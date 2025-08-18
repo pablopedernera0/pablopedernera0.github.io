@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoreo y Mantenimiento de Servidores Virtuales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide-content {
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #f0f0f0;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .content-list {
+            text-align: left;
+            font-size: 1.4rem;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .content-list li {
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .content-list li::before {
+            content: "▶";
+            color: #ffd700;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .comparison-table {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .comparison-table h4 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .tool-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 15px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tool-card h4 {
+            color: #ffd700;
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+        }
+
+        .resource-link {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 10px;
+            border: 2px solid #ffd700;
+            transition: all 0.3s ease;
+        }
+
+        .resource-link:hover {
+            background: #ffd700;
+            color: #333;
+            transform: translateY(-2px);
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+        }
+
+        .class-info {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+        }
+
+        .break-indicator {
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            color: #333;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .metric-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #ffd700;
+        }
+
+        .schedule-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 2px solid #ffd700;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.8rem; }
+            .content-list { font-size: 1.2rem; }
+            .two-column { grid-template-columns: 1fr; }
+            .slide { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">25</span>
+        </div>
+        
+        <div class="class-info">
+            <div id="class-indicator">CLASE 1</div>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <div class="slide-content">
+                <h1>Monitoreo y Mantenimiento de Servidores Virtuales</h1>
+                <p class="subtitle">Conceptos fundamentales y herramientas prácticas</p>
+                <div class="schedule-box">
+                    <h3>Cronograma de Clases</h3>
+                    <p><strong>Clase 1 (Martes 19-08-2025):</strong> 20:40 - 22:10 (Break: 21:30)</p>
+                    <p><strong>Clase 2 (Jueves 21-08-2025):</strong> 19:20 - 20:40 </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Objetivos -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Objetivos</h2>
+                <ul class="content-list">
+                    <li>Comprender los conceptos fundamentales de virtualización</li>
+                    <li>Dominar las diferencias entre hipervisores Tipo 1 y 2</li>
+                    <li>Conocer las principales plataformas: VMware, Hyper-V, KVM</li>
+                    <li>Implementar estrategias de monitoreo efectivas</li>
+                    <li>Establecer rutinas de mantenimiento preventivo</li>
+                    <li>Optimizar recursos y planificar capacidad</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3: Conceptos de Virtualización -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>¿Qué es la Virtualización?</h2>
+                <ul class="content-list">
+                    <li><strong>Definición:</strong> Tecnología que permite ejecutar múltiples sistemas operativos en un solo hardware físico</li>
+                    <li><strong>Beneficios:</strong> Mejor utilización de recursos, reducción de costos, mayor flexibilidad</li>
+                    <li><strong>Abstracción:</strong> Capa que separa el software del hardware físico</li>
+                    <li><strong>Consolidación:</strong> Múltiples cargas de trabajo en menos servidores físicos</li>
+                </ul>
+                <div style="margin-top: 30px;">
+                    <a href="https://www.vmware.com/solutions/virtualization.html" class="resource-link" target="_blank">VMware - Conceptos de Virtualización</a>
+                    <a href="https://docs.microsoft.com/en-us/virtualization/" class="resource-link" target="_blank">Microsoft Docs - Virtualización</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Hipervisores - Conceptos -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Hipervisores: El Corazón de la Virtualización</h2>
+                <ul class="content-list">
+                    <li><strong>Hipervisor:</strong> Software que crea y gestiona máquinas virtuales</li>
+                    <li><strong>Función principal:</strong> Asignar recursos físicos a VMs</li>
+                    <li><strong>Aislamiento:</strong> Garantiza que las VMs no interfieran entre sí</li>
+                    <li><strong>Gestión de recursos:</strong> CPU, memoria, almacenamiento y red</li>
+                </ul>
+                <div style="margin-top: 40px;">
+                    <a href="https://www.redhat.com/en/topics/virtualization/what-is-a-hypervisor" class="resource-link" target="_blank">Red Hat - ¿Qué es un Hipervisor?</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Hipervisores Tipo 1 vs Tipo 2 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Tipos de Hipervisores</h2>
+                <div class="two-column">
+                    <div class="comparison-table">
+                        <h4>🏢 Tipo 1 (Bare Metal)</h4>
+                        <ul class="content-list">
+                            <li>Se ejecuta directamente sobre hardware</li>
+                            <li>Mayor rendimiento</li>
+                            <li>Menor latencia</li>
+                            <li>Uso en centros de datos</li>
+                            <li><strong>Ejemplos:</strong> VMware ESXi, Hyper-V Server, Citrix XenServer</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-table">
+                        <h4>💻 Tipo 2 (Hosted)</h4>
+                        <ul class="content-list">
+                            <li>Se ejecuta sobre un OS host</li>
+                            <li>Más fácil de instalar</li>
+                            <li>Mejor para desarrollo/testing</li>
+                            <li>Menor rendimiento</li>
+                            <li><strong>Ejemplos:</strong> VMware Workstation, VirtualBox, Parallels</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: VMware -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>VMware</h2>
+                <div class="tool-card">
+                    <h4>🔧 Productos Principales</h4>
+                    <ul class="content-list">
+                        <li><strong>vSphere/ESXi:</strong> Hipervisor empresarial líder</li>
+                        <li><strong>vCenter:</strong> Gestión centralizada</li>
+                        <li><strong>Workstation Pro:</strong> Virtualización en escritorio</li>
+                        <li><strong>NSX:</strong> Virtualización de red</li>
+                    </ul>
+                </div>
+                <div style="margin-top: 30px;">
+                    <a href="https://www.vmware.com/products/vsphere.html" class="resource-link" target="_blank">VMware vSphere</a>
+                    <a href="https://docs.vmware.com/en/VMware-vSphere/index.html" class="resource-link" target="_blank">Documentación vSphere</a>
+                    <a href="https://www.vmware.com/education-services/certification.html" class="resource-link" target="_blank">Certificaciones VMware</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Hyper-V -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Microsoft Hyper-V</h2>
+                <div class="tool-card">
+                    <h4>🔧 Características Principales</h4>
+                    <ul class="content-list">
+                        <li><strong>Integración con Windows:</strong> Nativo en Windows Server</li>
+                        <li><strong>System Center:</strong> Suite de gestión completa</li>
+                        <li><strong>Azure integration:</strong> Híbrido cloud</li>
+                        <li><strong>PowerShell:</strong> Automatización avanzada</li>
+                    </ul>
+                </div>
+                <div style="margin-top: 30px;">
+                    <a href="https://docs.microsoft.com/en-us/windows-server/virtualization/hyper-v/hyper-v-on-windows-server" class="resource-link" target="_blank">Hyper-V Documentation</a>
+                    <a href="https://docs.microsoft.com/en-us/learn/paths/manage-infrastructure-hyper-v/" class="resource-link" target="_blank">Microsoft Learn - Hyper-V</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: KVM -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>KVM (Kernel-based Virtual Machine)</h2>
+                <div class="tool-card">
+                    <h4>🐧 Virtualización en Linux</h4>
+                    <ul class="content-list">
+                        <li><strong>Open Source:</strong> Incluido en el kernel de Linux</li>
+                        <li><strong>QEMU:</strong> Emulador de hardware</li>
+                        <li><strong>libvirt:</strong> API de gestión</li>
+                        <li><strong>OpenStack:</strong> Integración cloud</li>
+                    </ul>
+                </div>
+                <div style="margin-top: 30px;">
+                    <a href="https://www.linux-kvm.org/page/Documents" class="resource-link" target="_blank">KVM Documentation</a>
+                    <a href="https://libvirt.org/docs.html" class="resource-link" target="_blank">libvirt Documentation</a>
+                    <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_virtualization/" class="resource-link" target="_blank">Red Hat KVM Guide</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Break Slide -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>⏰ BREAK - 10 minutos</h2>
+                <div class="break-indicator">
+                    21:30 - 21:40
+                </div>
+                <p class="subtitle">Nos vemos en 10 minutos para continuar con Herramientas de Monitoreo</p>
+                <div style="margin-top: 40px;">
+                    <h3>🔄 Próximo tema: Herramientas de Monitoreo</h3>
+                    <ul class="content-list">
+                        <li>Métricas clave de rendimiento</li>
+                        <li>Nagios, Zabbix, PRTG</li>
+                        <li>Configuración y alertas</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Introducción al Monitoreo -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>¿Por qué Monitorear?</h2>
+                <ul class="content-list">
+                    <li><strong>Prevención:</strong> Detectar problemas antes de que afecten usuarios</li>
+                    <li><strong>Rendimiento:</strong> Optimizar recursos y identificar cuellos de botella</li>
+                    <li><strong>Disponibilidad:</strong> Garantizar SLAs y tiempo de actividad</li>
+                    <li><strong>Planificación:</strong> Datos para crecimiento y capacidad</li>
+                    <li><strong>Troubleshooting:</strong> Información para resolución rápida</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 11: Métricas Clave -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Métricas Clave de Rendimiento</h2>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <h4>🖥️ CPU</h4>
+                        <p>Utilización, carga promedio, procesos en espera</p>
+                    </div>
+                    <div class="metric-item">
+                        <h4>💾 RAM</h4>
+                        <p>Uso de memoria, swap, cache/buffers</p>
+                    </div>
+                    <div class="metric-item">
+                        <h4>💿 Disk I/O</h4>
+                        <p>IOPS, throughput, latencia, espacio libre</p>
+                    </div>
+                    <div class="metric-item">
+                        <h4>🌐 Network</h4>
+                        <p>Ancho de banda, paquetes, errores, latencia</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Nagios -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Nagios</h2>
+                <div class="tool-card">
+                    <h4>🔍 Características</h4>
+                    <ul class="content-list">
+                        <li><strong>Veterano confiable:</strong> Más de 20 años en el mercado</li>
+                        <li><strong>Extensible:</strong> Miles de plugins disponibles</li>
+                        <li><strong>Alertas flexibles:</strong> Email, SMS, scripts personalizados</li>
+                        <li><strong>Web interface:</strong> Monitoreo visual en tiempo real</li>
+                    </ul>
+                </div>
+                <div style="margin-top: 30px;">
+                    <a href="https://www.nagios.org/documentation/" class="resource-link" target="_blank">Nagios Documentation</a>
+                    <a href="https://exchange.nagios.org/" class="resource-link" target="_blank">Nagios Plugin Exchange</a>
+                    <a href="https://nagios-plugins.org/" class="resource-link" target="_blank">Official Plugins</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Zabbix -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Zabbix</h2>
+                <div class="tool-card">
+                    <h4>📊 Características</h4>
+                    <ul class="content-list">
+                        <li><strong>Todo-en-uno:</strong> Monitoreo, alertas, visualización</li>
+                        <li><strong>Agentes ligeros:</strong> Bajo impacto en recursos</li>
+                        <li><strong>Auto-discovery:</strong> Detección automática de dispositivos</li>
+                        <li><strong>Dashboards ricos:</strong> Gráficos y mapas interactivos</li>
+                    </ul>
+                </div>
+                <div style="margin-top: 30px;">
+                    <a href="https://www.zabbix.com/documentation/" class="resource-link" target="_blank">Zabbix Documentation</a>
+                    <a href="https://www.zabbix.com/integrations" class="resource-link" target="_blank">Zabbix Integrations</a>
+                    <a href="https://git.zabbix.com/projects/ZBX/repos/zabbix/browse/templates" class="resource-link" target="_blank">Templates Repository</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: PRTG -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>PRTG Network Monitor</h2>
+                <div class="tool-card">
+                    <h4>🖥️ Características</h4>
+                    <ul class="content-list">
+                        <li><strong>Windows-centric:</strong> Especializado en entornos Microsoft</li>
+                        <li><strong>Fácil configuración:</strong> Interfaz intuitiva</li>
+                        <li><strong>Sensores variados:</strong> +250 tipos de sensores</li>
+                        <li><strong>Aplicaciones móviles:</strong> Monitoreo desde cualquier lugar</li>
+                    </ul>
+                </div>
+                <div style="margin-top: 30px;">
+                    <a href="https://www.paessler.com/manuals/prtg" class="resource-link" target="_blank">PRTG Manual</a>
+                    <a href="https://kb.paessler.com/" class="resource-link" target="_blank">PRTG Knowledge Base</a>
+                    <a href="https://www.paessler.com/prtg/download" class="resource-link" target="_blank">PRTG Free Trial</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Comparación de Herramientas -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Comparación de Herramientas</h2>
+                <div class="two-column">
+                    <div class="comparison-table">
+                        <h4>Criterios de Selección</h4>
+                        <ul class="content-list">
+                            <li>Tamaño del entorno</li>
+                            <li>Presupuesto disponible</li>
+                            <li>Experiencia del equipo</li>
+                            <li>Requisitos de integración</li>
+                            <li>Escalabilidad futura</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-table">
+                        <h4>Recomendaciones</h4>
+                        <ul class="content-list">
+                            <li><strong>Pequeño/Medio:</strong> Zabbix</li>
+                            <li><strong>Enterprise:</strong> Nagios XI</li>
+                            <li><strong>Windows:</strong> PRTG</li>
+                            <li><strong>Cloud:</strong> CloudWatch, DataDog</li>
+                            <li><strong>Open Source:</strong> Nagios Core</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FIN CLASE 1 - INICIO CLASE 2 -->
+        <!-- Slide 16: Inicio Clase 2 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>CLASE 2: Mantenimiento Preventivo</h2>
+                <p class="subtitle">Jueves 19:20 - 20:40 (80 minutos sin break)</p>
+                <div class="schedule-box">
+                    <h3>Agenda de Hoy</h3>
+                    <ul class="content-list">
+                        <li>Estrategias de mantenimiento preventivo</li>
+                        <li>Gestión de actualizaciones y parches</li>
+                        <li>Respaldos y snapshots</li>
+                        <li>Planificación de recursos y capacidad</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: Mantenimiento Preventivo -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Mantenimiento Preventivo</h2>
+                <ul class="content-list">
+                    <li><strong>Objetivo:</strong> Prevenir fallos antes de que ocurran</li>
+                    <li><strong>Programación regular:</strong> Ventanas de mantenimiento planificadas</li>
+                    <li><strong>Documentación:</strong> Registro de todas las actividades</li>
+                    <li><strong>Automatización:</strong> Scripts y herramientas para tareas rutinarias</li>
+                    <li><strong>Monitoreo continuo:</strong> Alertas tempranas de problemas</li>
+                </ul>
+                <div style="margin-top: 30px;">
+                    <a href="https://www.vmware.com/content/dam/digitalmarketing/vmware/en/pdf/techpaper/performance/Perf_Best_Practices_vSphere67_2018.pdf" class="resource-link" target="_blank">VMware Best Practices</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Actualizaciones y Parches -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Gestión de Actualizaciones y Parches</h2>
+                <div class="two-column">
+                    <div class="tool-card">
+                        <h4>📋 Proceso Recomendado</h4>
+                        <ul class="content-list">
+                            <li>Evaluación de impacto</li>
+                            <li>Testing en ambiente de pruebas</li>
+                            <li>Programación de ventana</li>
+                            <li>Respaldo previo</li>
+                            <li>Aplicación controlada</li>
+                            <li>Verificación post-actualización</li>
+                        </ul>
+                    </div>
+                    <div class="tool-card">
+                        <h4>⚠️ Consideraciones</h4>
+                        <ul class="content-list">
+                            <li>Compatibilidad entre versiones</li>
+                            <li>Dependencias de aplicaciones</li>
+                            <li>Plan de rollback</li>
+                            <li>Comunicación a usuarios</li>
+                            <li>Documentación de cambios</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Herramientas de Actualización -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Herramientas de Actualización</h2>
+                <div class="tool-card">
+                    <h4>🔧 Por Plataforma</h4>
+                    <ul class="content-list">
+                        <li><strong>VMware:</strong> vSphere Update Manager (VUM), vCenter Lifecycle Manager</li>
+                        <li><strong>Hyper-V:</strong> Windows Update, WSUS, System Center Configuration Manager</li>
+                        <li><strong>Linux/KVM:</strong> yum, apt, zypper, Ansible, Puppet</li>
+                        <li><strong>Multi-plataforma:</strong> Red Hat Satellite, SUSE Manager</li>
+                    </ul>
+                </div>
+                <div style="margin-top: 30px;">
+                    <a href="https://docs.vmware.com/en/VMware-vSphere/7.0/com.vmware.vsphere-lifecycle-manager.doc/GUID-74295A37-E8BB-4EB9-BFBA-47B78F0C570D.html" class="resource-link" target="_blank">vSphere Lifecycle Manager</a>
+                    <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-server-update-services/get-started/windows-server-update-services-wsus" class="resource-link" target="_blank">Windows WSUS</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 20: Respaldos y Snapshots -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Estrategias de Respaldo</h2>
+                <ul class="content-list">
+                    <li><strong>Regla 3-2-1:</strong> 3 copias, 2 medios diferentes, 1 offsite</li>
+                    <li><strong>Full Backup:</strong> Copia completa de todos los datos</li>
+                    <li><strong>Incremental:</strong> Solo cambios desde último backup</li>
+                    <li><strong>Differential:</strong> Cambios desde último full backup</li>
+                    <li><strong>Snapshots:</strong> Punto en el tiempo para recovery rápido</li>
+                </ul>
+                <div style="margin-top: 30px;">
+                    <a href="https://www.veeam.com/backup-recovery-virtualized-environments-vmware-hyper-v.html" class="resource-link" target="_blank">Veeam Backup Solutions</a>
+                    <a href="https://www.nakivo.com/" class="resource-link" target="_blank">NAKIVO Backup</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 21: Herramientas de Backup -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Herramientas de Backup para VMs</h2>
+                <div class="two-column">
+                    <div class="tool-card">
+                        <h4>💼 Comerciales</h4>
+                        <ul class="content-list">
+                            <li><strong>Veeam B&R:</strong> Líder del mercado</li>
+                            <li><strong>Commvault:</strong> Enterprise grade</li>
+                            <li><strong>Acronis:</strong> Cyber backup</li>
+                            <li><strong>Rubrik:</strong> Cloud data management</li>
+                        </ul>
+                    </div>
+                    <div class="tool-card">
+                        <h4>🆓 Open Source</h4>
+                        <ul class="content-list">
+                            <li><strong>Bacula:</strong> Enterprise backup</li>
+                            <li><strong>Amanda:</strong> Network backup</li>
+                            <li><strong>Proxmox VE:</strong> Backup integrado</li>
+                            <li><strong>Restic:</strong> Backup moderno</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 22: Snapshots vs Backups -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Snapshots vs Backups</h2>
+                <div class="two-column">
+                    <div class="comparison-table">
+                        <h4>📸 Snapshots</h4>
+                        <ul class="content-list">
+                            <li><strong>Propósito:</strong> Recovery rápido</li>
+                            <li><strong>Ubicación:</strong> Mismo storage</li>
+                            <li><strong>Velocidad:</strong> Instantáneo</li>
+                            <li><strong>Retención:</strong> Corto plazo (días)</li>
+                            <li><strong>Limitación:</strong> No protege contra fallos de storage</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-table">
+                        <h4>💾 Backups</h4>
+                        <ul class="content-list">
+                            <li><strong>Propósito:</strong> Protección de datos</li>
+                            <li><strong>Ubicación:</strong> Storage separado</li>
+                            <li><strong>Velocidad:</strong> Proceso más lento</li>
+                            <li><strong>Retención:</strong> Largo plazo (meses/años)</li>
+                            <li><strong>Ventaja:</strong> Protección completa</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 23: Planificación de Recursos -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Planificación de Recursos</h2>
+                <ul class="content-list">
+                    <li><strong>Capacity Planning:</strong> Predecir necesidades futuras</li>
+                    <li><strong>Right-sizing:</strong> Ajustar recursos a necesidades reales</li>
+                    <li><strong>Resource pools:</strong> Agrupación lógica de recursos</li>
+                    <li><strong>DRS/DPM:</strong> Distribución automática de cargas</li>
+                    <li><strong>Trending:</strong> Análisis de tendencias históricas</li>
+                </ul>
+                <div style="margin-top: 30px;">
+                    <a href="https://docs.vmware.com/en/VMware-vRealize-Operations/index.html" class="resource-link" target="_blank">vRealize Operations</a>
+                    <a href="https://www.vmware.com/products/vcenter-server/features.html" class="resource-link" target="_blank">vCenter DRS Features</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 24: Métricas para Capacity Planning -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Métricas para Capacity Planning</h2>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <h4>📊 CPU</h4>
+                        <p>CPU Ready Time, Co-stop, Utilización promedio y picos</p>
+                    </div>
+                    <div class="metric-item">
+                        <h4>💾 Memoria</h4>
+                        <p>Memoria activa, ballooning, swapping, compresión</p>
+                    </div>
+                    <div class="metric-item">
+                        <h4>💿 Storage</h4>
+                        <p>Latencia de discos, IOPS, throughput, crecimiento</p>
+                    </div>
+                    <div class="metric-item">
+                        <h4>🌐 Red</h4>
+                        <p>Utilización de puertos, paquetes perdidos, latencia</p>
+                    </div>
+                </div>
+                <div style="margin-top: 30px;">
+                    <a href="https://core.vmware.com/resource/performance-best-practices-vmware-vsphere-70" class="resource-link" target="_blank">vSphere Performance Guide</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 25: Resumen y Próximos Pasos -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Resumen y Próximos Pasos</h2>
+                <div class="two-column">
+                    <div class="tool-card">
+                        <h4>✅ Lo que aprendimos</h4>
+                        <ul class="content-list">
+                            <li>Conceptos de virtualización</li>
+                            <li>Tipos de hipervisores</li>
+                            <li>Plataformas principales</li>
+                            <li>Herramientas de monitoreo</li>
+                            <li>Mantenimiento preventivo</li>
+                            <li>Estrategias de respaldo</li>
+                        </ul>
+                    </div>
+                    <div class="tool-card">
+                        <h4>🎯 Próximos pasos</h4>
+                        <ul class="content-list">
+                            <li>Práctica en laboratorio</li>
+                            <li>Implementar monitoreo</li>
+                            <li>Configurar backups</li>
+                            <li>Documentar procesos</li>
+                            <li>Certificaciones</li>
+                            <li>Mantenerse actualizado</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="margin-top: 40px;">
+                    <h3>📚 Recursos Adicionales</h3>
+                    <a href="https://docs.vmware.com/" class="resource-link" target="_blank">VMware Docs</a>
+                    <a href="https://docs.microsoft.com/en-us/virtualization/" class="resource-link" target="_blank">Microsoft Virtualization</a>
+                    <a href="https://www.redhat.com/en/technologies/virtualization" class="resource-link" target="_blank">Red Hat Virtualization</a>
+                    <a href="https://www.coursera.org/courses?query=virtualization" class="resource-link" target="_blank">Cursos Online</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousSlide()" id="prevBtn">← Anterior</button>
+        <button class="nav-btn" onclick="toggleFullscreen()">🔍 Pantalla Completa</button>
+        <button class="nav-btn" onclick="nextSlide()" id="nextBtn">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        // Class breaks - slide indices where classes change
+        const classBreaks = {
+            0: "CLASE 1 - Introducción",
+            9: "CLASE 1 - Después del Break",
+            15: "CLASE 2 - Mantenimiento"
+        };
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Update class indicator
+            const classIndicator = document.getElementById('class-indicator');
+            for (let breakPoint in classBreaks) {
+                if (currentSlide >= parseInt(breakPoint)) {
+                    classIndicator.textContent = classBreaks[breakPoint];
+                }
+            }
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            switch(event.key) {
+                case 'ArrowRight':
+                case 'Space':
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                    previousSlide();
+                    break;
+                case 'f':
+                case 'F':
+                    toggleFullscreen();
+                    break;
+                case 'Home':
+                    showSlide(0);
+                    break;
+                case 'End':
+                    showSlide(totalSlides - 1);
+                    break;
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+
+        // Add download functionality
+        function downloadPresentation() {
+            const element = document.documentElement;
+            const opt = {
+                margin: 0,
+                filename: 'Monitoreo_Mantenimiento_Servidores_Virtuales.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+            };
+            
+            // Note: This would require html2pdf library to be loaded
+            // html2pdf().set(opt).from(element).save();
+        }
+
+        // Touch/swipe support for mobile
+        let startX = 0;
+        let startY = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            if (!startX || !startY) return;
+            
+            let endX = e.changedTouches[0].clientX;
+            let endY = e.changedTouches[0].clientY;
+            
+            let diffX = startX - endX;
+            let diffY = startY - endY;
+            
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (diffX > 0) {
+                    nextSlide();
+                } else {
+                    previousSlide();
+                }
+            }
+            
+            startX = 0;
+            startY = 0;
+        });
+
+        // Auto-save current slide position
+        function saveProgress() {
+            localStorage.setItem('presentationSlide', currentSlide);
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('presentationSlide');
+            if (saved) {
+                showSlide(parseInt(saved));
+            }
+        }
+
+        // Save progress on slide change
+        document.addEventListener('keydown', saveProgress);
+
+        // Load progress on page load
+        window.addEventListener('load', loadProgress);
+    </script>
+</body>
+</html>
