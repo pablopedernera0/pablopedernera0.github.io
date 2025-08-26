@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direccionamiento IP - Presentación</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px;
+            height: 100vh;
+            overflow-y: auto;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255,255,255,0.3);
+        }
+
+        h2 {
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            color: #87ceeb;
+            border-bottom: 3px solid #87ceeb;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .content {
+            font-size: 1.3em;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 30px 0;
+        }
+
+        .comparison-table {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th {
+            background: rgba(135,206,235,0.3);
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.3);
+            font-size: 1.2em;
+        }
+
+        .comparison-table td {
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,165,0,0.2));
+            border-left: 5px solid #ffd700;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .code-block {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            font-size: 1.1em;
+            color: #00ff00;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1.1em;
+            backdrop-filter: blur(10px);
+        }
+
+        .class-indicator {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin: 15px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        li::before {
+            content: "▶";
+            color: #ffd700;
+            position: absolute;
+            left: 0;
+            font-size: 1.2em;
+        }
+
+        .subnet-calc {
+            background: rgba(0,100,200,0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 2px solid rgba(135,206,235,0.5);
+        }
+
+        .break-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-align: center;
+            /*display: flex;*/
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .break-slide h1 {
+            font-size: 4em;
+            margin-bottom: 30px;
+        }
+
+        .break-slide p {
+            font-size: 1.8em;
+            opacity: 0.9;
+        }
+        .break-slide.active {
+            display: flex !important;
+        }
+        .resource-link {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 10px;
+            border: 2px solid #ffd700;
+            transition: all 0.3s ease;
+        }
+
+        .resource-link:hover {
+            background: #ffd700;
+            color: #333;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">25</span>
+        </div>
+        
+        <div class="class-indicator" id="classIndicator">
+            CLASE 1 - MARTES
+        </div>
+
+        <!-- Slide 1: Portada -->
+        <div class="slide active">
+            <div class="content">
+                <h1>Direccionamiento IP</h1>
+                <div style="text-align: center; margin-top: 60px;">
+                    <h3>Desde los fundamentos hasta configuraciones avanzadas</h3>
+                    <p style="font-size: 1.5em; margin-top: 40px; opacity: 0.9;">
+                        Clase 1: Martes 20:40-22:10<br>
+                        Clase 2: Jueves 19:20-20:40
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CLASE 1 - PRIMERA PARTE (20:40-21:20) -->
+        
+        <!-- Slide 2: Agenda Clase 1 -->
+        <div class="slide">
+            <div class="content">
+                <h2>Agenda - Clase 1</h2>
+                <div style="font-size: 1.4em; line-height: 2;">
+                    <h3>Primera parte (20:40-21:20):</h3>
+                    <ul>
+                        <li>Repaso: Modelo TCP/IP</li>
+                        <li>Comparación OSI vs TCP/IP</li>
+                        <li>Fundamentos de direccionamiento IP</li>
+                    </ul>
+                    
+                    <h3>Segunda parte (21:30-22:10):</h3>
+                    <ul>
+                        <li>Clases de direcciones IP</li>
+                        <li>Subnetting básico</li>
+                        <li>Direcciones especiales</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Repaso TCP/IP -->
+        <div class="slide">
+            <div class="content">
+                <h2>Repaso: Modelo TCP/IP</h2>
+                <div class="highlight-box">
+                    <h3>4 Capas del Modelo TCP/IP:</h3>
+                    <ul style="font-size: 1.2em;">
+                        <li><strong>Aplicación:</strong> HTTP, FTP, SMTP, DNS</li>
+                        <li><strong>Transporte:</strong> TCP, UDP</li>
+                        <li><strong>Internet:</strong> IP, ICMP, ARP</li>
+                        <li><strong>Acceso a la Red:</strong> Ethernet, WiFi</li>
+                    </ul>
+                </div>
+                <div class="code-block">
+                    Datos → [App] → [Transport] → [Internet] → [Network] → Red
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: OSI vs TCP/IP -->
+        <div class="slide">
+            <div class="content">
+                <h2>Modelo OSI vs TCP/IP</h2>
+                <div class="comparison-table">
+                    <table>
+                        <tr>
+                            <th>OSI (7 capas)</th>
+                            <th>TCP/IP (4 capas)</th>
+                            <th>Función Principal</th>
+                        </tr>
+                        <tr>
+                            <td>7. Aplicación<br>6. Presentación<br>5. Sesión</td>
+                            <td>Aplicación</td>
+                            <td>Interfaz usuario-red</td>
+                        </tr>
+                        <tr>
+                            <td>4. Transporte</td>
+                            <td>Transporte</td>
+                            <td>Entrega confiable</td>
+                        </tr>
+                        <tr>
+                            <td>3. Red</td>
+                            <td>Internet</td>
+                            <td>Ruteo y direccionamiento</td>
+                        </tr>
+                        <tr>
+                            <td>2. Enlace<br>1. Física</td>
+                            <td>Acceso a la Red</td>
+                            <td>Transmisión física</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: ¿Qué es una dirección IP? -->
+        <div class="slide">
+            <div class="content">
+                <h2>¿Qué es una dirección IP?</h2>
+                <div class="highlight-box">
+                    <p style="font-size: 1.4em;">Una dirección IP es un identificador único de 32 bits (IPv4) que identifica cada dispositivo en una red TCP/IP.</p>
+                </div>
+                <div class="two-columns">
+                    <div>
+                        <h3>Formato binario:</h3>
+                        <div class="code-block">
+11000000.10101000.00000001.00000001</div>
+                    </div>
+                    <div>
+                        <h3>Formato decimal:</h3>
+                        <div class="code-block">192.168.1.1</div>
+                    </div>
+                </div>
+                <ul>
+                    <li>Cada octeto: 0-255 (8 bits)</li>
+                    <li>Total de direcciones IPv4: 2³² = 4,294,967,296</li>
+                    <li>Formato: Red.Red.Red.Host o Red.Host dependiendo de la clase</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 6: Componentes de una dirección IP -->
+        <div class="slide">
+            <div class="content">
+                <h2>Componentes de una dirección IP</h2>
+                <div class="two-columns">
+                    <div>
+                        <h3>Parte de Red (Network)</h3>
+                        <ul>
+                            <li>Identifica la red específica</li>
+                            <li>Debe ser única en Internet</li>
+                            <li>Utilizada por routers para ruteo</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Parte de Host</h3>
+                        <ul>
+                            <li>Identifica el dispositivo en la red</li>
+                            <li>Debe ser única dentro de la red</li>
+                            <li>Asignada por administrador local</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight-box">
+                    <h3>Ejemplo: 192.168.1.100/24</h3>
+                    <ul>
+                        <li><strong>Red:</strong> 192.168.1.0 (primeros 24 bits)</li>
+                        <li><strong>Host:</strong> 100 (últimos 8 bits)</li>
+                        <li><strong>Máscara:</strong> 255.255.255.0</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- BREAK SLIDE -->
+        <div class="slide break-slide">
+            <div class="content">
+                <h1>⏰ DESCANSO</h1>
+                <p>10 minutos</p>
+                <p style="font-size: 1.2em; margin-top: 30px;">21:20 - 21:30</p>
+            </div>
+        </div>
+
+        <!-- CLASE 1 - SEGUNDA PARTE (21:30-22:10) -->
+
+        <!-- Slide 8: Clases de direcciones IP -->
+        <div class="slide">
+            <div class="content">
+                <h2>Clases de Direcciones IP</h2>
+                <div class="comparison-table">
+                    <table>
+                        <tr>
+                            <th>Clase</th>
+                            <th>Rango</th>
+                            <th>Máscara por defecto</th>
+                            <th>Hosts por red</th>
+                            <th>Uso</th>
+                        </tr>
+                        <tr>
+                            <td><strong>A</strong></td>
+                            <td>1.0.0.0 - 126.255.255.255</td>
+                            <td>255.0.0.0 (/8)</td>
+                            <td>16,777,214</td>
+                            <td>Redes muy grandes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>B</strong></td>
+                            <td>128.0.0.0 - 191.255.255.255</td>
+                            <td>255.255.0.0 (/16)</td>
+                            <td>65,534</td>
+                            <td>Redes medianas</td>
+                        </tr>
+                        <tr>
+                            <td><strong>C</strong></td>
+                            <td>192.0.0.0 - 223.255.255.255</td>
+                            <td>255.255.255.0 (/24)</td>
+                            <td>254</td>
+                            <td>Redes pequeñas</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Direcciones especiales -->
+        <div class="slide">
+            <div class="content">
+                <h2>Direcciones Especiales</h2>
+                <div class="two-columns">
+                    <div class="highlight-box">
+                        <h3>Direcciones Privadas (RFC 1918)</h3>
+                        <ul>
+                            <li><strong>Clase A:</strong> 10.0.0.0/8</li>
+                            <li><strong>Clase B:</strong> 172.16.0.0/12</li>
+                            <li><strong>Clase C:</strong> 192.168.0.0/16</li>
+                        </ul>
+                    </div>
+                    <div class="highlight-box">
+                        <h3>Otras direcciones especiales</h3>
+                        <ul>
+                            <li><strong>Loopback:</strong> 127.0.0.0/8</li>
+                            <li><strong>APIPA:</strong> 169.254.0.0/16</li>
+                            <li><strong>Multicast:</strong> 224.0.0.0/4</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="code-block">
+Ejemplo de configuración de red privada:<br>
+Red: 192.168.1.0/24<br>
+Gateway: 192.168.1.1<br>
+DNS: 192.168.1.1<br>
+Hosts: 192.168.1.2 - 192.168.1.254<br>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Máscaras de subred -->
+        <div class="slide">
+            <div class="content">
+                <h2>Máscaras de Subred</h2>
+                <div class="highlight-box">
+                    <p>La máscara de subred determina qué parte de la dirección IP corresponde a la red y qué parte al host.</p>
+                </div>
+                <div class="subnet-calc">
+                    <h3>Notación CIDR vs Decimal</h3>
+                    <div class="two-columns">
+                        <div>
+                            <h4>Notación CIDR:</h4>
+                            <ul>
+                                <li>/8 = 255.0.0.0</li>
+                                <li>/16 = 255.255.0.0</li>
+                                <li>/24 = 255.255.255.0</li>
+                                <li>/30 = 255.255.255.252</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>Hosts disponibles:</h4>
+                            <ul>
+                                <li>/24 = 254 hosts</li>
+                                <li>/25 = 126 hosts</li>
+                                <li>/26 = 62 hosts</li>
+                                <li>/30 = 2 hosts</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Subnetting básico -->
+        <div class="slide">
+            <div class="content">
+                <h2>Subnetting Básico</h2>
+                <h3>Ejemplo práctico: Dividir 192.168.1.0/24</h3>
+                <div class="subnet-calc">
+                    <div class="code-block">
+Red original: 192.168.1.0/24 (254 hosts)<br>
+Necesitamos 4 subredes de ~60 hosts cada una<br>
+                        <br>
+Solución: Usar /26 (62 hosts por subred)<br>
+                        <br>
+Subred 1: 192.168.1.0/26   (192.168.1.1-62)<br>
+Subred 2: 192.168.1.64/26  (192.168.1.65-126)<br>
+Subred 3: 192.168.1.128/26 (192.168.1.129-190)<br>
+Subred 4: 192.168.1.192/26 (192.168.1.193-254)<br>
+                    </div>
+                </div>
+                <div class="highlight-box">
+                    <p><strong>Fórmula clave:</strong> Número de subredes = 2ⁿ (donde n = bits prestados)</p>
+                    <p><strong>Hosts por subred:</strong> 2ᵐ - 2 (donde m = bits de host restantes)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Resumen Clase 1 -->
+        <div class="slide">
+            <div class="content">
+                <h2>Resumen - Clase 1</h2>
+                <div class="highlight-box">
+                    <h3>Conceptos clave aprendidos:</h3>
+                    <ul>
+                        <li>Estructura del modelo TCP/IP vs OSI</li>
+                        <li>Composición de direcciones IPv4 (32 bits)</li>
+                        <li>Clases de direcciones IP (A, B, C)</li>
+                        <li>Direcciones privadas y especiales</li>
+                        <li>Máscaras de subred y notación CIDR</li>
+                        <li>Fundamentos de subnetting</li>
+                    </ul>
+                </div>
+                <div style="margin-top: 30px;">
+                    <a href="https://es.wikipedia.org/wiki/Direcci%C3%B3n_IP" class="resource-link" target="_blank">Direcciones IP (Wikipedia)</a>
+                    <a href="https://www.linkedin.com/pulse/redes-ip-para-principiantes-lo-que-necesitas-saber-tu-gabriel/" class="resource-link" target="_blank">Redes IP para principiantes</a>
+                    <a href="https://devopscube-com.translate.goog/ip-address-tutorial/?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=tc" class="resource-link" target="_blank">Tutorial de direcciones IP</a>
+                    <a href="https://www.hostinger.com/ar/tutoriales/que-es-una-direccion-ip" class="resource-link" target="_blank">¿Qué es una dirección IP? (Hostinger)</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- CLASE 2 - JUEVES (19:20-20:40) -->
+        
+        <!-- Slide 13: Bienvenida Clase 2 -->
+        <div class="slide">
+            <div class="content">
+                <h1>Clase 2 - Jueves</h1>
+                <h2>Temas Avanzados</h2>
+                <div style="text-align: center; margin-top: 60px;">
+                    <h3>Agenda de hoy:</h3>
+                    <ul style="font-size: 1.4em; line-height: 2;">
+                        <li>VLSM (Variable Length Subnet Masking)</li>
+                        <li>Introducción a IPv6</li>
+                        <li>NAT (Network Address Translation)</li>
+                        <li>Fundamentos de Firewalls</li>
+                        <li>Casos prácticos</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: VLSM -->
+        <div class="slide">
+            <div class="content">
+                <h2>VLSM - Variable Length Subnet Masking</h2>
+                <div class="highlight-box">
+                    <p>VLSM permite usar diferentes máscaras de subred dentro de la misma red principal, optimizando el uso de direcciones IP.</p>
+                </div>
+                <h3>Ejemplo práctico:</h3>
+                <div class="subnet-calc">
+                    <div class="code-block">
+Red: 192.168.100.0/24<br>
+Necesidades:<br>
+- Red A: 100 hosts → /25 (126 hosts)<br>
+- Red B: 50 hosts  → /26 (62 hosts)<br>
+- Red C: 20 hosts  → /27 (30 hosts)<br>
+- Enlaces WAN: 2 hosts → /30 (2 hosts)<br>
+                        <br>
+Asignación VLSM:<br>
+192.168.100.0/25   → Red A (0-127)<br>
+192.168.100.128/26 → Red B (128-191)<br>
+192.168.100.192/27 → Red C (192-223)<br>
+192.168.100.224/30 → WAN 1 (224-227)<br>
+192.168.100.228/30 → WAN 2 (228-231)<br>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: IPv6 Introducción -->
+        <div class="slide">
+            <div class="content">
+                <h2>Introducción a IPv6</h2>
+                <div class="two-columns">
+                    <div>
+                        <h3>¿Por qué IPv6?</h3>
+                        <ul>
+                            <li>Agotamiento de IPv4</li>
+                            <li>Crecimiento de Internet</li>
+                            <li>IoT y dispositivos móviles</li>
+                            <li>Simplificación del protocolo</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Características IPv6</h3>
+                        <ul>
+                            <li>128 bits de longitud</li>
+                            <li>3.4 × 10³⁸ direcciones</li>
+                            <li>Autoconfiguración</li>
+                            <li>Seguridad integrada (IPSec)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="code-block">
+Ejemplo IPv6: 2001:0db8:85a3:0000:0000:8a2e:0370:7334<br>
+Comprimida:   2001:db8:85a3::8a2e:370:7334
+                </div>
+                <div class="highlight-box">
+                    <p><strong>Estructura:</strong> 8 grupos de 4 dígitos hexadecimales separados por ":"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: NAT - Network Address Translation -->
+        <div class="slide">
+            <div class="content">
+                <h2>NAT - Network Address Translation</h2>
+                <div class="highlight-box">
+                    <p>NAT permite que múltiples dispositivos con direcciones privadas compartan una dirección IP pública para acceder a Internet.</p>
+                </div>
+                <div class="two-columns">
+                    <div>
+                        <h3>Tipos de NAT:</h3>
+                        <ul>
+                            <li><strong>Static NAT:</strong> 1:1 mapping</li>
+                            <li><strong>Dynamic NAT:</strong> Pool de IPs</li>
+                            <li><strong>PAT/NAPT:</strong> Overload</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Beneficios:</h3>
+                        <ul>
+                            <li>Conservación de IPs públicas</li>
+                            <li>Seguridad adicional</li>
+                            <li>Flexibilidad de red interna</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="code-block">
+Tabla NAT ejemplo:<br>
+Private IP      |  Public IP    |  Port<br>
+192.168.1.10:1024 → 200.1.1.1:5000<br>
+192.168.1.20:1025 → 200.1.1.1:5001<br>
+192.168.1.30:1026 → 200.1.1.1:5002<br>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: Funcionamiento de NAT -->
+        <div class="slide">
+            <div class="content">
+                <h2>¿Cómo funciona NAT?</h2>
+                <div class="subnet-calc">
+                    <h3>Proceso paso a paso:</h3>
+                    <div class="code-block">
+1. Host interno (192.168.1.10) envía paquete a Internet<br>
+   Origen: 192.168.1.10:1024 → Destino: 8.8.8.8:53<br>
+                        <br>
+2. Router NAT traduce la dirección origen<br>
+   Origen: 200.1.1.1:5000 → Destino: 8.8.8.8:53<br>
+   [Guarda en tabla: 192.168.1.10:1024 ↔ 200.1.1.1:5000]<br>
+                        <br>
+3. Respuesta de Internet llega al router<br>
+   Origen: 8.8.8.8:53 → Destino: 200.1.1.1:5000<br>
+                        <br>
+4. Router consulta tabla y reenvía al host interno<br>
+   Origen: 8.8.8.8:53 → Destino: 192.168.1.10:1024<br>
+                    </div>
+                </div>
+                <div class="highlight-box">
+                    <p><strong>Clave:</strong> NAT mantiene una tabla de traducciones para mapear conexiones internas con externas.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Firewalls - Introducción -->
+        <div class="slide">
+            <div class="content">
+                <h2>Fundamentos de Firewalls</h2>
+                <div class="highlight-box">
+                    <p>Un firewall es un sistema de seguridad que controla el tráfico de red basándose en reglas predefinidas.</p>
+                </div>
+                <div class="two-columns">
+                    <div>
+                        <h3>Tipos de Firewalls:</h3>
+                        <ul>
+                            <li><strong>Packet Filtering:</strong> Inspección básica</li>
+                            <li><strong>Stateful:</strong> Rastreo de conexiones</li>
+                            <li><strong>Application Layer:</strong> Inspección profunda</li>
+                            <li><strong>Next-Gen:</strong> Funciones avanzadas</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Criterios de filtrado:</h3>
+                        <ul>
+                            <li>Direcciones IP origen/destino</li>
+                            <li>Puertos origen/destino</li>
+                            <li>Protocolo (TCP/UDP/ICMP)</li>
+                            <li>Estado de conexión</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousSlide()" id="prevBtn">← Anterior</button>
+        <button class="nav-btn" onclick="toggleFullscreen()">🔍 Pantalla Completa</button>
+        <button class="nav-btn" onclick="nextSlide()" id="nextBtn">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        // Class breaks - slide indices where classes change
+        const classBreaks = {
+            0: "CLASE 1 - Introducción",
+            9: "CLASE 1 - Después del Break",
+            15: "CLASE 2 - Mantenimiento"
+        };
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+
+            // Update class indicator
+            const classIndicator = document.getElementById('class-indicator');
+            for (let breakPoint in classBreaks) {
+                if (currentSlide >= parseInt(breakPoint)) {
+                    classIndicator.textContent = classBreaks[breakPoint];
+                }
+            }
+
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            switch(event.key) {
+                case 'ArrowRight':
+                case 'Space':
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                    previousSlide();
+                    break;
+                case 'f':
+                case 'F':
+                    toggleFullscreen();
+                    break;
+                case 'Home':
+                    showSlide(0);
+                    break;
+                case 'End':
+                    showSlide(totalSlides - 1);
+                    break;
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+
+        // Add download functionality
+        function downloadPresentation() {
+            const element = document.documentElement;
+            const opt = {
+                margin: 0,
+                filename: 'Monitoreo_Mantenimiento_Servidores_Virtuales.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+            };
+
+            // Note: This would require html2pdf library to be loaded
+            // html2pdf().set(opt).from(element).save();
+        }
+
+        // Touch/swipe support for mobile
+        let startX = 0;
+        let startY = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            if (!startX || !startY) return;
+
+            let endX = e.changedTouches[0].clientX;
+            let endY = e.changedTouches[0].clientY;
+
+            let diffX = startX - endX;
+            let diffY = startY - endY;
+
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (diffX > 0) {
+                    nextSlide();
+                } else {
+                    previousSlide();
+                }
+            }
+
+            startX = 0;
+            startY = 0;
+        });
+
+        // Auto-save current slide position
+        function saveProgress() {
+            localStorage.setItem('presentationSlide', currentSlide);
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('presentationSlide');
+            if (saved) {
+                showSlide(parseInt(saved));
+            }
+        }
+
+        // Save progress on slide change
+        document.addEventListener('keydown', saveProgress);
+
+        // Load progress on page load
+        window.addEventListener('load', loadProgress);
+    </script>
+</body>
+</html>
