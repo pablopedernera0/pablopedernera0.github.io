@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Infraestructura en la Nube</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .scenario-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .scenario-card:hover {
+            border-color: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.1);
+        }
+
+        .scenario-card.active {
+            border-color: #4f46e5;
+            background: #f8faff;
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.2);
+        }
+
+        .scenario-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .scenario-desc {
+            color: #6b7280;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .scenario-context {
+            font-size: 0.9rem;
+        }
+
+        .context-item {
+            color: #4b5563;
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .context-item:before {
+            content: "•";
+            color: #4f46e5;
+            position: absolute;
+            left: 0;
+        }
+
+        .form-section {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group input {
+            padding: 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .results-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .result-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+        }
+
+        .result-card.cpu { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
+        .result-card.ram { background: linear-gradient(135deg, #10b981, #047857); color: white; }
+        .result-card.storage { background: linear-gradient(135deg, #8b5cf6, #5b21b6); color: white; }
+        .result-card.bandwidth { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .result-label {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .cost-section {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .cost-total {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .cost-amount {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .cost-period {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .cost-level {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .level-basic { background: #dcfce7; color: #166534; }
+        .level-intermediate { background: #fef3c7; color: #92400e; }
+        .level-enterprise { background: #fee2e2; color: #991b1b; }
+
+        .cost-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .recommendations {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+        .recommendations h3 {
+            color: #0c4a6e;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .recommendation-item:before {
+            content: "💡";
+            flex-shrink: 0;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+        }
+
+        @media (max-width: 768px) {
+            .scenarios-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🖥️ Calculadora de Infraestructura en la Nube</h1>
+        <p>Análisis práctico para casos reales de negocio</p>
+    </div>
+
+    <div class="content">
+        <h2 style="margin-bottom: 20px; color: #1f2937;">Selecciona un Escenario:</h2>
+        <div class="scenarios-grid" id="scenarios-grid">
+            <!-- Escenarios se cargarán aquí -->
+        </div>
+
+        <div class="form-section">
+            <div class="form-title">
+                <span>📊</span> Parámetros de Estimación
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label><span>👥</span> Usuarios Registrados</label>
+                    <input type="number" id="users" placeholder="Ej: 1000">
+                </div>
+                <div class="form-group">
+                    <label><span>⚡</span> Usuarios Concurrentes</label>
+                    <input type="number" id="concurrent" placeholder="Ej: 50">
+                </div>
+                <div class="form-group">
+                    <label><span>💾</span> Storage Inicial (GB)</label>
+                    <input type="number" id="storage" placeholder="Ej: 100">
+                </div>
+                <div class="form-group">
+                    <label><span>🛡️</span> Uptime Requerido (%)</label>
+                    <input type="number" id="uptime" step="0.1" min="95" max="99.99" placeholder="Ej: 99.5">
+                </div>
+            </div>
+            <button class="calculate-btn" id="calculate-btn">
+                <span>🧮</span> Calcular Infraestructura
+            </button>
+        </div>
+
+        <div class="results-section" id="results-section">
+            <h2 style="margin-bottom: 20px; color: #1f2937;">Resultados del Análisis:</h2>
+
+            <div class="results-grid">
+                <div class="result-card cpu">
+                    <div class="result-value" id="result-cpu">-</div>
+                    <div class="result-label">vCPUs</div>
+                </div>
+                <div class="result-card ram">
+                    <div class="result-value" id="result-ram">-</div>
+                    <div class="result-label">GB RAM</div>
+                </div>
+                <div class="result-card storage">
+                    <div class="result-value" id="result-storage">-</div>
+                    <div class="result-label">GB Storage</div>
+                </div>
+                <div class="result-card bandwidth">
+                    <div class="result-value" id="result-bandwidth">-</div>
+                    <div class="result-label">GB/mes</div>
+                </div>
+            </div>
+
+            <div class="cost-section">
+                <div class="cost-total">
+                    <div class="cost-amount" id="cost-total">$-</div>
+                    <div class="cost-period">USD/mes</div>
+                    <div class="cost-level" id="cost-level">-</div>
+                </div>
+                <div class="cost-breakdown" id="cost-breakdown">
+                    <!-- Desglose de costos se cargará aquí -->
+                </div>
+            </div>
+
+            <div class="recommendations" id="recommendations">
+                <h3>💡 Recomendaciones Específicas</h3>
+                <div id="recommendations-list">
+                    <!-- Recomendaciones se cargarán aquí -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        const scenarios = [
+            {
+                title: "Tienda de Ropa Local",
+                description: "Boutique de moda local creando su primera tienda online",
+                context: [
+                    "Clientela fiel pero envejeciendo",
+                    "Inventario limitado pero rotación frecuente",
+                    "Sin experiencia en e-commerce",
+                    "Presupuesto ajustado"
+                ],
+                type: "ecommerce",
+                suggested: { users: 500, concurrent: 25, storage: 100, uptime: 99.5 }
+            },
+            {
+                title: "Restaurante de Comida Rápida",
+                description: "Cadena local necesita app web/móvil para pedidos a domicilio",
+                context: [
+                    "5 sucursales en la ciudad",
+                    "Sistema POS existente para integrar",
+                    "Competencia fuerte",
+                    "Implementación rápida necesaria"
+                ],
+                type: "transactional",
+                suggested: { users: 2000, concurrent: 100, storage: 200, uptime: 99.9 }
+            },
+            {
+                title: "Clínica Médica Familiar",
+                description: "Sistema web para gestión de citas e historiales médicos",
+                context: [
+                    "3 médicos y 2 enfermeras",
+                    "Pacientes principalmente adultos mayores",
+                    "Sistema actual: papel y teléfono",
+                    "Preocupaciones de privacidad y seguridad"
+                ],
+                type: "healthcare",
+                suggested: { users: 1500, concurrent: 30, storage: 500, uptime: 99.95 }
+            },
+            {
+                title: "Academia de Idiomas",
+                description: "Plataforma web para cursos híbridos y gestión de estudiantes",
+                context: [
+                    "200 estudiantes actuales",
+                    "10 profesores (algunos con limitaciones tech)",
+                    "5 idiomas diferentes",
+                    "Compite con plataformas globales"
+                ],
+                type: "educational",
+                suggested: { users: 300, concurrent: 60, storage: 300, uptime: 99.0 }
+            },
+            {
+                title: "Municipalidad Local",
+                description: "Modernizar presencia web para trámites online",
+                context: [
+                    "50,000 habitantes",
+                    "Brecha digital significativa",
+                    "Requisitos de transparencia",
+                    "Presupuesto público limitado"
+                ],
+                type: "government",
+                suggested: { users: 10000, concurrent: 150, storage: 1000, uptime: 99.5 }
+            }
+        ];
+
+        let selectedScenario = 0;
+
+        // Cargar escenarios
+        function loadScenarios() {
+            let html = '';
+            scenarios.forEach((scenario, index) => {
+                html += `
+                        <div class="scenario-card ${index === 0 ? 'active' : ''}" data-index="${index}">
+                            <div class="scenario-title">${scenario.title}</div>
+                            <div class="scenario-desc">${scenario.description}</div>
+                            <div class="scenario-context">
+                                ${scenario.context.map(item => `<div class="context-item">${item}</div>`).join('')}
+                            </div>
+                        </div>
+                    `;
+            });
+            $('#scenarios-grid').html(html);
+            loadSuggestedValues(0);
+        }
+
+        // Cargar valores sugeridos
+        function loadSuggestedValues(index) {
+            const scenario = scenarios[index];
+            $('#users').attr('placeholder', scenario.suggested.users);
+            $('#concurrent').attr('placeholder', scenario.suggested.concurrent);
+            $('#storage').attr('placeholder', scenario.suggested.storage);
+            $('#uptime').attr('placeholder', scenario.suggested.uptime);
+        }
+
+        // Seleccionar escenario
+        $(document).on('click', '.scenario-card', function() {
+            $('.scenario-card').removeClass('active');
+            $(this).addClass('active');
+            selectedScenario = $(this).data('index');
+            loadSuggestedValues(selectedScenario);
+            $('#results-section').hide();
+        });
+
+        // Calcular recursos
+        function calculateResources(users, concurrent, storage, uptime, type) {
+            let cpuMultiplier = 1;
+            let ramMultiplier = 1;
+            let costMultiplier = 1;
+
+            switch(type) {
+                case 'ecommerce':
+                    cpuMultiplier = 2; ramMultiplier = 4; costMultiplier = 1.2;
+                    break;
+                case 'transactional':
+                    cpuMultiplier = 4; ramMultiplier = 8; costMultiplier = 1.5;
+                    break;
+                case 'healthcare':
+                    cpuMultiplier = 3; ramMultiplier = 6; costMultiplier = 2.0;
+                    break;
+                case 'educational':
+                    cpuMultiplier = 2; ramMultiplier = 4; costMultiplier = 1.0;
+                    break;
+                case 'government':
+                    cpuMultiplier = 3; ramMultiplier = 6; costMultiplier = 1.3;
+                    break;
+            }
+
+            const vcpus = Math.max(1, Math.ceil(concurrent / 25) * cpuMultiplier);
+            const ram = Math.max(2, Math.ceil(concurrent / 25) * ramMultiplier);
+            const totalStorage = Math.ceil(storage * (type === 'healthcare' ? 2 : 1.5));
+            const bandwidth = Math.ceil(concurrent * 2 * 10 / 1000);
+
+            const computeCost = vcpus * 25 + ram * 5;
+            const storageCost = totalStorage * 0.1;
+            const networkCost = bandwidth * 0.09;
+            const backupCost = totalStorage * 0.05;
+            const securityCost = type === 'healthcare' ? 100 : (type === 'government' ? 50 : 20);
+
+            const totalCost = Math.ceil((computeCost + storageCost + networkCost + backupCost + securityCost) * costMultiplier);
+
+            return {
+                vcpus,
+                ram,
+                totalStorage,
+                bandwidth,
+                totalCost,
+                breakdown: {
+                    compute: Math.ceil(computeCost * costMultiplier),
+                    storage: Math.ceil(storageCost * costMultiplier),
+                    network: Math.ceil(networkCost * costMultiplier),
+                    backup: Math.ceil(backupCost * costMultiplier),
+                    security: Math.ceil(securityCost)
+                }
+            };
+        }
+
+        // Obtener nivel de configuración
+        function getConfigurationLevel(cost) {
+            if (cost < 100) return { level: 'BÁSICA', class: 'level-basic' };
+            if (cost < 400) return { level: 'INTERMEDIA', class: 'level-intermediate' };
+            return { level: 'EMPRESARIAL', class: 'level-enterprise' };
+        }
+
+        // Obtener recomendaciones
+        function getRecommendations(type, cost) {
+            const recommendations = [];
+
+            if (type === 'healthcare') {
+                recommendations.push("Implementar cifrado extremo a extremo");
+                recommendations.push("Backup cada 4 horas");
+                recommendations.push("Cumplimiento HIPAA/LOPD obligatorio");
+                recommendations.push("Auditoría completa de accesos");
+            }
+
+            if (type === 'ecommerce') {
+                recommendations.push("CDN para mejorar velocidad de carga");
+                recommendations.push("Certificado SSL obligatorio");
+                recommendations.push("Escalado automático para picos de venta");
+                recommendations.push("Integración con pasarelas de pago");
+            }
+
+            if (type === 'government') {
+                recommendations.push("Accesibilidad según normativas");
+                recommendations.push("Transparencia y auditoría");
+                recommendations.push("Múltiples niveles de autenticación");
+            }
+
+            if (type === 'educational') {
+                recommendations.push("Almacenamiento multimedia escalable");
+                recommendations.push("Integración con sistemas académicos");
+                recommendations.push("Soporte para múltiples dispositivos");
+            }
+
+            if (cost < 100) {
+                recommendations.push("Considerar servicios compartidos para reducir costos");
+                recommendations.push("Implementar apagado automático en desarrollo");
+            } else if (cost > 400) {
+                recommendations.push("Evaluar reservas de instancias para ahorrar");
+                recommendations.push("Implementar monitoreo 24/7");
+            }
+
+            return recommendations;
+        }
+
+        // Calcular y mostrar resultados
+        $('#calculate-btn').click(function() {
+            const scenario = scenarios[selectedScenario];
+            const users = parseInt($('#users').val()) || scenario.suggested.users;
+            const concurrent = parseInt($('#concurrent').val()) || scenario.suggested.concurrent;
+            const storage = parseInt($('#storage').val()) || scenario.suggested.storage;
+            const uptime = parseFloat($('#uptime').val()) || scenario.suggested.uptime;
+
+            const results = calculateResources(users, concurrent, storage, uptime, scenario.type);
+
+            // Mostrar recursos
+            $('#result-cpu').text(results.vcpus);
+            $('#result-ram').text(results.ram);
+            $('#result-storage').text(results.totalStorage);
+            $('#result-bandwidth').text(results.bandwidth);
+
+            // Mostrar costos
+            $('#cost-total').text('$' + results.totalCost);
+            const level = getConfigurationLevel(results.totalCost);
+            $('#cost-level').text('Configuración ' + level.level).attr('class', 'cost-level ' + level.class);
+
+            // Desglose de costos
+            let breakdownHtml = '';
+            Object.entries(results.breakdown).forEach(([key, value]) => {
+                const labels = {
+                    compute: 'Compute',
+                    storage: 'Storage',
+                    network: 'Network',
+                    backup: 'Backup',
+                    security: 'Seguridad'
+                };
+                breakdownHtml += `<div class="cost-item"><span>${labels[key]}:</span><span>$${value}</span></div>`;
+            });
+            $('#cost-breakdown').html(breakdownHtml);
+
+            // Mostrar recomendaciones
+            const recommendations = getRecommendations(scenario.type, results.totalCost);
+            let recHtml = '';
+            recommendations.forEach(rec => {
+                recHtml += `<div class="recommendation-item">${rec}</div>`;
+            });
+            $('#recommendations-list').html(recHtml);
+
+            // Mostrar resultados
+            $('#results-section').show();
+
+            // Scroll suave a resultados
+            $('html, body').animate({
+                scrollTop: $("#results-section").offset().top - 20
+            }, 500);
+        });
+
+        // Inicializar
+        loadScenarios();
+    });
+</script>
+</body>
+</html>
