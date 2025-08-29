@@ -1,0 +1,262 @@
+<html>
+
+<body>
+<h1 id="an-lisis-funcional-sistema-de-pedidos-a-domicilio">Análisis Funcional - Sistema de Pedidos a Domicilio</h1>
+<h2 id="1-descripci-n-del-sistema">1. Descripción del Sistema</h2>
+<p>Sistema web/móvil para gestión de pedidos a domicilio de una cadena de restaurantes de comida rápida con 5 sucursales, que incluye integración con POS existente y gestión completa del proceso desde el pedido hasta la entrega.</p>
+<h2 id="2-actores-del-sistema">2. Actores del Sistema</h2>
+<h3 id="actores-principales-">Actores Principales:</h3>
+<ul>
+    <li><strong>Cliente</strong>: Usuario final que realiza pedidos</li>
+    <li><strong>Repartidor</strong>: Encargado de las entregas</li>
+    <li><strong>Empleado Cocina</strong>: Prepara los pedidos</li>
+    <li><strong>Administrador Sucursal</strong>: Gestiona operaciones locales</li>
+    <li><strong>Administrador Sistema</strong>: Gestiona configuraciones globales</li>
+</ul>
+<h3 id="actores-secundarios-">Actores Secundarios:</h3>
+<ul>
+    <li><strong>Sistema POS</strong>: Sistema punto de venta existente</li>
+    <li><strong>Sistema de Pagos</strong>: Procesador de pagos online</li>
+    <li><strong>Servicio de Geolocalización</strong>: Para tracking y rutas</li>
+</ul>
+<h2 id="3-requerimientos-funcionales-principales">3. Requerimientos Funcionales Principales</h2>
+<h3 id="rf01-gesti-n-de-pedidos">RF01 - Gestión de Pedidos</h3>
+<ul>
+    <li>Crear, modificar, cancelar pedidos</li>
+    <li>Seguimiento en tiempo real</li>
+    <li>Estimación de tiempos de entrega</li>
+</ul>
+<h3 id="rf02-gesti-n-de-men-">RF02 - Gestión de Menú</h3>
+<ul>
+    <li>Catálogo de productos por sucursal</li>
+    <li>Precios dinámicos según sucursal</li>
+    <li>Disponibilidad de productos</li>
+</ul>
+<h3 id="rf03-gesti-n-de-usuarios">RF03 - Gestión de Usuarios</h3>
+<ul>
+    <li>Registro y autenticación de clientes</li>
+    <li>Perfiles y direcciones guardadas</li>
+    <li>Historial de pedidos</li>
+</ul>
+<h3 id="rf04-gesti-n-de-entregas">RF04 - Gestión de Entregas</h3>
+<ul>
+    <li>Asignación automática de repartidores</li>
+    <li>Tracking GPS en tiempo real</li>
+    <li>Notificaciones de estado</li>
+</ul>
+<h3 id="rf05-gesti-n-de-pagos">RF05 - Gestión de Pagos</h3>
+<ul>
+    <li>Múltiples métodos de pago</li>
+    <li>Procesamiento seguro</li>
+    <li>Integración con sistema contable</li>
+</ul>
+<h3 id="rf06-integraci-n-pos">RF06 - Integración POS</h3>
+<ul>
+    <li>Sincronización de inventarios</li>
+    <li>Actualización automática de precios</li>
+    <li>Reportes unificados</li>
+</ul>
+<h2 id="4-requerimientos-no-funcionales">4. Requerimientos No Funcionales</h2>
+<h3 id="rnf01-performance">RNF01 - Performance</h3>
+<ul>
+    <li>Tiempo de respuesta &lt; 2 segundos</li>
+    <li>Soporte para 500 usuarios concurrentes por sucursal</li>
+</ul>
+<h3 id="rnf02-disponibilidad">RNF02 - Disponibilidad</h3>
+<ul>
+    <li>99.5% de disponibilidad</li>
+    <li>Funcionamiento 24/7</li>
+</ul>
+<h3 id="rnf03-seguridad">RNF03 - Seguridad</h3>
+<ul>
+    <li>Encriptación de datos sensibles</li>
+    <li>Cumplimiento PCI DSS para pagos</li>
+    <li>Autenticación multifactor para administradores</li>
+</ul>
+<h3 id="rnf04-usabilidad">RNF04 - Usabilidad</h3>
+<ul>
+    <li>Interfaz intuitiva y responsive</li>
+    <li>Tiempo de aprendizaje &lt; 15 minutos</li>
+</ul>
+<h3 id="rnf05-escalabilidad">RNF05 - Escalabilidad</h3>
+<ul>
+    <li>Arquitectura preparada para crecimiento</li>
+    <li>Fácil adición de nuevas sucursales</li>
+</ul>
+<h2 id="5-casos-de-uso-principales">5. Casos de Uso Principales</h2>
+<h3 id="cu01-realizar-pedido">CU01 - Realizar Pedido</h3>
+<p><strong>Actor</strong>: Cliente
+    <strong>Precondición</strong>: Cliente registrado y autenticado
+    <strong>Flujo Principal</strong>:</p>
+<ol>
+    <li>Cliente selecciona sucursal</li>
+    <li>Navega por el menú</li>
+    <li>Agrega productos al carrito</li>
+    <li>Confirma dirección de entrega</li>
+    <li>Selecciona método de pago</li>
+    <li>Confirma el pedido</li>
+    <li>Sistema procesa pago</li>
+    <li>Genera orden y notifica a sucursal</li>
+</ol>
+<h3 id="cu02-gestionar-pedido-en-cocina">CU02 - Gestionar Pedido en Cocina</h3>
+<p><strong>Actor</strong>: Empleado Cocina
+    <strong>Precondición</strong>: Pedido confirmado y pagado
+    <strong>Flujo Principal</strong>:</p>
+<ol>
+    <li>Recibe notificación de nuevo pedido</li>
+    <li>Visualiza detalles del pedido</li>
+    <li>Marca inicio de preparación</li>
+    <li>Actualiza estado durante preparación</li>
+    <li>Marca pedido como listo</li>
+    <li>Notifica para entrega</li>
+</ol>
+<h3 id="cu03-entregar-pedido">CU03 - Entregar Pedido</h3>
+<p><strong>Actor</strong>: Repartidor
+    <strong>Precondición</strong>: Pedido listo para entrega
+    <strong>Flujo Principal</strong>:</p>
+<ol>
+    <li>Recibe asignación de pedido</li>
+    <li>Acepta o rechaza entrega</li>
+    <li>Obtiene dirección y ruta óptima</li>
+    <li>Actualiza ubicación durante trayecto</li>
+    <li>Confirma entrega al cliente</li>
+    <li>Cliente confirma recepción</li>
+</ol>
+<h3 id="cu04-administrar-men-">CU04 - Administrar Menú</h3>
+<p><strong>Actor</strong>: Administrador Sucursal
+    <strong>Flujo Principal</strong>:</p>
+<ol>
+    <li>Accede al panel de administración</li>
+    <li>Selecciona productos a modificar</li>
+    <li>Actualiza precios, descripciones o disponibilidad</li>
+    <li>Sincroniza cambios con POS</li>
+    <li>Publica actualizaciones</li>
+</ol>
+<h2 id="6-eventos-del-sistema">6. Eventos del Sistema</h2>
+<h3 id="eventos-de-negocio-">Eventos de Negocio:</h3>
+<ul>
+    <li><strong>Pedido Creado</strong>: Nuevo pedido confirmado y pagado</li>
+    <li><strong>Pedido Actualizado</strong>: Cambio de estado en el pedido</li>
+    <li><strong>Pago Procesado</strong>: Transacción completada exitosamente</li>
+    <li><strong>Producto Agotado</strong>: Stock insuficiente detectado</li>
+    <li><strong>Entrega Completada</strong>: Pedido entregado y confirmado</li>
+</ul>
+<h3 id="eventos-t-cnicos-">Eventos Técnicos:</h3>
+<ul>
+    <li><strong>Sincronización POS</strong>: Actualización de datos desde/hacia POS</li>
+    <li><strong>Ubicación Actualizada</strong>: Nueva posición del repartidor</li>
+    <li><strong>Sesión Expirada</strong>: Timeout de sesión de usuario</li>
+    <li><strong>Error de Pago</strong>: Fallo en procesamiento de transacción</li>
+</ul>
+<h2 id="7-reglas-de-negocio">7. Reglas de Negocio</h2>
+<h3 id="rn01-horarios-de-atenci-n">RN01 - Horarios de Atención</h3>
+<ul>
+    <li>Cada sucursal tiene horarios específicos</li>
+    <li>No se aceptan pedidos fuera del horario</li>
+    <li>30 minutos antes del cierre se suspenden pedidos</li>
+</ul>
+<h3 id="rn02-zonas-de-entrega">RN02 - Zonas de Entrega</h3>
+<ul>
+    <li>Radio máximo de 5km por sucursal</li>
+    <li>Tiempo estimado basado en distancia y tráfico</li>
+    <li>Costo de envío variable según zona</li>
+</ul>
+<h3 id="rn03-gesti-n-de-stock">RN03 - Gestión de Stock</h3>
+<ul>
+    <li>Productos agotados se desactivan automáticamente</li>
+    <li>Sincronización cada 15 minutos con POS</li>
+    <li>Alertas cuando stock &lt; 5 unidades</li>
+</ul>
+<h3 id="rn04-precios-y-promociones">RN04 - Precios y Promociones</h3>
+<ul>
+    <li>Precios pueden variar entre sucursales</li>
+    <li>Promociones con fecha de inicio y fin</li>
+    <li>Descuentos aplicables según cliente o pedido</li>
+</ul>
+<h3 id="rn05-tiempos-de-entrega">RN05 - Tiempos de Entrega</h3>
+<ul>
+    <li>Tiempo mínimo: 20 minutos</li>
+    <li>Tiempo máximo: 60 minutos</li>
+    <li>Penalización si supera tiempo estimado</li>
+</ul>
+<h2 id="8-arquitectura-propuesta">8. Arquitectura Propuesta</h2>
+<h3 id="frontend-">Frontend:</h3>
+<ul>
+    <li><strong>Web App</strong>: React.js responsive</li>
+    <li><strong>Mobile App</strong>: React Native (iOS/Android)</li>
+    <li><strong>Panel Admin</strong>: Angular con Material Design</li>
+</ul>
+<h3 id="backend-">Backend:</h3>
+<ul>
+    <li><strong>API REST</strong>: Node.js con Express</li>
+    <li><strong>Base de Datos</strong>: PostgreSQL</li>
+    <li><strong>Cache</strong>: Redis para sesiones y datos frecuentes</li>
+    <li><strong>Message Queue</strong>: RabbitMQ para eventos</li>
+</ul>
+<h3 id="integraciones-">Integraciones:</h3>
+<ul>
+    <li><strong>POS Integration</strong>: API REST bidireccional</li>
+    <li><strong>Payment Gateway</strong>: Stripe/PayPal</li>
+    <li><strong>Maps API</strong>: Google Maps para geolocalización</li>
+    <li><strong>Push Notifications</strong>: Firebase Cloud Messaging</li>
+</ul>
+<h3 id="infraestructura-">Infraestructura:</h3>
+<ul>
+    <li><strong>Cloud Provider</strong>: AWS/Azure</li>
+    <li><strong>CDN</strong>: CloudFlare para assets estáticos</li>
+    <li><strong>Monitoring</strong>: New Relic/DataDog</li>
+    <li><strong>CI/CD</strong>: GitHub Actions</li>
+</ul>
+<h2 id="9-plan-de-implementaci-n">9. Plan de Implementación</h2>
+<h3 id="fase-1-4-semanas-mvp">Fase 1 (4 semanas): MVP</h3>
+<ul>
+    <li>Registro de usuarios y autenticación</li>
+    <li>Catálogo básico de productos</li>
+    <li>Carrito de compras y checkout</li>
+    <li>Panel básico de cocina</li>
+</ul>
+<h3 id="fase-2-3-semanas-entregas">Fase 2 (3 semanas): Entregas</h3>
+<ul>
+    <li>Sistema de repartidores</li>
+    <li>Tracking GPS básico</li>
+    <li>Notificaciones push</li>
+    <li>Integración pagos</li>
+</ul>
+<h3 id="fase-3-3-semanas-integraci-n">Fase 3 (3 semanas): Integración</h3>
+<ul>
+    <li>Conexión con POS existente</li>
+    <li>Panel de administración completo</li>
+    <li>Reportes y analíticas</li>
+    <li>Optimizaciones de performance</li>
+</ul>
+<h3 id="fase-4-2-semanas-pulimiento">Fase 4 (2 semanas): Pulimiento</h3>
+<ul>
+    <li>Testing exhaustivo</li>
+    <li>Optimización UX/UI</li>
+    <li>Documentación</li>
+    <li>Capacitación usuarios</li>
+</ul>
+<p><strong>Tiempo Total Estimado</strong>: 12 semanas</p>
+<h2 id="10-m-tricas-de-xito">10. Métricas de Éxito</h2>
+<h3 id="operacionales-">Operacionales:</h3>
+<ul>
+    <li>Reducción 30% en llamadas telefónicas</li>
+    <li>Incremento 25% en pedidos promedio</li>
+    <li>Tiempo promedio pedido &lt; 45 minutos</li>
+</ul>
+<h3 id="t-cnicas-">Técnicas:</h3>
+<ul>
+    <li>Disponibilidad &gt; 99.5%</li>
+    <li>Tiempo respuesta &lt; 2 segundos</li>
+    <li>Tasa error &lt; 1%</li>
+</ul>
+<h3 id="negocio-">Negocio:</h3>
+<ul>
+    <li>ROI positivo en 6 meses</li>
+    <li>Penetración 40% clientes existentes</li>
+    <li>Reducción 20% dependencia plataformas terceros</li>
+</ul>
+
+
+</body>
+</html>
