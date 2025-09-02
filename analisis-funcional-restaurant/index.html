@@ -1,272 +1,732 @@
-<html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Funcional - Sistema de Pedidos a Domicilio</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #f97316;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --dark-color: #1f2937;
+            --light-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 1.5rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .icon {
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+
+        .card h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 0.25rem 0.25rem 0 0;
+        }
+
+        .badge-primary { background: rgba(37, 99, 235, 0.1); color: var(--primary-color); }
+        .badge-secondary { background: rgba(249, 115, 22, 0.1); color: var(--secondary-color); }
+        .badge-success { background: rgba(5, 150, 105, 0.1); color: var(--success-color); }
+        .badge-warning { background: rgba(217, 119, 6, 0.1); color: var(--warning-color); }
+
+        .list-styled {
+            list-style: none;
+            padding: 0;
+        }
+
+        .list-styled li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .list-styled li:last-child {
+            border-bottom: none;
+        }
+
+        .list-styled li::before {
+            content: '→';
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-top: 0.1rem;
+            flex-shrink: 0;
+        }
+
+        .steps-list {
+            counter-reset: step-counter;
+            list-style: none;
+            padding: 0;
+        }
+
+        .steps-list li {
+            counter-increment: step-counter;
+            padding: 1rem 0 1rem 3rem;
+            position: relative;
+            border-left: 2px solid var(--border-color);
+        }
+
+        .steps-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: -1rem;
+            top: 0.75rem;
+            background: var(--primary-color);
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+
+        .steps-list li:last-child {
+            border-left-color: transparent;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--light-bg), #ffffff);
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .phase {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(249, 115, 22, 0.05));
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .phase h4 {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .tech-item {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .timeline {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(249, 115, 22, 0.1));
+            border-radius: 12px;
+        }
+
+        .timeline-total {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .header {
+                padding: 2rem;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
 <body>
-<h1 id="an-lisis-funcional-sistema-de-pedidos-a-domicilio">Análisis Funcional - Sistema de Pedidos a Domicilio</h1>
-<h2 id="1-descripci-n-del-sistema">1. Descripción del Sistema</h2>
-<p>Sistema web/móvil para gestión de pedidos a domicilio de una cadena de restaurantes de comida rápida con 5 sucursales, que incluye integración con POS existente y gestión completa del proceso desde el pedido hasta la entrega.</p>
-<h2 id="2-actores-del-sistema">2. Actores del Sistema</h2>
-<h3 id="actores-principales-">Actores Principales:</h3>
-<ul>
-    <li><strong>Cliente</strong>: Usuario final que realiza pedidos</li>
-    <li><strong>Repartidor</strong>: Encargado de las entregas</li>
-    <li><strong>Empleado Cocina</strong>: Prepara los pedidos</li>
-    <li><strong>Administrador Sucursal</strong>: Gestiona operaciones locales</li>
-    <li><strong>Administrador Sistema</strong>: Gestiona configuraciones globales</li>
-</ul>
-<h3 id="actores-secundarios-">Actores Secundarios:</h3>
-<ul>
-    <li><strong>Sistema POS</strong>: Sistema punto de venta existente</li>
-    <li><strong>Sistema de Pagos</strong>: Procesador de pagos online</li>
-    <li><strong>Servicio de Geolocalización</strong>: Para tracking y rutas</li>
-</ul>
-<h2 id="3-requerimientos-funcionales-principales">3. Requerimientos Funcionales Principales</h2>
-<h3 id="rf01-gesti-n-de-pedidos">RF01 - Gestión de Pedidos</h3>
-<ul>
-    <li>Crear, modificar, cancelar pedidos</li>
-    <li>Seguimiento en tiempo real</li>
-    <li>Estimación de tiempos de entrega</li>
-</ul>
-<h3 id="rf02-gesti-n-de-men-">RF02 - Gestión de Menú</h3>
-<ul>
-    <li>Catálogo de productos por sucursal</li>
-    <li>Precios dinámicos según sucursal</li>
-    <li>Disponibilidad de productos</li>
-</ul>
-<h3 id="rf03-gesti-n-de-usuarios">RF03 - Gestión de Usuarios</h3>
-<ul>
-    <li>Registro y autenticación de clientes</li>
-    <li>Perfiles y direcciones guardadas</li>
-    <li>Historial de pedidos</li>
-</ul>
-<h3 id="rf04-gesti-n-de-entregas">RF04 - Gestión de Entregas</h3>
-<ul>
-    <li>Asignación automática de repartidores</li>
-    <li>Tracking GPS en tiempo real</li>
-    <li>Notificaciones de estado</li>
-</ul>
-<h3 id="rf05-gesti-n-de-pagos">RF05 - Gestión de Pagos</h3>
-<ul>
-    <li>Múltiples métodos de pago</li>
-    <li>Procesamiento seguro</li>
-    <li>Integración con sistema contable</li>
-</ul>
-<h3 id="rf06-integraci-n-pos">RF06 - Integración POS</h3>
-<ul>
-    <li>Sincronización de inventarios</li>
-    <li>Actualización automática de precios</li>
-    <li>Reportes unificados</li>
-</ul>
-<h2 id="4-requerimientos-no-funcionales">4. Requerimientos No Funcionales</h2>
-<h3 id="rnf01-performance">RNF01 - Performance</h3>
-<ul>
-    <li>Tiempo de respuesta &lt; 2 segundos</li>
-    <li>Soporte para 500 usuarios concurrentes por sucursal</li>
-</ul>
-<h3 id="rnf02-disponibilidad">RNF02 - Disponibilidad</h3>
-<ul>
-    <li>99.5% de disponibilidad</li>
-    <li>Funcionamiento 24/7</li>
-</ul>
-<h3 id="rnf03-seguridad">RNF03 - Seguridad</h3>
-<ul>
-    <li>Encriptación de datos sensibles</li>
-    <li>Cumplimiento PCI DSS para pagos</li>
-    <li>Autenticación multifactor para administradores</li>
-</ul>
-<h3 id="rnf04-usabilidad">RNF04 - Usabilidad</h3>
-<ul>
-    <li>Interfaz intuitiva y responsive</li>
-    <li>Tiempo de aprendizaje &lt; 15 minutos</li>
-</ul>
-<h3 id="rnf05-escalabilidad">RNF05 - Escalabilidad</h3>
-<ul>
-    <li>Arquitectura preparada para crecimiento</li>
-    <li>Fácil adición de nuevas sucursales</li>
-</ul>
-<h2 id="5-casos-de-uso-principales">5. Casos de Uso Principales</h2>
-<h3 id="cu01-realizar-pedido">CU01 - Realizar Pedido</h3>
-<p><strong>Actor</strong>: Cliente
-    <strong>Precondición</strong>: Cliente registrado y autenticado
-    <strong>Flujo Principal</strong>:</p>
-<ol>
-    <li>Cliente selecciona sucursal</li>
-    <li>Navega por el menú</li>
-    <li>Agrega productos al carrito</li>
-    <li>Confirma dirección de entrega</li>
-    <li>Selecciona método de pago</li>
-    <li>Confirma el pedido</li>
-    <li>Sistema procesa pago</li>
-    <li>Genera orden y notifica a sucursal</li>
-</ol>
-<h3 id="cu02-gestionar-pedido-en-cocina">CU02 - Gestionar Pedido en Cocina</h3>
-<p><strong>Actor</strong>: Empleado Cocina
-    <strong>Precondición</strong>: Pedido confirmado y pagado
-    <strong>Flujo Principal</strong>:</p>
-<ol>
-    <li>Recibe notificación de nuevo pedido</li>
-    <li>Visualiza detalles del pedido</li>
-    <li>Marca inicio de preparación</li>
-    <li>Actualiza estado durante preparación</li>
-    <li>Marca pedido como listo</li>
-    <li>Notifica para entrega</li>
-</ol>
-<h3 id="cu03-entregar-pedido">CU03 - Entregar Pedido</h3>
-<p><strong>Actor</strong>: Repartidor
-    <strong>Precondición</strong>: Pedido listo para entrega
-    <strong>Flujo Principal</strong>:</p>
-<ol>
-    <li>Recibe asignación de pedido</li>
-    <li>Acepta o rechaza entrega</li>
-    <li>Obtiene dirección y ruta óptima</li>
-    <li>Actualiza ubicación durante trayecto</li>
-    <li>Confirma entrega al cliente</li>
-    <li>Cliente confirma recepción</li>
-</ol>
-<h3 id="cu04-administrar-men-">CU04 - Administrar Menú</h3>
-<p><strong>Actor</strong>: Administrador Sucursal
-    <strong>Flujo Principal</strong>:</p>
-<ol>
-    <li>Accede al panel de administración</li>
-    <li>Selecciona productos a modificar</li>
-    <li>Actualiza precios, descripciones o disponibilidad</li>
-    <li>Sincroniza cambios con POS</li>
-    <li>Publica actualizaciones</li>
-</ol>
-<h2 id="6-eventos-del-sistema">6. Eventos del Sistema</h2>
-<h3 id="eventos-de-negocio-">Eventos de Negocio:</h3>
-<ul>
-    <li><strong>Pedido Creado</strong>: Nuevo pedido confirmado y pagado</li>
-    <li><strong>Pedido Actualizado</strong>: Cambio de estado en el pedido</li>
-    <li><strong>Pago Procesado</strong>: Transacción completada exitosamente</li>
-    <li><strong>Producto Agotado</strong>: Stock insuficiente detectado</li>
-    <li><strong>Entrega Completada</strong>: Pedido entregado y confirmado</li>
-</ul>
-<h3 id="eventos-t-cnicos-">Eventos Técnicos:</h3>
-<ul>
-    <li><strong>Sincronización POS</strong>: Actualización de datos desde/hacia POS</li>
-    <li><strong>Ubicación Actualizada</strong>: Nueva posición del repartidor</li>
-    <li><strong>Sesión Expirada</strong>: Timeout de sesión de usuario</li>
-    <li><strong>Error de Pago</strong>: Fallo en procesamiento de transacción</li>
-</ul>
-<h2 id="7-reglas-de-negocio">7. Reglas de Negocio</h2>
-<h3 id="rn01-horarios-de-atenci-n">RN01 - Horarios de Atención</h3>
-<ul>
-    <li>Cada sucursal tiene horarios específicos</li>
-    <li>No se aceptan pedidos fuera del horario</li>
-    <li>30 minutos antes del cierre se suspenden pedidos</li>
-</ul>
-<h3 id="rn02-zonas-de-entrega">RN02 - Zonas de Entrega</h3>
-<ul>
-    <li>Radio máximo de 5km por sucursal</li>
-    <li>Tiempo estimado basado en distancia y tráfico</li>
-    <li>Costo de envío variable según zona</li>
-</ul>
-<h3 id="rn03-gesti-n-de-stock">RN03 - Gestión de Stock</h3>
-<ul>
-    <li>Productos agotados se desactivan automáticamente</li>
-    <li>Sincronización cada 15 minutos con POS</li>
-    <li>Alertas cuando stock &lt; 5 unidades</li>
-</ul>
-<h3 id="rn04-precios-y-promociones">RN04 - Precios y Promociones</h3>
-<ul>
-    <li>Precios pueden variar entre sucursales</li>
-    <li>Promociones con fecha de inicio y fin</li>
-    <li>Descuentos aplicables según cliente o pedido</li>
-</ul>
-<h3 id="rn05-tiempos-de-entrega">RN05 - Tiempos de Entrega</h3>
-<ul>
-    <li>Tiempo mínimo: 20 minutos</li>
-    <li>Tiempo máximo: 60 minutos</li>
-    <li>Penalización si supera tiempo estimado</li>
-</ul>
+<div class="container">
+    <header class="header fade-in">
+        <h1>Sistema de Pedidos a Domicilio</h1>
+        <p>Análisis Funcional Completo - Sistema web/móvil para gestión de pedidos a domicilio de una cadena de restaurantes de comida rápida con 5 sucursales, que incluye integración con POS existente y gestión completa del proceso desde el pedido hasta la entrega.</p>
+    </header>
 
-<h2 id="8-diagramas">8. Diagramas</h2>
-<h3 id="diagramas-propuestos-">Diagramas propuestos:</h3>
-<ul>
-    <li><strong>Entidad Relación</strong>: <a href="diagramas-html/a-diagrama-entidad-relacion.html"></a></li>
-    <li><strong>Eventos</strong>: <a href="diagramas-html/b-diagrama-eventos.html"></a></li>
-    <li><strong>Clases</strong>: <a href="diagramas-html/c-diagrama-clases.html"></a></li>
-    <li><strong>Casos de uso</strong>: <a href="diagramas-html/d-diagrama-casos-uso.html"></a></li>
-</ul>
+    <section class="section fade-in">
+        <h2><span class="icon">👥</span>Actores del Sistema</h2>
 
-<h2 id="9-arquitectura-propuesta">9. Arquitectura Propuesta</h2>
-<h3 id="frontend-">Frontend:</h3>
-<ul>
-    <li><strong>Web App</strong>: React.js responsive</li>
-    <li><strong>Mobile App</strong>: React Native (iOS/Android)</li>
-    <li><strong>Panel Admin</strong>: Angular con Material Design</li>
-</ul>
-<h3 id="backend-">Backend:</h3>
-<ul>
-    <li><strong>API REST</strong>: Node.js con Express</li>
-    <li><strong>Base de Datos</strong>: PostgreSQL</li>
-    <li><strong>Cache</strong>: Redis para sesiones y datos frecuentes</li>
-    <li><strong>Message Queue</strong>: RabbitMQ para eventos</li>
-</ul>
-<h3 id="integraciones-">Integraciones:</h3>
-<ul>
-    <li><strong>POS Integration</strong>: API REST bidireccional</li>
-    <li><strong>Payment Gateway</strong>: Stripe/PayPal</li>
-    <li><strong>Maps API</strong>: Google Maps para geolocalización</li>
-    <li><strong>Push Notifications</strong>: Firebase Cloud Messaging</li>
-</ul>
-<h3 id="infraestructura-">Infraestructura:</h3>
-<ul>
-    <li><strong>Cloud Provider</strong>: AWS/Azure</li>
-    <li><strong>CDN</strong>: CloudFlare para assets estáticos</li>
-    <li><strong>Monitoring</strong>: New Relic/DataDog</li>
-    <li><strong>CI/CD</strong>: GitHub Actions</li>
-</ul>
-<h2 id="10-plan-de-implementaci-n">10. Plan de Implementación</h2>
-<h3 id="fase-1-4-semanas-mvp">Fase 1 (4 semanas): MVP</h3>
-<ul>
-    <li>Registro de usuarios y autenticación</li>
-    <li>Catálogo básico de productos</li>
-    <li>Carrito de compras y checkout</li>
-    <li>Panel básico de cocina</li>
-</ul>
-<h3 id="fase-2-3-semanas-entregas">Fase 2 (3 semanas): Entregas</h3>
-<ul>
-    <li>Sistema de repartidores</li>
-    <li>Tracking GPS básico</li>
-    <li>Notificaciones push</li>
-    <li>Integración pagos</li>
-</ul>
-<h3 id="fase-3-3-semanas-integraci-n">Fase 3 (3 semanas): Integración</h3>
-<ul>
-    <li>Conexión con POS existente</li>
-    <li>Panel de administración completo</li>
-    <li>Reportes y analíticas</li>
-    <li>Optimizaciones de performance</li>
-</ul>
-<h3 id="fase-4-2-semanas-pulimiento">Fase 4 (2 semanas): Pulimiento</h3>
-<ul>
-    <li>Testing exhaustivo</li>
-    <li>Optimización UX/UI</li>
-    <li>Documentación</li>
-    <li>Capacitación usuarios</li>
-</ul>
-<p><strong>Tiempo Total Estimado</strong>: 12 semanas</p>
-<h2 id="10-m-tricas-de-xito">10. Métricas de Éxito</h2>
-<h3 id="operacionales-">Operacionales:</h3>
-<ul>
-    <li>Reducción 30% en llamadas telefónicas</li>
-    <li>Incremento 25% en pedidos promedio</li>
-    <li>Tiempo promedio pedido &lt; 45 minutos</li>
-</ul>
-<h3 id="t-cnicas-">Técnicas:</h3>
-<ul>
-    <li>Disponibilidad &gt; 99.5%</li>
-    <li>Tiempo respuesta &lt; 2 segundos</li>
-    <li>Tasa error &lt; 1%</li>
-</ul>
-<h3 id="negocio-">Negocio:</h3>
-<ul>
-    <li>ROI positivo en 6 meses</li>
-    <li>Penetración 40% clientes existentes</li>
-    <li>Reducción 20% dependencia plataformas terceros</li>
-</ul>
+        <h3>Actores Principales</h3>
+        <div class="grid">
+            <div class="card">
+                <h4>👤 Cliente</h4>
+                <p>Usuario final que realiza pedidos</p>
+            </div>
+            <div class="card">
+                <h4>🚗 Repartidor</h4>
+                <p>Encargado de las entregas</p>
+            </div>
+            <div class="card">
+                <h4>👨‍🍳 Empleado Cocina</h4>
+                <p>Prepara los pedidos</p>
+            </div>
+            <div class="card">
+                <h4>🏪 Administrador Sucursal</h4>
+                <p>Gestiona operaciones locales</p>
+            </div>
+            <div class="card">
+                <h4>⚙️ Administrador Sistema</h4>
+                <p>Gestiona configuraciones globales</p>
+            </div>
+        </div>
 
+        <h3>Actores Secundarios</h3>
+        <ul class="list-styled">
+            <li><strong>Sistema POS:</strong> Sistema punto de venta existente</li>
+            <li><strong>Sistema de Pagos:</strong> Procesador de pagos online</li>
+            <li><strong>Servicio de Geolocalización:</strong> Para tracking y rutas</li>
+        </ul>
+    </section>
 
-</body>
-</html>
+    <section class="section fade-in">
+        <h2><span class="icon">⚙️</span>Requerimientos Funcionales</h2>
+        <div class="grid">
+            <div class="card">
+                <h4>RF01 - Gestión de Pedidos</h4>
+                <ul class="list-styled">
+                    <li>Crear, modificar, cancelar pedidos</li>
+                    <li>Seguimiento en tiempo real</li>
+                    <li>Estimación de tiempos de entrega</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>RF02 - Gestión de Menú</h4>
+                <ul class="list-styled">
+                    <li>Catálogo de productos por sucursal</li>
+                    <li>Precios dinámicos según sucursal</li>
+                    <li>Disponibilidad de productos</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>RF03 - Gestión de Usuarios</h4>
+                <ul class="list-styled">
+                    <li>Registro y autenticación de clientes</li>
+                    <li>Perfiles y direcciones guardadas</li>
+                    <li>Historial de pedidos</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>RF04 - Gestión de Entregas</h4>
+                <ul class="list-styled">
+                    <li>Asignación automática de repartidores</li>
+                    <li>Tracking GPS en tiempo real</li>
+                    <li>Notificaciones de estado</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>RF05 - Gestión de Pagos</h4>
+                <ul class="list-styled">
+                    <li>Múltiples métodos de pago</li>
+                    <li>Procesamiento seguro</li>
+                    <li>Integración con sistema contable</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>RF06 - Integración POS</h4>
+                <ul class="list-styled">
+                    <li>Sincronización de inventarios</li>
+                    <li>Actualización automática de precios</li>
+                    <li>Reportes unificados</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section fade-in">
+        <h2><span class="icon">🔧</span>Requerimientos No Funcionales</h2>
+        <div class="metrics-grid">
+            <div class="metric">
+                <span class="metric-value">&lt;2s</span>
+                <div class="metric-label">Tiempo de Respuesta</div>
+            </div>
+            <div class="metric">
+                <span class="metric-value">500</span>
+                <div class="metric-label">Usuarios Concurrentes</div>
+            </div>
+            <div class="metric">
+                <span class="metric-value">99.5%</span>
+                <div class="metric-label">Disponibilidad</div>
+            </div>
+            <div class="metric">
+                <span class="metric-value">24/7</span>
+                <div class="metric-label">Funcionamiento</div>
+            </div>
+            <div class="metric">
+                <span class="metric-value">&lt;15min</span>
+                <div class="metric-label">Tiempo de Aprendizaje</div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h4>🔒 Seguridad</h4>
+                <ul class="list-styled">
+                    <li>Encriptación de datos sensibles</li>
+                    <li>Cumplimiento PCI DSS para pagos</li>
+                    <li>Autenticación multifactor para admins</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>🎨 Usabilidad</h4>
+                <ul class="list-styled">
+                    <li>Interfaz intuitiva y responsive</li>
+                    <li>Tiempo de aprendizaje < 15 minutos</li>
+                    <li>Accesibilidad web completa</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>📈 Escalabilidad</h4>
+                <ul class="list-styled">
+                    <li>Arquitectura preparada para crecimiento</li>
+                    <li>Fácil adición de nuevas sucursales</li>
+                    <li>Microservicios desacoplados</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section fade-in">
+        <h2><span class="icon">📋</span>Casos de Uso Principales</h2>
+
+        <div class="grid">
+            <div class="card">
+                <h4>CU01 - Realizar Pedido</h4>
+                <p><span class="badge badge-primary">Cliente</span></p>
+                <p><strong>Precondición:</strong> Cliente registrado y autenticado</p>
+                <ol class="steps-list">
+                    <li>Cliente selecciona sucursal</li>
+                    <li>Navega por el menú</li>
+                    <li>Agrega productos al carrito</li>
+                    <li>Confirma dirección de entrega</li>
+                    <li>Selecciona método de pago</li>
+                    <li>Confirma el pedido</li>
+                    <li>Sistema procesa pago</li>
+                    <li>Genera orden y notifica a sucursal</li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <h4>CU02 - Gestionar Pedido en Cocina</h4>
+                <p><span class="badge badge-warning">Empleado Cocina</span></p>
+                <p><strong>Precondición:</strong> Pedido confirmado y pagado</p>
+                <ol class="steps-list">
+                    <li>Recibe notificación de nuevo pedido</li>
+                    <li>Visualiza detalles del pedido</li>
+                    <li>Marca inicio de preparación</li>
+                    <li>Actualiza estado durante preparación</li>
+                    <li>Marca pedido como listo</li>
+                    <li>Notifica para entrega</li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <h4>CU03 - Entregar Pedido</h4>
+                <p><span class="badge badge-success">Repartidor</span></p>
+                <p><strong>Precondición:</strong> Pedido listo para entrega</p>
+                <ol class="steps-list">
+                    <li>Recibe asignación de pedido</li>
+                    <li>Acepta o rechaza entrega</li>
+                    <li>Obtiene dirección y ruta óptima</li>
+                    <li>Actualiza ubicación durante trayecto</li>
+                    <li>Confirma entrega al cliente</li>
+                    <li>Cliente confirma recepción</li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <h4>CU04 - Administrar Menú</h4>
+                <p><span class="badge badge-secondary">Admin Sucursal</span></p>
+                <ol class="steps-list">
+                    <li>Accede al panel de administración</li>
+                    <li>Selecciona productos a modificar</li>
+                    <li>Actualiza precios, descripciones o disponibilidad</li>
+                    <li>Sincroniza cambios con POS</li>
+                    <li>Publica actualizaciones</li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <section class="section fade-in">
+        <h2><span class="icon">⚡</span>Eventos del Sistema</h2>
+
+        <h3>Eventos de Negocio</h3>
+        <div class="grid">
+            <div class="card">
+                <h4>📝 Pedido Creado</h4>
+                <p>Nuevo pedido confirmado y pagado</p>
+            </div>
+            <div class="card">
+                <h4>🔄 Pedido Actualizado</h4>
+                <p>Cambio de estado en el pedido</p>
+            </div>
+            <div class="card">
+                <h4>💳 Pago Procesado</h4>
+                <p>Transacción completada exitosamente</p>
+            </div>
+            <div class="card">
+                <h4>❌ Producto Agotado</h4>
+                <p>Stock insuficiente detectado</p>
+            </div>
+            <div class="card">
+                <h4>✅ Entrega Completada</h4>
+                <p>Pedido entregado y confirmado</p>
+            </div>
+        </div>
+
+        <h3>Eventos Técnicos</h3>
+        <div class="grid">
+            <div class="card">
+                <h4>🔗 Sincronización POS</h4>
+                <p>Actualización de datos desde/hacia POS</p>
+            </div>
+            <div class="card">
+                <h4>📍 Ubicación Actualizada</h4>
+                <p>Nueva posición del repartidor</p>
+            </div>
+            <div class="card">
+                <h4>⏰ Sesión Expirada</h4>
+                <p>Timeout de sesión de usuario</p>
+            </div>
+            <div class="card">
+                <h4>⚠️ Error de Pago</h4>
+                <p>Fallo en procesamiento de transacción</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section fade-in">
+        <h2><span class="icon">📜</span>Reglas de Negocio</h2>
+        <div class="grid">
+            <div class="card">
+                <h4>RN01 - Horarios de Atención</h4>
+                <ul class="list-styled">
+                    <li>Cada sucursal tiene horarios específicos</li>
+                    <li>No se aceptan pedidos fuera del horario</li>
+                    <li>30 minutos antes del cierre se suspenden pedidos</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>RN02 - Zonas de Entrega</h4>
+                <ul class="list-styled">
+                    <li>Radio máximo de 5km por sucursal</li>
+                    <li>Tiempo estimado basado en distancia y tráfico</li>
+                    <li>Costo de envío variable según zona</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>RN03 - Gestión de Stock</h4>
+                <ul class="list-styled">
+                    <li>Productos agotados se desactivan automáticamente</li>
+                    <li>Sincronización cada 15 minutos con POS</li>
+                    <li>Alertas cuando stock < 5 unidades</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>RN04 - Precios y Promociones</h4>
+                <ul class="list-styled">
+                    <li>Precios pueden variar entre sucursales</li>
+                    <li>Promociones con fecha de inicio y fin</li>
+                    <li>Descuentos aplicables según cliente o pedido</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>RN05 - Tiempos de Entrega</h4>
+                <ul class="list-styled">
+                    <li>Tiempo mínimo: 20 minutos</li>
+                    <li>Tiempo máximo: 60 minutos</li>
+                    <li>Penalización si supera tiempo estimado</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section fade-in">
+        <h2><span class="icon">🏗️</span>Arquitectura Propuesta</h2>
+
+        <h3>Frontend</h3>
+        <div class="tech-stack">
+            <span class="tech-item">React.js</span>
+            <span class="tech-item">React Native</span>
+            <span class="tech-item">Angular</span>
+            <span class="tech-item">Material Design</span>
+        </div>
+
+        <h3>Backend</h3>
+        <div class="tech-stack">
+            <span class="tech-item">Node.js</span>
+            <span class="tech-item">Express</span>
+            <span class="tech-item">PostgreSQL</span>
+            <span class="tech-item">Redis</span>
+            <span class="tech-item">RabbitMQ</span>
+        </div>
+
+        <h3>Integraciones</h3>
+        <div class="tech-stack">
+            <span class="tech-item">REST API</span>
+            <span class="tech-item">Stripe/PayPal</span>
+            <span class="tech-item">Google Maps</span>
+            <span class="tech-item">Firebase FCM</span>
+        </div>
+
+        <h3>Infraestructura</h3>
+        <div class="tech-stack">
+            <span class="tech-item">AWS/Azure</span>
+            <span class="tech-item">CloudFlare CDN</span>
+            <span class="tech-item">New Relic</span>
+            <span class="tech-item">GitHub Actions</span>
+        </div>
+    </section>
+
+    <section class="section fade-in">
+        <h2><span class="icon">🎨</span>Interfaces y Diseño (<a href="https://pablopedernera0.github.io/disenio-interfaces/">Ver dise&ntilde;o</a>)</h2>
+
+        <div class="grid">
+            <div class="card">
+                <h4>📋 Listados de Pedidos</h4>
+                <ul class="list-styled">
+                    <li>Vista tabular con filtros y búsquedas</li>
+                    <li>Estados visuales con badges de colores</li>
+                    <li>Acciones rápidas por pedido</li>
+                    <li>Información clave del repartidor y tiempos</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>📝 Formulario de Alta</h4>
+                <ul class="list-styled">
+                    <li>Selección de sucursal y datos del cliente</li>
+                    <li>Constructor de pedidos con productos</li>
+                    <li>Cálculo automático de totales</li>
+                    <li>Validaciones y campos requeridos</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>✏️ Formulario de Edición</h4>
+                <ul class="list-styled">
+                    <li>Campos bloqueados según estado del pedido</li>
+                    <li>Historial de cambios de estado</li>
+                    <li>Asignación de repartidores</li>
+                    <li>Reglas de negocio aplicadas</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Características Destacadas</h3>
+        <div class="grid">
+            <div class="card">
+                <h4>📱 Responsive</h4>
+                <p>Adaptable a móviles y tablets</p>
+            </div>
+            <div class="card">
+                <h4>🎯 Estados Visuales</h4>
+                <p>Colores consistentes para cada estado</p>
+            </div>
+            <div class="card">
+                <h4>⚡ UX Intuitiva</h4>
+                <p>Iconos claros y navegación lógica</p>
+            </div>
+            <div class="card">
+                <h4>🔒 Seguridad</h4>
+                <p>Control de permisos por rol</p>
+            </div>
+            <div class="card">
+                <h4>🚀 Performance</h4>
+                <p>Diseño optimizado para carga rápida</p>
+            </div>
+            <div class="card">
+                <h4>♿ Accesibilidad</h4>
+                <p>Contraste y semántica adecuada</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section fade-in">
+        <h2><span class="icon">📅</span>Plan de Implementación</h2>
+
+        <div class="phase">
+            <h4>Fase 1 (4 semanas): MVP</h4>
+            <ul class="list-styled">
+                <li>Registro de usuarios y autenticación</li>
+                <li>Catálogo bás
