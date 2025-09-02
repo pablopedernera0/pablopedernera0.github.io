@@ -161,7 +161,14 @@ Sistema web/móvil para gestión de pedidos a domicilio de una cadena de restaur
 - Tiempo máximo: 60 minutos
 - Penalización si supera tiempo estimado
 
-## 8. Arquitectura Propuesta
+## 8. Diagramas
+### Diagramas propuestos
+- [**Entidad Relación**]: diagramas-md/a-diagrama-entidad-relacion.md
+- [**Eventos**]: diagramas-md/b-diagrama-eventos.md 
+- [**Clases**]: diagramas-md/c-diagrama-clases.md
+- [**Casos de Uso**]: diagramas-md/d-diagrama-casos-uso.md
+
+## 9. Arquitectura Propuesta
 
 ### Frontend:
 - **Web App**: React.js responsive
@@ -186,7 +193,7 @@ Sistema web/móvil para gestión de pedidos a domicilio de una cadena de restaur
 - **Monitoring**: New Relic/DataDog
 - **CI/CD**: GitHub Actions
 
-## 9. Plan de Implementación
+## 10. Plan de Implementación
 
 ### Fase 1 (4 semanas): MVP
 - Registro de usuarios y autenticación
@@ -214,7 +221,7 @@ Sistema web/móvil para gestión de pedidos a domicilio de una cadena de restaur
 
 **Tiempo Total Estimado**: 12 semanas
 
-## 10. Métricas de Éxito
+## 11. Métricas de Éxito
 
 ### Operacionales:
 - Reducción 30% en llamadas telefónicas
