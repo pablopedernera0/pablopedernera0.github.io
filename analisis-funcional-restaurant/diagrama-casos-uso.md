@@ -1,0 +1,179 @@
+ ```mermaid
+flowchart TD
+    %% Actores principales
+    Cliente[👤 Cliente]
+    Repartidor[🚗 Repartidor]
+    Cocina[👨‍🍳 Empleado Cocina]
+    AdminSucursal[👔 Admin Sucursal]
+    AdminSistema[💻 Admin Sistema]
+    
+    %% Actores del sistema
+    SistemaPOS[🖥️ Sistema POS]
+    SistemaPagos[💳 Sistema Pagos]
+    
+    %% Sistema principal
+    subgraph Sistema["🍔 Sistema de Pedidos a Domicilio"]
+        
+        %% Casos de uso del Cliente
+        subgraph ClienteUC["Gestión de Cliente"]
+            UC01[Registrarse]
+            UC02[Iniciar Sesión]
+            UC03[Gestionar Perfil]
+            UC04[Gestionar Direcciones]
+            UC05[Consultar Historial]
+        end
+        
+        subgraph PedidosUC["Gestión de Pedidos"]
+            UC06[Navegar Menú]
+            UC07[Agregar al Carrito]
+            UC08[Aplicar Promoción]
+            UC09[Realizar Pedido]
+            UC10[Realizar Pago]
+            UC11[Seguir Pedido]
+            UC12[Cancelar Pedido]
+            UC13[Calificar Servicio]
+        end
+        
+        %% Casos de uso del Repartidor
+        subgraph RepartidorUC["Gestión de Entregas"]
+            UC14[Ver Pedidos Asignados]
+            UC15[Aceptar/Rechazar Entrega]
+            UC16[Actualizar Ubicación]
+            UC17[Confirmar Recogida]
+            UC18[Confirmar Entrega]
+            UC19[Reportar Problema]
+        end
+        
+        %% Casos de uso de Cocina
+        subgraph CocinaUC["Gestión de Cocina"]
+            UC20[Ver Pedidos Pendientes]
+            UC21[Iniciar Preparación]
+            UC22[Actualizar Estado Pedido]
+            UC23[Marcar Pedido Listo]
+            UC24[Reportar Demora]
+        end
+        
+        %% Casos de uso Admin Sucursal
+        subgraph AdminSucursalUC["Administración Sucursal"]
+            UC25[Gestionar Menú Local]
+            UC26[Actualizar Precios]
+            UC27[Gestionar Stock]
+            UC28[Ver Reportes Sucursal]
+            UC29[Gestionar Empleados]
+            UC30[Configurar Horarios]
+            UC31[Gestionar Repartidores]
+            UC32[Crear Promociones Locales]
+        end
+        
+        %% Casos de uso Admin Sistema
+        subgraph AdminSistemaUC["Administración Sistema"]
+            UC33[Gestionar Sucursales]
+            UC34[Gestionar Usuarios]
+            UC35[Configurar Sistema]
+            UC36[Ver Reportes Globales]
+            UC37[Gestionar Promociones]
+            UC38[Monitorear Performance]
+            UC39[Gestionar Integraciones]
+        end
+        
+        %% Casos de uso de Integración
+        subgraph IntegracionUC["Integraciones Externas"]
+            UC40[Sincronizar Inventario]
+            UC41[Procesar Pago]
+            UC42[Enviar Notificaciones]
+            UC43[Validar Dirección]
+            UC44[Calcular Ruta Óptima]
+        end
+    end
+    
+    %% Relaciones Cliente
+    Cliente -.-> UC01
+    Cliente -.-> UC02
+    Cliente -.-> UC03
+    Cliente -.-> UC04
+    Cliente -.-> UC05
+    Cliente -.-> UC06
+    Cliente -.-> UC07
+    Cliente -.-> UC08
+    Cliente -.-> UC09
+    Cliente -.-> UC10
+    Cliente -.-> UC11
+    Cliente -.-> UC12
+    Cliente -.-> UC13
+    
+    %% Relaciones Repartidor
+    Repartidor -.-> UC14
+    Repartidor -.-> UC15
+    Repartidor -.-> UC16
+    Repartidor -.-> UC17
+    Repartidor -.-> UC18
+    Repartidor -.-> UC19
+    
+    %% Relaciones Cocina
+    Cocina -.-> UC20
+    Cocina -.-> UC21
+    Cocina -.-> UC22
+    Cocina -.-> UC23
+    Cocina -.-> UC24
+    
+    %% Relaciones Admin Sucursal
+    AdminSucursal -.-> UC25
+    AdminSucursal -.-> UC26
+    AdminSucursal -.-> UC27
+    AdminSucursal -.-> UC28
+    AdminSucursal -.-> UC29
+    AdminSucursal -.-> UC30
+    AdminSucursal -.-> UC31
+    AdminSucursal -.-> UC32
+    
+    %% Relaciones Admin Sistema
+    AdminSistema -.-> UC33
+    AdminSistema -.-> UC34
+    AdminSistema -.-> UC35
+    AdminSistema -.-> UC36
+    AdminSistema -.-> UC37
+    AdminSistema -.-> UC38
+    AdminSistema -.-> UC39
+    
+    %% Relaciones Sistemas Externos
+    SistemaPOS -.-> UC40
+    SistemaPagos -.-> UC41
+    
+    %% Relaciones Include (representadas con flechas sólidas)
+    UC09 --> UC10
+    UC09 --> UC42
+    UC10 --> UC41
+    UC11 --> UC42
+    UC15 --> UC44
+    UC25 --> UC40
+    UC27 --> UC40
+    UC18 --> UC42
+    
+    %% Extend (representadas con flechas punteadas rojas)
+    UC09 -.-> UC08
+    UC18 -.-> UC13
+    UC22 -.-> UC24
+    UC12 -.-> UC19
+    
+    %% Estilado de actores
+    classDef actorStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    classDef sistemaStyle fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#000
+    
+    %% Estilado de casos de uso por categoría
+    classDef clienteUC fill:#e8f5e8,stroke:#2e7d32,stroke-width:1px
+    classDef repartidorUC fill:#f3e5f5,stroke:#7b1fa2,stroke-width:1px
+    classDef cocinaUC fill:#fff3e0,stroke:#ef6c00,stroke-width:1px
+    classDef adminSucursalUC fill:#e0f2f1,stroke:#00695c,stroke-width:1px
+    classDef adminSistemaUC fill:#fff8e1,stroke:#f57f17,stroke-width:1px
+    classDef integracionUC fill:#fce4ec,stroke:#ad1457,stroke-width:1px
+    
+    %% Aplicar estilos
+    class Cliente,Repartidor,Cocina,AdminSucursal,AdminSistema actorStyle
+    class SistemaPOS,SistemaPagos sistemaStyle
+    
+    class UC01,UC02,UC03,UC04,UC05,UC06,UC07,UC08,UC09,UC10,UC11,UC12,UC13 clienteUC
+    class UC14,UC15,UC16,UC17,UC18,UC19 repartidorUC
+    class UC20,UC21,UC22,UC23,UC24 cocinaUC
+    class UC25,UC26,UC27,UC28,UC29,UC30,UC31,UC32 adminSucursalUC
+    class UC33,UC34,UC35,UC36,UC37,UC38,UC39 adminSistemaUC
+    class UC40,UC41,UC42,UC43,UC44 integracionUC
