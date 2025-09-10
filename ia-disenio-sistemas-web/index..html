@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA Aplicada al Diseño de Sistemas Web</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideIn 0.8s ease forwards;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            font-size: 3rem;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        h2 {
+            font-size: 2.5rem;
+            color: #2d3748;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+        
+        h3 {
+            font-size: 1.8rem;
+            color: #4a5568;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        h3::before {
+            content: '▸';
+            color: #667eea;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        ul {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+        
+        li {
+            margin: 1rem 0;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        li:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin: 2rem 0;
+            padding: 1.5rem 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -38px;
+            top: 25px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 4px solid white;
+        }
+        
+        .year {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .card {
+            padding: 2rem;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
+        }
+        
+        .card h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .slide-number {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .intro-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .intro-slide h1 {
+            color: white;
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .intro-slide p {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .highlight {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+        
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .resource-card {
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .resource-card:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        }
+        
+        .resource-title {
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .slide {
+                margin: 10px;
+                padding: 40px 20px;
+            }
+            
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+            h3 { font-size: 1.5rem; }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Título -->
+        <div class="slide intro-slide">
+            <div class="content">
+                <h1>IA Aplicada al Diseño de Sistemas Web</h1>
+                <p>Una guía completa para integrar Inteligencia Artificial en el desarrollo y diseño de sistemas web modernos</p>
+            </div>
+            <div class="slide-number">1 / 20</div>
+        </div>
+
+        <!-- Slide 2: Agenda -->
+        <div class="slide">
+            <div class="content">
+                <h2>Agenda</h2>
+                <ul>
+                    <li>Historia y evolución de la IA</li>
+                    <li>Fundamentos: ¿Cómo funciona la IA?</li>
+                    <li>IA en el diseño de sistemas web</li>
+                    <li>Aplicaciones prácticas y casos de uso</li>
+                    <li>Tips y mejores prácticas</li>
+                    <li>Recursos y herramientas</li>
+                </ul>
+            </div>
+            <div class="slide-number">2 / 20</div>
+        </div>
+
+        <!-- Slide 3: Historia de la IA -->
+        <div class="slide">
+            <div class="content">
+                <h2>Historia de la Inteligencia Artificial</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="year">1950s</div>
+                        <p>Alan Turing propone el Test de Turing. Primeros programas de IA.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="year">1980s-90s</div>
+                        <p>Redes neuronales y sistemas expertos. Primeras aplicaciones comerciales.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="year">2010s</div>
+                        <p>Deep Learning revoluciona la IA. GPUs aceleran el entrenamiento.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="year">2020s</div>
+                        <p>IA Generativa (GPT, DALL-E). IA accesible para diseñadores y desarrolladores.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">3 / 20</div>
+        </div>
+
+        <!-- Slide 4: Evolución en el diseño web -->
+        <div class="slide">
+            <div class="content">
+                <h2>IA en el Diseño Web: Evolución</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h4>Era 1.0 (2000s)</h4>
+                        <p>Sitios estáticos, diseño manual, sin personalización</p>
+                    </div>
+                    <div class="card">
+                        <h4>Era 2.0 (2010s)</h4>
+                        <p>Responsive design, CMS, primeras recomendaciones automáticas</p>
+                    </div>
+                    <div class="card">
+                        <h4>Era 3.0 (Actual)</h4>
+                        <p>IA generativa, diseño automatizado, personalización inteligente</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">4 / 20</div>
+        </div>
+
+        <!-- Slide 5: ¿Cómo funciona la IA? -->
+        <div class="slide">
+            <div class="content">
+                <h2>¿Cómo Funciona la IA?</h2>
+                <h3>Conceptos Fundamentales</h3>
+                <ul>
+                    <li><strong>Machine Learning:</strong> Algoritmos que aprenden de datos sin programación explícita</li>
+                    <li><strong>Deep Learning:</strong> Redes neuronales profundas que imitan el cerebro humano</li>
+                    <li><strong>IA Generativa:</strong> Crea contenido nuevo basado en patrones aprendidos</li>
+                    <li><strong>Procesamiento de Lenguaje Natural:</strong> Comprende y genera texto humano</li>
+                </ul>
+            </div>
+            <div class="slide-number">5 / 20</div>
+        </div>
+
+        <!-- Slide 6: Tipos de IA -->
+        <div class="slide">
+            <div class="content">
+                <h2>Tipos de IA Relevantes para el Diseño Web</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h4>IA Predictiva</h4>
+                        <p>Analiza comportamiento del usuario para predecir acciones futuras</p>
+                    </div>
+                    <div class="card">
+                        <h4>IA Generativa</h4>
+                        <p>Crea contenido automáticamente: texto, imágenes, código</p>
+                    </div>
+                    <div class="card">
+                        <h4>IA de Recomendación</h4>
+                        <p>Sugiere contenido personalizado basado en preferencias</p>
+                    </div>
+                    <div class="card">
+                        <h4>IA Conversacional</h4>
+                        <p>Chatbots y asistentes virtuales para interacción</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">6 / 20</div>
+        </div>
+
+        <!-- Slide 7: IA en el diseño de sistemas web -->
+        <div class="slide">
+            <div class="content">
+                <h2>IA en el Diseño de Sistemas Web</h2>
+                <h3>Áreas de Aplicación</h3>
+                <ul>
+                    <li><strong>Experiencia de Usuario (UX):</strong> Personalización dinámica de interfaces</li>
+                    <li><strong>Generación de Contenido:</strong> Textos, imágenes y layouts automáticos</li>
+                    <li><strong>Optimización:</strong> A/B testing inteligente y mejora continua</li>
+                    <li><strong>Accesibilidad:</strong> Adaptación automática para usuarios con discapacidades</li>
+                    <li><strong>Performance:</strong> Optimización inteligente de recursos y carga</li>
+                </ul>
+            </div>
+            <div class="slide-number">7 / 20</div>
+        </div>
+
+        <!-- Slide 8: Personalización inteligente -->
+        <div class="slide">
+            <div class="content">
+                <h2>Personalización Inteligente</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h4>Contenido Dinámico</h4>
+                        <p>Adapta textos, imágenes y ofertas según el perfil del usuario</p>
+                    </div>
+                    <div class="card">
+                        <h4>Layout Adaptativo</h4>
+                        <p>Reorganiza elementos según el comportamiento de navegación</p>
+                    </div>
+                    <div class="card">
+                        <h4>Recomendaciones</h4>
+                        <p>Sugiere productos, artículos o servicios relevantes</p>
+                    </div>
+                    <div class="card">
+                        <h4>Tiempo Real</h4>
+                        <p>Ajustes instantáneos basados en interacciones actuales</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">8 / 20</div>
+        </div>
+
+        <!-- Slide 9: Generación automática -->
+        <div class="slide">
+            <div class="content">
+                <h2>Generación Automática de Contenido</h2>
+                <h3>Aplicaciones Prácticas</h3>
+                <ul>
+                    <li><strong>Texto:</strong> Descripciones de productos, meta tags, content marketing</li>
+                    <li><strong>Imágenes:</strong> Gráficos personalizados, ilustraciones, optimización</li>
+                    <li><strong>Código:</strong> Componentes UI, CSS automático, pruebas unitarias</li>
+                    <li><strong>Diseño:</strong> Paletas de colores, tipografías, layouts responsive</li>
+                    <li><strong>Traducciones:</strong> Contenido multiidioma automático</li>
+                </ul>
+            </div>
+            <div class="slide-number">9 / 20</div>
+        </div>
+
+        <!-- Slide 10: Chatbots y asistentes -->
+        <div class="slide">
+            <div class="content">
+                <h2>Chatbots y Asistentes Virtuales</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h4>Soporte al Cliente</h4>
+                        <p>Respuesta 24/7 a consultas frecuentes y resolución de problemas básicos</p>
+                    </div>
+                    <div class="card">
+                        <h4>Navegación Inteligente</h4>
+                        <p>Guía a usuarios hacia contenido o productos específicos</p>
+                    </div>
+                    <div class="card">
+                        <h4>Captación de Leads</h4>
+                        <p>Califica prospectos automáticamente mediante conversación</p>
+                    </div>
+                    <div class="card">
+                        <h4>Feedback Dinámico</h4>
+                        <p>Recolecta opiniones y mejora la experiencia continuamente</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">10 / 20</div>
+        </div>
+
+        <!-- Slide 11: Análisis y optimización -->
+        <div class="slide">
+            <div class="content">
+                <h2>Análisis y Optimización con IA</h2>
+                <h3>Métricas Inteligentes</h3>
+                <ul>
+                    <li><strong>Heat Maps IA:</strong> Predicción de zonas de interacción antes del lanzamiento</li>
+                    <li><strong>A/B Testing Automático:</strong> Pruebas continuas con optimización automática</li>
+                    <li><strong>Análisis Predictivo:</strong> Identifica problemas potenciales antes de que ocurran</li>
+                    <li><strong>SEO Inteligente:</strong> Optimización automática para motores de búsqueda</li>
+                    <li><strong>Performance Monitoring:</strong> Ajustes automáticos de rendimiento</li>
+                </ul>
+            </div>
+            <div class="slide-number">11 / 20</div>
+        </div>
+
+        <!-- Slide 12: Herramientas populares -->
+        <div class="slide">
+            <div class="content">
+                <h2>Herramientas de IA para Diseño Web</h2>
+                <div class="resources-grid">
+                    <div class="resource-card">
+                        <div class="resource-title">Diseño Visual</div>
+                        <p>Figma AI, Adobe Sensei, Canva AI, Midjourney</p>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-title">Desarrollo</div>
+                        <p>GitHub Copilot, Tabnine, CodeT5, Replit AI</p>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-title">Contenido</div>
+                        <p>GPT-4, Claude, Jasper, Copy.ai, Grammarly</p>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-title">Chatbots</div>
+                        <p>Dialogflow, Rasa, Botpress, Chatfuel</p>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-title">Analytics</div>
+                        <p>Google Analytics AI, Hotjar AI, Crazy Egg</p>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-title">No-Code</div>
+                        <p>Wix ADI, Bookmark AI, Firedrop, Grid</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">12 / 20</div>
+        </div>
+
+        <!-- Slide 13: Tips prácticos -->
+        <div class="slide">
+            <div class="content">
+                <h2>Tips y Mejores Prácticas</h2>
+                <h3>Implementación Exitosa</h3>
+                <ul>
+                    <li><strong>Comienza pequeño:</strong> Implementa IA gradualmente, no todo a la vez</li>
+                    <li><strong>Datos de calidad:</strong> La IA es tan buena como los datos que la alimentan</li>
+                    <li><strong>Transparencia:</strong> Informa a usuarios cuando interactúan con IA</li>
+                    <li><strong>Control humano:</strong> Mantén supervisión y posibilidad de intervención</li>
+                    <li><strong>Privacidad first:</strong> Cumple con GDPR y regulaciones de datos</li>
+                </ul>
+            </div>
+            <div class="slide-number">13 / 20</div>
+        </div>
+
+        <!-- Slide 14: Errores comunes -->
+        <div class="slide">
+            <div class="content">
+                <h2>Errores Comunes a Evitar</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h4>Over-automation</h4>
+                        <p>No automatices procesos que requieren toque humano o decisiones complejas</p>
+                    </div>
+                    <div class="card">
+                        <h4>Falta de contexto</h4>
+                        <p>La IA necesita contexto adecuado para funcionar correctamente</p>
+                    </div>
+                    <div class="card">
+                        <h4>Ignorar la ética</h4>
+                        <p>Considera sesgos, privacidad y impacto social de tus implementaciones</p>
+                    </div>
+                    <div class="card">
+                        <h4>Sin métricas claras</h4>
+                        <p>Define KPIs específicos para medir el éxito de la IA</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">14 / 20</div>
+        </div>
+
+        <!-- Slide 15: Casos de éxito -->
+        <div class="slide">
+            <div class="content">
+                <h2>Casos de Éxito Destacados</h2>
+                <ul>
+                    <li><strong>Netflix:</strong> Sistema de recomendaciones que impulsa 80% de las visualizaciones</li>
+                    <li><strong>Amazon:</strong> Personalización de homepage aumentó conversiones 29%</li>
+                    <li><strong>Spotify:</strong> Discover Weekly usa IA para engagement del 40%</li>
+                    <li><strong>Airbnb:</strong> IA optimiza precios y aumenta reservas 13%</li>
+                    <li><strong>Adobe:</strong> Sensei acelera workflows creativos en 75%</li>
+                </ul>
+            </div>
+            <div class="slide-number">15 / 20</div>
+        </div>
+
+        <!-- Slide 16: Métricas de éxito -->
+        <div class="slide">
+            <div class="content">
+                <h2>Métricas para Evaluar el Éxito</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h4>Experiencia de Usuario</h4>
+                        <p>Time on site, bounce rate, click-through rate, satisfacción del usuario</p>
+                    </div>
+                    <div class="card">
+                        <h4>Conversión</h4>
+                        <p>Tasa de conversión, valor promedio del pedido, customer lifetime value</p>
+                    </div>
+                    <div class="card">
+                        <h4>Eficiencia</h4>
+                        <p>Tiempo de desarrollo, costo operativo, productividad del equipo</p>
+                    </div>
+                    <div class="card">
+                        <h4>Performance</h4>
+                        <p>Velocidad de carga, disponibilidad, escalabilidad del sistema</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">16 / 20</div>
+        </div>
+
+        <!-- Slide 17: Futuro de la IA -->
+        <div class="slide">
+            <div class="content">
+                <h2>El Futuro de la IA en el Diseño Web</h2>
+                <h3>Tendencias Emergentes</h3>
+                <ul>
+                    <li><strong>Diseño Conversacional:</strong> Interfaces que se adaptan mediante diálogo natural</li>
+                    <li><strong>IA Multimodal:</strong> Integración de voz, texto, imagen y gestos</li>
+                    <li><strong>Realidad Aumentada:</strong> Experiencias web inmersivas con IA</li>
+                    <li><strong>Edge AI:</strong> Procesamiento inteligente en el dispositivo del usuario</li>
+                    <li><strong>Código Sin Código:</strong> Desarrollo web completamente automatizado</li>
+                </ul>
+            </div>
+            <div class="slide-number">17 / 20</div>
+        </div>
+
+        <!-- Slide 18: Recursos online -->
+        <div class="slide">
+            <div class="content">
+                <h2>Recursos Online Recomendados</h2>
+                <div class="resources-grid">
+                    <div class="resource-card">
+                        <div class="resource-title">Cursos</div>
+                        <p>Coursera AI, edX Machine Learning, Udacity AI Nanodegree</p>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-title">Documentación</div>
+                        <p>TensorFlow.js, ML5.js, OpenAI API, Google AI Platform</p>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-title">Comunidades</div>
+                        <p>AI/ML Reddit, Stack Overflow AI, Discord AI servers</p>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-title">Blogs y News</div>
+                        <p>Towards Data Science, AI Research, Google AI Blog</p>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-title">Herramientas Gratuitas</div>
+                        <p>Hugging Face, Google Colab, Kaggle, GitHub</p>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-title">APIs y SDKs</div>
+                        <p>OpenAI GPT, Google Vision, AWS Rekognition</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">18 / 20</div>
+        </div>
+
+        <!-- Slide 19: Plan de acción -->
+        <div class="slide">
+            <div class="content">
+                <h2>Plan de Acción: Primeros Pasos</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="year">Semana 1-2</div>
+                        <p>Audita tu sitio actual e identifica oportunidades de IA</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="year">Semana 3-4</div>
+                        <p>Experimenta con herramientas gratuitas y APIs</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="year">Mes 2</div>
+                        <p>Implementa tu primera funcionalidad IA (chatbot o personalización básica)</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="year">Mes 3+</div>
+                        <p>Mide resultados, itera y expande a más funcionalidades</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">19 / 20</div>
+        </div>
+
+        <!-- Slide 20: Conclusión -->
+        <div class="slide intro-slide">
+            <div class="content">
+                <h1>¡Gracias!</h1>
+                <p>La IA no reemplaza la creatividad humana, la potencia. Comienza tu viaje hacia el diseño web inteligente hoy mismo.</p>
+                <br>
+                <p style="font-size: 1.2rem; opacity: 0.8;">¿Preguntas? ¡Conversemos sobre IA y diseño web!</p>
+            </div>
+            <div class="slide-number">20 / 20</div>
+        </div>
+    </div>
+
+    <script>
+        // Smooth scroll behavior
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add intersection observer for animations
+            const slides = document.querySelectorAll('.slide');
+            
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationDelay = '0.2s';
+                        entry.target.classList.add('animate-in');
+                    }
+                });
+            }, observerOptions);
+
+            slides.forEach(slide => {
+                observer.observe(slide);
+            });
+
+            // Add keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowDown' || e.key === ' ') {
+                    e.preventDefault();
+                    scrollToNextSlide();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    scrollToPrevSlide();
+                }
+            });
+
+            function scrollToNextSlide() {
+                const current = getCurrentSlide();
+                const next = slides[current + 1];
+                if (next) {
+                    next.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+
+            function scrollToPrevSlide() {
+                const current = getCurrentSlide();
+                const prev = slides[current - 1];
+                if (prev) {
+                    prev.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+
+            function getCurrentSlide() {
+                const scrollPosition = window.scrollY + window.innerHeight / 2;
+                let currentSlide = 0;
+                
+                slides.forEach((slide, index) => {
+                    if (slide.offsetTop <= scrollPosition) {
+                        currentSlide = index;
+                    }
+                });
+                
+                return currentSlide;
+            }
+
+            // Add progress indicator
+            const progressBar = document.createElement('div');
+            progressBar.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 0%;
+                height: 4px;
+                background: linear-gradient(90deg, #667eea, #764ba2);
+                z-index: 1000;
+                transition: width 0.3s ease;
+            `;
+            document.body.appendChild(progressBar);
+
+            window.addEventListener('scroll', () => {
+                const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+                progressBar.style.width = scrolled + '%';
+            });
+        });
+    </script>
+</body>
+</html>
