@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Ancho de Banda - Tiempo Real</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Share+Tech+Mono:wght@400&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER MODERNO */
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 20px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            min-width: 140px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        /* SECCIÓN SUPERIOR: Gráfico Moderno */
+        .upper-section {
+            height: 50vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upper-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .visualization-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .svg-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .house {
+            fill: #ff6b6b;
+            stroke: #ffffff;
+            stroke-width: 2;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        .building {
+            fill: #4ecdc4;
+            stroke: #ffffff;
+            stroke-width: 2;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        .pipe {
+            fill: none;
+            stroke: #ffffff;
+            stroke-width: 8;
+            opacity: 0.9;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .data-flow {
+            r: 4;
+            opacity: 0.9;
+        }
+
+        .data-particle-upload {
+            fill: #ff9f43;
+            filter: drop-shadow(0 0 6px #ff9f43);
+        }
+
+        .data-particle-download {
+            fill: #54a0ff;
+            filter: drop-shadow(0 0 6px #54a0ff);
+        }
+
+        .window {
+            fill: #feca57;
+            stroke: #ffffff;
+            stroke-width: 1;
+        }
+
+        .door {
+            fill: #8b4513;
+            stroke: #ffffff;
+            stroke-width: 1;
+        }
+
+        .roof {
+            fill: #e55039;
+            stroke: #ffffff;
+            stroke-width: 2;
+        }
+
+        .control-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-btn.active {
+            background: #ff6b6b;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 20px;
+            font-size: 0.9em;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .upload-color { background: #ff9f43; }
+        .download-color { background: #54a0ff; }
+
+        /* SECCIÓN INFERIOR: Matrix Style para datos en crudo */
+        .lower-section {
+            height: 50vh;
+            background: #000000;
+            font-family: 'Share Tech Mono', monospace;
+            color: #00ff00;
+            overflow: hidden;
+            position: relative;
+            border-top: 3px solid #00ff00;
+        }
+
+        .matrix-header {
+            background: rgba(0, 30, 0, 0.9);
+            padding: 15px;
+            border-bottom: 2px solid #00ff00;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .matrix-title {
+            font-size: 1.3em;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            animation: textGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes textGlow {
+            from { text-shadow: 0 0 10px #00ff00; }
+            to { text-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
+        }
+
+        .matrix-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .matrix-btn {
+            background: rgba(0, 40, 0, 0.8);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 8px 15px;
+            font-family: 'Share Tech Mono', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .matrix-btn:hover {
+            background: rgba(0, 80, 0, 0.8);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            transform: scale(1.05);
+        }
+
+        .matrix-btn.active {
+            background: #004400;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.7);
+        }
+
+        .connections-container {
+            height: calc(100% - 60px);
+            overflow-y: auto;
+            padding: 15px;
+            position: relative;
+        }
+
+        .connections-grid {
+            display: grid;
+            grid-template-columns: 150px 150px 80px 100px 120px 1fr;
+            gap: 8px;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+
+        .grid-header {
+            background: rgba(0, 50, 0, 0.8);
+            padding: 10px 8px;
+            border: 1px solid #00ff00;
+            font-weight: bold;
+            text-align: center;
+            color: #88ff88;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .connection-row {
+            display: contents;
+        }
+
+        .connection-cell {
+            padding: 8px;
+            border: 1px solid #004400;
+            background: rgba(0, 20, 0, 0.4);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.9em;
+        }
+
+        .connection-cell:hover {
+            background: rgba(0, 60, 0, 0.8);
+            border-color: #00ff00;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .connection-new {
+            animation: newConnection 1.5s ease-out;
+        }
+
+        @keyframes newConnection {
+            0% {
+                background: rgba(0, 255, 0, 0.6);
+                transform: scale(1.02);
+                box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+            }
+            100% {
+                background: rgba(0, 20, 0, 0.4);
+                transform: scale(1);
+                box-shadow: none;
+            }
+        }
+
+        /* Colores para protocolos en estilo Matrix */
+        .protocol-tcp { 
+            color: #00ff00; 
+            text-shadow: 0 0 5px #00ff00;
+        }
+        .protocol-udp { 
+            color: #ffff00; 
+            text-shadow: 0 0 5px #ffff00;
+        }
+        .protocol-http { 
+            color: #00ffff; 
+            text-shadow: 0 0 5px #00ffff;
+        }
+        .protocol-https { 
+            color: #ff00ff; 
+            text-shadow: 0 0 5px #ff00ff;
+        }
+        .protocol-other { 
+            color: #ffffff; 
+            text-shadow: 0 0 5px #ffffff;
+        }
+
+        /* Colores para volumen de bytes */
+        .bytes-high { 
+            color: #ff4444; 
+            text-shadow: 0 0 5px #ff4444;
+            font-weight: bold;
+        }
+        .bytes-medium { 
+            color: #ffaa00; 
+            text-shadow: 0 0 5px #ffaa00;
+        }
+        .bytes-low { 
+            color: #00ff00; 
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        /* Efecto lluvia Matrix solo en la sección inferior */
+        .matrix-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.1;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .matrix-column {
+            position: absolute;
+            top: -100px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: #00ff00;
+            animation: matrixFall 6s linear infinite;
+            line-height: 1.2;
+        }
+
+        @keyframes matrixFall {
+            0% { transform: translateY(-100px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(calc(50vh + 100px)); opacity: 0; }
+        }
+
+        /* Scrollbar Matrix style */
+        .connections-container::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .connections-container::-webkit-scrollbar-track {
+            background: #000;
+            border: 1px solid #004400;
+        }
+
+        .connections-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00ff00, #004400);
+            border-radius: 5px;
+        }
+
+        .connections-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #88ff88, #00aa00);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .upper-section, .lower-section {
+                height: 45vh;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .connections-grid {
+                grid-template-columns: 100px 100px 60px 80px 100px 1fr;
+                font-size: 0.75em;
+            }
+            
+            .control-panel {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 10px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌐 Monitor de Ancho de Banda</h1>
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value" id="uploadSpeed">0</div>
+                <div class="stat-label">KB/s Subida</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="downloadSpeed">0</div>
+                <div class="stat-label">KB/s Bajada</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalData">0</div>
+                <div class="stat-label">MB Total</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="packetsPerSec">0</div>
+                <div class="stat-label">Paquetes/s</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="activeConnections">0</div>
+                <div class="stat-label">Conexiones</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN SUPERIOR: Gráfico Moderno -->
+    <div class="upper-section">
+        <div class="control-panel">
+            <button class="control-btn active" id="startBtn">▶ Iniciar</button>
+            <button class="control-btn" id="pauseBtn">⏸ Pausar</button>
+            <button class="control-btn" id="resetBtn">🔄 Reiniciar</button>
+            <button class="control-btn" id="simulateBtn">📊 Simular</button>
+        </div>
+
+        <div class="visualization-container">
+            <svg class="svg-container" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+                <!-- Casa -->
+                <g id="house">
+                    <polygon points="50,120 100,80 150,120" class="roof"/>
+                    <rect x="50" y="120" width="100" height="60" class="house"/>
+                    <rect x="75" y="150" width="15" height="30" class="door"/>
+                    <rect x="60" y="130" width="12" height="12" class="window"/>
+                    <rect x="125" y="130" width="12" height="12" class="window"/>
+                    <rect x="120" y="100" width="6" height="20" fill="#8b4513"/>
+                </g>
+
+                <!-- Tubería -->
+                <g id="pipe">
+                    <path d="M 150 150 Q 400 120 650 150" class="pipe" id="mainPipe"/>
+                    <circle cx="150" cy="150" r="6" fill="#ffffff" opacity="0.8"/>
+                    <circle cx="650" cy="150" r="6" fill="#ffffff" opacity="0.8"/>
+                </g>
+
+                <!-- Edificio -->
+                <g id="building">
+                    <rect x="650" y="100" width="60" height="120" class="building"/>
+                    <rect x="665" y="80" width="30" height="20" class="building"/>
+                    <line x1="680" y1="80" x2="680" y2="70" stroke="#ffffff" stroke-width="2"/>
+                    <circle cx="680" cy="70" r="3" fill="#feca57"/>
+                    <!-- Ventanas -->
+                    <rect x="660" y="110" width="8" height="10" class="window"/>
+                    <rect x="675" y="110" width="8" height="10" class="window"/>
+                    <rect x="690" y="110" width="8" height="10" class="window"/>
+                    <rect x="660" y="130" width="8" height="10" class="window"/>
+                    <rect x="675" y="130" width="8" height="10" class="window"/>
+                    <rect x="690" y="130" width="8" height="10" class="window"/>
+                    <rect x="660" y="150" width="8" height="10" class="window"/>
+                    <rect x="675" y="150" width="8" height="10" class="window"/>
+                    <rect x="690" y="150" width="8" height="10" class="window"/>
+                    <rect x="675" y="190" width="15" height="30" class="door"/>
+                </g>
+
+                <g id="dataParticles"></g>
+                
+                <text x="100" y="240" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="bold">Casa</text>
+                <text x="680" y="240" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="bold">Servidor</text>
+            </svg>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color upload-color"></div>
+                <span>Datos Subida</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color download-color"></div>
+                <span>Datos Bajada</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN INFERIOR: Matrix Style para datos en crudo -->
+    <div class="lower-section">
+        <div class="matrix-rain" id="matrixRain"></div>
+        
+        <div class="matrix-header">
+            <div class="matrix-title">[[ RAW NETWORK DATA - LIVE FEED ]]</div>
+            <div class="matrix-controls">
+                <button class="matrix-btn active" id="filterAll">ALL</button>
+                <button class="matrix-btn" id="filterTCP">TCP</button>
+                <button class="matrix-btn" id="filterUDP">UDP</button>
+                <button class="matrix-btn" id="filterHTTP">HTTP/S</button>
+                <button class="matrix-btn" id="clearBtn">PURGE</button>
+            </div>
+        </div>
+
+        <div class="connections-container" id="connectionsContainer">
+            <div class="connections-grid">
+                <div class="grid-header">source_ip</div>
+                <div class="grid-header">dest_ip</div>
+                <div class="grid-header">port</div>
+                <div class="grid-header">protocol</div>
+                <div class="grid-header">bytes</div>
+                <div class="grid-header">status</div>
+            </div>
+            <div id="connectionsData"></div>
+        </div>
+    </div>
+
+    <script>
+        class NetworkMatrixMonitor {
+            constructor() {
+                this.isRunning = false;
+                this.uploadSpeed = 0;
+                this.downloadSpeed = 0;
+                this.totalData = 0;
+                this.packetsPerSec = 0;
+                this.particles = [];
+                this.connections = new Map();
+                this.animationId = null;
+                this.apiUrl = 'http://localhost:5000/api';
+                this.isConnectedToAPI = false;
+                this.dataInterval = null;
+                this.currentFilter = 'all';
+                
+                this.initializeElements();
+                this.setupEventListeners();
+                this.checkAPIConnection();
+                this.startMatrixRain();
+            }
+
+            initializeElements() {
+                this.svg = document.querySelector('.svg-container');
+                this.particleContainer = document.getElementById('dataParticles');
+                this.uploadSpeedEl = document.getElementById('uploadSpeed');
+                this.downloadSpeedEl = document.getElementById('downloadSpeed');
+                this.totalDataEl = document.getElementById('totalData');
+                this.packetsPerSecEl = document.getElementById('packetsPerSec');
+                this.activeConnectionsEl = document.getElementById('activeConnections');
+                this.connectionsDataEl = document.getElementById('connectionsData');
+            }
+
+            setupEventListeners() {
+                document.getElementById('startBtn').addEventListener('click', () => this.start());
+                document.getElementById('pauseBtn').addEventListener('click', () => this.pause());
+                document.getElementById('resetBtn').addEventListener('click', () => this.reset());
+                document.getElementById('simulateBtn').addEventListener('click', () => this.simulateTraffic());
+                
+                // Filtros Matrix
+                document.getElementById('filterAll').addEventListener('click', () => this.setFilter('all'));
+                document.getElementById('filterTCP').addEventListener('click', () => this.setFilter('tcp'));
+                document.getElementById('filterUDP').addEventListener('click', () => this.setFilter('udp'));
+                document.getElementById('filterHTTP').addEventListener('click', () => this.setFilter('http'));
+                document.getElementById('clearBtn').addEventListener('click', () => this.clearConnections());
+            }
+
+            async checkAPIConnection() {
+                try {
+                    const response = await fetch(`${this.apiUrl}/status`);
+                    if (response.ok) {
+                        this.isConnectedToAPI = true;
+                        this.updateConnectionStatus('✅ CONNECTED TO WIRESHARK API');
+                        this.setupRealDataFetching();
+                    } else {
+                        throw new Error('API no disponible');
+                    }
+                } catch (error) {
+                    this.isConnectedToAPI = false;
+                    this.updateConnectionStatus('⚠️ SIMULATION MODE - API UNAVAILABLE');
+                    this.setupDataSimulation();
+                }
+            }
+
+            updateConnectionStatus(message) {
+                let statusEl = document.getElementById('connectionStatus');
+                if (!statusEl) {
+                    statusEl = document.createElement('div');
+                    statusEl.id = 'connectionStatus';
+                    statusEl.style.cssText = `
+                        position: fixed;
+                        bottom: 10px;
+                        right: 10px;
+                        background: rgba(0,20,0,0.9);
+                        color: #00ff00;
+                        padding: 8px 12px;
+                        border: 1px solid #00ff00;
+                        font-size: 11px;
+                        z-index: 1000;
+                        font-family: 'Share Tech Mono', monospace;
+                    `;
+                    document.body.appendChild(statusEl);
+                }
+                statusEl.textContent = message;
+            }
+
+            startMatrixRain() {
+                const matrixContainer = document.getElementById('matrixRain');
+                const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+                
+                const createColumn = () => {
+                    const column = document.createElement('div');
+                    column.className = 'matrix-column';
+                    column.style.left = Math.random() * 100 + '%';
+                    column.style.animationDelay = Math.random() * 5 + 's';
+                    column.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                    
+                    let text = '';
+                    const length = Math.floor(Math.random() * 15) + 8;
+                    for (let i = 0; i < length; i++) {
+                        text += chars.charAt(Math.floor(Math.random() * chars.length)) + '<br>';
+                    }
+                    column.innerHTML = text;
+                    
+                    matrixContainer.appendChild(column);
+                    
+                    setTimeout(() => {
+                        if (column.parentNode) {
+                            column.parentNode.removeChild(column);
+                        }
+                    }, 10000);
+                };
+
+                // Crear columnas iniciales
+                for (let i = 0; i < 12; i++) {
+                    setTimeout(createColumn, Math.random() * 2000);
+                }
+
+                // Continuar creando columnas
+                setInterval(() => {
+                    if (Math.random() < 0.25) {
+                        createColumn();
+                    }
+                }, 600);
+            }
+
+            async setupRealDataFetching() {
+                try {
+                    const startResponse = await fetch(`${this.apiUrl}/start`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ interface: 'any', filter: '' })
+                    });
+                    
+                    if (startResponse.ok) {
+                        this.dataInterval = setInterval(() => {
+                            this.fetchRealData();
+                        }, 1000);
+                    }
+                } catch (error) {
+                    console.error('Error iniciando monitoreo:', error);
+                    this.setupDataSimulation();
+                }
+            }
+
+            async fetchRealData() {
+                if (!this.isConnectedToAPI || !this.isRunning) return;
+                
+                try {
+                    const response = await fetch(`${this.apiUrl}/stats`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.status === 'success') {
+                            this.uploadSpeed = data.data.uploadSpeed;
+                            this.downloadSpeed = data.data.downloadSpeed;
+                            this.totalData = data.data.totalData;
+                            this.packetsPerSec = data.data.packetsPerSec;
+                            
+                            // Agregar conexiones reales
+                            if (data.data.connections) {
+                                data.data.connections.forEach(conn => {
+                                    this.connections.set(conn.id, {
+                                        ...conn,
+                                        timestamp: Date.now()
+                                    });
+                                });
+                            }
+                            
+                            this.updateStats();
+                            this.generateParticles();
+                            this.updateConnectionsDisplay();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error obteniendo datos:', error);
+                    this.isConnectedToAPI = false;
+                    this.updateConnectionStatus('⚠️ ERROR API - SIMULATION MODE');
+                    this.setupDataSimulation();
+                }
+            }
+
+            setupDataSimulation() {
+                setInterval(() => {
+                    if (this.isRunning) {
+                        this.uploadSpeed = Math.max(0, this.uploadSpeed + (Math.random() - 0.5) * 50);
+                        this.downloadSpeed = Math.max(0, this.downloadSpeed + (Math.random() - 0.5) * 100);
+                        this.packetsPerSec = Math.floor(Math.random() * 500) + 100;
+                        
+                        this.uploadSpeed = Math.min(this.uploadSpeed, 1000);
+                        this.downloadSpeed = Math.min(this.downloadSpeed, 2000);
+                        
+                        this.totalData += (this.uploadSpeed + this.downloadSpeed) / 1024;
+                        
+                        this.updateStats();
+                        this.generateParticles();
+                        this.generateConnections();
+                    }
+                }, 500);
+            }
+
+            generateConnections() {
+                const newConnections = Math.floor(Math.random() * 3) + 1;
+                
+                for (let i = 0; i < newConnections; i++) {
+                    setTimeout(() => {
+                        this.addConnection();
+                    }, Math.random() * 500);
+                }
+
+                this.cleanOldConnections();
+            }
+
+            addConnection() {
+                const protocols = ['TCP', 'UDP', 'HTTP', 'HTTPS', 'FTP', 'SSH', 'DNS'];
+                const ips = [
+                    '192.168.1.', '192.168.0.', '10.0.0.', '172.16.0.',
+                    '8.8.8.8', '1.1.1.1', '208.67.222.222', '74.125.224.'
+                ];
+                
+                const connectionId = Date.now() + Math.random();
+                const sourceIP = Math.random() > 0.5 ? 
+                    ips[Math.floor(Math.random() * 4)] + Math.floor(Math.random() * 254 + 1) :
+                    ips[4 + Math.floor(Math.random() * 4)];
+                const destIP = Math.random() > 0.5 ?
+                    ips[4 + Math.floor(Math.random() * 4)] :
+                    ips[Math.floor(Math.random() * 4)] + Math.floor(Math.random() * 254 + 1);
+                
+                const protocol = protocols[Math.floor(Math.random() * protocols.length)];
+                const port = protocol === 'HTTP' ? 80 : 
+                           protocol === 'HTTPS' ? 443 :
+                           protocol === 'SSH' ? 22 :
+                           protocol === 'FTP' ? 21 :
+                           protocol === 'DNS' ? 53 :
+                           Math.floor(Math.random() * 65535) + 1;
+                
+                const bytes = Math.floor(Math.random() * 10000) + 100;
+                const statuses = ['ESTABLISHED', 'SYN_SENT', 'LISTENING', 'TIME_WAIT', 'CLOSED', 'ACTIVE'];
+                const status = statuses[Math.floor(Math.random() * statuses.length)];
+
+                const connection = {
+                    id: connectionId,
+                    sourceIP,
+                    destIP,
+                    port,
+                    protocol,
+                    bytes,
+                    status,
+                    timestamp: Date.now()
+                };
+
+                this.connections.set(connectionId, connection);
+                this.updateConnectionsDisplay();
+            }
+
+            updateConnectionsDisplay() {
+                const filteredConnections = this.getFilteredConnections();
+                this.activeConnectionsEl.textContent = filteredConnections.length;
+                
+                const connectionsHTML = filteredConnections
+                    .sort((a, b) => b.timestamp - a.timestamp)
+                    .slice(0, 50)
+                    .map(conn => this.createConnectionHTML(conn))
+                    .join('');
+
+                this.connectionsDataEl.innerHTML = connectionsHTML;
+            }
+
+            createConnectionHTML(conn) {
+                const protocolClass = `protocol-${conn.protocol.toLowerCase()}`;
+                const bytesClass = conn.bytes > 5000 ? 'bytes-high' : 
+                                 conn.bytes > 1000 ? 'bytes-medium' : 'bytes-low';
+                const isNew = Date.now() - conn.timestamp < 2000 ? 'connection-new' : '';
+
+                return `
+                    <div class="connection-row ${isNew}">
+                        <div class="connection-cell">${conn.sourceIP}</div>
+                        <div class="connection-cell">${conn.destIP}</div>
+                        <div class="connection-cell">${conn.port}</div>
+                        <div class="connection-cell ${protocolClass}">${conn.protocol}</div>
+                        <div class="connection-cell ${bytesClass}">${conn.bytes.toLocaleString()}</div>
+                        <div class="connection-cell">${conn.status}</div>
+                    </div>
+                `;
+            }
+
+            getFilteredConnections() {
+                const allConnections = Array.from(this.connections.values());
+                
+                switch (this.currentFilter) {
+                    case 'tcp':
+                        return allConnections.filter(c => c.protocol === 'TCP');
+                    case 'udp':
+                        return allConnections.filter(c => c.protocol === 'UDP');
+                    case 'http':
+                        return allConnections.filter(c => 
+                            c.protocol === 'HTTP' || c.protocol === 'HTTPS');
+                    default:
+                        return allConnections;
+                }
+            }
+
+            setFilter(filter) {
+                this.currentFilter = filter;
+                
+                document.querySelectorAll('.matrix-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.getElementById(`filter${filter.charAt(0).toUpperCase() + filter.slice(1)}`).classList.add('active');
+                
+                this.updateConnectionsDisplay();
+            }
+
+            clearConnections() {
+                this.connections.clear();
+                this.updateConnectionsDisplay();
+            }
+
+            cleanOldConnections() {
+                const now = Date.now();
+                const maxAge = 60000; // 1 minuto
+                
+                for (let [id, conn] of this.connections) {
+                    if (now - conn.timestamp > maxAge) {
+                        this.connections.delete(id);
+                    }
+                }
+            }
+
+            start() {
+                this.isRunning = true;
+                document.getElementById('startBtn').classList.add('active');
+                document.getElementById('pauseBtn').classList.remove('active');
+                
+                if (this.isConnectedToAPI) {
+                    this.fetchRealData();
+                } else {
+                    this.setupDataSimulation();
+                }
+                
+                this.animate();
+            }
+
+            async pause() {
+                this.isRunning = false;
+                document.getElementById('startBtn').classList.remove('active');
+                document.getElementById('pauseBtn').classList.add('active');
+                
+                if (this.isConnectedToAPI) {
+                    try {
+                        await fetch(`${this.apiUrl}/stop`, { method: 'POST' });
+                    } catch (error) {
+                        console.error('Error deteniendo monitoreo:', error);
+                    }
+                }
+                
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                }
+                
+                if (this.dataInterval) {
+                    clearInterval(this.dataInterval);
+                    this.dataInterval = null;
+                }
+            }
+
+            async reset() {
+                await this.pause();
+                this.uploadSpeed = 0;
+                this.downloadSpeed = 0;
+                this.totalData = 0;
+                this.packetsPerSec = 0;
+                this.particles = [];
+                this.connections.clear();
+                this.particleContainer.innerHTML = '';
+                this.updateStats();
+                this.updateConnectionsDisplay();
+                document.getElementById('startBtn').classList.remove('active');
+                document.getElementById('pauseBtn').classList.remove('active');
+            }
+
+            simulateTraffic() {
+                this.uploadSpeed = Math.random() * 800 + 200;
+                this.downloadSpeed = Math.random() * 1500 + 500;
+                this.packetsPerSec = Math.random() * 800 + 200;
+                
+                for (let i = 0; i < 15; i++) {
+                    setTimeout(() => this.addConnection(), i * 100);
+                }
+                
+                if (!this.isRunning) {
+                    this.start();
+                }
+            }
+
+            updateStats() {
+                this.uploadSpeedEl.textContent = Math.round(this.uploadSpeed);
+                this.downloadSpeedEl.textContent = Math.round(this.downloadSpeed);
+                this.totalDataEl.textContent = this.totalData.toFixed(1);
+                this.packetsPerSecEl.textContent = this.packetsPerSec;
+            }
+
+            generateParticles() {
+                const uploadParticles = Math.floor(this.uploadSpeed / 50);
+                const downloadParticles = Math.floor(this.downloadSpeed / 50);
+
+                for (let i = 0; i < uploadParticles; i++) {
+                    setTimeout(() => {
+                        this.createParticle('upload');
+                    }, Math.random() * 500);
+                }
+
+                for (let i = 0; i < downloadParticles; i++) {
+                    setTimeout(() => {
+                        this.createParticle('download');
+                    }, Math.random() * 500);
+                }
+            }
+
+            createParticle(type) {
+                const particle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                particle.setAttribute('r', '3');
+                particle.classList.add('data-flow');
+                
+                if (type === 'upload') {
+                    particle.classList.add('data-particle-upload');
+                    particle.setAttribute('cx', '150');
+                    particle.setAttribute('cy', '150');
+                } else {
+                    particle.classList.add('data-particle-download');
+                    particle.setAttribute('cx', '650');
+                    particle.setAttribute('cy', '150');
+                }
+                
+                this.particleContainer.appendChild(particle);
+                this.animateParticle(particle, type);
+            }
+
+            animateParticle(particle, type) {
+                let progress = 0;
+                const speed = 0.02 + Math.random() * 0.01;
+                
+                const animate = () => {
+                    progress += speed;
+                    
+                    if (progress >= 1) {
+                        particle.remove();
+                        return;
+                    }
+                    
+                    let t = type === 'upload' ? progress : 1 - progress;
+                    
+                    const p0x = 150, p0y = 150;
+                    const p1x = 400, p1y = 120;
+                    const p2x = 650, p2y = 150;
+                    
+                    const x = Math.pow(1-t, 2) * p0x + 2*(1-t)*t * p1x + Math.pow(t, 2) * p2x;
+                    const y = Math.pow(1-t, 2) * p0y + 2*(1-t)*t * p1y + Math.pow(t, 2) * p2y;
+                    
+                    particle.setAttribute('cx', x);
+                    particle.setAttribute('cy', y);
+                    
+                    const scale = 1 + Math.sin(progress * Math.PI * 4) * 0.3;
+                    particle.style.transform = `scale(${scale})`;
+                    
+                    requestAnimationFrame(animate);
+                };
+                
+                animate();
+            }
+
+            animate() {
+                if (this.isRunning) {
+                    this.animationId = requestAnimationFrame(() => this.animate());
+                }
+            }
+        }
+
+        // Inicializar el monitor
+        document.addEventListener('DOMContentLoaded', () => {
+            window.networkMonitor = new NetworkMatrixMonitor();
+            
+            // Mostrar mensaje inicial
+            console.log('🚀 Monitor de Red inicializado');
+            console.log('📡 Intentando conectar con Wireshark API...');
+            
+            // Auto-iniciar simulación después de verificar API
+            setTimeout(() => {
+                if (!window.networkMonitor.isConnectedToAPI) {
+                    console.log('⚠️ API no disponible - Iniciando simulación');
+                    window.networkMonitor.simulateTraffic();
+                }
+            }, 3000);
+        });
+
+        // API externa para datos reales
+        window.updateNetworkData = function(data) {
+            if (window.networkMonitor) {
+                window.networkMonitor.uploadSpeed = data.uploadSpeed || 0;
+                window.networkMonitor.downloadSpeed = data.downloadSpeed || 0;
+                window.networkMonitor.packetsPerSec = data.packetsPerSec || 0;
+                
+                if (data.totalData !== undefined) {
+                    window.networkMonitor.totalData = data.totalData;
+                }
+                
+                if (data.connections && Array.isArray(data.connections)) {
+                    data.connections.forEach(conn => {
+                        window.networkMonitor.connections.set(conn.id || Date.now() + Math.random(), {
+                            ...conn,
+                            timestamp: Date.now()
+                        });
+                    });
+                }
+                
+                window.networkMonitor.updateStats();
+                window.networkMonitor.updateConnectionsDisplay();
+                
+                if (!window.networkMonitor.isRunning) {
+                    window.networkMonitor.start();
+                }
+            }
+        };
+    </script>
+</body>
+</html>

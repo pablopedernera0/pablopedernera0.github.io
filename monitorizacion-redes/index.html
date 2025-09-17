@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Red - Console View</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Share+Tech+Mono:wght@400&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1a1a1a;
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER CON ESTADÍSTICAS */
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 20px;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #4a90e2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            font-weight: 600;
+            background: linear-gradient(45deg, #4a90e2, #7ec8e3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px 15px;
+            background: rgba(74, 144, 226, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(74, 144, 226, 0.3);
+        }
+
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #4a90e2;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: rgba(74, 144, 226, 0.2);
+            border: 1px solid #4a90e2;
+            color: #4a90e2;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .btn:hover {
+            background: rgba(74, 144, 226, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn.active {
+            background: #4a90e2;
+            color: white;
+        }
+
+        /* SECCIÓN SUPERIOR: Gráfico (50%) */
+        .upper-section {
+            height: 50vh;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 3px solid #4a90e2;
+        }
+
+        .visualization-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .svg-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .house {
+            fill: #e74c3c;
+            stroke: #ffffff;
+            stroke-width: 2;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        .building {
+            fill: #3498db;
+            stroke: #ffffff;
+            stroke-width: 2;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        .pipe {
+            fill: none;
+            stroke: #4a90e2;
+            stroke-width: 8;
+            opacity: 0.9;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .data-particle-upload {
+            fill: #f39c12;
+            filter: drop-shadow(0 0 6px #f39c12);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .data-particle-download {
+            fill: #2ecc71;
+            filter: drop-shadow(0 0 6px #2ecc71);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .binary-text {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 8px;
+            font-weight: bold;
+            text-shadow: 0 0 3px currentColor;
+        }
+
+        .window {
+            fill: #f1c40f;
+            stroke: #ffffff;
+            stroke-width: 1;
+        }
+
+        .door {
+            fill: #8b4513;
+            stroke: #ffffff;
+            stroke-width: 1;
+        }
+
+        .roof {
+            fill: #c0392b;
+            stroke: #ffffff;
+            stroke-width: 2;
+        }
+
+        /* SECCIÓN INFERIOR: Consola (50%) */
+        .lower-section {
+            height: 50vh;
+            background: #000000;
+            font-family: 'Share Tech Mono', monospace;
+            color: #00ff00;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .console-header {
+            background: #111111;
+            padding: 10px 20px;
+            border-bottom: 1px solid #00ff00;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .console-title {
+            color: #00ff00;
+            font-size: 1.1em;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .console-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .console-btn {
+            background: transparent;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 4px 12px;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8em;
+            transition: all 0.3s ease;
+        }
+
+        .console-btn:hover {
+            background: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .console-output {
+            height: calc(100% - 50px);
+            overflow-y: auto;
+            padding: 10px 20px;
+            line-height: 1.4;
+            font-size: 0.9em;
+            background: #000000;
+        }
+
+        .console-line {
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .timestamp {
+            color: #555555;
+            margin-right: 10px;
+            min-width: 80px;
+        }
+
+        .log-level {
+            margin-right: 10px;
+            font-weight: bold;
+            min-width: 60px;
+        }
+
+        .log-info { color: #00ff00; }
+        .log-warn { color: #ffff00; }
+        .log-error { color: #ff0000; }
+        .log-data { color: #00ffff; }
+
+        .log-message {
+            flex: 1;
+        }
+
+        .protocol {
+            color: #ff00ff;
+            font-weight: bold;
+        }
+
+        .ip-address {
+            color: #00ffff;
+        }
+
+        .bytes {
+            color: #ffff00;
+        }
+
+        /* Cursor parpadeante */
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #00ff00;
+            animation: blink 1s infinite;
+            margin-left: 5px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Scrollbar personalizado */
+        .console-output::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .console-output::-webkit-scrollbar-track {
+            background: #111111;
+        }
+
+        .console-output::-webkit-scrollbar-thumb {
+            background: #00ff00;
+            border-radius: 3px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                padding: 10px;
+            }
+            
+            .stats-row {
+                justify-content: center;
+            }
+            
+            .stat-item {
+                padding: 3px 10px;
+            }
+            
+            .console-output {
+                font-size: 0.8em;
+                padding: 10px;
+            }
+            
+            .upper-section, .lower-section {
+                height: 45vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌐 Network Traffic Monitor</h1>
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-value" id="uploadSpeed">0</div>
+                <div class="stat-label">KB/s ↑</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="downloadSpeed">0</div>
+                <div class="stat-label">KB/s ↓</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalData">0</div>
+                <div class="stat-label">MB Total</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="packetsPerSec">0</div>
+                <div class="stat-label">Packets/s</div>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="btn active" id="startBtn">▶ Start</button>
+            <button class="btn" id="pauseBtn">⏸ Pause</button>
+            <button class="btn" id="resetBtn">🔄 Reset</button>
+            <button class="btn" id="simulateBtn">📊 Simulate</button>
+        </div>
+    </div>
+
+    <!-- SECCIÓN SUPERIOR: Gráfico de Casa-Edificio -->
+    <div class="upper-section">
+        <div class="visualization-container">
+            <svg class="svg-container" viewBox="0 0 800 250" xmlns="http://www.w3.org/2000/svg">
+                <!-- Casa -->
+                <g id="house">
+                    <polygon points="80,100 130,60 180,100" class="roof"/>
+                    <rect x="80" y="100" width="100" height="70" class="house"/>
+                    <rect x="105" y="130" width="15" height="40" class="door"/>
+                    <rect x="90" y="110" width="12" height="12" class="window"/>
+                    <rect x="155" y="110" width="12" height="12" class="window"/>
+                    <rect x="90" y="135" width="12" height="12" class="window"/>
+                    <rect x="155" y="135" width="12" height="12" class="window"/>
+                    <rect x="160" y="80" width="8" height="25" fill="#8b4513"/>
+                    <!-- Chimenea -->
+                    <rect x="162" y="75" width="4" height="15" fill="#666"/>
+                </g>
+
+                <!-- Tubería de conexión -->
+                <g id="pipe">
+                    <path d="M 180 135 Q 400 100 620 135" class="pipe" id="mainPipe"/>
+                    <circle cx="180" cy="135" r="6" fill="#4a90e2" opacity="0.8"/>
+                    <circle cx="620" cy="135" r="6" fill="#4a90e2" opacity="0.8"/>
+                    <!-- Señales wifi -->
+                    <g id="signals" opacity="0.6">
+                        <circle cx="180" cy="135" r="20" fill="none" stroke="#4a90e2" stroke-width="1" opacity="0.5">
+                            <animate attributeName="r" values="20;35;20" dur="2s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.5;0;0.5" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="620" cy="135" r="20" fill="none" stroke="#4a90e2" stroke-width="1" opacity="0.5">
+                            <animate attributeName="r" values="20;35;20" dur="2.5s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.5;0;0.5" dur="2.5s" repeatCount="indefinite"/>
+                        </circle>
+                    </g>
+                </g>
+
+                <!-- Edificio/Servidor -->
+                <g id="building">
+                    <rect x="620" y="80" width="80" height="90" class="building"/>
+                    <rect x="635" y="60" width="50" height="20" class="building"/>
+                    <!-- Antena -->
+                    <line x1="660" y1="60" x2="660" y2="45" stroke="#ffffff" stroke-width="3"/>
+                    <circle cx="660" cy="45" r="4" fill="#f39c12"/>
+                    <!-- Torre de comunicaciones -->
+                    <polygon points="655,45 660,35 665,45" fill="#f39c12"/>
+                    
+                    <!-- Ventanas del edificio -->
+                    <rect x="630" y="90" width="10" height="12" class="window"/>
+                    <rect x="645" y="90" width="10" height="12" class="window"/>
+                    <rect x="660" y="90" width="10" height="12" class="window"/>
+                    <rect x="675" y="90" width="10" height="12" class="window"/>
+                    <rect x="630" y="110" width="10" height="12" class="window"/>
+                    <rect x="645" y="110" width="10" height="12" class="window"/>
+                    <rect x="660" y="110" width="10" height="12" class="window"/>
+                    <rect x="675" y="110" width="10" height="12" class="window"/>
+                    <rect x="630" y="130" width="10" height="12" class="window"/>
+                    <rect x="645" y="130" width="10" height="12" class="window"/>
+                    <rect x="660" y="130" width="10" height="12" class="window"/>
+                    <rect x="675" y="130" width="10" height="12" class="window"/>
+                    
+                    <!-- Puerta -->
+                    <rect x="650" y="150" width="20" height="20" class="door"/>
+                </g>
+
+                <!-- Contenedor para partículas de datos -->
+                <g id="dataParticles"></g>
+                
+                <!-- Etiquetas -->
+                <text x="130" y="200" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="bold">LOCAL</text>
+                <text x="660" y="200" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="bold">INTERNET</text>
+                
+                <!-- Indicadores de velocidad -->
+                <text x="300" y="80" text-anchor="middle" fill="#f39c12" font-size="12" id="uploadIndicator">⟰ Upload</text>
+                <text x="500" y="80" text-anchor="middle" fill="#2ecc71" font-size="12" id="downloadIndicator">⟱ Download</text>
+            </svg>
+        </div>
+    </div>
+
+    <!-- SECCIÓN INFERIOR: Consola de Tráfico -->
+    <div class="lower-section">
+        <div class="console-header">
+            <div class="console-title">[ NETWORK TRAFFIC CONSOLE ]</div>
+            <div class="console-controls">
+                <button class="console-btn" id="clearConsole">CLEAR</button>
+                <button class="console-btn" id="pauseConsole">PAUSE</button>
+                <button class="console-btn" id="saveLog">SAVE</button>
+            </div>
+        </div>
+        <div class="console-output" id="consoleOutput">
+            <div class="console-line">
+                <span class="timestamp">--:--:--</span>
+                <span class="log-level log-info">[INFO]</span>
+                <span class="log-message">Network monitor initialized. Waiting for traffic data...</span>
+                <span class="cursor"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class NetworkConsoleMonitor {
+            constructor() {
+                this.isRunning = false;
+                this.consoleRunning = true;
+                this.uploadSpeed = 0;
+                this.downloadSpeed = 0;
+                this.totalData = 0;
+                this.packetsPerSec = 0;
+                this.particles = [];
+                this.consoleLines = [];
+                this.maxConsoleLines = 100;
+                this.animationId = null;
+                this.simulationInterval = null;
+                this.consoleInterval = null;
+                
+                this.initializeElements();
+                this.setupEventListeners();
+                this.startConsoleSimulation();
+            }
+
+            initializeElements() {
+                this.svg = document.querySelector('.svg-container');
+                this.particleContainer = document.getElementById('dataParticles');
+                this.uploadSpeedEl = document.getElementById('uploadSpeed');
+                this.downloadSpeedEl = document.getElementById('downloadSpeed');
+                this.totalDataEl = document.getElementById('totalData');
+                this.packetsPerSecEl = document.getElementById('packetsPerSec');
+                this.consoleOutput = document.getElementById('consoleOutput');
+            }
+
+            setupEventListeners() {
+                document.getElementById('startBtn').addEventListener('click', () => this.start());
+                document.getElementById('pauseBtn').addEventListener('click', () => this.pause());
+                document.getElementById('resetBtn').addEventListener('click', () => this.reset());
+                document.getElementById('simulateBtn').addEventListener('click', () => this.simulateTraffic());
+                
+                document.getElementById('clearConsole').addEventListener('click', () => this.clearConsole());
+                document.getElementById('pauseConsole').addEventListener('click', () => this.toggleConsole());
+                document.getElementById('saveLog').addEventListener('click', () => this.saveLog());
+            }
+
+            start() {
+                this.isRunning = true;
+                document.getElementById('startBtn').classList.add('active');
+                document.getElementById('pauseBtn').classList.remove('active');
+                
+                this.addConsoleLog('INFO', 'Network monitoring started');
+                this.setupDataSimulation();
+                this.animate();
+            }
+
+            pause() {
+                this.isRunning = false;
+                document.getElementById('startBtn').classList.remove('active');
+                document.getElementById('pauseBtn').classList.add('active');
+                
+                this.addConsoleLog('WARN', 'Network monitoring paused');
+                
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                }
+                
+                if (this.simulationInterval) {
+                    clearInterval(this.simulationInterval);
+                    this.simulationInterval = null;
+                }
+            }
+
+            reset() {
+                this.pause();
+                this.uploadSpeed = 0;
+                this.downloadSpeed = 0;
+                this.totalData = 0;
+                this.packetsPerSec = 0;
+                this.particles = [];
+                this.particleContainer.innerHTML = '';
+                this.updateStats();
+                this.addConsoleLog('INFO', 'Network monitor reset - all counters cleared');
+                
+                document.getElementById('startBtn').classList.remove('active');
+                document.getElementById('pauseBtn').classList.remove('active');
+            }
+
+            simulateTraffic() {
+                this.uploadSpeed = Math.random() * 800 + 200;
+                this.downloadSpeed = Math.random() * 1500 + 500;
+                this.packetsPerSec = Math.random() * 800 + 200;
+                
+                this.addConsoleLog('DATA', `High traffic burst detected - Upload: ${Math.round(this.uploadSpeed)}KB/s, Download: ${Math.round(this.downloadSpeed)}KB/s`);
+                
+                if (!this.isRunning) {
+                    this.start();
+                }
+            }
+
+            setupDataSimulation() {
+                if (this.simulationInterval) {
+                    clearInterval(this.simulationInterval);
+                }
+                
+                // Inicializar valores base
+                if (this.uploadSpeed === 0 && this.downloadSpeed === 0) {
+                    this.uploadSpeed = Math.random() * 100 + 50;
+                    this.downloadSpeed = Math.random() * 200 + 100;
+                }
+                
+                this.simulationInterval = setInterval(() => {
+                    if (this.isRunning) {
+                        const prevUpload = this.uploadSpeed;
+                        const prevDownload = this.downloadSpeed;
+                        
+                        // Simular fluctuaciones
+                        this.uploadSpeed = Math.max(0, this.uploadSpeed + (Math.random() - 0.5) * 100);
+                        this.downloadSpeed = Math.max(0, this.downloadSpeed + (Math.random() - 0.5) * 150);
+                        this.packetsPerSec = Math.floor(Math.random() * 500) + 100;
+                        
+                        // Limitar valores
+                        this.uploadSpeed = Math.min(this.uploadSpeed, 1000);
+                        this.downloadSpeed = Math.min(this.downloadSpeed, 2000);
+                        
+                        this.totalData += (this.uploadSpeed + this.downloadSpeed) / 2048;
+                        
+                        // Generar logs de consola basados en cambios
+                        if (Math.abs(this.uploadSpeed - prevUpload) > 50) {
+                            this.generateTrafficLog();
+                        }
+                        
+                        this.updateStats();
+                        this.generateParticles();
+                    }
+                }, 1000);
+            }
+
+            startConsoleSimulation() {
+                this.consoleInterval = setInterval(() => {
+                    if (this.consoleRunning && this.isRunning) {
+                        // Generar logs periódicos
+                        if (Math.random() < 0.3) {
+                            this.generateRandomLog();
+                        }
+                    }
+                }, 2000);
+            }
+
+            generateTrafficLog() {
+                const protocols = ['TCP', 'UDP', 'HTTP', 'HTTPS', 'FTP'];
+                const ips = ['192.168.1.', '10.0.0.', '172.16.0.'];
+                const domains = ['google.com', 'facebook.com', 'youtube.com', 'github.com', 'stackoverflow.com'];
+                
+                const protocol = protocols[Math.floor(Math.random() * protocols.length)];
+                const sourceIP = ips[Math.floor(Math.random() * ips.length)] + Math.floor(Math.random() * 254 + 1);
+                const destDomain = domains[Math.floor(Math.random() * domains.length)];
+                const bytes = Math.floor(Math.random() * 5000) + 100;
+                const port = Math.floor(Math.random() * 65535) + 1;
+                
+                this.addConsoleLog('DATA', 
+                    `${protocol} ${sourceIP}:${port} → ${destDomain} [${bytes} bytes]`);
+            }
+
+            generateRandomLog() {
+                const logTypes = [
+                    () => this.addConsoleLog('INFO', `Packet processed - ${Math.floor(Math.random() * 1000)} bytes`),
+                    () => this.addConsoleLog('WARN', `High latency detected: ${Math.floor(Math.random() * 500) + 100}ms`),
+                    () => this.addConsoleLog('DATA', `DNS query resolved for ${['example.com', 'test.org', 'demo.net'][Math.floor(Math.random() * 3)]}`),
+                    () => this.addConsoleLog('INFO', `Connection established on port ${Math.floor(Math.random() * 65535)}`),
+                ];
+                
+                const randomLog = logTypes[Math.floor(Math.random() * logTypes.length)];
+                randomLog();
+            }
+
+            addConsoleLog(level, message) {
+                const now = new Date();
+                const timestamp = now.toLocaleTimeString();
+                
+                const logLine = document.createElement('div');
+                logLine.className = 'console-line';
+                
+                logLine.innerHTML = `
+                    <span class="timestamp">${timestamp}</span>
+                    <span class="log-level log-${level.toLowerCase()}">[${level}]</span>
+                    <span class="log-message">${this.formatLogMessage(message)}</span>
+                `;
+                
+                // Remover cursor anterior
+                const cursor = this.consoleOutput.querySelector('.cursor');
+                if (cursor) cursor.remove();
+                
+                this.consoleOutput.appendChild(logLine);
+                
+                // Agregar nuevo cursor
+                const newCursor = document.createElement('span');
+                newCursor.className = 'cursor';
+                this.consoleOutput.appendChild(newCursor);
+                
+                // Mantener límite de líneas
+                const lines = this.consoleOutput.querySelectorAll('.console-line');
+                if (lines.length > this.maxConsoleLines) {
+                    lines[0].remove();
+                }
+                
+                // Scroll automático
+                this.consoleOutput.scrollTop = this.consoleOutput.scrollHeight;
+            }
+
+            formatLogMessage(message) {
+                // Colorear elementos específicos
+                return message
+                    .replace(/(\d+\.\d+\.\d+\.\d+)/g, '<span class="ip-address">$1</span>')
+                    .replace(/(TCP|UDP|HTTP|HTTPS|FTP|DNS)/g, '<span class="protocol">$1</span>')
+                    .replace(/(\d+\s*bytes)/g, '<span class="bytes">$1</span>');
+            }
+
+            clearConsole() {
+                this.consoleOutput.innerHTML = `
+                    <div class="console-line">
+                        <span class="timestamp">${new Date().toLocaleTimeString()}</span>
+                        <span class="log-level log-info">[INFO]</span>
+                        <span class="log-message">Console cleared</span>
+                        <span class="cursor"></span>
+                    </div>
+                `;
+            }
+
+            toggleConsole() {
+                this.consoleRunning = !this.consoleRunning;
+                const btn = document.getElementById('pauseConsole');
+                btn.textContent = this.consoleRunning ? 'PAUSE' : 'RESUME';
+                
+                this.addConsoleLog('INFO', `Console logging ${this.consoleRunning ? 'resumed' : 'paused'}`);
+            }
+
+            saveLog() {
+                const logs = Array.from(this.consoleOutput.querySelectorAll('.console-line'))
+                    .map(line => line.textContent.replace('█', '').trim())
+                    .join('\n');
+                
+                const blob = new Blob([logs], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `network-log-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                this.addConsoleLog('INFO', 'Network log saved to file');
+            }
+
+            updateStats() {
+                this.uploadSpeedEl.textContent = Math.round(this.uploadSpeed);
+                this.downloadSpeedEl.textContent = Math.round(this.downloadSpeed);
+                this.totalDataEl.textContent = this.totalData.toFixed(1);
+                this.packetsPerSecEl.textContent = Math.round(this.packetsPerSec);
+            }
+
+            generateParticles() {
+                const uploadParticles = Math.floor(this.uploadSpeed / 100);
+                const downloadParticles = Math.floor(this.downloadSpeed / 100);
+
+                for (let i = 0; i < uploadParticles; i++) {
+                    setTimeout(() => this.createParticle('upload'), Math.random() * 1000);
+                }
+
+                for (let i = 0; i < downloadParticles; i++) {
+                    setTimeout(() => this.createParticle('download'), Math.random() * 1000);
+                }
+            }
+
+            createParticle(type) {
+                // Crear grupo para texto binario
+                const particle = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                
+                // Generar texto binario aleatorio (0s y 1s)
+                const binaryText = Math.random().toString(2).substr(2, 4).padStart(4, '0');
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.textContent = binaryText;
+                text.setAttribute('class', 'binary-text');
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('dominant-baseline', 'central');
+                
+                if (type === 'upload') {
+                    text.setAttribute('x', '180');
+                    text.setAttribute('y', '135');
+                    text.setAttribute('fill', '#f39c12');
+                } else {
+                    text.setAttribute('x', '620');
+                    text.setAttribute('y', '135');
+                    text.setAttribute('fill', '#2ecc71');
+                }
+                
+                particle.appendChild(text);
+                this.particleContainer.appendChild(particle);
+                this.animateParticle(particle, type);
+            }
+
+            animateParticle(particle, type) {
+                let progress = 0;
+                // velocidad rapida
+                //const speed = 0.005 + Math.random() * 0.003;
+                //velocidad mas lenta
+                //const speed = 0.015 + Math.random() * 0.01;
+                //velocidad muy lenta
+                const speed = 0.002 + Math.random() * 0.002;
+                //velocidad super lenta
+                //const speed = 0.001 + Math.random() * 0.001;
+                const text = particle.querySelector('text');
+                
+                const animate = () => {
+                    progress += speed;
+                    
+                    if (progress >= 1) {
+                        particle.remove();
+                        return;
+                    }
+                    
+                    let t = type === 'upload' ? progress : 1 - progress;
+                    
+                    // Curva Bézier cuadrática para la trayectoria
+                    const p0x = 180, p0y = 135;  // Casa
+                    const p1x = 400, p1y = 100;  // Punto de control
+                    const p2x = 620, p2y = 135;  // Edificio
+                    
+                    const x = Math.pow(1-t, 2) * p0x + 2*(1-t)*t * p1x + Math.pow(t, 2) * p2x;
+                    const y = Math.pow(1-t, 2) * p0y + 2*(1-t)*t * p1y + Math.pow(t, 2) * p2y;
+                    
+                    text.setAttribute('x', x);
+                    text.setAttribute('y', y);
+                    
+                    // Efecto de desvanecimiento según la posición
+                    const opacity = 0.8 - (progress * 0.3);
+                    text.setAttribute('opacity', opacity);
+                    
+                    // Cambiar texto binario ocasionalmente para simular flujo de datos
+                    if (Math.random() < 0.1) {
+                        const newBinary = Math.random().toString(2).substr(2, 4).padStart(4, '0');
+                        text.textContent = newBinary;
+                    }
+                    
+                    requestAnimationFrame(animate);
+                };
+                
+                animate();
+            }
+
+            animate() {
+                if (this.isRunning) {
+                    // Actualizar animaciones existentes aquí si es necesario
+                    this.animationId = requestAnimationFrame(() => this.animate());
+                }
+            }
+        }
+
+        // Inicializar el monitor cuando se carga la página
+        document.addEventListener('DOMContentLoaded', () => {
+            new NetworkConsoleMonitor();
+        });
+    </script>
+</body>
+</html>
