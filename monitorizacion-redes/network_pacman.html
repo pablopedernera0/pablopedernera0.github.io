@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Pac-Man: Protege los Datos</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Share+Tech+Mono:wght@400&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1a1a1a;
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER CON ESTADÍSTICAS DEL JUEGO */
+        .header {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 15px 20px;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #4a90e2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            font-weight: 600;
+            background: linear-gradient(45deg, #4a90e2, #7ec8e3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px 15px;
+            background: rgba(74, 144, 226, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(74, 144, 226, 0.3);
+        }
+
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #4a90e2;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: rgba(74, 144, 226, 0.2);
+            border: 1px solid #4a90e2;
+            color: #4a90e2;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .btn:hover {
+            background: rgba(74, 144, 226, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn.active {
+            background: #4a90e2;
+            color: white;
+        }
+
+        /* ÁREA DEL JUEGO */
+        .game-area {
+            height: 60vh;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 3px solid #4a90e2;
+        }
+
+        .game-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .svg-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Elementos de la red */
+        .house {
+            fill: #e74c3c;
+            stroke: #ffffff;
+            stroke-width: 2;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        .building {
+            fill: #3498db;
+            stroke: #ffffff;
+            stroke-width: 2;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        .pipe {
+            fill: none;
+            stroke: #4a90e2;
+            stroke-width: 12;
+            opacity: 0.7;
+        }
+
+        .data-dots {
+            fill: #f39c12;
+            filter: drop-shadow(0 0 4px #f39c12);
+        }
+
+        /* Elementos del juego */
+        .player {
+            fill: #00ff00;
+            stroke: #ffffff;
+            stroke-width: 2;
+            filter: drop-shadow(0 0 8px #00ff00);
+            cursor: pointer;
+        }
+
+        .virus {
+            filter: drop-shadow(0 0 6px currentColor);
+        }
+
+        .virus-1 { fill: #ff0066; }
+        .virus-2 { fill: #ff6600; }
+        .virus-3 { fill: #9900ff; }
+
+        .window {
+            fill: #f1c40f;
+            stroke: #ffffff;
+            stroke-width: 1;
+        }
+
+        .door {
+            fill: #8b4513;
+            stroke: #ffffff;
+            stroke-width: 1;
+        }
+
+        .roof {
+            fill: #c0392b;
+            stroke: #ffffff;
+            stroke-width: 2;
+        }
+
+        /* CONSOLA DE JUEGO */
+        .game-console {
+            height: 40vh;
+            background: #000000;
+            font-family: 'Share Tech Mono', monospace;
+            color: #00ff00;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .console-header {
+            background: #111111;
+            padding: 10px 20px;
+            border-bottom: 1px solid #00ff00;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .console-title {
+            color: #00ff00;
+            font-size: 1.1em;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .console-output {
+            height: calc(100% - 50px);
+            overflow-y: auto;
+            padding: 10px 20px;
+            line-height: 1.4;
+            font-size: 0.9em;
+        }
+
+        .console-line {
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .timestamp {
+            color: #555555;
+            margin-right: 10px;
+            min-width: 80px;
+        }
+
+        .log-level {
+            margin-right: 10px;
+            font-weight: bold;
+            min-width: 60px;
+        }
+
+        .log-info { color: #00ff00; }
+        .log-warn { color: #ffff00; }
+        .log-error { color: #ff0000; }
+        .log-game { color: #00ffff; }
+
+        /* Game Over Screen */
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            display: none;
+            z-index: 1000;
+        }
+
+        .game-over h2 {
+            color: #ff0000;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        /* Win Screen */
+        .win-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 100, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            display: none;
+            z-index: 1000;
+        }
+
+        .win-screen h2 {
+            color: #00ff00;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        /* Controles de movimiento */
+        .controls-help {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                padding: 10px;
+            }
+            
+            .game-stats {
+                justify-content: center;
+            }
+            
+            .game-area {
+                height: 55vh;
+            }
+            
+            .game-console {
+                height: 35vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎮 Network Pac-Man: Protege los Datos</h1>
+        <div class="game-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="score">0</div>
+                <div class="stat-label">Puntos</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="lives">3</div>
+                <div class="stat-label">Vidas</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="level">1</div>
+                <div class="stat-label">Nivel</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="dataCollected">0</div>
+                <div class="stat-label">Datos</div>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="btn active" id="startBtn">🎮 Jugar</button>
+            <button class="btn" id="pauseBtn">⏸ Pausa</button>
+            <button class="btn" id="resetBtn">🔄 Reiniciar</button>
+        </div>
+    </div>
+
+    <!-- ÁREA DEL JUEGO -->
+    <div class="game-area">
+        <div class="game-container">
+            <div class="controls-help">
+                Usa WASD o flechas para moverte<br>
+                Recoge datos 💾, evita virus 🦠
+            </div>
+            
+            <svg class="svg-container" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+                <!-- Red de tuberías (laberinto) -->
+                <g id="network">
+                    <!-- Casa -->
+                    <g id="house">
+                        <polygon points="80,120 130,80 180,120" class="roof"/>
+                        <rect x="80" y="120" width="100" height="70" class="house"/>
+                        <rect x="105" y="150" width="15" height="40" class="door"/>
+                        <rect x="90" y="130" width="12" height="12" class="window"/>
+                        <rect x="155" y="130" width="12" height="12" class="window"/>
+                        <rect x="90" y="155" width="12" height="12" class="window"/>
+                        <rect x="155" y="155" width="12" height="12" class="window"/>
+                    </g>
+
+                    <!-- Red de tuberías (laberinto simplificado) -->
+                    <g id="pipes">
+                        <!-- Tubería principal horizontal -->
+                        <path d="M 180 155 L 620 155" class="pipe"/>
+                        
+                        <!-- Tuberías verticales -->
+                        <path d="M 280 155 L 280 100" class="pipe"/>
+                        <path d="M 280 155 L 280 210" class="pipe"/>
+                        <path d="M 520 155 L 520 100" class="pipe"/>
+                        <path d="M 520 155 L 520 210" class="pipe"/>
+                        
+                        <!-- Tuberías horizontales secundarias -->
+                        <path d="M 280 100 L 520 100" class="pipe"/>
+                        <path d="M 280 210 L 520 210" class="pipe"/>
+                        
+                        <!-- Conexiones adicionales -->
+                        <path d="M 400 100 L 400 155" class="pipe"/>
+                        <path d="M 400 155 L 400 210" class="pipe"/>
+                    </g>
+
+                    <!-- Edificio/Servidor -->
+                    <g id="building">
+                        <rect x="620" y="100" width="80" height="90" class="building"/>
+                        <rect x="635" y="80" width="50" height="20" class="building"/>
+                        <!-- Antena -->
+                        <line x1="660" y1="80" x2="660" y2="65" stroke="#ffffff" stroke-width="3"/>
+                        <circle cx="660" cy="65" r="4" fill="#f39c12"/>
+                        
+                        <!-- Ventanas del edificio -->
+                        <rect x="630" y="110" width="10" height="12" class="window"/>
+                        <rect x="645" y="110" width="10" height="12" class="window"/>
+                        <rect x="660" y="110" width="10" height="12" class="window"/>
+                        <rect x="675" y="110" width="10" height="12" class="window"/>
+                        <rect x="630" y="130" width="10" height="12" class="window"/>
+                        <rect x="645" y="130" width="10" height="12" class="window"/>
+                        <rect x="660" y="130" width="10" height="12" class="window"/>
+                        <rect x="675" y="130" width="10" height="12" class="window"/>
+                        <rect x="630" y="150" width="10" height="12" class="window"/>
+                        <rect x="645" y="150" width="10" height="12" class="window"/>
+                        <rect x="660" y="150" width="10" height="12" class="window"/>
+                        <rect x="675" y="150" width="10" height="12" class="window"/>
+                        
+                        <!-- Puerta -->
+                        <rect x="650" y="170" width="20" height="20" class="door"/>
+                    </g>
+                </g>
+
+                <!-- Datos para recoger -->
+                <g id="dataDots"></g>
+
+                <!-- Jugador (paquete de datos) -->
+                <g id="player">
+                    <circle cx="200" cy="155" r="8" class="player" id="playerCircle"/>
+                    <text x="200" y="159" text-anchor="middle" fill="#000000" font-size="8" font-weight="bold">📦</text>
+                </g>
+
+                <!-- Virus enemigos -->
+                <g id="viruses">
+                    <g class="virus virus-1" id="virus1">
+                        <circle cx="300" cy="155" r="8"/>
+                        <text x="300" y="159" text-anchor="middle" fill="#ffffff" font-size="8">🦠</text>
+                    </g>
+                    <g class="virus virus-2" id="virus2">
+                        <circle cx="450" cy="155" r="8"/>
+                        <text x="450" y="159" text-anchor="middle" fill="#ffffff" font-size="8">🦠</text>
+                    </g>
+                    <g class="virus virus-3" id="virus3">
+                        <circle cx="350" cy="100" r="8"/>
+                        <text x="350" y="104" text-anchor="middle" fill="#ffffff" font-size="8">🦠</text>
+                    </g>
+                </g>
+
+                <!-- Etiquetas -->
+                <text x="130" y="250" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="bold">LOCAL</text>
+                <text x="660" y="250" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="bold">SERVIDOR</text>
+            </svg>
+            
+            <!-- Pantalla Game Over -->
+            <div class="game-over" id="gameOver">
+                <h2>¡CONEXIÓN PERDIDA!</h2>
+                <p>Los virus han corrompido tus datos</p>
+                <p>Puntuación final: <span id="finalScore">0</span></p>
+                <button class="btn" onclick="game.restart()">Reintentar</button>
+            </div>
+
+            <!-- Pantalla Win -->
+            <div class="win-screen" id="winScreen">
+                <h2>¡NIVEL COMPLETADO!</h2>
+                <p>Todos los datos han sido protegidos</p>
+                <p>Avanzando al nivel: <span id="nextLevel">2</span></p>
+                <button class="btn" onclick="game.nextLevel()">Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONSOLA DE JUEGO -->
+    <div class="game-console">
+        <div class="console-header">
+            <div class="console-title">[ GAME LOG - NETWORK SECURITY ]</div>
+        </div>
+        <div class="console-output" id="consoleOutput">
+            <div class="console-line">
+                <span class="timestamp">--:--:--</span>
+                <span class="log-level log-info">[INFO]</span>
+                <span class="log-message">Sistema de seguridad de red inicializado. Presiona JUGAR para comenzar...</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class NetworkPacManGame {
+            constructor() {
+                this.player = { x: 200, y: 155, element: null };
+                this.viruses = [
+/*                    { x: 300, y: 155, element: null, direction: { x: 1, y: 0 }, speed: 1 },
+                    { x: 450, y: 155, element: null, direction: { x: -1, y: 0 }, speed: 1.2 },
+                    { x: 350, y: 100, element: null, direction: { x: 0, y: 1 }, speed: 0.8 }*/
+                    { x: 500, y: 155, element: null, direction: { x: 1, y: 0 }, speed: 1 },
+                    { x: 600, y: 155, element: null, direction: { x: -1, y: 0 }, speed: 1.2 },
+                    { x: 450, y: 100, element: null, direction: { x: 0, y: 1 }, speed: 0.8 }
+                ];
+                this.dataDots = [];
+                this.score = 0;
+                this.lives = 3;
+                this.level = 1;
+                this.dataCollected = 0;
+                this.totalDataInLevel = 0;
+                this.isRunning = false;
+                this.gameLoop = null;
+                this.keys = {};
+                this.lastCollisionTime = 0;
+                
+                // Puntos válidos de la red (intersecciones y caminos)
+                this.validPoints = [
+                    // Línea horizontal principal
+                    ...this.generateLinePoints(180, 155, 620, 155),
+                    // Líneas verticales
+                    ...this.generateLinePoints(280, 100, 280, 210),
+                    ...this.generateLinePoints(520, 100, 520, 210),
+                    ...this.generateLinePoints(400, 100, 400, 210),
+                    // Líneas horizontales secundarias
+                    ...this.generateLinePoints(280, 100, 520, 100),
+                    ...this.generateLinePoints(280, 210, 520, 210)
+                ];
+                
+                this.initializeElements();
+                this.setupEventListeners();
+                this.createDataDots();
+                this.addConsoleLog('INFO', 'Network Pac-Man cargado. ¡Protege los datos de los virus!');
+            }
+
+            generateLinePoints(x1, y1, x2, y2) {
+                const points = [];
+                const steps = Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1)) / 20; // Un punto cada 20 unidades
+                
+                for (let i = 0; i <= steps; i++) {
+                    const t = i / steps;
+                    const x = x1 + (x2 - x1) * t;
+                    const y = y1 + (y2 - y1) * t;
+                    points.push({ x: Math.round(x), y: Math.round(y) });
+                }
+                
+                return points;
+            }
+
+            initializeElements() {
+                this.player.element = document.getElementById('playerCircle');
+                this.viruses.forEach((virus, index) => {
+                    virus.element = document.getElementById(`virus${index + 1}`);
+                });
+                
+                this.scoreEl = document.getElementById('score');
+                this.livesEl = document.getElementById('lives');
+                this.levelEl = document.getElementById('level');
+                this.dataCollectedEl = document.getElementById('dataCollected');
+                this.consoleOutput = document.getElementById('consoleOutput');
+                this.gameOverScreen = document.getElementById('gameOver');
+                this.winScreen = document.getElementById('winScreen');
+                this.finalScoreEl = document.getElementById('finalScore');
+                this.nextLevelEl = document.getElementById('nextLevel');
+            }
+
+            setupEventListeners() {
+                // Botones del juego
+                document.getElementById('startBtn').addEventListener('click', () => this.start());
+                document.getElementById('pauseBtn').addEventListener('click', () => this.pause());
+                document.getElementById('resetBtn').addEventListener('click', () => this.restart());
+
+                // Controles del jugador
+                document.addEventListener('keydown', (e) => {
+                    this.keys[e.key.toLowerCase()] = true;
+                    e.preventDefault();
+                });
+
+                document.addEventListener('keyup', (e) => {
+                    this.keys[e.key.toLowerCase()] = false;
+                });
+            }
+
+            createDataDots() {
+                const dotContainer = document.getElementById('dataDots');
+                dotContainer.innerHTML = '';
+                this.dataDots = [];
+
+                // Crear datos en puntos específicos de la red (más datos en niveles superiores)
+                let dotPositions = [
+                    { x: 220, y: 155 }, { x: 250, y: 155 }, { x: 320, y: 155 },
+                    { x: 380, y: 155 }, { x: 480, y: 155 }, { x: 550, y: 155 },
+                    { x: 280, y: 120 }, { x: 280, y: 190 }, { x: 520, y: 120 },
+                    { x: 520, y: 190 }, { x: 350, y: 100 }, { x: 450, y: 100 },
+                    { x: 350, y: 210 }, { x: 450, y: 210 }, { x: 400, y: 130 }
+                ];
+
+                // Agregar más datos en niveles superiores
+                if (this.level >= 2) {
+                    dotPositions = dotPositions.concat([
+                        { x: 240, y: 155 }, { x: 300, y: 100 }, { x: 500, y: 100 },
+                        { x: 300, y: 210 }, { x: 500, y: 210 }, { x: 400, y: 180 }
+                    ]);
+                }
+
+                if (this.level >= 3) {
+                    dotPositions = dotPositions.concat([
+                        { x: 330, y: 155 }, { x: 420, y: 155 }, { x: 470, y: 155 },
+                        { x: 280, y: 130 }, { x: 280, y: 180 }, { x: 520, y: 130 }
+                    ]);
+                }
+
+                this.totalDataInLevel = dotPositions.length;
+
+                dotPositions.forEach((pos, index) => {
+                    const dot = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    dot.innerHTML = `
+                        <circle cx="${pos.x}" cy="${pos.y}" r="4" class="data-dots"/>
+                        <text x="${pos.x}" y="${pos.y + 2}" text-anchor="middle" fill="#000000" font-size="6">💾</text>
+                    `;
+                    dotContainer.appendChild(dot);
+                    
+                    this.dataDots.push({
+                        x: pos.x,
+                        y: pos.y,
+                        element: dot,
+                        collected: false
+                    });
+                });
+            }
+
+            start() {
+                if (this.isRunning) return;
+                
+                this.isRunning = true;
+                document.getElementById('startBtn').classList.add('active');
+                document.getElementById('pauseBtn').classList.remove('active');
+                
+                this.addConsoleLog('GAME', 'Iniciando protección de datos - ¡Evita los virus!');
+                this.gameLoop = setInterval(() => this.update(), 1000/60); // 60 FPS
+            }
+
+            pause() {
+                this.isRunning = false;
+                document.getElementById('startBtn').classList.remove('active');
+                document.getElementById('pauseBtn').classList.add('active');
+                
+                if (this.gameLoop) {
+                    clearInterval(this.gameLoop);
+                    this.gameLoop = null;
+                }
+                
+                this.addConsoleLog('WARN', 'Juego pausado - La red sigue vulnerable');
+            }
+
+            restart() {
+                this.pause();
+                
+                // Resetear estadísticas
+                this.score = 0;
+                this.lives = 3;
+                this.level = 1;
+                this.dataCollected = 0;
+                
+                // Resetear posiciones
+                this.player.x = 200;
+                this.player.y = 155;
+                this.updatePlayerPosition();
+                
+                this.resetViruses();
+                
+                // Recrear datos
+                this.createDataDots();
+                
+                // Ocultar pantallas
+                this.gameOverScreen.style.display = 'none';
+                this.winScreen.style.display = 'none';
+                
+                this.updateStats();
+                this.addConsoleLog('INFO', 'Sistema reiniciado - Red lista para nueva protección');
+                
+                document.getElementById('startBtn').classList.remove('active');
+                document.getElementById('pauseBtn').classList.remove('active');
+            }
+
+            resetViruses() {
+                const initialPositions = [
+/*                    { x: 300, y: 155 },
+                    { x: 450, y: 155 },
+                    { x: 350, y: 100 }*/
+                    { x: 500, y: 155 },
+                    { x: 600, y: 155 },
+                    { x: 450, y: 100 }
+                ];
+
+                const initialSpeeds = [1, 1.2, 0.8];
+
+                this.viruses.forEach((virus, index) => {
+                    virus.x = initialPositions[index].x;
+                    virus.y = initialPositions[index].y;
+                    virus.speed = initialSpeeds[index] * (1 + (this.level - 1) * 0.2); // Los virus se vuelven más rápidos
+                    virus.direction = { x: Math.random() - 0.5, y: Math.random() - 0.5 };
+                    this.updateVirusPosition(virus, index);
+                });
+            }
+
+            nextLevel() {
+                this.level++;
+                this.dataCollected = 0;
+                this.winScreen.style.display = 'none';
+                
+                // Incrementar velocidad de virus
+                this.resetViruses();
+                
+                // Crear nuevos datos
+                this.createDataDots();
+                
+                // Resetear posición del jugador
+                this.player.x = 200;
+                this.player.y = 155;
+                this.updatePlayerPosition();
+                
+                this.updateStats();
+                this.addConsoleLog('GAME', `Nivel ${this.level} iniciado - Nueva amenaza detectada`);
+                this.start();
+            }
+
+            update() {
+                if (!this.isRunning) return;
+                
+                this.updatePlayer();
+                this.updateViruses();
+                this.checkCollisions();
+                this.checkWinCondition();
+            }
+
+            updatePlayer() {
+                const speed = 2;
+                let newX = this.player.x;
+                let newY = this.player.y;
+                
+                // Movimiento con WASD o flechas
+                if (this.keys['w'] || this.keys['arrowup']) newY -= speed;
+                if (this.keys['s'] || this.keys['arrowdown']) newY += speed;
+                if (this.keys['a'] || this.keys['arrowleft']) newX -= speed;
+                if (this.keys['d'] || this.keys['arrowright']) newX += speed;
+                
+                // Verificar si la nueva posición está en un camino válido
+                if (this.isValidPosition(newX, newY)) {
+                    this.player.x = newX;
+                    this.player.y = newY;
+                    this.updatePlayerPosition();
+                }
+            }
+
+            isValidPosition(x, y) {
+                const tolerance = 15; // Tolerancia para moverse cerca de los caminos
+                
+                return this.validPoints.some(point => 
+                    Math.abs(point.x - x) < tolerance && Math.abs(point.y - y) < tolerance
+                );
+            }
+
+            updatePlayerPosition() {
+                const playerGroup = document.getElementById('player');
+                const circle = playerGroup.querySelector('circle');
+                const text = playerGroup.querySelector('text');
+                
+                circle.setAttribute('cx', this.player.x);
+                circle.setAttribute('cy', this.player.y);
+                text.setAttribute('x', this.player.x);
+                text.setAttribute('y', this.player.y + 4);
+            }
+
+            updateViruses() {
+                this.viruses.forEach((virus, index) => {
+                    // IA simple: moverse hacia el jugador
+                    const dx = this.player.x - virus.x;
+                    const dy = this.player.y - virus.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance > 0 && Math.random() < 0.7) { // 70% de probabilidad de seguir al jugador
+                        // Normalizar la dirección
+                        virus.direction.x = (dx / distance) * virus.speed;
+                        virus.direction.y = (dy / distance) * virus.speed;
+                    } else {
+                        // Movimiento aleatorio ocasional
+                        virus.direction.x = (Math.random() - 0.5) * 2 * virus.speed;
+                        virus.direction.y = (Math.random() - 0.5) * 2 * virus.speed;
+                    }
+                    
+                    // Mover el virus
+                    let newX = virus.x + virus.direction.x;
+                    let newY = virus.y + virus.direction.y;
+                    
+                    // Verificar que el virus se mantenga en caminos válidos
+                    if (this.isValidPosition(newX, newY)) {
+                        virus.x = newX;
+                        virus.y = newY;
+                    } else {
+                        // Si no puede moverse, cambiar dirección aleatoriamente
+                        virus.direction.x = (Math.random() - 0.5) * 2 * virus.speed;
+                        virus.direction.y = (Math.random() - 0.5) * 2 * virus.speed;
+                    }
+                    
+                    this.updateVirusPosition(virus, index);
+                });
+            }
+
+            updateVirusPosition(virus, index) {
+                const virusGroup = virus.element;
+                const circle = virusGroup.querySelector('circle');
+                const text = virusGroup.querySelector('text');
+                
+                circle.setAttribute('cx', virus.x);
+                circle.setAttribute('cy', virus.y);
+                text.setAttribute('x', virus.x);
+                text.setAttribute('y', virus.y + 4);
+            }
+
+            checkCollisions() {
+                const currentTime = Date.now();
+                
+                // Colisión con datos
+                this.dataDots.forEach((dot, index) => {
+                    if (!dot.collected) {
+                        const dx = this.player.x - dot.x;
+                        const dy = this.player.y - dot.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 12) {
+                            dot.collected = true;
+                            dot.element.style.opacity = '0';
+                            this.score += 10;
+                            this.dataCollected++;
+                            this.addConsoleLog('GAME', `Datos seguros recolectados +10 pts [${dot.x},${dot.y}]`);
+                            this.updateStats();
+                        }
+                    }
+                });
+                
+                // Colisión con virus (con cooldown para evitar múltiples colisiones)
+                if (currentTime - this.lastCollisionTime > 2000) { // 2 segundos de inmunidad
+                    this.viruses.forEach((virus, index) => {
+                        const dx = this.player.x - virus.x;
+                        const dy = this.player.y - virus.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 16) {
+                            this.lives--;
+                            this.lastCollisionTime = currentTime;
+                            this.addConsoleLog('ERROR', `¡Virus detectado! Datos corrompidos. Vidas: ${this.lives}`);
+                            
+                            if (this.lives <= 0) {
+                                this.gameOver();
+                            } else {
+                                // Respawn del jugador
+                                this.player.x = 200;
+                                this.player.y = 155;
+                                this.updatePlayerPosition();
+                                this.updateStats();
+                            }
+                        }
+                    });
+                }
+            }
+
+            checkWinCondition() {
+                const allDataCollected = this.dataDots.every(dot => dot.collected);
+                
+                if (allDataCollected && this.isRunning) {
+                    this.pause();
+                    this.score += 50 * this.level; // Bonus por completar nivel
+                    this.addConsoleLog('GAME', `¡Nivel ${this.level} completado! Bonus: ${50 * this.level} pts`);
+                    this.showWinScreen();
+                }
+            }
+
+            showWinScreen() {
+                this.nextLevelEl.textContent = this.level + 1;
+                this.winScreen.style.display = 'block';
+                this.updateStats();
+            }
+
+            gameOver() {
+                this.pause();
+                this.finalScoreEl.textContent = this.score;
+                this.gameOverScreen.style.display = 'block';
+                this.addConsoleLog('ERROR', `GAME OVER - Puntuación final: ${this.score}`);
+            }
+
+            updateStats() {
+                this.scoreEl.textContent = this.score;
+                this.livesEl.textContent = this.lives;
+                this.levelEl.textContent = this.level;
+                this.dataCollectedEl.textContent = `${this.dataCollected}/${this.totalDataInLevel}`;
+            }
+
+            addConsoleLog(level, message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const logLine = document.createElement('div');
+                logLine.className = 'console-line';
+                
+                const levelClass = `log-${level.toLowerCase()}`;
+                
+                logLine.innerHTML = `
+                    <span class="timestamp">${timestamp}</span>
+                    <span class="log-level ${levelClass}">[${level}]</span>
+                    <span class="log-message">${message}</span>
+                `;
+                
+                this.consoleOutput.appendChild(logLine);
+                this.consoleOutput.scrollTop = this.consoleOutput.scrollHeight;
+                
+                // Limitar el número de líneas en consola
+                const lines = this.consoleOutput.querySelectorAll('.console-line');
+                if (lines.length > 50) {
+                    lines[0].remove();
+                }
+            }
+
+            // Método público para reiniciar desde el botón de game over
+            restart() {
+                this.pause();
+                
+                // Resetear estadísticas
+                this.score = 0;
+                this.lives = 3;
+                this.level = 1;
+                this.dataCollected = 0;
+                this.lastCollisionTime = 0;
+                
+                // Resetear posiciones
+                this.player.x = 200;
+                this.player.y = 155;
+                this.updatePlayerPosition();
+                
+                this.resetViruses();
+                
+                // Recrear datos
+                this.createDataDots();
+                
+                // Ocultar pantallas
+                this.gameOverScreen.style.display = 'none';
+                this.winScreen.style.display = 'none';
+                
+                this.updateStats();
+                this.addConsoleLog('INFO', 'Sistema reiniciado - Red lista para nueva protección');
+                
+                document.getElementById('startBtn').classList.remove('active');
+                document.getElementById('pauseBtn').classList.remove('active');
+            }
+        }
+
+        // Inicializar el juego
+        const game = new NetworkPacManGame();
+
+        // Agregar algunos logs iniciales para ambientar
+        setTimeout(() => {
+            game.addConsoleLog('INFO', 'Red de datos detectada - 15 paquetes vulnerables');
+        }, 1000);
+
+        setTimeout(() => {
+            game.addConsoleLog('WARN', 'Amenazas virales identificadas en el sistema');
+        }, 2000);
+
+        setTimeout(() => {
+            game.addConsoleLog('INFO', 'Firewall activado - Listo para iniciar protección');
+        }, 3000);
+    </script>
+</body>
+</html>
