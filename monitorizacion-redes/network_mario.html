@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Network Mario: Protector de Datos (Sprites embebidos)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;600&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg,#2c3e50,#3498db);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            display:flex; flex-direction:column;
+        }
+
+        .header {
+            background: rgba(0,0,0,0.9);
+            padding:15px 20px;
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid #e74c3c;
+            display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px;
+        }
+
+        .header h1 {
+            font-family:'Press Start 2P',monospace;
+            font-size:1.2em;
+            background: linear-gradient(45deg,#e74c3c,#f39c12);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+        }
+
+        .game-stats { display:flex; gap:20px; flex-wrap:wrap; }
+        .stat-item { display:flex; flex-direction:column; align-items:center; padding:8px 15px; background:rgba(231,76,60,0.2); border-radius:8px; border:2px solid rgba(231,76,60,0.5); }
+        .stat-value { font-family:'Press Start 2P',monospace; font-size:1.1em; color:#f39c12; }
+        .stat-label { font-size:0.8em; opacity:0.9; margin-top:5px; }
+
+        .controls { display:flex; gap:10px; }
+        .btn {
+            background: rgba(231,76,60,0.3);
+            border:2px solid #e74c3c;
+            color:#fff;
+            padding:10px 16px;
+            border-radius:8px;
+            cursor:pointer;
+            transition:all 0.3s ease;
+            font-family:'Press Start 2P',monospace;
+            font-size:0.7em;
+        }
+        .btn:hover { background:rgba(231,76,60,0.5); transform:translateY(-2px); box-shadow:0 4px 8px rgba(0,0,0,0.3); }
+        .btn.active { background:#e74c3c; color:white; }
+
+        .game-area {
+            height:65vh;
+            background: linear-gradient(180deg,#87CEEB 0%,#87CEEB 60%,#228B22 60%,#32CD32 100%);
+            position:relative; overflow:hidden;
+        }
+
+        .game-world {
+            width:1200px; height:100%; position:relative; transition:transform 0.1s ease;
+        }
+
+        .cloud { position:absolute; color:white; font-size:2em; animation:float 3s ease-in-out infinite; }
+        @keyframes float { 0%,100%{transform:translateY(0px);}50%{transform:translateY(-10px);} }
+
+        .pipe { position:absolute; background:linear-gradient(to right,#228B22,#32CD32); border:3px solid #006400; border-radius:10px; }
+        .pipe::before { content:''; position:absolute; top:-10px; left:-5px; right:-5px; height:20px; background:linear-gradient(to right,#228B22,#32CD32); border:3px solid #006400; border-radius:10px 10px 5px 5px; }
+
+        .platform { position:absolute; background:#8B4513; border:2px solid #A0522D; border-radius:5px; }
+        .brick { position:absolute; background: linear-gradient(45deg,#CD853F 25%,#DEB887 25%,#DEB887 50%,#CD853F 50%,#CD853F 75%,#DEB887 75%); border:2px solid #8B4513; width:30px; height:30px; }
+        .question-block { position:absolute; background: linear-gradient(45deg,#FFD700,#FFA500); border:2px solid #FF8C00; width:30px; height:30px; display:flex; align-items:center; justify-content:center; font-weight:bold; color:#8B4513; animation:glow 2s ease-in-out infinite; }
+        @keyframes glow { 0%,100%{box-shadow:0 0 5px #FFD700;}50%{box-shadow:0 0 20px #FFD700;} }
+
+        /* --- Sprites: ahora embebidos SVG dentro de los elementos --- */
+        .mario {
+            position:absolute;
+            width:32px;
+            height:32px;
+            z-index:10;
+            transition: transform 0.1s ease;
+            pointer-events:none; /* evita que SVG capture teclas/puntero */
+        }
+        .mario.jumping { transform: scaleY(1.2); }
+
+        .mario svg, .virus-enemy svg {
+            width:100%; height:100%;
+            image-rendering: pixelated;
+            shape-rendering: crispEdges;
+            display:block;
+        }
+
+        .virus-enemy {
+            position:absolute;
+            width:28px;
+            height:28px;
+            z-index:8;
+            display:flex; align-items:center; justify-content:center;
+            animation:wiggle 1s ease-in-out infinite;
+            pointer-events:none;
+        }
+        @keyframes wiggle { 0%,100%{ transform: rotate(-5deg);}50%{ transform:rotate(5deg);} }
+
+        .data-coin { position:absolute; width:20px; height:20px; background: linear-gradient(45deg,#FFD700,#FFA500); border:2px solid #FF8C00; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; animation:spin 2s linear infinite; z-index:5; }
+        @keyframes spin { from{ transform:rotateY(0deg);} to{ transform:rotateY(360deg);} }
+
+        .power-up { position:absolute; width:24px; height:24px; background:linear-gradient(45deg,#00ff00,#32cd32); border:2px solid #228b22; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:14px; animation:bounce 1.5s ease-in-out infinite; z-index:5; }
+        @keyframes bounce { 0%,100%{ transform:translateY(0px);}50%{ transform:translateY(-8px);} }
+
+        .game-hud { position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.8); padding:10px; border-radius:10px; font-family:'Press Start 2P',monospace; font-size:0.7em; z-index:100; }
+        .controls-help { position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.8); padding:10px; border-radius:10px; font-size:0.8em; z-index:100; }
+
+        .game-console { height:35vh; background:#000000; font-family:'Courier New',monospace; color:#00ff00; position:relative; overflow:hidden; }
+        .console-header { background:#111111; padding:10px 20px; border-bottom:2px solid #00ff00; display:flex; justify-content:space-between; align-items:center; }
+        .console-title { color:#00ff00; font-size:1.1em; text-shadow:0 0 10px #00ff00; }
+        .console-output { height:calc(100% - 50px); overflow-y:auto; padding:10px 20px; line-height:1.4; font-size:0.9em; }
+        .console-line { margin-bottom:2px; display:flex; align-items:center; animation:fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from{ opacity:0; transform:translateX(-10px);} to{ opacity:1; transform:translateX(0);} }
+        .timestamp { color:#555555; margin-right:10px; min-width:80px; }
+        .log-level { margin-right:10px; font-weight:bold; min-width:60px; }
+        .log-info { color:#00ff00; } .log-warn { color:#ffff00; } .log-error { color:#ff0000; } .log-game { color:#00ffff; } .log-mario { color:#ff6b6b; }
+
+        .game-over, .win-screen {
+            position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.95); border:3px solid #e74c3c; border-radius:15px; padding:30px; text-align:center; display:none; z-index:1000; font-family:'Press Start 2P',monospace;
+        }
+        .win-screen { border-color:#27ae60; }
+        .game-over h2, .win-screen h2 { font-size:1.5em; margin-bottom:20px; text-shadow:0 0 10px currentColor; }
+        .game-over h2 { color:#e74c3c; } .win-screen h2 { color:#27ae60; }
+
+        @media (max-width:768px) {
+            .header { flex-direction:column; padding:10px; }
+            .game-stats { justify-content:center; }
+            .game-area { height:60vh; }
+            .game-console { height:30vh; }
+            .mario { width:28px; height:28px; }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>🍄 NETWORK MARIO: PROTECTOR DE DATOS</h1>
+    <div class="game-stats">
+        <div class="stat-item"><div class="stat-value" id="score">000000</div><div class="stat-label">PUNTOS</div></div>
+        <div class="stat-item"><div class="stat-value" id="lives">x3</div><div class="stat-label">VIDAS</div></div>
+        <div class="stat-item"><div class="stat-value" id="level">1-1</div><div class="stat-label">NIVEL</div></div>
+        <div class="stat-item"><div class="stat-value" id="dataCollected">0</div><div class="stat-label">DATOS</div></div>
+        <div class="stat-item"><div class="stat-value" id="timer">400</div><div class="stat-label">TIEMPO</div></div>
+    </div>
+    <div class="controls">
+        <button class="btn active" id="startBtn">🎮 JUGAR</button>
+        <button class="btn" id="pauseBtn">⏸ PAUSA</button>
+        <button class="btn" id="resetBtn">🔄 RESET</button>
+    </div>
+</div>
+
+<div class="game-area" id="gameArea">
+    <div class="game-world" id="gameWorld">
+        <div class="game-hud">
+            <div>MARIO: <span id="hudScore">000000</span></div>
+            <div>WORLD: <span id="hudWorld">1-1</span></div>
+            <div>TIME: <span id="hudTime">400</span></div>
+        </div>
+
+        <div class="controls-help">
+            WASD/Flechas: Mover<br>
+            ESPACIO: Saltar<br>
+            Recoge datos 💾, evita virus 🦠
+        </div>
+
+        <!-- Mario (jugador) con SVG embebido (pixel-art 32x32) -->
+        <div class="mario" id="mario">
+            <!-- Sprite pixelado simple creado con rects (8x8 pixels * 4 = 32px) -->
+            <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                <!-- Colores: gorra roja, cara piel, cabello, overol azul, zapatos -->
+                <!-- Hat top -->
+                <rect x="8" y="0" width="4" height="4" fill="#e63946" />
+                <rect x="12" y="0" width="4" height="4" fill="#e63946" />
+                <rect x="16" y="0" width="4" height="4" fill="#e63946" />
+                <rect x="20" y="0" width="4" height="4" fill="#e63946" />
+
+                <!-- Hat middle -->
+                <rect x="4" y="4" width="4" height="4" fill="#e63946" />
+                <rect x="8" y="4" width="4" height="4" fill="#e63946" />
+                <rect x="12" y="4" width="4" height="4" fill="#e63946" />
+                <rect x="16" y="4" width="4" height="4" fill="#e63946" />
+                <rect x="20" y="4" width="4" height="4" fill="#e63946" />
+                <rect x="24" y="4" width="4" height="4" fill="#e63946" />
+
+                <!-- Brim darker -->
+                <rect x="6" y="8" width="20" height="4" fill="#b22222" />
+
+                <!-- Face -->
+                <rect x="8" y="12" width="4" height="4" fill="#f1c27d" />
+                <rect x="12" y="12" width="4" height="4" fill="#f1c27d" />
+                <rect x="16" y="12" width="4" height="4" fill="#f1c27d" />
+                <rect x="20" y="12" width="4" height="4" fill="#f1c27d" />
+
+                <!-- Eyes -->
+                <rect x="12" y="14" width="1" height="1" fill="#000000" />
+                <rect x="19" y="14" width="1" height="1" fill="#000000" />
+
+                <!-- Hair side -->
+                <rect x="4" y="12" width="4" height="4" fill="#6b3f1f" />
+                <rect x="24" y="12" width="4" height="4" fill="#6b3f1f" />
+
+                <!-- Body / overalls -->
+                <rect x="8" y="16" width="4" height="4" fill="#1f6feb" />
+                <rect x="12" y="16" width="4" height="4" fill="#1f6feb" />
+                <rect x="16" y="16" width="4" height="4" fill="#1f6feb" />
+                <rect x="20" y="16" width="4" height="4" fill="#1f6feb" />
+
+                <rect x="8" y="20" width="4" height="4" fill="#1f6feb" />
+                <rect x="12" y="20" width="4" height="4" fill="#1f6feb" />
+                <rect x="16" y="20" width="4" height="4" fill="#1f6feb" />
+                <rect x="20" y="20" width="4" height="4" fill="#1f6feb" />
+
+                <!-- Shoes -->
+                <rect x="8" y="24" width="4" height="4" fill="#6b3f1f" />
+                <rect x="20" y="24" width="4" height="4" fill="#6b3f1f" />
+            </svg>
+        </div>
+
+        <!-- Elementos del mundo generados dinámicamente -->
+    </div>
+
+    <div class="game-over" id="gameOver">
+        <h2>¡CONEXIÓN PERDIDA!</h2>
+        <p>Los virus han infectado la red</p>
+        <p>PUNTUACIÓN: <span id="finalScore">000000</span></p>
+        <button class="btn" onclick="game.restart()">REINTENTAR</button>
+    </div>
+
+    <div class="win-screen" id="winScreen">
+        <h2>¡NIVEL COMPLETADO!</h2>
+        <p>Red protegida exitosamente</p>
+        <p>BONUS: <span id="bonusScore">0000</span></p>
+        <button class="btn" onclick="game.nextLevel()">SIGUIENTE NIVEL</button>
+    </div>
+</div>
+
+<div class="game-console">
+    <div class="console-header">
+        <div class="console-title">[ NETWORK MARIO SYSTEM LOG ]</div>
+    </div>
+    <div class="console-output" id="consoleOutput">
+        <div class="console-line">
+            <span class="timestamp">--:--:--</span>
+            <span class="log-level log-info">[INIT]</span>
+            <span class="log-message">Sistema Mario Network Security inicializado...</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    class NetworkMarioGame {
+        constructor() {
+            this.mario = {
+                x: 50,
+                y: 400,
+                width: 32,
+                height: 32,
+                velocityY: 0,
+                isJumping: false,
+                onGround: false,
+                invulnerable: false
+            };
+
+            this.camera = { x: 0 };
+            this.gravity = 0.8;
+            this.jumpPower = -15;
+            this.moveSpeed = 4;
+
+            this.score = 0;
+            this.lives = 3;
+            this.level = 1;
+            this.world = 1;
+            this.dataCollected = 0;
+            this.timer = 400;
+            this.totalData = 0;
+
+            this.isRunning = false;
+            this.gameLoop = null;
+            this.timerLoop = null;
+            this.keys = {};
+
+            this.viruses = [];
+            this.dataCoins = [];
+            this.powerUps = [];
+            this.platforms = [];
+            this.bricks = [];
+            this.questionBlocks = [];
+
+            this.worldElements = [];
+
+            this.initializeElements();
+            this.setupEventListeners();
+            this.generateLevel();
+            this.addConsoleLog('MARIO', "¡It\\'s-a me, Mario! Listo para proteger la red");
+        }
+
+        initializeElements() {
+            this.marioElement = document.getElementById('mario');
+            this.gameWorld = document.getElementById('gameWorld');
+            this.gameArea = document.getElementById('gameArea');
+
+            this.scoreEl = document.getElementById('score');
+            this.livesEl = document.getElementById('lives');
+            this.levelEl = document.getElementById('level');
+            this.dataCollectedEl = document.getElementById('dataCollected');
+            this.timerEl = document.getElementById('timer');
+
+            this.hudScore = document.getElementById('hudScore');
+            this.hudWorld = document.getElementById('hudWorld');
+            this.hudTime = document.getElementById('hudTime');
+
+            this.consoleOutput = document.getElementById('consoleOutput');
+            this.gameOverScreen = document.getElementById('gameOver');
+            this.winScreen = document.getElementById('winScreen');
+            this.finalScoreEl = document.getElementById('finalScore');
+            this.bonusScoreEl = document.getElementById('bonusScore');
+        }
+
+        setupEventListeners() {
+            document.getElementById('startBtn').addEventListener('click', () => this.start());
+            document.getElementById('pauseBtn').addEventListener('click', () => this.pause());
+            document.getElementById('resetBtn').addEventListener('click', () => this.restart());
+
+            document.addEventListener('keydown', (e) => {
+                this.keys[e.key.toLowerCase()] = true;
+                if (e.key === ' ' || e.key === 'ArrowUp' || e.key.toLowerCase() === 'w') {
+                    this.jump();
+                    e.preventDefault();
+                }
+            });
+
+            document.addEventListener('keyup', (e) => {
+                this.keys[e.key.toLowerCase()] = false;
+            });
+        }
+
+        generateLevel() {
+            this.clearWorld();
+
+            this.createClouds();
+            this.createGroundPlatforms();
+            this.createPipes();
+            this.createFloatingPlatforms();
+            this.createBlocks();
+            this.createDataCoins();
+            this.createViruses();
+            this.createPowerUps();
+
+            this.addConsoleLog('INFO', `Nivel ${this.world}-${this.level} generado con ${this.totalData} datos para proteger`);
+        }
+
+        clearWorld() {
+            this.worldElements.forEach(element => {
+                if (element.parentNode) element.parentNode.removeChild(element);
+            });
+            this.worldElements = [];
+            this.viruses = [];
+            this.dataCoins = [];
+            this.powerUps = [];
+            this.platforms = [];
+            this.bricks = [];
+            this.questionBlocks = [];
+        }
+
+        createClouds() {
+            const cloudPositions = [100,300,500,700,900,1100];
+            cloudPositions.forEach(x => {
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                cloud.textContent = '☁️';
+                cloud.style.left = x + 'px';
+                cloud.style.top = '50px';
+                this.gameWorld.appendChild(cloud);
+                this.worldElements.push(cloud);
+            });
+        }
+
+        createGroundPlatforms() {
+            for (let x=0;x<1200;x+=40) {
+                const platform = this.createPlatform(x,450,40,50);
+                this.platforms.push({ x, y:450, width:40, height:50, element:platform });
+            }
+        }
+
+        createPipes() {
+            const pipePositions = [{x:200,height:80},{x:400,height:100},{x:800,height:120},{x:1000,height:100}];
+            pipePositions.forEach(pipe => {
+                const pipeEl = this.createPipe(pipe.x,450-pipe.height,pipe.height);
+                this.platforms.push({ x:pipe.x, y:450-pipe.height, width:60, height:pipe.height, element:pipeEl });
+            });
+        }
+
+        createFloatingPlatforms() {
+            const platformPositions = [{x:300,y:300,width:80},{x:500,y:250,width:60},{x:650,y:350,width:100},{x:850,y:200,width:80},{x:950,y:320,width:60}];
+            platformPositions.forEach(pos => {
+                const platform = this.createPlatform(pos.x,pos.y,pos.width,20);
+                this.platforms.push({ x:pos.x, y:pos.y, width:pos.width, height:20, element:platform });
+            });
+        }
+
+        createBlocks() {
+            const blockPositions = [
+                { x: 250, y: 350, type: 'question' },
+                { x: 280, y: 350, type: 'brick' },
+                { x: 310, y: 350, type: 'question' },
+                { x: 340, y: 350, type: 'brick' },
+                { x: 550, y: 200, type: 'question' },
+                { x: 700, y: 300, type: 'brick' },
+                { x: 730, y: 300, type: 'question' },
+                { x: 900, y: 150, type: 'brick' },
+                { x: 930, y: 150, type: 'question' }
+            ];
+
+            blockPositions.forEach(pos => {
+                if (pos.type === 'question') {
+                    const block = this.createQuestionBlock(pos.x,pos.y);
+                    this.questionBlocks.push({ x:pos.x, y:pos.y, width:30, height:30, element:block, hit:false });
+                } else {
+                    const brick = this.createBrick(pos.x,pos.y);
+                    this.bricks.push({ x:pos.x, y:pos.y, width:30, height:30, element:brick });
+                }
+            });
+        }
+
+        createDataCoins() {
+            const coinPositions = [
+                { x: 120, y: 380 }, { x: 180, y: 350 }, { x: 320, y: 270 },
+                { x: 520, y: 200 }, { x: 580, y: 200 }, { x: 670, y: 320 },
+                { x: 720, y: 290 }, { x: 870, y: 170 }, { x: 920, y: 170 },
+                { x: 980, y: 290 }, { x: 1080, y: 380 }, { x: 1120, y: 350 },
+                ...(this.level >= 2 ? [{ x:150,y:320 },{ x:450,y:150 },{ x:750,y:250 },{ x:1050,y:320 }] : [])
+            ];
+
+            this.totalData = coinPositions.length;
+
+            coinPositions.forEach((pos,index) => {
+                const coin = this.createDataCoin(pos.x,pos.y);
+                this.dataCoins.push({ x:pos.x, y:pos.y, width:20, height:20, element:coin, collected:false });
+            });
+        }
+
+        createViruses() {
+            const virusPositions = [
+                { x: 350, y: 420, type: 'red', direction: 1 },
+                { x: 600, y: 420, type: 'blue', direction: -1 },
+                { x: 750, y: 420, type: 'purple', direction: 1 },
+                { x: 480, y: 220, type: 'red', direction: 1 },
+                { x: 820, y: 170, type: 'blue', direction: -1 }
+            ];
+
+            virusPositions.forEach(pos => {
+                const virus = this.createVirus(pos.x,pos.y,pos.type);
+                this.viruses.push({
+                    x: pos.x,
+                    y: pos.y,
+                    width: 28,
+                    height: 28,
+                    element: virus,
+                    type: pos.type,
+                    direction: pos.direction,
+                    speed: 1 + Math.random() * 0.5,
+                    startX: pos.x,
+                    range: 100 + Math.random() * 50
+                });
+            });
+        }
+
+        createPowerUps() {
+            const powerUpPositions = [{ x: 280, y: 320 }, { x: 580, y: 170 }, { x: 930, y: 120 }];
+            powerUpPositions.forEach(pos => {
+                const powerUp = this.createPowerUp(pos.x,pos.y);
+                this.powerUps.push({ x: pos.x, y: pos.y, width:24, height:24, element:powerUp, collected:false, type:'shield' });
+            });
+        }
+
+        // DOM creation helpers
+        createPlatform(x,y,width,height) {
+            const platform = document.createElement('div');
+            platform.className = 'platform';
+            platform.style.left = x + 'px';
+            platform.style.top = y + 'px';
+            platform.style.width = width + 'px';
+            platform.style.height = height + 'px';
+            this.gameWorld.appendChild(platform);
+            this.worldElements.push(platform);
+            return platform;
+        }
+
+        createPipe(x,y,height) {
+            const pipe = document.createElement('div');
+            pipe.className = 'pipe';
+            pipe.style.left = x + 'px';
+            pipe.style.top = y + 'px';
+            pipe.style.width = '60px';
+            pipe.style.height = height + 'px';
+            this.gameWorld.appendChild(pipe);
+            this.worldElements.push(pipe);
+            return pipe;
+        }
+
+        createBrick(x,y) {
+            const brick = document.createElement('div');
+            brick.className = 'brick';
+            brick.style.left = x + 'px';
+            brick.style.top = y + 'px';
+            this.gameWorld.appendChild(brick);
+            this.worldElements.push(brick);
+            return brick;
+        }
+
+        createQuestionBlock(x,y) {
+            const block = document.createElement('div');
+            block.className = 'question-block';
+            block.style.left = x + 'px';
+            block.style.top = y + 'px';
+            block.textContent = '?';
+            this.gameWorld.appendChild(block);
+            this.worldElements.push(block);
+            return block;
+        }
+
+        createDataCoin(x,y) {
+            const coin = document.createElement('div');
+            coin.className = 'data-coin';
+            coin.style.left = x + 'px';
+            coin.style.top = y + 'px';
+            coin.textContent = '💾';
+            this.gameWorld.appendChild(coin);
+            this.worldElements.push(coin);
+            return coin;
+        }
+
+        createVirus(x,y,type) {
+            const virus = document.createElement('div');
+            virus.className = `virus-enemy virus-${type}`;
+            virus.style.left = x + 'px';
+            virus.style.top = y + 'px';
+
+            // SVG simple para el virus; color según tipo
+            let fill = '#ff4444';
+            if (type === 'blue') fill = '#4444ff';
+            if (type === 'purple') fill = '#8844ff';
+
+            virus.innerHTML = `
+                    <svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                        <circle cx="14" cy="14" r="11" fill="${fill}" stroke="#000000" stroke-width="1.2"/>
+                        <!-- ojos -->
+                        <circle cx="10" cy="12" r="1.8" fill="#ffffff"/>
+                        <circle cx="18" cy="12" r="1.8" fill="#ffffff"/>
+                        <!-- detalle 'picos' simples -->
+                        <path d="M3 16 C5 10, 10 8, 14 8 C18 8, 23 10, 25 16" fill="none" stroke="#000000" stroke-width="0.8" opacity="0.15"/>
+                    </svg>
+                `;
+
+            this.gameWorld.appendChild(virus);
+            this.worldElements.push(virus);
+            return virus;
+        }
+
+        createPowerUp(x,y) {
+            const powerUp = document.createElement('div');
+            powerUp.className = 'power-up';
+            powerUp.style.left = x + 'px';
+            powerUp.style.top = y + 'px';
+            powerUp.textContent = '🛡️';
+            this.gameWorld.appendChild(powerUp);
+            this.worldElements.push(powerUp);
+            return powerUp;
+        }
+
+        start() {
+            if (this.isRunning) return;
+            this.isRunning = true;
+            document.getElementById('startBtn').classList.add('active');
+            document.getElementById('pauseBtn').classList.remove('active');
+            this.addConsoleLog('MARIO','Mama mia! ¡Comenzando misión de protección de datos!');
+            this.gameLoop = requestAnimationFrame(() => this.update());
+            this.timerLoop = setInterval(() => this.updateTimer(), 1000);
+        }
+
+        pause() {
+            this.isRunning = false;
+            document.getElementById('startBtn').classList.remove('active');
+            document.getElementById('pauseBtn').classList.add('active');
+            if (this.gameLoop) { cancelAnimationFrame(this.gameLoop); this.gameLoop = null; }
+            if (this.timerLoop) { clearInterval(this.timerLoop); this.timerLoop = null; }
+            this.addConsoleLog('WARN','Juego pausado - Red temporalmente desprotegida');
+        }
+
+        restart() {
+            this.pause();
+            this.score = 0; this.lives = 3; this.level = 1; this.world = 1;
+            this.dataCollected = 0; this.timer = 400;
+            this.mario.x = 50; this.mario.y = 400; this.mario.velocityY = 0; this.mario.isJumping = false; this.mario.onGround = false; this.mario.invulnerable = false;
+            this.camera.x = 0;
+            this.gameOverScreen.style.display = 'none';
+            this.winScreen.style.display = 'none';
+            this.generateLevel();
+            this.updateMarioPosition();
+            this.updateCamera();
+            this.updateStats();
+            this.addConsoleLog('INFO','Sistema Mario reiniciado - ¡Wahoo! Nueva aventura comenzada');
+            document.getElementById('startBtn').classList.remove('active');
+            document.getElementById('pauseBtn').classList.remove('active');
+        }
+
+        nextLevel() {
+            this.level++;
+            if (this.level > 4) { this.level = 1; this.world++; }
+            this.dataCollected = 0; this.timer = 400; this.winScreen.style.display = 'none';
+            this.mario.x = 50; this.mario.y = 400; this.mario.velocityY = 0; this.mario.isJumping = false; this.mario.onGround = false; this.mario.invulnerable = false;
+            this.camera.x = 0;
+            this.generateLevel();
+            this.updateMarioPosition();
+            this.updateCamera();
+            this.updateStats();
+            this.addConsoleLog('MARIO', `Here we go! Nivel ${this.world}-${this.level} - Nuevos desafíos detectados`);
+            this.start();
+        }
+
+        update() {
+            if (!this.isRunning) return;
+            this.updateMario();
+            this.updateViruses();
+            this.checkCollisions();
+            this.updateCamera();
+            this.checkWinCondition();
+            this.gameLoop = requestAnimationFrame(() => this.update());
+        }
+
+        updateTimer() {
+            if (!this.isRunning) return;
+            this.timer--;
+            if (this.timer <= 0) {
+                this.addConsoleLog('ERROR','¡Tiempo agotado! La red ha quedado desprotegida');
+                this.gameOver();
+            }
+            this.updateStats();
+        }
+
+        updateMario() {
+            if (this.keys['a'] || this.keys['arrowleft']) { this.mario.x -= this.moveSpeed; this.marioElement.style.transform = 'scaleX(-1)'; }
+            if (this.keys['d'] || this.keys['arrowright']) { this.mario.x += this.moveSpeed; this.marioElement.style.transform = 'scaleX(1)'; }
+            this.mario.x = Math.max(0, Math.min(1200 - this.mario.width, this.mario.x));
+            this.mario.velocityY += this.gravity;
+            this.mario.y += this.mario.velocityY;
+
+            this.mario.onGround = false;
+            this.platforms.forEach(platform => {
+                if (this.checkCollision(this.mario, platform)) {
+                    if (this.mario.velocityY > 0) {
+                        this.mario.y = platform.y - this.mario.height;
+                        this.mario.velocityY = 0;
+                        this.mario.onGround = true; this.mario.isJumping = false;
+                    }
+                }
+            });
+
+            [...this.bricks, ...this.questionBlocks].forEach(block => {
+                if (this.checkCollision(this.mario, block)) {
+                    if (this.mario.velocityY > 0) {
+                        this.mario.y = block.y - this.mario.height;
+                        this.mario.velocityY = 0;
+                        this.mario.onGround = true; this.mario.isJumping = false;
+                    } else if (this.mario.velocityY < 0) {
+                        this.mario.y = block.y + block.height;
+                        this.mario.velocityY = 0;
+                        this.hitBlock(block);
+                    }
+                }
+            });
+
+            if (this.mario.y > 500) { this.loseLife('Mario cayó al vacío digital'); }
+
+            this.updateMarioPosition();
+        }
+
+        updateViruses() {
+            this.viruses.forEach(virus => {
+                virus.x += virus.direction * virus.speed;
+                if (virus.x <= virus.startX - virus.range || virus.x >= virus.startX + virus.range) {
+                    virus.direction *= -1;
+                }
+                let onPlatform = false;
+                this.platforms.forEach(platform => {
+                    if (virus.x + virus.width > platform.x &&
+                        virus.x < platform.x + platform.width &&
+                        Math.abs(virus.y + virus.height - platform.y) < 10) {
+                        onPlatform = true;
+                    }
+                });
+                if (!onPlatform) virus.direction *= -1;
+                virus.element.style.left = virus.x + 'px';
+            });
+        }
+
+        jump() {
+            if (this.mario.onGround && !this.mario.isJumping) {
+                this.mario.velocityY = this.jumpPower;
+                this.mario.isJumping = true;
+                this.mario.onGround = false;
+                this.marioElement.classList.add('jumping');
+                setTimeout(() => { this.marioElement.classList.remove('jumping'); }, 300);
+            }
+        }
+
+        updateMarioPosition() {
+            this.marioElement.style.left = this.mario.x + 'px';
+            this.marioElement.style.top = this.mario.y + 'px';
+        }
+
+        updateCamera() {
+            const targetCameraX = this.mario.x - 300;
+            this.camera.x = Math.max(0, Math.min(400, targetCameraX));
+            this.gameWorld.style.transform = `translateX(${-this.camera.x}px)`;
+        }
+
+        checkCollision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                rect1.x + rect1.width > rect2.x &&
+                rect1.y < rect2.y + rect2.height &&
+                rect1.y + rect1.height > rect2.y;
+        }
+
+        checkCollisions() {
+            this.dataCoins.forEach((coin, index) => {
+                if (!coin.collected && this.checkCollision(this.mario, coin)) {
+                    coin.collected = true;
+                    coin.element.style.display = 'none';
+                    this.score += 100;
+                    this.dataCollected++;
+                    this.addConsoleLog('MARIO', `¡Mamma mia! Datos seguros +100 pts [${Math.round(coin.x)},${Math.round(coin.y)}]`);
+                    this.updateStats();
+                }
+            });
+
+            this.powerUps.forEach((powerUp, index) => {
+                if (!powerUp.collected && this.checkCollision(this.mario, powerUp)) {
+                    powerUp.collected = true;
+                    powerUp.element.style.display = 'none';
+                    this.score += 500;
+                    this.mario.invulnerable = true;
+                    this.addConsoleLog('MARIO', '¡Wahoo! Shield activado - Inmunidad temporal +500 pts');
+                    setTimeout(() => { this.mario.invulnerable = false; this.addConsoleLog('WARN', 'Shield desactivado - Mario vulnerable nuevamente'); }, 5000);
+                    this.updateStats();
+                }
+            });
+
+            if (!this.mario.invulnerable) {
+                this.viruses.forEach(virus => {
+                    if (this.checkCollision(this.mario, virus)) {
+                        this.loseLife(`Virus ${virus.type} infectó a Mario`);
+                    }
+                });
+            }
+        }
+
+        hitBlock(block) {
+            if (this.questionBlocks.includes(block) && !block.hit) {
+                block.hit = true;
+                block.element.textContent = '';
+                block.element.style.background = '#8B4513';
+                this.score += 200;
+                this.addConsoleLog('MARIO', '¡Block hit! Bonus de seguridad +200 pts');
+                this.updateStats();
+            }
+        }
+
+        loseLife(reason) {
+            if (this.mario.invulnerable) return;
+            this.lives--;
+            this.mario.invulnerable = true;
+            this.addConsoleLog('ERROR', `¡Oh no! ${reason} - Vidas restantes: ${this.lives}`);
+            if (this.lives <= 0) {
+                this.gameOver();
+            } else {
+                this.mario.x = 50; this.mario.y = 400; this.mario.velocityY = 0; this.camera.x = 0;
+                this.updateMarioPosition(); this.updateCamera();
+                setTimeout(() => { this.mario.invulnerable = false; }, 3000);
+            }
+            this.updateStats();
+        }
+
+        checkWinCondition() {
+            const allDataCollected = this.dataCoins.every(coin => coin.collected);
+            if (allDataCollected && this.isRunning) {
+                this.pause();
+                const timeBonus = this.timer * 10;
+                this.score += timeBonus;
+                this.addConsoleLog('MARIO', `¡Yahoo! Nivel completado - Time Bonus: ${timeBonus} pts`);
+                this.showWinScreen(timeBonus);
+            }
+        }
+
+        showWinScreen(bonus) {
+            this.bonusScoreEl.textContent = bonus.toString().padStart(4,'0');
+            this.winScreen.style.display = 'block';
+            this.updateStats();
+        }
+
+        gameOver() {
+            this.pause();
+            this.finalScoreEl.textContent = this.score.toString().padStart(6,'0');
+            this.gameOverScreen.style.display = 'block';
+            this.addConsoleLog('ERROR', `GAME OVER - Puntuación final: ${this.score}`);
+            this.addConsoleLog('MARIO', 'Mamma mia... Better luck next time!');
+        }
+
+        updateStats() {
+            const scoreStr = this.score.toString().padStart(6,'0');
+            const levelStr = `${this.world}-${this.level}`;
+            this.scoreEl.textContent = scoreStr;
+            this.livesEl.textContent = `x${this.lives}`;
+            this.levelEl.textContent = levelStr;
+            this.dataCollectedEl.textContent = `${this.dataCollected}/${this.totalData}`;
+            this.timerEl.textContent = this.timer;
+            this.hudScore.textContent = scoreStr;
+            this.hudWorld.textContent = levelStr;
+            this.hudTime.textContent = this.timer;
+        }
+
+        addConsoleLog(level, message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logLine = document.createElement('div');
+            logLine.className = 'console-line';
+            const levelClass = `log-${level.toLowerCase()}`;
+            logLine.innerHTML = `
+                    <span class="timestamp">${timestamp}</span>
+                    <span class="log-level ${levelClass}">[${level}]</span>
+                    <span class="log-message">${message}</span>
+                `;
+            this.consoleOutput.appendChild(logLine);
+            this.consoleOutput.scrollTop = this.consoleOutput.scrollHeight;
+            const lines = this.consoleOutput.querySelectorAll('.console-line');
+            if (lines.length > 50) lines[0].remove();
+        }
+    }
+
+    // Inicializar juego
+    const game = new NetworkMarioGame();
+
+    setTimeout(() => { game.addConsoleLog('INFO','Mundo Mushroom Kingdom Network detectado'); }, 1000);
+    setTimeout(() => { game.addConsoleLog('WARN','Amenazas virales activas en el sistema'); }, 2000);
+    setTimeout(() => { game.addConsoleLog('INFO','Mario Network Security System ready!'); }, 3000);
+</script>
+</body>
+</html>
