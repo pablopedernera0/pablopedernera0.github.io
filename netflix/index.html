@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquitectura de Netflix</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #141e30, #243b55);
+            color: white;
+            overflow: hidden;
+        }
+        
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .slide h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            color: #e50914;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .slide h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #e50914;
+            text-align: center;
+        }
+        
+        .slide h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #ff6b9d;
+        }
+        
+        .slide p, .slide li {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            max-width: 800px;
+            text-align: center;
+        }
+        
+        .slide ul {
+            max-width: 800px;
+            text-align: left;
+        }
+        
+        .architecture-diagram {
+            position: relative;
+            width: 90%;
+            max-width: 1200px;
+            height: 600px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, #e50914, #ff6b9d);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(229, 9, 20, 0.5);
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+        
+        .component-group {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .frontend { top: 10%; left: 15%; }
+        .backend { top: 10%; right: 15%; }
+        .streaming { bottom: 15%; left: 25%; }
+        .bigdata { bottom: 15%; left: 33%; }
+        .cicd { bottom: 15%; right: 28%; }
+        
+        .component {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #ff6b9d, #c44569);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .component:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(255, 107, 157, 0.4);
+        }
+        
+        .component.active {
+            background: linear-gradient(45deg, #00d4ff, #0099cc);
+            animation: componentPulse 1s infinite;
+        }
+        
+        @keyframes componentPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(0, 212, 255, 0.8); }
+        }
+        
+        .flow-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+            height: 3px;
+            animation: flowData 2s linear infinite;
+            opacity: 0;
+        }
+        
+        .flow-line.active {
+            opacity: 1;
+        }
+        
+        @keyframes flowData {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            z-index: 1000;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #e50914, #ff6b9d);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+        }
+        
+        .slide-counter {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            font-size: 1.2rem;
+            background: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+        
+        .demo-animation {
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+        
+        .request-flow {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #00d4ff;
+            border-radius: 50%;
+            animation: requestFlow 4s linear infinite;
+        }
+        
+        @keyframes requestFlow {
+            0% { left: 10%; top: 50%; }
+            25% { left: 30%; top: 30%; }
+            50% { left: 50%; top: 50%; }
+            75% { left: 70%; top: 70%; }
+            100% { left: 90%; top: 50%; }
+        }
+        
+        .server-node {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #ff6b9d, #c44569);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .load-balancer {
+            position: absolute;
+            top: 20%;
+            left: 45%;
+            background: linear-gradient(45deg, #00d4ff, #0099cc);
+        }
+        
+        .server1 { top: 60%; left: 20%; }
+        .server2 { top: 60%; left: 45%; }
+        .server3 { top: 60%; left: 70%; }
+        
+        .link-section {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+            max-width: 800px;
+        }
+        
+        .link-section a {
+            color: #00d4ff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: block;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .link-section a:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateX(10px);
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <h1>Arquitectura de Netflix</h1>
+            <h3>Distribución de Carga y Gestión de Infraestructura</h3>
+            <p>Redes y Comunicaciones</p>
+            <p style="margin-top: 2rem; font-size: 1rem; opacity: 0.8;">Una mirada profunda al sistema de streaming más grande del mundo</p>
+        </div>
+        
+        <!-- Slide 2: Introducción -->
+        <div class="slide">
+            <h2>Netflix en Números</h2>
+            <div class="demo-animation">
+                <div class="request-flow"></div>
+                <div class="server-node load-balancer">LB</div>
+                <div class="server-node server1">S1</div>
+                <div class="server-node server2">S2</div>
+                <div class="server-node server3">S3</div>
+            </div>
+            <ul>
+                <li>🎬 Más de 230 millones de suscriptores globales</li>
+                <li>🌍 Disponible en más de 190 países</li>
+                <li>📊 Más de 15,000 títulos en catálogo</li>
+                <li>💾 Genera petabytes de datos diariamente</li>
+                <li>🚀 Maneja millones de requests por segundo</li>
+            </ul>
+        </div>
+        
+        <!-- Slide 3: Arquitectura General -->
+        <div class="slide">
+            <h2>Arquitectura General</h2>
+            <div class="architecture-diagram">
+                <div class="center-circle">
+                    <div>NETFLIX</div>
+                    <div style="font-size: 1rem; opacity: 0.8;">CORE</div>
+                </div>
+                
+                <div class="component-group frontend">
+                    <h4 style="color: #ff6b9d;">Frontend</h4>
+                    <div class="component">iOS</div>
+                    <div class="component">Android</div>
+                    <div class="component">Web</div>
+                    <div class="component">Smart TV</div>
+                </div>
+                
+                <div class="component-group backend">
+                    <h4 style="color: #ff6b9d;">Backend</h4>
+                    <div class="component">API Gateway</div>
+                    <div class="component">Microservicios</div>
+                    <div class="component">Base de Datos</div>
+                    <div class="component">Cache</div>
+                </div>
+                
+                <div class="component-group streaming">
+                    <h4 style="color: #ff6b9d;">Streaming</h4>
+                    <div class="component">CDN</div>
+                    <div class="component">Encoding</div>
+                    <div class="component">Open Connect</div>
+                </div>
+                
+                <div class="component-group bigdata">
+                    <h4 style="color: #ff6b9d;">Big Data</h4>
+                    <div class="component">Kafka</div>
+                    <div class="component">Spark</div>
+                    <div class="component">ML</div>
+                </div>
+                
+                <div class="component-group cicd">
+                    <h4 style="color: #ff6b9d;">CI/CD</h4>
+                    <div class="component">Jenkins</div>
+                    <div class="component">Spinnaker</div>
+                    <div class="component">Atlas</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 4: Distribución de Carga -->
+        <div class="slide">
+            <h2>Distribución de Carga</h2>
+            <h3>Estrategias de Load Balancing</h3>
+            <ul>
+                <li><strong>Zuul Gateway:</strong> Proxy y Load Balancer a nivel de aplicación</li>
+                <li><strong>Eureka:</strong> Service Discovery para microservicios</li>
+                <li><strong>Ribbon:</strong> Client-side load balancing</li>
+                <li><strong>Hystrix:</strong> Circuit breaker para tolerancia a fallos</li>
+                <li><strong>Auto Scaling:</strong> Escalamiento automático basado en métricas</li>
+            </ul>
+            
+            <div class="link-section">
+                <h4>📚 Documentación Oficial:</h4>
+                <a href="https://github.com/Netflix/zuul" target="_blank">Netflix Zuul - API Gateway</a>
+                <a href="https://github.com/Netflix/eureka" target="_blank">Netflix Eureka - Service Discovery</a>
+                <a href="https://github.com/Netflix/ribbon" target="_blank">Netflix Ribbon - Load Balancer</a>
+            </div>
+        </div>
+        
+        <!-- Slide 5: Infraestructura Cloud -->
+        <div class="slide">
+            <h2>Gestión de Infraestructura</h2>
+            <h3>Netflix en AWS</h3>
+            <ul>
+                <li><strong>Multi-Region:</strong> Despliegue en múltiples regiones AWS</li>
+                <li><strong>Auto Scaling Groups:</strong> Escalamiento automático de instancias</li>
+                <li><strong>Elastic Load Balancers:</strong> Distribución de tráfico</li>
+                <li><strong>CloudFormation:</strong> Infraestructura como código</li>
+                <li><strong>Chaos Engineering:</strong> Resiliencia mediante Chaos Monkey</li>
+            </ul>
+            
+            <div class="link-section">
+                <h4>🔧 Herramientas de Netflix OSS:</h4>
+                <a href="https://github.com/Netflix/SimianArmy" target="_blank">Simian Army - Chaos Engineering</a>
+                <a href="https://github.com/Netflix/asgard" target="_blank">Asgard - AWS Management</a>
+                <a href="https://github.com/Netflix/ice" target="_blank">Ice - AWS Usage Monitoring</a>
+            </div>
+        </div>
+        
+        <!-- Slide 6: CDN y Open Connect -->
+        <div class="slide">
+            <h2>Netflix Open Connect</h2>
+            <h3>Red de Distribución de Contenido</h3>
+            <p>Netflix ha creado su propia CDN llamada Open Connect para optimizar la entrega de contenido</p>
+            <ul>
+                <li><strong>Servidores Locales:</strong> Equipos en ISPs para reducir latencia</li>
+                <li><strong>Cache Inteligente:</strong> Predicción de contenido popular</li>
+                <li><strong>Adaptive Streaming:</strong> Calidad dinámica según ancho de banda</li>
+                <li><strong>Global Coverage:</strong> Miles de servidores mundialmente</li>
+            </ul>
+            
+            <div class="link-section">
+                <h4>🌐 Recursos sobre Open Connect:</h4>
+                <a href="https://openconnect.netflix.com/Open-Connect-Overview.pdf" target="_blank">Open Connect Overview (PDF)</a>
+                <a href="https://netflixtechblog.com/serving-100-gbps-from-an-open-connect-appliance-cdb51dda15a4" target="_blank">Netflix Tech Blog - 100 Gbps Appliance</a>
+            </div>
+        </div>
+        
+        <!-- Slide 7: Microservicios -->
+        <div class="slide">
+            <h2>Arquitectura de Microservicios</h2>
+            <h3>Escalabilidad y Mantenibilidad</h3>
+            <ul>
+                <li><strong>700+ Microservicios:</strong> Separación de responsabilidades</li>
+                <li><strong>Spring Boot:</strong> Framework para desarrollo ágil</li>
+                <li><strong>GraphQL Federation:</strong> API unificada</li>
+                <li><strong>Event-Driven:</strong> Comunicación asíncrona con Kafka</li>
+                <li><strong>Database per Service:</strong> Independencia de datos</li>
+            </ul>
+            
+            <div class="link-section">
+                <h4>⚡ Tecnologías Clave:</h4>
+                <a href="https://netflixtechblog.com/ready-for-changes-with-hexagonal-architecture-b315ec967749" target="_blank">Hexagonal Architecture en Netflix</a>
+                <a href="https://netflixtechblog.com/the-netflix-cosmos-platform-35c14d9351ad" target="_blank">Netflix Cosmos Platform</a>
+            </div>
+        </div>
+        
+        <!-- Slide 8: Monitoreo y Observabilidad -->
+        <div class="slide">
+            <h2>Monitoreo y Observabilidad</h2>
+            <h3>Atlas, Spectator y más</h3>
+            <ul>
+                <li><strong>Atlas:</strong> Sistema de métricas en tiempo real</li>
+                <li><strong>Spectator:</strong> Librerías de instrumentación</li>
+                <li><strong>Distributed Tracing:</strong> Seguimiento de requests</li>
+                <li><strong>Alerting:</strong> Notificaciones proactivas</li>
+                <li><strong>Dashboards:</strong> Visualización de métricas</li>
+            </ul>
+            
+            <div class="link-section">
+                <h4>📊 Herramientas de Monitoreo:</h4>
+                <a href="https://github.com/Netflix/atlas" target="_blank">Netflix Atlas - Metrics Platform</a>
+                <a href="https://github.com/Netflix/spectator" target="_blank">Netflix Spectator - Metrics Library</a>
+                <a href="https://netflixtechblog.com/introducing-atlas-netflixs-primary-telemetry-platform-bd31f4d8ed9a" target="_blank">Introducing Atlas</a>
+            </div>
+        </div>
+        
+        <!-- Slide 9: Casos de Uso -->
+        <div class="slide">
+            <h2>Casos de Uso Reales</h2>
+            <h3>Problemas y Soluciones</h3>
+            <ul>
+                <li><strong>Black Friday:</strong> Manejo de picos de tráfico extremo</li>
+                <li><strong>Lanzamientos Globales:</strong> Distribución simultánea mundial</li>
+                <li><strong>Outages de AWS:</strong> Recuperación automática</li>
+                <li><strong>A/B Testing:</strong> Experimentación a gran escala</li>
+                <li><strong>Recomendaciones:</strong> ML en tiempo real</li>
+            </ul>
+            
+            <div class="link-section">
+                <h4>📖 Casos de Estudio:</h4>
+                <a href="https://netflixtechblog.com/netflix-chaos-monkey-upgraded-1d679429be5d" target="_blank">Chaos Monkey Case Study</a>
+                <a href="https://netflixtechblog.com/global-cloud-the-internet-3f1e1ae3cb88" target="_blank">Global Cloud Strategy</a>
+            </div>
+        </div>
+        
+        <!-- Slide 10: Conclusiones -->
+        <div class="slide">
+            <h2>Conclusiones Clave</h2>
+            <ul>
+                <li>🏗️ <strong>Arquitectura resiliente:</strong> Diseño para fallos</li>
+                <li>⚡ <strong>Escalabilidad horizontal:</strong> Crecimiento elástico</li>
+                <li>🔄 <strong>DevOps cultura:</strong> Deploy continuo y automatización</li>
+                <li>📊 <strong>Data-driven:</strong> Decisiones basadas en métricas</li>
+                <li>🌍 <strong>Global thinking:</strong> Infraestructura mundial</li>
+            </ul>
+            
+            <div class="link-section">
+                <h4>🎯 Para Profundizar:</h4>
+                <a href="https://netflixtechblog.com/" target="_blank">Netflix Technology Blog</a>
+                <a href="https://github.com/Netflix" target="_blank">Netflix Open Source</a>
+                <a href="https://openconnect.netflix.com/" target="_blank">Netflix Open Connect</a>
+                <a href="https://research.netflix.com/" target="_blank">Netflix Research</a>
+            </div>
+            
+            <p style="margin-top: 2rem; font-style: italic; opacity: 0.8;">
+                "The best way to avoid failure is to fail constantly" - Netflix Engineering
+            </p>
+        </div>
+    </div>
+    
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">10</span>
+    </div>
+    
+    <div class="controls">
+        <button class="btn" onclick="previousSlide()">← Anterior</button>
+        <button class="btn" onclick="startAnimation()">🎬 Animar</button>
+        <button class="btn" onclick="nextSlide()">Siguiente →</button>
+    </div>
+    
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+        
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+        
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+        
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+        
+        function startAnimation() {
+            // Activar animación en el diagrama de arquitectura
+            const components = document.querySelectorAll('.component');
+            components.forEach((comp, index) => {
+                setTimeout(() => {
+                    comp.classList.add('active');
+                    setTimeout(() => {
+                        comp.classList.remove('active');
+                    }, 1000);
+                }, index * 200);
+            });
+        }
+        
+        // Navegación con teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            } else if (e.key === 'r' || e.key === 'R') {
+                startAnimation();
+            }
+        });
+        
+        // Auto-animación cada 5 segundos en slide de arquitectura
+        setInterval(() => {
+            if (currentSlide === 2) { // Slide de arquitectura
+                startAnimation();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
