@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Asistencia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: none;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #63408b 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .student-item {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        .student-item.present {
+            background-color: #d4edda;
+            border-left-color: #28a745;
+        }
+        .student-item.absent {
+            background-color: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        .stats-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .hidden {
+            display: none;
+        }
+        .alert-custom {
+            border-radius: 10px;
+            border: none;
+        }
+        .materia-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .materia-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .codigo-display {
+            font-size: 2rem;
+            letter-spacing: 0.5rem;
+            font-weight: bold;
+            color: #667eea;
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Pantalla de Selección de Rol -->
+        <div id="roleSelection" class="text-center">
+            <div class="card mx-auto" style="max-width: 500px;">
+                <div class="card-header">
+                    <h2><i class="fas fa-graduation-cap"></i> Sistema de Asistencia</h2>
+                </div>
+                <div class="card-body p-5">
+                    <h4 class="mb-4">Seleccione su rol</h4>
+                    <div class="d-grid gap-3">
+                        <button class="btn btn-primary btn-lg" onclick="showLogin()">
+                            <i class="fas fa-chalkboard-teacher"></i> Soy Profesor
+                        </button>
+                        <button class="btn btn-success btn-lg" onclick="showStudentView()">
+                            <i class="fas fa-user-graduate"></i> Soy Estudiante
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Profesor -->
+        <div id="loginView" class="hidden">
+            <div class="card mx-auto" style="max-width: 500px;">
+                <div class="card-header">
+                    <h3><i class="fas fa-sign-in-alt"></i> Login Profesor</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div id="loginAlert"></div>
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="loginEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+                        <button type="button" class="btn btn-link w-100" onclick="backToRole()">Volver</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vista Materias Profesor -->
+        <div id="materiasView" class="hidden">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3><i class="fas fa-book"></i> Mis Materias</h3>
+                    <button class="btn btn-light btn-sm" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="materiasList" class="row g-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vista Dashboard Profesor -->
+        <div id="dashboardView" class="hidden">
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 id="dashboardTitle"><i class="fas fa-chalkboard"></i> </h3>
+                    <button class="btn btn-light btn-sm" onclick="backToMaterias()">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </button>
+                </div>
+            </div>
+
+            <!-- Control de Asistencia -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div id="sessionInactive">
+                        <h5>Habilitar Asistencia</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" id="codigoClase" placeholder="Ingrese código (ej: ABC123)" maxlength="10">
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btn btn-success w-100" onclick="habilitarAsistencia()">
+                                    <i class="fas fa-play"></i> Habilitar Asistencia
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="sessionActive" class="hidden">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5>Sesión Activa</h5>
+                                <div class="codigo-display" id="codigoActivo"></div>
+                                <p class="text-muted mt-2"><i class="fas fa-clock"></i> Horario válido: <span id="horarioValido"></span></p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <button class="btn btn-danger" onclick="cerrarSesion()">
+                                    <i class="fas fa-stop"></i> Cerrar Sesión
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="stats-card text-center">
+                        <div class="stats-number" id="totalPresentes">0</div>
+                        <div class="text-muted">Presentes</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stats-card text-center">
+                        <div class="stats-number" id="totalAusentes">0</div>
+                        <div class="text-muted">Ausentes</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stats-card text-center">
+                        <div class="stats-number" id="totalEstudiantes">0</div>
+                        <div class="text-muted">Total</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Estudiantes -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-users"></i> Lista de Estudiantes</h5>
+                    <input type="text" class="form-control mt-2" id="searchStudent" placeholder="Buscar estudiante...">
+                </div>
+                <div class="card-body">
+                    <div id="studentsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vista Estudiante -->
+        <div id="studentView" class="hidden">
+            <div class="card mx-auto" style="max-width: 500px;">
+                <div class="card-header">
+                    <h3><i class="fas fa-clipboard-check"></i> Marcar Asistencia</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div id="studentAlert"></div>
+                    <form id="studentForm">
+                        <div class="mb-3">
+                            <label class="form-label">Número de DNI</label>
+                            <input type="text" class="form-control" id="studentDNI" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Código de Clase</label>
+                            <input type="text" class="form-control" id="studentCodigo" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-check"></i> Marcar Presente
+                        </button>
+                        <button type="button" class="btn btn-link w-100" onclick="backToRole()">Volver</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script type="module">
+        // Importar Firebase desde CDN
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, push, get, onValue, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // CONFIGURACIÓN - DEBES REEMPLAZAR CON TUS CREDENCIALES
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_AUTH_DOMAIN",
+            databaseURL: "TU_DATABASE_URL",
+            projectId: "TU_PROJECT_ID",
+            storageBucket: "TU_STORAGE_BUCKET",
+            messagingSenderId: "TU_MESSAGING_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        
+        // Hacer disponibles globalmente
+        window.firebaseDB = database;
+        window.firebaseRef = ref;
+        window.firebaseSet = set;
+        window.firebasePush = push;
+        window.firebaseGet = get;
+        window.firebaseOnValue = onValue;
+        window.firebaseQuery = query;
+        window.firebaseOrderByChild = orderByChild;
+        window.firebaseEqualTo = equalTo;
+
+        // Variables globales
+        let currentUser = null;
+        let currentMateria = null;
+        let activeSession = null;
+        let estudiantes = [];
+
+        // Navegación entre vistas
+        function showView(viewId) {
+            $('.main-container > div').addClass('hidden');
+            $('#' + viewId).removeClass('hidden');
+        }
+
+        function showLogin() {
+            showView('loginView');
+        }
+
+        function showStudentView() {
+            showView('studentView');
+        }
+
+        function backToRole() {
+            showView('roleSelection');
+        }
+
+        function backToMaterias() {
+            showView('materiasView');
+            currentMateria = null;
+            activeSession = null;
+        }
+
+        function logout() {
+            currentUser = null;
+            backToRole();
+        }
+
+        // Login Profesor
+        $('#loginForm').on('submit', function(e) {
+            e.preventDefault();
+            const email = $('#loginEmail').val();
+            const password = $('#loginPassword').val();
+
+            // Buscar profesor en Firebase
+            const profesoresRef = window.firebaseRef(window.firebaseDB, 'profesores');
+            const q = window.firebaseQuery(profesoresRef, window.firebaseOrderByChild('email'), window.firebaseEqualTo(email));
+            
+            window.firebaseGet(q)
+                .then(snapshot => {
+                    if (snapshot.exists()) {
+                        const profesorData = Object.values(snapshot.val())[0];
+                        const profesorId = Object.keys(snapshot.val())[0];
+                        
+                        if (profesorData.password === password) {
+                            currentUser = { id: profesorId, ...profesorData };
+                            loadMaterias();
+                            showView('materiasView');
+                        } else {
+                            showAlert('loginAlert', 'Contraseña incorrecta', 'danger');
+                        }
+                    } else {
+                        showAlert('loginAlert', 'Usuario no encontrado', 'danger');
+                    }
+                })
+                .catch(error => {
+                    showAlert('loginAlert', 'Error al iniciar sesión: ' + error.message, 'danger');
+                });
+        });
+
+        // Cargar materias del profesor
+        function loadMaterias() {
+            if (!currentUser || !currentUser.materias) {
+                $('#materiasList').html('<div class="col-12"><p class="text-center text-muted">No hay materias configuradas</p></div>');
+                return;
+            }
+
+            let html = '';
+            Object.entries(currentUser.materias).forEach(([id, materia]) => {
+                html += `
+                    <div class="col-md-6">
+                        <div class="card materia-card" onclick="selectMateria('${id}')">
+                            <div class="card-body">
+                                <h5><i class="fas fa-book-open"></i> ${materia.nombre}</h5>
+                                <p class="text-muted mb-0">Año: ${materia.anio}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            $('#materiasList').html(html);
+        }
+
+        // Seleccionar materia y cargar estudiantes
+        function selectMateria(materiaId) {
+            currentMateria = { id: materiaId, ...currentUser.materias[materiaId] };
+            $('#dashboardTitle').html(`<i class="fas fa-chalkboard"></i> ${currentMateria.nombre}`);
+            
+            loadEstudiantes();
+            checkActiveSession();
+            showView('dashboardView');
+        }
+
+        // Cargar estudiantes desde Google Sheets
+        function loadEstudiantes() {
+            const sheetId = currentMateria.googleSheetId;
+            const apiKey = currentMateria.apiKey || 'TU_GOOGLE_API_KEY';
+            const range = currentMateria.range || 'A4:Z100';
+
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
+
+            $.get(url)
+                .done(function(data) {
+                    if (data.values && data.values.length > 0) {
+                        const headers = data.values[0];
+                        const dniIndex = headers.findIndex(h => h.toLowerCase().includes('dni'));
+                        const nombreIndex = 0;
+
+                        estudiantes = data.values.slice(1).map((row, idx) => ({
+                            rowIndex: idx + 5,
+                            nombre: row[nombreIndex] || '',
+                            dni: row[dniIndex] || '',
+                            asistencias: row.slice(2)
+                        })).filter(e => e.nombre && e.dni);
+
+                        updateStudentsList();
+                        updateStats();
+                    }
+                })
+                .fail(function() {
+                    showAlert('studentAlert', 'Error al cargar estudiantes desde Google Sheets', 'danger');
+                });
+        }
+
+        // Actualizar lista de estudiantes
+        function updateStudentsList() {
+            const searchTerm = $('#searchStudent').val().toLowerCase();
+            const todayColumn = getTodayColumnIndex();
+            
+            let html = '';
+            estudiantes.forEach(estudiante => {
+                if (searchTerm && !estudiante.nombre.toLowerCase().includes(searchTerm) && 
+                    !estudiante.dni.includes(searchTerm)) {
+                    return;
+                }
+
+                const asistenciaHoy = estudiante.asistencias[todayColumn] || '';
+                const isPresent = asistenciaHoy.startsWith('P');
+                const clase = isPresent ? 'present' : 'absent';
+                const icon = isPresent ? 'check-circle' : 'times-circle';
+                const color = isPresent ? 'success' : 'danger';
+
+                html += `
+                    <div class="student-item ${clase} p-3 mb-2 rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">${estudiante.nombre}</h6>
+                                <small class="text-muted">DNI: ${estudiante.dni}</small>
+                            </div>
+                            <div class="text-end">
+                                <i class="fas fa-${icon} text-${color} fa-2x"></i>
+                                ${isPresent ? `<div class="small text-muted">${asistenciaHoy.substring(2)}</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            $('#studentsList').html(html || '<p class="text-center text-muted">No hay estudiantes</p>');
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            const todayColumn = getTodayColumnIndex();
+            let presentes = 0;
+            
+            estudiantes.forEach(est => {
+                if (est.asistencias[todayColumn] && est.asistencias[todayColumn].startsWith('P')) {
+                    presentes++;
+                }
+            });
+
+            $('#totalPresentes').text(presentes);
+            $('#totalAusentes').text(estudiantes.length - presentes);
+            $('#totalEstudiantes').text(estudiantes.length);
+        }
+
+        // Obtener índice de columna de hoy
+        function getTodayColumnIndex() {
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            return 0; // Simplificado, deberías calcular basándote en las fechas del header
+        }
+
+        // Verificar sesión activa
+        function checkActiveSession() {
+            const today = new Date().toISOString().split('T')[0];
+            const sessionRef = window.firebaseRef(window.firebaseDB, `sesiones/${currentMateria.id}/${today}`);
+            
+            window.firebaseOnValue(sessionRef, snapshot => {
+                if (snapshot.exists()) {
+                    activeSession = snapshot.val();
+                    if (activeSession.habilitada) {
+                        showActiveSession();
+                    } else {
+                        showInactiveSession();
+                    }
+                } else {
+                    showInactiveSession();
+                }
+            });
+        }
+
+        function showActiveSession() {
+            $('#sessionInactive').addClass('hidden');
+            $('#sessionActive').removeClass('hidden');
+            $('#codigoActivo').text(activeSession.codigo);
+            
+            const inicio = new Date(activeSession.horaInicio);
+            const fin = new Date(activeSession.horaFin);
+            $('#horarioValido').text(`${inicio.toLocaleTimeString('es-AR')} - ${fin.toLocaleTimeString('es-AR')}`);
+        }
+
+        function showInactiveSession() {
+            $('#sessionInactive').removeClass('hidden');
+            $('#sessionActive').addClass('hidden');
+        }
+
+        // Habilitar asistencia
+        function habilitarAsistencia() {
+            const codigo = $('#codigoClase').val().trim();
+            if (!codigo) {
+                alert('Debe ingresar un código');
+                return;
+            }
+
+            const now = new Date();
+            const inicio = new Date(now.getTime() - 15 * 60000);
+            const fin = new Date(now.getTime() + 30 * 60000);
+            const today = now.toISOString().split('T')[0];
+
+            const sessionData = {
+                codigo: codigo,
+                horaInicio: inicio.toISOString(),
+                horaFin: fin.toISOString(),
+                habilitada: true,
+                presentes: []
+            };
+
+            const sessionRef = window.firebaseRef(window.firebaseDB, `sesiones/${currentMateria.id}/${today}`);
+            window.firebaseSet(sessionRef, sessionData)
+                .then(() => {
+                    $('#codigoClase').val('');
+                })
+                .catch(error => {
+                    alert('Error al habilitar asistencia: ' + error.message);
+                });
+        }
+
+        // Cerrar sesión de asistencia
+        function cerrarSesion() {
+            const today = new Date().toISOString().split('T')[0];
+            const sessionRef = window.firebaseRef(window.firebaseDB, `sesiones/${currentMateria.id}/${today}/habilitada`);
+            window.firebaseSet(sessionRef, false);
+        }
+
+        // Marcar asistencia estudiante
+        $('#studentForm').on('submit', function(e) {
+            e.preventDefault();
+            const dni = $('#studentDNI').val().trim();
+            const codigo = $('#studentCodigo').val().trim();
+
+            // Buscar sesión activa con este código
+            const today = new Date().toISOString().split('T')[0];
+            const sesionesRef = window.firebaseRef(window.firebaseDB, 'sesiones');
+            
+            window.firebaseGet(sesionesRef)
+                .then(snapshot => {
+                    let sessionFound = null;
+                    let materiaId = null;
+
+                    snapshot.forEach(materiaSnap => {
+                        materiaSnap.forEach(dateSnap => {
+                            if (dateSnap.key === today) {
+                                const session = dateSnap.val();
+                                if (session.codigo === codigo && session.habilitada) {
+                                    const now = new Date();
+                                    const inicio = new Date(session.horaInicio);
+                                    const fin = new Date(session.horaFin);
+                                    
+                                    if (now >= inicio && now <= fin) {
+                                        sessionFound = session;
+                                        materiaId = materiaSnap.key;
+                                    }
+                                }
+                            }
+                        });
+                    });
+
+                    if (!sessionFound) {
+                        showAlert('studentAlert', 'Código inválido o fuera de horario', 'danger');
+                        return;
+                    }
+
+                    // Verificar si ya marcó
+                    if (sessionFound.presentes && sessionFound.presentes.includes(dni)) {
+                        showAlert('studentAlert', 'Ya marcaste asistencia para esta clase', 'warning');
+                        return;
+                    }
+
+                    // Registrar asistencia
+                    marcarAsistenciaGoogle(materiaId, dni);
+                })
+                .catch(error => {
+                    showAlert('studentAlert', 'Error: ' + error.message, 'danger');
+                });
+        });
+
+        // Marcar asistencia en Google Sheets
+        function marcarAsistenciaGoogle(materiaId, dni) {
+            // Esta función requiere implementación específica con Google Sheets API
+            // Por ahora simulamos el éxito
+            const now = new Date();
+            const timestamp = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+            const today = now.toISOString().split('T')[0];
+
+            // Actualizar Firebase
+            const presentesRef = window.firebaseRef(window.firebaseDB, `sesiones/${materiaId}/${today}/presentes`);
+            window.firebasePush(presentesRef, dni);
+            
+            showAlert('studentAlert', `¡Asistencia registrada correctamente! Hora: ${timestamp}`, 'success');
+            $('#studentForm')[0].reset();
+        }
+
+        // Buscar estudiantes
+        $('#searchStudent').on('input', function() {
+            updateStudentsList();
+        });
+
+        // Mostrar alertas
+        function showAlert(containerId, message, type) {
+            const html = `
+                <div class="alert alert-${type} alert-dismissible alert-custom fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            $('#' + containerId).html(html);
+        }
+
+        // Inicialización
+        $(document).ready(function() {
+            console.log('Sistema de Asistencia inicializado');
+            // Para desarrollo: crear datos de prueba
+            // crearDatosPrueba();
+        });
+
+        // Función auxiliar para crear datos de prueba
+        function crearDatosPrueba() {
+            const profesorPrueba = {
+                nombre: "Juan Pérez",
+                email: "profesor@ejemplo.com",
+                password: "123456",
+                materias: {
+                    "materia1": {
+                        nombre: "Desarrollo Sistemas Web",
+                        anio: "2025",
+                        googleSheetId: "TU_SHEET_ID",
+                        apiKey: "TU_API_KEY",
+                        range: "A4:Z100"
+                    }
+                }
+            };
+
+            const profesoresRef = window.firebaseRef(window.firebaseDB, 'profesores');
+            window.firebasePush(profesoresRef, profesorPrueba)
+                .then(() => console.log('Datos de prueba creados'))
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
