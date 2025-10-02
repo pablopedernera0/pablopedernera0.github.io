@@ -26,7 +26,7 @@
             width: 100%;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
@@ -43,7 +43,7 @@
         }
 
         .progress-bar {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             height: 8px;
             border-radius: 4px;
             margin-top: 20px;
@@ -71,8 +71,14 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .problem-title {
@@ -220,7 +226,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 1000;
             animation: fadeIn 0.3s;
         }
@@ -243,8 +249,14 @@
         }
 
         @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .modal-header {
@@ -346,9 +358,15 @@
         }
 
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-10px);
+            }
+            75% {
+                transform: translateX(10px);
+            }
         }
 
         .completion {
@@ -375,629 +393,635 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🐳 Laboratorio Docker: Diagnóstico de Conectividad</h1>
-            <p style="margin-top: 10px; opacity: 0.9;">Diagnostica y soluciona problemas de red entre contenedores</p>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressBar"></div>
-            </div>
-        </div>
-
-        <div class="slide-container" id="slideContainer">
-            <!-- Slide 0: Introducción -->
-            <div class="slide active">
-                <div style="text-align: center; padding: 20px;">
-                    <div class="emoji">🚀</div>
-                    <h2 style="color: #2d3748; margin-bottom: 20px;">Bienvenido al Laboratorio</h2>
-                    <p style="color: #4a5568; line-height: 1.8; margin-bottom: 30px;">
-                        En este laboratorio trabajarás con 5 ejercicios de diagnóstico de redes Docker.
-                        Cada problema te mostrará síntomas, comandos de diagnóstico y finalmente
-                        deberás encontrar la clave para desbloquear la solución.
-                    </p>
-                    <div style="background: #f7fafc; padding: 20px; border-radius: 8px; text-align: left;">
-                        <h3 style="color: #2d3748; margin-bottom: 15px;">📋 Preparación del entorno:</h3>
-                        <div class="code-block">
-<span class="command"># Crear el entorno del laboratorio (cada linea es un comando separado)</span>
-                            <br>git clone https://github.com/pablopedernera0/docker-connectivity-lab.git
-                            <br>cd docker-connectivity-lab
-                            <br>sh iniciar.sh
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Ejercicio 1: Problema -->
-            <div class="slide">
-                <h2 class="problem-title">🔴 Ejercicio 1: Red Aislada</h2>
-                <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
-                    El contenedor <strong>container-b</strong> ha perdido conectividad con <strong>container-a</strong>.
-                    Los comandos básicos de red no funcionan y no puede alcanzar ningún otro contenedor.
-                </p>
-
-                <div class="step">
-                    <h3>🔧 Simular el problema</h3>
-                    <div class="code-block">
-<span class="command"># Preparar el problema 1</span>
-sh problema-1.sh
-                    </div>
-                </div>
-
-                <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
-                    <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
-                    <ul style="color: #742a2a; padding-left: 20px;">
-                        <li>Ping no funciona</li>
-                        <li>No hay respuesta de red</li>
-                        <li>El contenedor parece aislado</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Ejercicio 1: Diagnóstico -->
-            <div class="slide">
-                <h2 class="diagnostic-title">🔍 Ejercicio 1: Diagnóstico</h2>
-                
-                <div class="step">
-                    <h3>Paso 1: Intentar ping</h3>
-                    <div class="code-block">docker exec container-b ping -c 3 container-a</div>
-                    <p><strong>Resultado esperado:</strong> ping: bad address 'container-a'</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 2: Verificar interfaces de red</h3>
-                    <div class="code-block">docker exec container-b ip addr show</div>
-                    <p><strong>Busca:</strong> ¿Qué interfaces aparecen? ¿Hay alguna eth0?</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 3: Verificar redes del contenedor</h3>
-                    <div class="code-block">docker inspect container-b | grep -A 20 Networks</div>
-                    <p><strong>Busca:</strong> El campo "Networks" - ¿está vacío o tiene alguna red?</p>
-                </div>
-
-                <div class="questions">
-                    <h3>🤔 Preguntas para reflexionar:</h3>
-                    <ul>
-                        <li>¿Por qué falla el ping?</li>
-                        <li>¿Qué interfaces de red tiene el contenedor?</li>
-                        <li>¿Está conectado a alguna red?</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Ejercicio 2: Problema -->
-            <div class="slide">
-                <h2 class="problem-title">🔴 Ejercicio 2: Problema de DNS</h2>
-                <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
-                    Se creó un nuevo contenedor que no puede resolver nombres de otros contenedores,
-                    aunque la red está correctamente configurada.
-                </p>
-
-                <div class="step">
-                    <h3>🔧 Simular el problema</h3>
-                    <div class="code-block">
-<span class="command"># Preparar el problema 2</span>
-                        <br>sh problema-2.sh
-                    </div>
-                </div>
-
-                <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
-                    <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
-                    <ul style="color: #742a2a; padding-left: 20px;">
-                        <li>No resuelve nombres de contenedores</li>
-                        <li>Ping por nombre falla</li>
-                        <li>DNS parece no funcionar correctamente</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Ejercicio 2: Diagnóstico -->
-            <div class="slide">
-                <h2 class="diagnostic-title">🔍 Ejercicio 2: Diagnóstico</h2>
-                
-                <div class="step">
-                    <h3>Paso 1: Intentar conexión por nombre</h3>
-                    <div class="code-block">docker exec container-c ping -c 3 container-a</div>
-                    <p><strong>Resultado esperado:</strong> Puede fallar con "bad address" o timeout</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 2: Verificar configuración DNS</h3>
-                    <div class="code-block">docker exec container-c cat /etc/resolv.conf</div>
-                    <p><strong>Busca:</strong> La línea "nameserver" - ¿qué dirección IP aparece?</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 3: Probar resolución DNS</h3>
-                    <div class="code-block">docker exec container-c nslookup container-a</div>
-                    <p><strong>Busca:</strong> ¿El servidor puede resolver el nombre?</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 4: Obtener IP y probar conexión directa</h3>
-                    <div class="code-block">
-                        <br>CONTAINER_A_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' container-a)
-                        <br>echo $CONTAINER_A_IP
-                        <br>docker exec container-c ping -c 3 $CONTAINER_A_IP
-                    </div>
-                    <p><strong>Resultado esperado:</strong> El ping por IP debería funcionar</p>
-                </div>
-
-                <div class="questions">
-                    <h3>🤔 Preguntas para reflexionar:</h3>
-                    <ul>
-                        <li>¿Funciona el ping por IP pero no por nombre?</li>
-                        <li>¿Qué servidor DNS está usando?</li>
-                        <li>¿Puede resolver nombres internos de Docker?</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Ejercicio 3: Problema -->
-            <div class="slide">
-                <h2 class="problem-title">🔴 Ejercicio 3: Puerto No Accesible</h2>
-                <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
-                    Un servidor web está corriendo pero el cliente no puede acceder al servicio,
-                    aunque ambos están en la misma red.
-                </p>
-
-                <div class="step">
-                    <h3>🔧 Simular el problema</h3>
-                    <div class="code-block">
-<span class="command"># Preparar el problema 3</span>
-                        <br>sh problema-3.sh
-                    </div>
-                </div>
-
-                <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
-                    <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
-                    <ul style="color: #742a2a; padding-left: 20px;">
-                        <li>Ping funciona pero curl no</li>
-                        <li>Timeout al intentar conectar al puerto</li>
-                        <li>El servidor parece estar corriendo</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Ejercicio 3: Diagnóstico -->
-            <div class="slide">
-                <h2 class="diagnostic-title">🔍 Ejercicio 3: Diagnóstico</h2>
-                
-                <div class="step">
-                    <h3>Paso 1: Verificar que el servidor está corriendo</h3>
-                    <div class="code-block">docker exec web-server ps aux | grep python</div>
-                    <p><strong>Busca:</strong> El proceso de Python en ejecución</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 2: Intentar conexión desde el cliente</h3>
-                    <div class="code-block">docker exec web-client curl http://web-server:8080</div>
-                    <p><strong>Resultado:</strong> Anota si funciona o da timeout</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 3: Verificar conectividad básica</h3>
-                    <div class="code-block">docker exec web-client ping -c 3 web-server</div>
-                    <p><strong>Resultado esperado:</strong> El ping debería funcionar</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 4: Test de puerto específico</h3>
-                    <div class="code-block">docker exec web-client nc -zv web-server 8080</div>
-                    <p><strong>Busca:</strong> El mensaje que indica si el puerto está abierto o cerrado</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 5: Verificar en qué interfaz escucha el servidor</h3>
-                    <div class="code-block">docker exec web-server netstat -tlnp | grep 8080</div>
-                    <p><strong>Busca:</strong> La columna "Local Address" - ¿dice 0.0.0.0:8080 o 127.0.0.1:8080?</p>
-                </div>
-
-                <div class="questions">
-                    <h3>🤔 Preguntas para reflexionar:</h3>
-                    <ul>
-                        <li>¿El ping funciona pero curl no?</li>
-                        <li>¿En qué interfaz está escuchando el servidor?</li>
-                        <li>¿Debería escuchar en localhost o en todas las interfaces?</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Ejercicio 4: Problema -->
-            <div class="slide">
-                <h2 class="problem-title">🔴 Ejercicio 4: Redes Diferentes</h2>
-                <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
-                    Dos contenedores no pueden comunicarse entre sí, aunque ambos parecen
-                    estar correctamente configurados individualmente.
-                </p>
-
-                <div class="step">
-                    <h3>🔧 Simular el problema</h3>
-                    <div class="code-block">
-<span class="command"># Preparar el problema 4</span>
-                        <br>sh problema-4.sh
-                    </div>
-                </div>
-
-                <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
-                    <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
-                    <ul style="color: #742a2a; padding-left: 20px;">
-                        <li>No hay conectividad entre contenedores</li>
-                        <li>Ambos contenedores funcionan individualmente</li>
-                        <li>Ping no encuentra el host de destino</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Ejercicio 4: Diagnóstico -->
-            <div class="slide">
-                <h2 class="diagnostic-title">🔍 Ejercicio 4: Diagnóstico</h2>
-                
-                <div class="step">
-                    <h3>Paso 1: Intentar ping entre contenedores</h3>
-                    <div class="code-block">docker exec isolated-a ping -c 3 isolated-b</div>
-                    <p><strong>Resultado esperado:</strong> Debería fallar</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 2: Verificar redes de isolated-a</h3>
-                    <div class="code-block">docker inspect isolated-a | grep -A 10 Networks</div>
-                    <p><strong>Busca:</strong> El nombre de la red a la que está conectado</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 3: Verificar redes de isolated-b</h3>
-                    <div class="code-block">docker inspect isolated-b | grep -A 10 Networks</div>
-                    <p><strong>Busca:</strong> El nombre de la red a la que está conectado</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 4: Listar todas las redes</h3>
-                    <div class="code-block">docker network ls</div>
-                    <p><strong>Busca:</strong> Las redes lab-network y lab-network-2</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 5: Ver contenedores en cada red</h3>
-                    <div class="code-block">
-                        <br>docker network inspect lab-network | grep Name
-                        <br>docker network inspect lab-network-2 | grep Name
-                    </div>
-                    <p><strong>Busca:</strong> Qué contenedores están en cada red</p>
-                </div>
-
-                <div class="questions">
-                    <h3>🤔 Preguntas para reflexionar:</h3>
-                    <ul>
-                        <li>¿En qué redes está cada contenedor?</li>
-                        <li>¿Pueden dos contenedores en redes diferentes comunicarse por defecto?</li>
-                        <li>¿Cómo podrían comunicarse?</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Ejercicio 5: Problema -->
-            <div class="slide">
-                <h2 class="problem-title">🔴 Ejercicio 5: Firewall Bloqueando Tráfico</h2>
-                <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
-                    Un contenedor no puede hacer ping a otros contenedores, pero otros protocolos
-                    parecen funcionar correctamente.
-                </p>
-
-                <div class="step">
-                    <h3>🔧 Simular el problema</h3>
-                    <div class="code-block">
-<span class="command"># Preparar el problema 5</span>
-                        <br>sh problema-5.sh
-                    </div>
-                </div>
-
-                <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
-                    <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
-                    <ul style="color: #742a2a; padding-left: 20px;">
-                        <li>Ping no funciona</li>
-                        <li>Otros servicios (HTTP) sí funcionan</li>
-                        <li>Comportamiento selectivo según el protocolo</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Ejercicio 5: Diagnóstico -->
-            <div class="slide">
-                <h2 class="diagnostic-title">🔍 Ejercicio 5: Diagnóstico</h2>
-                
-                <div class="step">
-                    <h3>Paso 1: Intentar ping (fallará)</h3>
-                    <div class="code-block">docker exec firewall-test ping -c 3 container-a</div>
-                    <p><strong>Resultado esperado:</strong> Debería fallar o timeout</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 2: Verificar reglas iptables</h3>
-                    <div class="code-block">docker exec firewall-test iptables -L -n -v</div>
-                    <p><strong>Busca:</strong> La sección OUTPUT - ¿hay alguna regla DROP para ICMP?</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 3: Intentar con otro protocolo</h3>
-                    <div class="code-block">docker exec firewall-test curl http://container-a</div>
-                    <p><strong>Resultado esperado:</strong> Debería funcionar correctamente</p>
-                </div>
-
-                <div class="step">
-                    <h3>Paso 4: Ver estadísticas de la regla</h3>
-                    <div class="code-block">docker exec firewall-test iptables -L OUTPUT -v</div>
-                    <p><strong>Busca:</strong> Los contadores de paquetes - ¿cuántos paquetes fueron bloqueados?</p>
-                </div>
-
-                <div class="questions">
-                    <h3>🤔 Preguntas para reflexionar:</h3>
-                    <ul>
-                        <li>¿Por qué curl funciona pero ping no?</li>
-                        <li>¿Qué protocolo usa ping?</li>
-                        <li>¿Qué reglas están bloqueando tráfico?</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Final -->
-            <div class="slide">
-                <div class="completion">
-                    <div class="emoji">🎉</div>
-                    <h2>¡Laboratorio Completado!</h2>
-                    <p>Has diagnosticado y resuelto 5 problemas comunes de conectividad en Docker.</p>
-                    <p style="margin-top: 20px;">Recuerda siempre seguir una metodología sistemática de diagnóstico:</p>
-                    <div style="background: #f7fafc; padding: 30px; border-radius: 8px; margin-top: 30px; text-align: left;">
-                        <ul style="color: #2d3748; line-height: 2;">
-                            <li>✅ Verificar conectividad básica (ping)</li>
-                            <li>✅ Revisar configuración de red</li>
-                            <li>✅ Comprobar DNS</li>
-                            <li>✅ Verificar puertos y servicios</li>
-                            <li>✅ Revisar reglas de firewall</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div style="padding: 30px; background: #f7fafc;">
-            <div class="navigation">
-                <button class="btn btn-prev" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
-                <button class="btn btn-next" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
-                <button class="btn btn-solve" id="solveBtn" onclick="showSolveModal()" style="display: none;">🔓 Resolver</button>
-            </div>
+<div class="container">
+    <div class="header">
+        <h1>🐳 Laboratorio Docker: Diagnóstico de Conectividad</h1>
+        <p style="margin-top: 10px; opacity: 0.9;">Diagnostica y soluciona problemas de red entre contenedores</p>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
         </div>
     </div>
 
-    <!-- Modal para ingresar solución -->
-    <div class="modal" id="solveModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span style="font-size: 32px;">🔐</span>
-                <h2>Desbloquear Solución</h2>
+    <div class="slide-container" id="slideContainer">
+        <!-- Slide 0: Introducción -->
+        <div class="slide active">
+            <div style="text-align: center; padding: 20px;">
+                <div class="emoji">🚀</div>
+                <h2 style="color: #2d3748; margin-bottom: 20px;">Bienvenido al Laboratorio</h2>
+                <p style="color: #4a5568; line-height: 1.8; margin-bottom: 30px;">
+                    En este laboratorio trabajarás con 5 ejercicios de diagnóstico de redes Docker.
+                    Cada problema te mostrará síntomas, comandos de diagnóstico y finalmente
+                    deberás encontrar la clave para desbloquear la solución.
+                </p>
+                <div style="background: #f7fafc; padding: 20px; border-radius: 8px; text-align: left;">
+                    <h3 style="color: #2d3748; margin-bottom: 15px;">📋 Preparación del entorno:</h3>
+                    <div class="code-block">
+                        <span class="command"># Crear el entorno del laboratorio (cada linea es un comando separado)</span>
+                        <br>git clone https://github.com/pablopedernera0/docker-connectivity-lab.git
+                        <br>cd docker-connectivity-lab
+                        <br>sh iniciar.sh
+                    </div>
+                </div>
             </div>
-            
-            <p style="color: #4a5568; margin-bottom: 20px;">
-                Para desbloquear la solución, ingresa la clave que encontraste en el diagnóstico.
+        </div>
+
+        <!-- Ejercicio 1: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Ejercicio 1: Red Aislada</h2>
+            <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
+                El contenedor <strong>container-b</strong> ha perdido conectividad con <strong>container-a</strong>.
+                Los comandos básicos de red no funcionan y no puede alcanzar ningún otro contenedor.
             </p>
 
-            <div class="hints" id="hintsContainer"></div>
-
-            <div class="input-group">
-                <label for="solutionKey">Clave de solución:</label>
-                <input type="text" id="solutionKey" placeholder="Ingresa la clave aquí...">
+            <div class="step">
+                <h3>🔧 Simular el problema</h3>
+                <div class="code-block">
+                    <span class="command"># Preparar el problema 1</span>
+                    sh problema-1.sh
+                </div>
             </div>
 
-            <div class="error-message" id="errorMessage">
-                ❌ Clave incorrecta. Revisa las pistas y vuelve a intentar.
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>Ping no funciona</li>
+                    <li>No hay respuesta de red</li>
+                    <li>El contenedor parece aislado</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 1: Diagnóstico -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Ejercicio 1: Diagnóstico</h2>
+
+            <div class="step">
+                <h3>Paso 1: Intentar ping</h3>
+                <div class="code-block">docker exec container-b ping -c 3 container-a</div>
+                <p><strong>Resultado esperado:</strong> ping: bad address 'container-a'</p>
             </div>
 
-            <div style="display: flex; gap: 15px; margin-top: 25px;">
-                <button class="btn btn-prev" onclick="closeSolveModal()" style="flex: 1;">Cancelar</button>
-                <button class="btn btn-solve" onclick="checkSolution()" style="flex: 1;">Verificar</button>
+            <div class="step">
+                <h3>Paso 2: Verificar interfaces de red</h3>
+                <div class="code-block">docker exec container-b ip addr show</div>
+                <p><strong>Busca:</strong> ¿Qué interfaces aparecen? ¿Hay alguna eth0?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 3: Verificar redes del contenedor</h3>
+                <div class="code-block">docker inspect container-b | grep -A 20 Networks</div>
+                <p><strong>Busca:</strong> El campo "Networks" - ¿está vacío o tiene alguna red?</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿Por qué falla el ping?</li>
+                    <li>¿Qué interfaces de red tiene el contenedor?</li>
+                    <li>¿Está conectado a alguna red?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 2: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Ejercicio 2: Problema de DNS</h2>
+            <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
+                Se creó un nuevo contenedor que no puede resolver nombres de otros contenedores,
+                aunque la red está correctamente configurada.
+            </p>
+
+            <div class="step">
+                <h3>🔧 Simular el problema</h3>
+                <div class="code-block">
+                    <span class="command"># Preparar el problema 2</span>
+                    <br>sh problema-2.sh
+                </div>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>No resuelve nombres de contenedores</li>
+                    <li>Ping por nombre falla</li>
+                    <li>DNS parece no funcionar correctamente</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 2: Diagnóstico -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Ejercicio 2: Diagnóstico</h2>
+
+            <div class="step">
+                <h3>Paso 1: Intentar conexión por nombre</h3>
+                <div class="code-block">docker exec container-c ping -c 3 container-a</div>
+                <p><strong>Resultado esperado:</strong> Puede fallar con "bad address" o timeout</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 2: Verificar configuración DNS</h3>
+                <div class="code-block">docker exec container-c cat /etc/resolv.conf</div>
+                <p><strong>Busca:</strong> La línea "nameserver" - ¿qué dirección IP aparece?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 3: Probar resolución DNS</h3>
+                <div class="code-block">docker exec container-c nslookup container-a</div>
+                <p><strong>Busca:</strong> ¿El servidor puede resolver el nombre?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 4: Obtener IP y probar conexión directa</h3>
+                <div class="code-block">
+                    <br>CONTAINER_A_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}'
+                    container-a)
+                    <br>echo $CONTAINER_A_IP
+                    <br>docker exec container-c ping -c 3 $CONTAINER_A_IP
+                </div>
+                <p><strong>Resultado esperado:</strong> El ping por IP debería funcionar</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿Funciona el ping por IP pero no por nombre?</li>
+                    <li>¿Qué servidor DNS está usando?</li>
+                    <li>¿Puede resolver nombres internos de Docker?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 3: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Ejercicio 3: Puerto No Accesible</h2>
+            <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
+                Un servidor web está corriendo pero el cliente no puede acceder al servicio,
+                aunque ambos están en la misma red.
+            </p>
+
+            <div class="step">
+                <h3>🔧 Simular el problema</h3>
+                <div class="code-block">
+                    <span class="command"># Preparar el problema 3</span>
+                    <br>sh problema-3.sh
+                </div>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>Ping funciona pero curl no</li>
+                    <li>Timeout al intentar conectar al puerto</li>
+                    <li>El servidor parece estar corriendo</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 3: Diagnóstico -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Ejercicio 3: Diagnóstico</h2>
+
+            <div class="step">
+                <h3>Paso 1: Verificar que el servidor está corriendo</h3>
+                <div class="code-block">docker exec web-server ps aux | grep python</div>
+                <p><strong>Busca:</strong> El proceso de Python en ejecución</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 2: Intentar conexión desde el cliente</h3>
+                <div class="code-block">docker exec web-client curl http://web-server:8080</div>
+                <p><strong>Resultado:</strong> Anota si funciona o da timeout</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 3: Verificar conectividad básica</h3>
+                <div class="code-block">docker exec web-client ping -c 3 web-server</div>
+                <p><strong>Resultado esperado:</strong> El ping debería funcionar</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 4: Test de puerto específico</h3>
+                <div class="code-block">docker exec web-client nc -zv web-server 8080</div>
+                <p><strong>Busca:</strong> El mensaje que indica si el puerto está abierto o cerrado</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 5: Verificar en qué interfaz escucha el servidor</h3>
+                <div class="code-block">docker exec web-server netstat -tlnp | grep 8080</div>
+                <p><strong>Busca:</strong> La columna "Local Address" - ¿dice 0.0.0.0:8080 o 127.0.0.1:8080?</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿El ping funciona pero curl no?</li>
+                    <li>¿En qué interfaz está escuchando el servidor?</li>
+                    <li>¿Debería escuchar en localhost o en todas las interfaces?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 4: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Ejercicio 4: Redes Diferentes</h2>
+            <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
+                Dos contenedores no pueden comunicarse entre sí, aunque ambos parecen
+                estar correctamente configurados individualmente.
+            </p>
+
+            <div class="step">
+                <h3>🔧 Simular el problema</h3>
+                <div class="code-block">
+                    <span class="command"># Preparar el problema 4</span>
+                    <br>sh problema-4.sh
+                </div>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>No hay conectividad entre contenedores</li>
+                    <li>Ambos contenedores funcionan individualmente</li>
+                    <li>Ping no encuentra el host de destino</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 4: Diagnóstico -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Ejercicio 4: Diagnóstico</h2>
+
+            <div class="step">
+                <h3>Paso 1: Intentar ping entre contenedores</h3>
+                <div class="code-block">docker exec isolated-a ping -c 3 isolated-b</div>
+                <p><strong>Resultado esperado:</strong> Debería fallar</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 2: Verificar redes de isolated-a</h3>
+                <div class="code-block">docker inspect isolated-a | grep -A 10 Networks</div>
+                <p><strong>Busca:</strong> El nombre de la red a la que está conectado</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 3: Verificar redes de isolated-b</h3>
+                <div class="code-block">docker inspect isolated-b | grep -A 10 Networks</div>
+                <p><strong>Busca:</strong> El nombre de la red a la que está conectado</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 4: Listar todas las redes</h3>
+                <div class="code-block">docker network ls</div>
+                <p><strong>Busca:</strong> Las redes lab-network y lab-network-2</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 5: Ver contenedores en cada red</h3>
+                <div class="code-block">
+                    <br>docker network inspect lab-network | grep Name
+                    <br>docker network inspect lab-network-2 | grep Name
+                </div>
+                <p><strong>Busca:</strong> Qué contenedores están en cada red</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿En qué redes está cada contenedor?</li>
+                    <li>¿Pueden dos contenedores en redes diferentes comunicarse por defecto?</li>
+                    <li>¿Cómo podrían comunicarse?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 5: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Ejercicio 5: Firewall Bloqueando Tráfico</h2>
+            <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
+                Un contenedor no puede hacer ping a otros contenedores, pero otros protocolos
+                parecen funcionar correctamente.
+            </p>
+
+            <div class="step">
+                <h3>🔧 Simular el problema</h3>
+                <div class="code-block">
+                    <span class="command"># Preparar el problema 5</span>
+                    <br>sh problema-5.sh
+                </div>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>Ping no funciona</li>
+                    <li>Otros servicios (HTTP) sí funcionan</li>
+                    <li>Comportamiento selectivo según el protocolo</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 5: Diagnóstico -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Ejercicio 5: Diagnóstico</h2>
+
+            <div class="step">
+                <h3>Paso 1: Intentar ping (fallará)</h3>
+                <div class="code-block">docker exec firewall-test ping -c 3 container-a</div>
+                <p><strong>Resultado esperado:</strong> Debería fallar o timeout</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 2: Verificar reglas iptables</h3>
+                <div class="code-block">docker exec firewall-test iptables -L -n -v</div>
+                <p><strong>Busca:</strong> La sección OUTPUT - ¿hay alguna regla DROP para ICMP?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 3: Intentar con otro protocolo</h3>
+                <div class="code-block">docker exec firewall-test curl http://container-a</div>
+                <p><strong>Resultado esperado:</strong> Debería funcionar correctamente</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 4: Ver estadísticas de la regla</h3>
+                <div class="code-block">docker exec firewall-test iptables -L OUTPUT -v</div>
+                <p><strong>Busca:</strong> Los contadores de paquetes - ¿cuántos paquetes fueron bloqueados?</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿Por qué curl funciona pero ping no?</li>
+                    <li>¿Qué protocolo usa ping?</li>
+                    <li>¿Qué reglas están bloqueando tráfico?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Final -->
+        <div class="slide">
+            <div class="completion">
+                <div class="emoji">🎉</div>
+                <h2>¡Laboratorio Completado!</h2>
+                <p>Has diagnosticado y resuelto 5 problemas comunes de conectividad en Docker.</p>
+                <p style="margin-top: 20px;">Recuerda siempre seguir una metodología sistemática de diagnóstico:</p>
+                <div style="background: #f7fafc; padding: 30px; border-radius: 8px; margin-top: 30px; text-align: left;">
+                    <ul style="color: #2d3748; line-height: 2;">
+                        <li>✅ Verificar conectividad básica (ping)</li>
+                        <li>✅ Revisar configuración de red</li>
+                        <li>✅ Comprobar DNS</li>
+                        <li>✅ Verificar puertos y servicios</li>
+                        <li>✅ Revisar reglas de firewall</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal para mostrar solución -->
-    <div class="modal" id="solutionModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span style="font-size: 32px;">✅</span>
-                <h2>¡Solución Correcta!</h2>
-            </div>
-            
-            <span class="success-badge">Problema Resuelto</span>
-
-            <div class="solution-content" id="solutionContent"></div>
-
-            <button class="btn btn-next" onclick="closeSolutionModal()" style="width: 100%; margin-top: 25px;">
-                Continuar →
+    <div style="padding: 30px; background: #f7fafc;">
+        <div class="navigation">
+            <button class="btn btn-prev" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+            <button class="btn btn-next" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+            <button class="btn btn-solve" id="solveBtn" onclick="showSolveModal()" style="display: none;">🔓 Resolver
             </button>
         </div>
     </div>
+</div>
 
-    <script>
-        let currentSlide = 0;
-        let currentExercise = 0;
+<!-- Modal para ingresar solución -->
+<div class="modal" id="solveModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span style="font-size: 32px;">🔐</span>
+            <h2>Desbloquear Solución</h2>
+        </div>
 
-        const exercises = [
-            {
-                problemSlide: 1,
-                diagnosticSlide: 2,
-                key: "lab-network",
-                hints: [
-                    "💡 Busca el nombre de la red en el comando 'docker inspect'",
-                    "💡 Fíjate en el campo 'Networks' del contenedor",
-                    "💡 La respuesta está vacía {} porque no está conectado a ninguna red"
-                ],
-                hintText: "La clave es el nombre de la red de la que fue desconectado el contenedor.",
-                solution: {
-                    title: "Problema: Contenedor Desconectado de la Red",
-                    description: "El contenedor fue desconectado de la red lab-network, por lo que perdió toda conectividad. Un contenedor sin red no puede comunicarse con otros contenedores ni resolver nombres DNS.",
-                    command: "docker network connect lab-network container-b"
-                }
-            },
-            {
-                problemSlide: 3,
-                diagnosticSlide: 4,
-                key: "1.1.1.1",
-                hints: [
-                    "💡 Ejecuta 'docker exec container-c cat /etc/resolv.conf'",
-                    "💡 Busca la línea que comienza con 'nameserver'",
-                    "💡 Es una dirección IP pública conocida de Cloudflare"
-                ],
-                hintText: "La clave es la dirección IP del servidor DNS configurado (vista en /etc/resolv.conf).",
-                solution: {
-                    title: "Problema: DNS Externo en Lugar de DNS Interno",
-                    description: "El contenedor fue configurado con un DNS externo (1.1.1.1) que no puede resolver nombres internos de Docker. Docker proporciona su propio servidor DNS que conoce los nombres de los contenedores en la misma red.",
-                    command: "docker rm -f container-c\ndocker run -d --name container-c --network lab-network alpine:latest sleep 3600"
-                }
-            },
-            {
-                problemSlide: 5,
-                diagnosticSlide: 6,
-                key: "127.0.0.1",
-                hints: [
-                    "💡 Ejecuta 'docker exec web-server netstat -tlnp | grep 8080'",
-                    "💡 Mira la columna 'Local Address'",
-                    "💡 Si dice 127.0.0.1:8080, solo escucha en localhost"
-                ],
-                hintText: "La clave es la dirección IP en la que está escuchando el servidor (columna Local Address).",
-                solution: {
-                    title: "Problema: Servidor Escuchando Solo en Localhost",
-                    description: "El servidor Python estaba escuchando en 127.0.0.1 (localhost) en lugar de 0.0.0.0 (todas las interfaces). Esto significa que solo acepta conexiones desde dentro del mismo contenedor, no desde otros contenedores de la red.",
-                    command: "docker exec web-server python -m http.server 8080 --bind 0.0.0.0\n# O recrear: docker run -d --name web-server --network lab-network python:3.9-alpine sh -c \"python -m http.server 8080 --bind 0.0.0.0\""
-                }
-            },
-            {
-                problemSlide: 7,
-                diagnosticSlide: 8,
-                key: "lab-network-2",
-                hints: [
-                    "💡 Ejecuta 'docker inspect isolated-b | grep -A 10 Networks'",
-                    "💡 Busca el nombre de la red en la salida",
-                    "💡 Es diferente a 'lab-network'"
-                ],
-                hintText: "La clave es el nombre de la segunda red (donde está isolated-b).",
-                solution: {
-                    title: "Problema: Contenedores en Redes Diferentes",
-                    description: "Los contenedores están en redes Docker diferentes (lab-network y lab-network-2). Por defecto, los contenedores solo pueden comunicarse con otros contenedores en la misma red. Es necesario conectar un contenedor a ambas redes o moverlos a la misma red.",
-                    command: "docker network connect lab-network-2 isolated-a\n# Ahora isolated-a está en ambas redes y puede comunicarse con isolated-b"
-                }
-            },
-            {
-                problemSlide: 9,
-                diagnosticSlide: 10,
-                key: "icmp",
-                hints: [
-                    "💡 Ejecuta 'docker exec firewall-test iptables -L OUTPUT -n -v'",
-                    "💡 Busca una regla que tenga 'DROP' en la columna 'target'",
-                    "💡 Mira la columna 'prot' (protocolo) - es el protocolo usado por ping"
-                ],
-                hintText: "La clave es el nombre del protocolo bloqueado por iptables (en minúsculas).",
-                solution: {
-                    title: "Problema: Regla de Firewall Bloqueando ICMP",
-                    description: "Se agregó una regla de iptables que bloquea todo el tráfico ICMP saliente. ICMP es el protocolo usado por ping, por eso ping falla mientras que otros protocolos como HTTP (usado por curl) siguen funcionando. Las reglas de firewall pueden bloquear selectivamente diferentes tipos de tráfico.",
-                    command: "docker exec firewall-test iptables -D OUTPUT -p icmp -j DROP\n# Esto elimina la regla que bloquea ICMP"
-                }
+        <p style="color: #4a5568; margin-bottom: 20px;">
+            Para desbloquear la solución, ingresa la clave que encontraste en el diagnóstico.
+        </p>
+
+        <div class="hints" id="hintsContainer"></div>
+
+        <div class="input-group">
+            <label for="solutionKey">Clave de solución:</label>
+            <input type="text" id="solutionKey" placeholder="Ingresa la clave aquí...">
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            ❌ Clave incorrecta. Revisa las pistas y vuelve a intentar.
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-top: 25px;">
+            <button class="btn btn-prev" onclick="closeSolveModal()" style="flex: 1;">Cancelar</button>
+            <button class="btn btn-solve" onclick="checkSolution()" style="flex: 1;">Verificar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para mostrar solución -->
+<div class="modal" id="solutionModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span style="font-size: 32px;">✅</span>
+            <h2>¡Solución Correcta!</h2>
+        </div>
+
+        <span class="success-badge">Problema Resuelto</span>
+
+        <div class="solution-content" id="solutionContent"></div>
+
+        <button class="btn btn-next" onclick="closeSolutionModal()" style="width: 100%; margin-top: 25px;">
+            Continuar →
+        </button>
+    </div>
+</div>
+
+<script>
+    let currentSlide = 0;
+    let currentExercise = 0;
+
+    const exercises = [
+        {
+            problemSlide: 1,
+            diagnosticSlide: 2,
+            key: "lab-network",
+            hints: [
+                "💡 Busca el nombre de la red en el comando 'docker inspect'",
+                "💡 Fíjate en el campo 'Networks' del contenedor",
+                "💡 La respuesta está vacía {} porque no está conectado a ninguna red"
+            ],
+            hintText: "La clave es el nombre de la red de la que fue desconectado el contenedor.",
+            solution: {
+                title: "Problema: Contenedor Desconectado de la Red",
+                description: "El contenedor fue desconectado de la red lab-network, por lo que perdió toda conectividad. Un contenedor sin red no puede comunicarse con otros contenedores ni resolver nombres DNS.",
+                command: "docker network connect lab-network container-b"
             }
-        ];
-
-        function updateProgress() {
-            const totalSlides = document.querySelectorAll('.slide').length;
-            const progress = ((currentSlide) / (totalSlides - 1)) * 100;
-            document.getElementById('progressBar').style.width = progress + '%';
-        }
-
-        function showSlide(n) {
-            const slides = document.querySelectorAll('.slide');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            const solveBtn = document.getElementById('solveBtn');
-
-            if (n >= slides.length) {
-                currentSlide = slides.length - 1;
-                return;
+        },
+        {
+            problemSlide: 3,
+            diagnosticSlide: 4,
+            key: "1.1.1.1",
+            hints: [
+                "💡 Ejecuta 'docker exec container-c cat /etc/resolv.conf'",
+                "💡 Busca la línea que comienza con 'nameserver'",
+                "💡 Es una dirección IP pública conocida de Cloudflare"
+            ],
+            hintText: "La clave es la dirección IP del servidor DNS configurado (vista en /etc/resolv.conf).",
+            solution: {
+                title: "Problema: DNS Externo en Lugar de DNS Interno",
+                description: "El contenedor fue configurado con un DNS externo (1.1.1.1) que no puede resolver nombres internos de Docker. Docker proporciona su propio servidor DNS que conoce los nombres de los contenedores en la misma red.",
+                command: "docker rm -f container-c\ndocker run -d --name container-c --network lab-network alpine:latest sleep 3600"
             }
-            if (n < 0) {
-                currentSlide = 0;
-                return;
+        },
+        {
+            problemSlide: 5,
+            diagnosticSlide: 6,
+            key: "127.0.0.1",
+            hints: [
+                "💡 Ejecuta 'docker exec web-server netstat -tlnp | grep 8080'",
+                "💡 Mira la columna 'Local Address'",
+                "💡 Si dice 127.0.0.1:8080, solo escucha en localhost"
+            ],
+            hintText: "La clave es la dirección IP en la que está escuchando el servidor (columna Local Address).",
+            solution: {
+                title: "Problema: Servidor Escuchando Solo en Localhost",
+                description: "El servidor Python estaba escuchando en 127.0.0.1 (localhost) en lugar de 0.0.0.0 (todas las interfaces). Esto significa que solo acepta conexiones desde dentro del mismo contenedor, no desde otros contenedores de la red.",
+                command: "# Recrear el servidor escuchando en todas las interfaces\n" +
+                    "   docker rm -f web-server\n" +
+                    "   docker run -d --name web-server \\\n" +
+                    "     --network lab-network \\\n" +
+                    "     python:3.9-alpine sh -c \"echo 'Hello World' > index.html && python -m http.server 8080\""
             }
-
-            currentSlide = n;
-
-            slides.forEach(slide => slide.classList.remove('active'));
-            slides[currentSlide].classList.add('active');
-
-            // Control de botones
-            prevBtn.disabled = currentSlide === 0;
-            nextBtn.style.display = currentSlide === slides.length - 1 ? 'none' : 'flex';
-            
-            // Mostrar botón resolver solo en slides de diagnóstico
-            const isDiagnosticSlide = exercises.some(ex => ex.diagnosticSlide === currentSlide);
-            solveBtn.style.display = isDiagnosticSlide ? 'flex' : 'none';
-
-            // Actualizar ejercicio actual
-            exercises.forEach((ex, idx) => {
-                if (ex.diagnosticSlide === currentSlide) {
-                    currentExercise = idx;
-                }
-            });
-
-            updateProgress();
-            window.scrollTo(0, 0);
-        }
-
-        function changeSlide(direction) {
-            showSlide(currentSlide + direction);
-        }
-
-        function showSolveModal() {
-            const modal = document.getElementById('solveModal');
-            const hintsContainer = document.getElementById('hintsContainer');
-            const exercise = exercises[currentExercise];
-
-            let hintsHTML = '<h4>💡 Pistas:</h4>';
-            exercise.hints.forEach(hint => {
-                hintsHTML += `<p>${hint}</p>`;
-            });
-            hintsHTML += `<p style="margin-top: 15px; font-weight: 600;">${exercise.hintText}</p>`;
-
-            hintsContainer.innerHTML = hintsHTML;
-            document.getElementById('solutionKey').value = '';
-            document.getElementById('errorMessage').classList.remove('show');
-            
-            modal.classList.add('active');
-        }
-
-        function closeSolveModal() {
-            document.getElementById('solveModal').classList.remove('active');
-        }
-
-        function checkSolution() {
-            const input = document.getElementById('solutionKey').value.trim();
-            const exercise = exercises[currentExercise];
-            const errorMessage = document.getElementById('errorMessage');
-
-            if (input.toLowerCase() === exercise.key.toLowerCase()) {
-                closeSolveModal();
-                showSolutionModal();
-            } else {
-                errorMessage.classList.add('show');
-                setTimeout(() => {
-                    errorMessage.classList.remove('show');
-                }, 3000);
+        },
+        {
+            problemSlide: 7,
+            diagnosticSlide: 8,
+            key: "lab-network-2",
+            hints: [
+                "💡 Ejecuta 'docker inspect isolated-b | grep -A 10 Networks'",
+                "💡 Busca el nombre de la red en la salida",
+                "💡 Es diferente a 'lab-network'"
+            ],
+            hintText: "La clave es el nombre de la segunda red (donde está isolated-b).",
+            solution: {
+                title: "Problema: Contenedores en Redes Diferentes",
+                description: "Los contenedores están en redes Docker diferentes (lab-network y lab-network-2). Por defecto, los contenedores solo pueden comunicarse con otros contenedores en la misma red. Es necesario conectar un contenedor a ambas redes o moverlos a la misma red.",
+                command: "docker network connect lab-network-2 isolated-a\n# Ahora isolated-a está en ambas redes y puede comunicarse con isolated-b"
+            }
+        },
+        {
+            problemSlide: 9,
+            diagnosticSlide: 10,
+            key: "icmp",
+            hints: [
+                "💡 Ejecuta 'docker exec firewall-test iptables -L OUTPUT -n -v'",
+                "💡 Busca una regla que tenga 'DROP' en la columna 'target'",
+                "💡 Mira la columna 'prot' (protocolo) - es el protocolo usado por ping"
+            ],
+            hintText: "La clave es el nombre del protocolo bloqueado por iptables (en minúsculas).",
+            solution: {
+                title: "Problema: Regla de Firewall Bloqueando ICMP",
+                description: "Se agregó una regla de iptables que bloquea todo el tráfico ICMP saliente. ICMP es el protocolo usado por ping, por eso ping falla mientras que otros protocolos como HTTP (usado por curl) siguen funcionando. Las reglas de firewall pueden bloquear selectivamente diferentes tipos de tráfico.",
+                command: "docker exec firewall-test iptables -D OUTPUT -p icmp -j DROP\n# Esto elimina la regla que bloquea ICMP"
             }
         }
+    ];
 
-        function showSolutionModal() {
-            const modal = document.getElementById('solutionModal');
-            const content = document.getElementById('solutionContent');
-            const exercise = exercises[currentExercise];
-            const solution = exercise.solution;
+    function updateProgress() {
+        const totalSlides = document.querySelectorAll('.slide').length;
+        const progress = ((currentSlide) / (totalSlides - 1)) * 100;
+        document.getElementById('progressBar').style.width = progress + '%';
+    }
 
-            content.innerHTML = `
+    function showSlide(n) {
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const solveBtn = document.getElementById('solveBtn');
+
+        if (n >= slides.length) {
+            currentSlide = slides.length - 1;
+            return;
+        }
+        if (n < 0) {
+            currentSlide = 0;
+            return;
+        }
+
+        currentSlide = n;
+
+        slides.forEach(slide => slide.classList.remove('active'));
+        slides[currentSlide].classList.add('active');
+
+        // Control de botones
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.style.display = currentSlide === slides.length - 1 ? 'none' : 'flex';
+
+        // Mostrar botón resolver solo en slides de diagnóstico
+        const isDiagnosticSlide = exercises.some(ex => ex.diagnosticSlide === currentSlide);
+        solveBtn.style.display = isDiagnosticSlide ? 'flex' : 'none';
+
+        // Actualizar ejercicio actual
+        exercises.forEach((ex, idx) => {
+            if (ex.diagnosticSlide === currentSlide) {
+                currentExercise = idx;
+            }
+        });
+
+        updateProgress();
+        window.scrollTo(0, 0);
+    }
+
+    function changeSlide(direction) {
+        showSlide(currentSlide + direction);
+    }
+
+    function showSolveModal() {
+        const modal = document.getElementById('solveModal');
+        const hintsContainer = document.getElementById('hintsContainer');
+        const exercise = exercises[currentExercise];
+
+        let hintsHTML = '<h4>💡 Pistas:</h4>';
+        exercise.hints.forEach(hint => {
+            hintsHTML += `<p>${hint}</p>`;
+        });
+        hintsHTML += `<p style="margin-top: 15px; font-weight: 600;">${exercise.hintText}</p>`;
+
+        hintsContainer.innerHTML = hintsHTML;
+        document.getElementById('solutionKey').value = '';
+        document.getElementById('errorMessage').classList.remove('show');
+
+        modal.classList.add('active');
+    }
+
+    function closeSolveModal() {
+        document.getElementById('solveModal').classList.remove('active');
+    }
+
+    function checkSolution() {
+        const input = document.getElementById('solutionKey').value.trim();
+        const exercise = exercises[currentExercise];
+        const errorMessage = document.getElementById('errorMessage');
+
+        if (input.toLowerCase() === exercise.key.toLowerCase()) {
+            closeSolveModal();
+            showSolutionModal();
+        } else {
+            errorMessage.classList.add('show');
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+            }, 3000);
+        }
+    }
+
+    function showSolutionModal() {
+        const modal = document.getElementById('solutionModal');
+        const content = document.getElementById('solutionContent');
+        const exercise = exercises[currentExercise];
+        const solution = exercise.solution;
+
+        content.innerHTML = `
                 <h3>${solution.title}</h3>
                 <p>${solution.description}</p>
                 <div style="margin-top: 20px;">
@@ -1006,37 +1030,37 @@ sh problema-1.sh
                 </div>
             `;
 
-            modal.classList.add('active');
+        modal.classList.add('active');
+    }
+
+    function closeSolutionModal() {
+        document.getElementById('solutionModal').classList.remove('active');
+        // Avanzar automáticamente a la siguiente slide
+        changeSlide(1);
+    }
+
+    // Cerrar modales al hacer clic fuera
+    window.onclick = function (event) {
+        const solveModal = document.getElementById('solveModal');
+        const solutionModal = document.getElementById('solutionModal');
+
+        if (event.target === solveModal) {
+            closeSolveModal();
         }
-
-        function closeSolutionModal() {
-            document.getElementById('solutionModal').classList.remove('active');
-            // Avanzar automáticamente a la siguiente slide
-            changeSlide(1);
+        if (event.target === solutionModal) {
+            closeSolutionModal();
         }
+    }
 
-        // Cerrar modales al hacer clic fuera
-        window.onclick = function(event) {
-            const solveModal = document.getElementById('solveModal');
-            const solutionModal = document.getElementById('solutionModal');
-            
-            if (event.target === solveModal) {
-                closeSolveModal();
-            }
-            if (event.target === solutionModal) {
-                closeSolutionModal();
-            }
+    // Permitir Enter para verificar solución
+    document.getElementById('solutionKey').addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            checkSolution();
         }
+    });
 
-        // Permitir Enter para verificar solución
-        document.getElementById('solutionKey').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                checkSolution();
-            }
-        });
-
-        // Inicializar
-        showSlide(0);
-    </script>
+    // Inicializar
+    showSlide(0);
+</script>
 </body>
 </html>
