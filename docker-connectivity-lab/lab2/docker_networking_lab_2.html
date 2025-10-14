@@ -869,8 +869,8 @@
             hintText: "La clave es el modo de red que está usando host-app.",
             solution: {
                 title: "Problema: Host Network Mode incompatible",
-                description: "Un contenedor en host network mode no puede alcanzar contenedores en bridge porque comparte la pila de red del host. No tiene su propia interfaz de red y no puede participar en las redes de Docker. Para comunicarse con otros contenedores, debe conectarse a una red personalizada o usar bridge.",
-                command: "# Recrear en bridge network\ndocker rm -f host-app\ndocker run -d --name host-app \\\n  --network custom-bridge \\\n  alpine:latest sleep 3600\n\n# Ahora puede comunicarse con otros en custom-bridge"
+                description: "Un contenedor en host network mode comparte la pila de red del host y no puede alcanzar contenedores en redes Docker (bridge, custom). Solo puede comunicarse usando localhost o direcciones del host. Para comunicarse con otros contenedores, debe recrearse en una red personalizada donde el DNS de Docker funciona.",
+                command: "# Crear red personalizada\ndocker network create shared-net\n\n# Recrear ambos en la red personalizada\ndocker rm -f host-app bridge-app\n\ndocker run -d --name host-app \\\n  --network shared-net \\\n  alpine:latest sleep 3600\n\ndocker run -d --name bridge-app \\\n  --network shared-net \\\n  alpine:latest sleep 3600\n\n# Ahora pueden comunicarse\ndocker exec host-app ping bridge-app"
             }
         },
         {
