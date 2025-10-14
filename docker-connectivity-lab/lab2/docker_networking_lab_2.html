@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Docker 2 - Diagnóstico Avanzado de Redes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: #f093fb;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .slide-container {
+            padding: 40px;
+            min-height: 500px;
+        }
+
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .problem-title {
+            color: #e53e3e;
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .diagnostic-title {
+            color: #3182ce;
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #68d391;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .command {
+            color: #ffd700;
+        }
+
+        .step {
+            background: #f7fafc;
+            padding: 20px;
+            border-left: 4px solid #3182ce;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .step h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .step p {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .questions {
+            background: #fff5e6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #f6ad55;
+        }
+
+        .questions h3 {
+            color: #c05621;
+            margin-bottom: 15px;
+        }
+
+        .questions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .questions li {
+            color: #744210;
+            margin: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .questions li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-prev {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .btn-prev:hover:not(:disabled) {
+            background: #cbd5e0;
+            transform: translateX(-3px);
+        }
+
+        .btn-next {
+            background: #f5576c;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-next:hover:not(:disabled) {
+            background: #d63447;
+            transform: translateX(3px);
+        }
+
+        .btn-solve {
+            background: #48bb78;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-solve:hover {
+            background: #38a169;
+            transform: scale(1.05);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modal-header h2 {
+            color: #2d3748;
+            font-size: 24px;
+        }
+
+        .input-group {
+            margin: 20px 0;
+        }
+
+        .input-group label {
+            display: block;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #f5576c;
+        }
+
+        .hints {
+            background: #fef5e7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #f39c12;
+        }
+
+        .hints h4 {
+            color: #d68910;
+            margin-bottom: 10px;
+        }
+
+        .hints p {
+            color: #7d6608;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .solution-content {
+            margin-top: 25px;
+        }
+
+        .solution-content h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .solution-content p {
+            color: #4a5568;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .success-badge {
+            display: inline-block;
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-10px);
+            }
+            75% {
+                transform: translateX(10px);
+            }
+        }
+
+        .completion {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .completion h2 {
+            color: #2d3748;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .completion p {
+            color: #4a5568;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        .emoji {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🌐 Laboratorio Docker: Diagnóstico Avanzado de Redes - Práctica 2</h1>
+        <p style="margin-top: 10px; opacity: 0.9;">Problemas avanzados de conectividad entre contenedores</p>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slideContainer">
+        <!-- Slide 0: Introducción -->
+        <div class="slide active">
+            <div style="text-align: center; padding: 20px;">
+                <div class="emoji">🎯</div>
+                <h2 style="color: #2d3748; margin-bottom: 20px;">Bienvenido a la Práctica 2</h2>
+                <p style="color: #4a5568; line-height: 1.8; margin-bottom: 30px;">
+                    Esta es una práctica avanzada con 5 nuevos ejercicios enfocados en problemas
+                    de conectividad y configuración de redes en Docker.
+                </p>
+                <div style="background: #f7fafc; padding: 20px; border-radius: 8px; text-align: left;">
+                    <h3 style="color: #2d3748; margin-bottom: 15px;">📋 Preparación del entorno:</h3>
+                    <div class="code-block">
+                        <span class="command"># Crear el entorno de la práctica 2</span>
+                        <br>git clone https://github.com/pablopedernera0/docker-connectivity-lab2.git
+                        <br>cd docker-connectivity-lab2
+                        <br>sh setup-practica-2.sh
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ejercicio 1: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Ejercicio 1: Contenedor con Red Host pero sin Visibilidad</h2>
+            <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
+                Un contenedor está usando <strong>host network</strong> pero no puede resolver nombres DNS de otros contenedores
+                en redes bridge.
+            </p>
+
+            <div class="step">
+                <h3>🔧 Simular el problema</h3>
+                <div class="code-block">
+                    <span class="command"># Preparar el problema 1</span>
+                    <br>sh problema-1-p2.sh
+                </div>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>Ping entre contenedores en host network falla</li>
+                    <li>No puede alcanzar contenedores en redes bridge</li>
+                    <li>El contenedor usa la red del host directamente</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 1: Diagnóstico -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Ejercicio 1: Diagnóstico</h2>
+
+            <div class="step">
+                <h3>Paso 1: Ver modo de red del contenedor</h3>
+                <div class="code-block">docker inspect host-app | grep -A 2 "NetworkMode"</div>
+                <p><strong>Busca:</strong> El valor de NetworkMode - ¿es "host"?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 2: Intentar ping a otro contenedor</h3>
+                <div class="code-block">docker exec host-app ping -c 2 bridge-app</div>
+                <p><strong>Resultado esperado:</strong> Falla con "bad address"</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 3: Ver interfaces de red en host-app</h3>
+                <div class="code-block">docker exec host-app ip addr show</div>
+                <p><strong>Busca:</strong> Las interfaces - ¿ve eth0 o solo las del host?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 4: Ver configuración de DNS en host-app</h3>
+                <div class="code-block">docker exec host-app cat /etc/resolv.conf</div>
+                <p><strong>Busca:</strong> El servidor nameserver - probablemente sea el del host</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 5: Ver redes del otro contenedor</h3>
+                <div class="code-block">docker inspect bridge-app | grep -A 5 "NetworkMode"</div>
+                <p><strong>Busca:</strong> El NetworkMode del bridge-app - ¿es "bridge"?</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿Un contenedor en host network puede alcanzar contenedores en bridge?</li>
+                    <li>¿Qué diferencia hay en la configuración de DNS?</li>
+                    <li>¿Cómo se resuelven los nombres en cada red?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 2: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Ejercicio 2: Rutas de Red No Configuradas</h2>
+            <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
+                Dos contenedores en subredes diferentes no pueden comunicarse,
+                aunque ambos están conectados a la misma red personalizada.
+            </p>
+
+            <div class="step">
+                <h3>🔧 Simular el problema</h3>
+                <div class="code-block">
+                    <span class="command"># Preparar el problema 2</span>
+                    <br>sh problema-2-p2.sh
+                </div>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>Ping falla entre contenedores</li>
+                    <li>Ambos están en la misma red personalizada</li>
+                    <li>Problema de ruteo de paquetes</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 2: Diagnóstico -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Ejercicio 2: Diagnóstico</h3>
+
+            <div class="step">
+                <h3>Paso 1: Ver redes disponibles</h3>
+                <div class="code-block">docker network ls</div>
+                <p><strong>Busca:</strong> Las redes personalizadas</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 2: Inspeccionar la red personalizada</h3>
+                <div class="code-block">docker network inspect custom-net | grep -A 20 Containers</div>
+                <p><strong>Busca:</strong> Qué contenedores están conectados</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 3: Ver IP de cada contenedor en la red</h3>
+                <div class="code-block">docker exec subnet-a ip addr show eth0</div>
+                <p><strong>Busca:</strong> La IP del contenedor - anota el rango</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 4: Ver IP del otro contenedor</h3>
+                <div class="code-block">docker exec subnet-b ip addr show eth0</div>
+                <p><strong>Busca:</strong> La IP - ¿es diferente rango que subnet-a?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 5: Ver tabla de rutas</h3>
+                <div class="code-block">docker exec subnet-a route -n</div>
+                <p><strong>Busca:</strong> Las rutas configuradas - ¿hay una para alcanzar subnet-b?</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿Los contenedores tienen IPs en diferentes subredes?</li>
+                    <li>¿Qué rutas necesita cada contenedor?</li>
+                    <li>¿Cómo se configura el ruteo entre subredes en Docker?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 3: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Ejercicio 3: Conectividad Bridge con Tráfico Bloqueado</h2>
+            <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
+                Dos contenedores pueden ping entre sí pero no pueden comunicarse con un servicio específico.
+                Las reglas iptables podrían estar interfiriendo.
+            </p>
+
+            <div class="step">
+                <h3>🔧 Simular el problema</h3>
+                <div class="code-block">
+                    <span class="command"># Preparar el problema 3</span>
+                    <br>sh problema-3-p2.sh
+                </div>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>Ping funciona correctamente</li>
+                    <li>El servicio no responde en puerto específico</li>
+                    <li>Las conexiones se pierden en el bridge</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 3: Diagnóstico -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Ejercicio 3: Diagnóstico</h2>
+
+            <div class="step">
+                <h3>Paso 1: Verificar conectividad básica</h3>
+                <div class="code-block">docker exec client-bridge ping -c 2 service-bridge</div>
+                <p><strong>Resultado esperado:</strong> Funciona</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 2: Intentar conexión al puerto del servicio</h3>
+                <div class="code-block">docker exec client-bridge curl http://service-bridge:6000</div>
+                <p><strong>Resultado esperado:</strong> Timeout o conexión rechazada</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 3: Ver reglas del bridge en iptables</h3>
+                <div class="code-block">docker exec service-bridge iptables -L FORWARD -n -v</div>
+                <p><strong>Busca:</strong> Reglas que digan DROP en la columna target</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 4: Ver puertos escuchando</h3>
+                <div class="code-block">docker exec service-bridge netstat -tlnp</div>
+                <p><strong>Busca:</strong> El puerto 6000 - ¿está escuchando en 0.0.0.0?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 5: Ver estadísticas de forward</h3>
+                <div class="code-block">docker exec service-bridge iptables -L FORWARD -v</div>
+                <p><strong>Busca:</strong> El nombre de la regla bloqueante - ¿dice FORWARD?</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿El forward está permitido en todas las interfaces?</li>
+                    <li>¿Qué política por defecto tiene el bridge?</li>
+                    <li>¿Cómo se habilita el forward de tráfico?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 4: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Ejercicio 4: Contenedor en Red None sin Conectividad</h2>
+            <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
+                Un contenedor con <strong>network mode none</strong> está completamente aislado
+                y se intenta hacerlo alcanzar desde otros contenedores.
+            </p>
+
+            <div class="step">
+                <h3>🔧 Simular el problema</h3>
+                <div class="code-block">
+                    <span class="command"># Preparar el problema 4</span>
+                    <br>sh problema-4-p2.sh
+                </div>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>No hay conectividad de red en absoluto</li>
+                    <li>Solo tiene loopback (lo)</li>
+                    <li>No puede conectarse a ningún otro contenedor</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 4: Diagnóstico -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Ejercicio 4: Diagnóstico</h2>
+
+            <div class="step">
+                <h3>Paso 1: Ver modo de red</h3>
+                <div class="code-block">docker inspect isolated-app | grep NetworkMode</div>
+                <p><strong>Busca:</strong> El valor de NetworkMode - ¿es "none"?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 2: Ver interfaces de red</h3>
+                <div class="code-block">docker exec isolated-app ip addr show</div>
+                <p><strong>Busca:</strong> Solo loopback (lo) sin eth0</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 3: Intentar ping desde otro contenedor</h3>
+                <div class="code-block">docker exec normal-app ping -c 2 isolated-app</div>
+                <p><strong>Resultado esperado:</strong> Falla completamente</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 4: Ver conexiones de red</h3>
+                <div class="code-block">docker exec isolated-app netstat -an</div>
+                <p><strong>Busca:</strong> Solo localhost, sin conexiones externas</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 5: Verificar tabla de rutas</h3>
+                <div class="code-block">docker exec isolated-app route -n</div>
+                <p><strong>Busca:</strong> El destino de las rutas - ¿es solo local?</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿Qué significa network mode "none"?</li>
+                    <li>¿Cuándo se usa this modo?</li>
+                    <li>¿Cómo se habilita conectividad en un contenedor none?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 5: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Ejercicio 5: Link Legado Deprecado</h2>
+            <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
+                Se está usando el sistema de <strong>links legados</strong> para conectar contenedores,
+                lo cual causa comportamiento impredecible en redes modernas.
+            </p>
+
+            <div class="step">
+                <h3>🔧 Simular el problema</h3>
+                <div class="code-block">
+                    <span class="command"># Preparar el problema 5</span>
+                    <br>sh problema-5-p2.sh
+                </div>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>Variables de entorno heredadas no funcionan bien</li>
+                    <li>Resolución de nombres inconsistente</li>
+                    <li>Comportamiento diferente en redes personalizadas</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 5: Diagnóstico -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Ejercicio 5: Diagnóstico</h2>
+
+            <div class="step">
+                <h3>Paso 1: Ver configuración del contenedor</h3>
+                <div class="code-block">docker inspect linked-client | grep -i link</div>
+                <p><strong>Busca:</strong> La sección Links</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 2: Ver variables de entorno heredadas</h3>
+                <div class="code-block">docker exec linked-client env | grep -i linked</div>
+                <p><strong>Busca:</strong> Variables como LINKED_SERVER_*</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 3: Ver /etc/hosts en el contenedor</h3>
+                <div class="code-block">docker exec linked-client cat /etc/hosts</div>
+                <p><strong>Busca:</strong> Entradas adicionales creadas por links</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 4: Probar resolución de nombres</h3>
+                <div class="code-block">docker exec linked-client ping -c 2 linked_server</div>
+                <p><strong>Resultado esperado:</strong> Funciona por el link</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 5: Ver redes del contenedor</h3>
+                <div class="code-block">docker network ls | grep linked</div>
+                <p><strong>Busca:</strong> El nombre de la red - ¿es bridge por defecto?</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿Cómo funcionan los links legados?</li>
+                    <li>¿Cuál es la solución moderna recomendada?</li>
+                    <li>¿Por qué se deprecaron los links?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Final -->
+        <div class="slide">
+            <div class="completion">
+                <div class="emoji">🏆</div>
+                <h2>¡Práctica 2 Completada!</h2>
+                <p>Has diagnosticado 5 problemas avanzados de conectividad en Docker.</p>
+                <p style="margin-top: 20px;">Conceptos clave de esta práctica:</p>
+                <div style="background: #f7fafc; padding: 30px; border-radius: 8px; margin-top: 30px; text-align: left;">
+                    <ul style="color: #2d3748; line-height: 2;">
+                        <li>✅ Network modes: host, bridge, none, container</li>
+                        <li>✅ Ruteo de paquetes entre subredes</li>
+                        <li>✅ Reglas de iptables y forward en bridges</li>
+                        <li>✅ Aislamiento total con network none</li>
+                        <li>✅ Links legados vs. redes personalizadas</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="padding: 30px; background: #f7fafc;">
+        <div class="navigation">
+            <button class="btn btn-prev" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+            <button class="btn btn-next" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+            <button class="btn btn-solve" id="solveBtn" onclick="showSolveModal()" style="display: none;">🔓 Resolver
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ingresar solución -->
+<div class="modal" id="solveModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span style="font-size: 32px;">🔑</span>
+            <h2>Desbloquear Solución</h2>
+        </div>
+
+        <p style="color: #4a5568; margin-bottom: 20px;">
+            Para desbloquear la solución, ingresa la clave que encontraste en el diagnóstico.
+        </p>
+
+        <div class="hints" id="hintsContainer"></div>
+
+        <div class="input-group">
+            <label for="solutionKey">Clave de solución:</label>
+            <input type="text" id="solutionKey" placeholder="Ingresa la clave aquí...">
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            ❌ Clave incorrecta. Revisa las pistas y vuelve a intentar.
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-top: 25px;">
+            <button class="btn btn-prev" onclick="closeSolveModal()" style="flex: 1;">Cancelar</button>
+            <button class="btn btn-solve" onclick="checkSolution()" style="flex: 1;">Verificar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para mostrar solución -->
+<div class="modal" id="solutionModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span style="font-size: 32px;">✅</span>
+            <h2>¡Solución Correcta!</h2>
+        </div>
+
+        <span class="success-badge">Problema Resuelto</span>
+
+        <div class="solution-content" id="solutionContent"></div>
+
+        <button class="btn btn-next" onclick="closeSolutionModal()" style="width: 100%; margin-top: 25px;">
+            Continuar →
+        </button>
+    </div>
+</div>
+
+<script>
+    let currentSlide = 0;
+    let currentExercise = 0;
+
+    const exercises = [
+        {
+            problemSlide: 1,
+            diagnosticSlide: 2,
+            key: "host",
+            hints: [
+                "💡 Ejecuta 'docker inspect host-app | grep NetworkMode'",
+                "💡 Busca el valor de NetworkMode",
+                "💡 Es el mismo modo que usa el host del sistema"
+            ],
+            hintText: "La clave es el modo de red que está usando host-app.",
+            solution: {
+                title: "Problema: Host Network Mode incompatible",
+                description: "Un contenedor en host network mode no puede alcanzar contenedores en bridge porque comparte la pila de red del host. No tiene su propia interfaz de red y no puede participar en las redes de Docker. Para comunicarse con otros contenedores, debe conectarse a una red personalizada o usar bridge.",
+                command: "# Recrear en bridge network\ndocker rm -f host-app\ndocker run -d --name host-app \\\n  --network custom-bridge \\\n  alpine:latest sleep 3600\n\n# Ahora puede comunicarse con otros en custom-bridge"
+            }
+        },
+        {
+            problemSlide: 3,
+            diagnosticSlide: 4,
+            key: "FORWARD",
+            hints: [
+                "💡 Ejecuta 'docker exec subnet-a route -n'",
+                "💡 Mira la tabla de rutas - ¿hay entrada para subnet-b?",
+                "💡 Busca en iptables FORWARD chain"
+            ],
+            hintText: "La clave es el nombre de la cadena iptables que falta habilitarse.",
+            solution: {
+                title: "Problema: Rutas no configuradas entre subredes",
+                description: "Los contenedores están en diferentes subredes de la misma red personalizada pero no tienen rutas configuradas entre ellas. Docker debe tener habilitado el forward de paquetes (FORWARD chain en iptables) para que el tráfico entre subredes funcione correctamente.",
+                command: "# Verificar FORWARD está abierto\nsudo iptables -L FORWARD\n\n# Si está bloqueado, cambiar política\nsudo iptables -P FORWARD ACCEPT\n\n# O agregar regla específica\nsudo iptables -A FORWARD -i docker0 -o docker0 -j ACCEPT"
+            }
+        },
+        {
+            problemSlide: 5,
+            diagnosticSlide: 6,
+            key: "FORWARD",
+            hints: [
+                "💡 Ejecuta 'docker exec service-bridge iptables -L FORWARD -n -v'",
+                "💡 Busca una regla con DROP",
+                "💡 El nombre de la cadena es el que falta permitir"
+            ],
+            hintText: "La clave es la cadena iptables que está bloqueando el tráfico entre bridges.",
+            solution: {
+                title: "Problema: Tráfico FORWARD bloqueado en bridge",
+                description: "El bridge Docker tiene la política FORWARD en DROP, lo que bloquea todo el tráfico entre contenedores diferentes en el mismo bridge. Aunque el ping funciona (usa loopback en algunos casos), el tráfico de aplicaciones es bloqueado. Se necesita permitir el forward entre interfaces del bridge.",
+                command: "# Permitir forward entre contenedores en el bridge\nsudo iptables -A FORWARD -i br-+ -o br-+ -j ACCEPT\n\n# O cambiar política por defecto\nsudo iptables -P FORWARD ACCEPT\n\n# Verificar que funciona\ndocker exec client-bridge curl http://service-bridge:6000"
+            }
+        },
+        {
+            problemSlide: 7,
+            diagnosticSlide: 8,
+            key: "none",
+            hints: [
+                "💡 Ejecuta 'docker inspect isolated-app | grep NetworkMode'",
+                "💡 Busca el valor exacto de NetworkMode",
+                "💡 Este modo crea aislamiento total de red"
+            ],
+            hintText: "La clave es el modo de red que proporciona aislamiento total.",
+            solution: {
+                title: "Problema: Contenedor en Network Mode None",
+                description: "Un contenedor con network mode 'none' tiene cero conectividad de red - solo loopback. No puede comunicarse con otros contenedores ni con el host. Este modo se usa para workloads que no necesitan red o donde la red se configura manualmente. Para habilitar conectividad, debe recrearse el contenedor en una red diferente.",
+                command: "# Recrear en bridge network\ndocker rm -f isolated-app\ndocker run -d --name isolated-app \\\n  --network bridge \\\n  alpine:latest sleep 3600\n\n# Ahora tiene conectividad de red"
+            }
+        },
+        {
+            problemSlide: 9,
+            diagnosticSlide: 10,
+            key: "bridge",
+            hints: [
+                "💡 Ejecuta 'docker inspect linked-client | grep -i link'",
+                "💡 Busca qué tipo de red está usando",
+                "💡 Los links legados solo funcionan en bridge por defecto"
+            ],
+            hintText: "La clave es el nombre de la red por defecto donde funcionan los links legados.",
+            solution: {
+                title: "Problema: Uso de Links Legados Deprecados",
+                description: "Los links legados (--link flag) están deprecados desde Docker 1.9 y solo funcionan en la red bridge por defecto. No funcionan en redes personalizadas y causan comportamiento impredecible. La solución moderna es usar redes personalizadas donde Docker proporciona service discovery automático de DNS.",
+                command: "# Opción 1: Crear red personalizada\ndocker network create app-net\n\n# Opción 2: Recrear contenedores en la red\ndocker run -d --name linked-server --network app-net alpine:latest\ndocker run -d --name linked-client --network app-net alpine:latest\n\n# Ahora el DNS resuelve 'linked-server' automáticamente"
+            }
+        }
+    ];
+
+    function updateProgress() {
+        const totalSlides = document.querySelectorAll('.slide').length;
+        const progress = ((currentSlide) / (totalSlides - 1)) * 100;
+        document.getElementById('progressBar').style.width = progress + '%';
+    }
+
+    function showSlide(n) {
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const solveBtn = document.getElementById('solveBtn');
+
+        if (n >= slides.length) {
+            currentSlide = slides.length - 1;
+            return;
+        }
+        if (n < 0) {
+            currentSlide = 0;
+            return;
+        }
+
+        currentSlide = n;
+
+        slides.forEach(slide => slide.classList.remove('active'));
+        slides[currentSlide].classList.add('active');
+
+        // Control de botones
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.style.display = currentSlide === slides.length - 1 ? 'none' : 'flex';
+
+        // Mostrar botón resolver solo en slides de diagnóstico
+        const isDiagnosticSlide = exercises.some(ex => ex.diagnosticSlide === currentSlide);
+        solveBtn.style.display = isDiagnosticSlide ? 'flex' : 'none';
+
+        // Actualizar ejercicio actual
+        exercises.forEach((ex, idx) => {
+            if (ex.diagnosticSlide === currentSlide) {
+                currentExercise = idx;
+            }
+        });
+
+        updateProgress();
+        window.scrollTo(0, 0);
+    }
+
+    function changeSlide(direction) {
+        showSlide(currentSlide + direction);
+    }
+
+    function showSolveModal() {
+        const modal = document.getElementById('solveModal');
+        const hintsContainer = document.getElementById('hintsContainer');
+        const exercise = exercises[currentExercise];
+
+        let hintsHTML = '<h4>💡 Pistas:</h4>';
+        exercise.hints.forEach(hint => {
+            hintsHTML += `<p>${hint}</p>`;
+        });
+        hintsHTML += `<p style="margin-top: 15px; font-weight: 600;">${exercise.hintText}</p>`;
+
+        hintsContainer.innerHTML = hintsHTML;
+        document.getElementById('solutionKey').value = '';
+        document.getElementById('errorMessage').classList.remove('show');
+
+        modal.classList.add('active');
+    }
+
+    function closeSolveModal() {
+        document.getElementById('solveModal').classList.remove('active');
+    }
+
+    function checkSolution() {
+        const input = document.getElementById('solutionKey').value.trim();
+        const exercise = exercises[currentExercise];
+        const errorMessage = document.getElementById('errorMessage');
+
+        if (input.toLowerCase() === exercise.key.toLowerCase()) {
+            closeSolveModal();
+            showSolutionModal();
+        } else {
+            errorMessage.classList.add('show');
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+            }, 3000);
+        }
+    }
+
+    function showSolutionModal() {
+        const modal = document.getElementById('solutionModal');
+        const content = document.getElementById('solutionContent');
+        const exercise = exercises[currentExercise];
+        const solution = exercise.solution;
+
+        content.innerHTML = `
+                <h3>${solution.title}</h3>
+                <p>${solution.description}</p>
+                <div style="margin-top: 20px;">
+                    <h4 style="color: #2d3748; margin-bottom: 10px;">🔧 Comando de solución:</h4>
+                    <div class="code-block">${solution.command.replace(/\n/g, '<br>')}</div>
+                </div>
+            `;
+
+        modal.classList.add('active');
+    }
+
+    function closeSolutionModal() {
+        document.getElementById('solutionModal').classList.remove('active');
+        // Avanzar automáticamente a la siguiente slide
+        changeSlide(1);
+    }
+
+    // Cerrar modales al hacer clic fuera
+    window.onclick = function (event) {
+        const solveModal = document.getElementById('solveModal');
+        const solutionModal = document.getElementById('solutionModal');
+
+        if (event.target === solveModal) {
+            closeSolveModal();
+        }
+        if (event.target === solutionModal) {
+            closeSolutionModal();
+        }
+    }
+
+    // Permitir Enter para verificar solución
+    document.getElementById('solutionKey').addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            checkSolution();
+        }
+    });
+
+    // Inicializar
+    showSlide(0);
+</script>
+</body>
+</html>
