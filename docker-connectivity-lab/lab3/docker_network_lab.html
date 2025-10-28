@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Docker - Diagnóstico de Puerto No Accesible</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: #667eea;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .slide-container {
+            padding: 40px;
+            min-height: 500px;
+        }
+
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .problem-title {
+            color: #e53e3e;
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .diagnostic-title {
+            color: #3182ce;
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #68d391;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .command {
+            color: #ffd700;
+        }
+
+        .step {
+            background: #f7fafc;
+            padding: 20px;
+            border-left: 4px solid #3182ce;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .step h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .step p {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-top: 8px;
+        }
+
+        .questions {
+            background: #fff5e6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #f6ad55;
+        }
+
+        .questions h3 {
+            color: #c05621;
+            margin-bottom: 15px;
+        }
+
+        .questions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .questions li {
+            color: #744210;
+            margin: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .questions li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-prev {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .btn-prev:hover:not(:disabled) {
+            background: #cbd5e0;
+            transform: translateX(-3px);
+        }
+
+        .btn-next {
+            background: #667eea;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-next:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateX(3px);
+        }
+
+        .btn-solve {
+            background: #48bb78;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-solve:hover {
+            background: #38a169;
+            transform: scale(1.05);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modal-header h2 {
+            color: #2d3748;
+            font-size: 24px;
+        }
+
+        .input-group {
+            margin: 20px 0;
+        }
+
+        .input-group label {
+            display: block;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .hints {
+            background: #fef5e7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #f39c12;
+        }
+
+        .hints h4 {
+            color: #d68910;
+            margin-bottom: 10px;
+        }
+
+        .hints p {
+            color: #7d6608;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 8px 0;
+        }
+
+        .solution-content {
+            margin-top: 25px;
+        }
+
+        .solution-content h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .solution-content p {
+            color: #4a5568;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .success-badge {
+            display: inline-block;
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-10px);
+            }
+            75% {
+                transform: translateX(10px);
+            }
+        }
+
+        .completion {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .completion h2 {
+            color: #2d3748;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .completion p {
+            color: #4a5568;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        .emoji {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .scenario-box {
+            background: #edf2f7;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4299e1;
+        }
+
+        .scenario-box h3 {
+            color: #2c5282;
+            margin-bottom: 12px;
+        }
+
+        .scenario-box p {
+            color: #2d3748;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🌐 Laboratorio Docker: Puerto Mapeado No Responde</h1>
+        <p style="margin-top: 10px; opacity: 0.9;">Diagnóstico de problemas de conectividad en contenedores</p>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slideContainer">
+        <!-- Slide 0: Introducción -->
+        <div class="slide active">
+            <div style="text-align: center; padding: 20px;">
+                <div class="emoji">🎯</div>
+                <h2 style="color: #2d3748; margin-bottom: 20px;">Bienvenido al Laboratorio</h2>
+                <p style="color: #4a5568; line-height: 1.8; margin-bottom: 30px;">
+                    En este ejercicio diagnosticarás un problema común en el despliegue de aplicaciones
+                    con Docker: un puerto está mapeado correctamente, pero el servicio no responde desde el host.
+                </p>
+                <div style="background: #f7fafc; padding: 20px; border-radius: 8px; text-align: left;">
+                    <h3 style="color: #2d3748; margin-bottom: 15px;">📋 Preparación del entorno:</h3>
+                    <div class="code-block">
+                        <span class="command"># Crear el contenedor problemático</span>
+                        <br>docker run -d --name webapp \
+                        <br>  -p 8080:8080 \
+                        <br>  nginx:alpine \
+                        <br>  sh -c "echo 'server { listen 127.0.0.1:8080; location / { return 200 \"Funciona\"; } }' > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+                    </div>
+                    <p style="color: #718096; margin-top: 15px; font-size: 14px;">
+                        💡 Este comando crea un contenedor con un problema real que deberás diagnosticar.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 1: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Problema: Puerto Mapeado pero Sin Respuesta</h2>
+            
+            <div class="scenario-box">
+                <h3>🎬 Escenario Real</h3>
+                <p>
+                    Has desplegado una aplicación web en un contenedor Docker. El contenedor está corriendo,
+                    el puerto 8080 está mapeado correctamente con <code>-p 8080:8080</code>, y cuando verificas
+                    desde dentro del contenedor con <code>curl localhost:8080</code> funciona perfectamente.
+                </p>
+                <p style="margin-top: 10px;">
+                    Sin embargo, cuando intentas acceder desde tu navegador en <code>http://localhost:8080</code>
+                    o desde la terminal del host con <code>curl localhost:8080</code>, la conexión falla.
+                </p>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181; margin-top: 20px;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>El contenedor está corriendo (<code>docker ps</code> lo muestra)</li>
+                    <li>El puerto 8080 está mapeado correctamente</li>
+                    <li><code>curl localhost:8080</code> funciona DENTRO del contenedor</li>
+                    <li><code>curl localhost:8080</code> FALLA desde el host</li>
+                    <li>El navegador muestra "Connection refused" o timeout</li>
+                </ul>
+            </div>
+
+            <div style="background: #e6fffa; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #38b2ac;">
+                <h3 style="color: #234e52; margin-bottom: 10px;">🎓 ¿Por qué es importante?</h3>
+                <p style="color: #285e61; line-height: 1.6;">
+                    Este es uno de los errores más comunes al contenedorizar aplicaciones. Muchas aplicaciones
+                    (Node.js, Flask, Django, etc.) por defecto escuchan en <code>127.0.0.1</code> por seguridad,
+                    lo que funciona bien en desarrollo local pero falla en contenedores.
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Diagnóstico Paso 1 -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Diagnóstico - Paso 1: Verificar Estado del Contenedor</h2>
+
+            <div class="step">
+                <h3>1. Confirmar que el contenedor está corriendo</h3>
+                <div class="code-block">docker ps | grep webapp</div>
+                <p><strong>¿Qué buscar?</strong> El contenedor debe estar en estado "Up" y mostrar el mapeo de puertos 0.0.0.0:8080->8080/tcp</p>
+            </div>
+
+            <div class="step">
+                <h3>2. Verificar logs del contenedor</h3>
+                <div class="code-block">docker logs webapp</div>
+                <p><strong>¿Qué buscar?</strong> Mensajes de error o advertencias sobre el inicio del servicio</p>
+            </div>
+
+            <div class="step">
+                <h3>3. Confirmar el mapeo de puertos</h3>
+                <div class="code-block">docker port webapp</div>
+                <p><strong>¿Qué buscar?</strong> Debe mostrar: 8080/tcp -> 0.0.0.0:8080</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿El contenedor muestra algún error en los logs?</li>
+                    <li>¿El mapeo de puertos está correctamente configurado?</li>
+                    <li>¿Qué significa 0.0.0.0:8080 en el mapeo?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3: Diagnóstico Paso 2 -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Diagnóstico - Paso 2: Probar Conectividad</h2>
+
+            <div class="step">
+                <h3>1. Probar desde DENTRO del contenedor</h3>
+                <div class="code-block">docker exec webapp curl -v localhost:8080</div>
+                <p><strong>Resultado esperado:</strong> Debería funcionar correctamente</p>
+            </div>
+
+            <div class="step">
+                <h3>2. Probar desde el HOST</h3>
+                <div class="code-block">curl -v localhost:8080</div>
+                <p><strong>Resultado esperado:</strong> Falla con "Connection refused" o timeout</p>
+            </div>
+
+            <div class="step">
+                <h3>3. Probar con la IP del contenedor</h3>
+                <div class="code-block">
+                    <span class="command"># Obtener IP del contenedor</span>
+                    <br>docker inspect webapp | grep IPAddress
+                    <br><br><span class="command"># Probar con la IP (ejemplo: 172.17.0.2)</span>
+                    <br>curl -v 172.17.0.2:8080
+                </div>
+                <p><strong>Resultado esperado:</strong> También falla</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿Por qué funciona desde dentro pero no desde fuera?</li>
+                    <li>¿Cuál es la diferencia entre ambas pruebas?</li>
+                    <li>¿Qué componente podría estar bloqueando la conexión?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 4: Diagnóstico Paso 3 -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Diagnóstico - Paso 3: Investigar Puertos en Escucha</h2>
+
+            <div class="step">
+                <h3>1. Ver qué puertos está escuchando el servicio</h3>
+                <div class="code-block">docker exec webapp netstat -tlnp</div>
+                <p><strong>¿Qué buscar?</strong> La columna "Local Address" - ¿dice 127.0.0.1:8080 o 0.0.0.0:8080?</p>
+            </div>
+
+            <div class="step">
+                <h3>2. Alternativa con ss (si netstat no está disponible)</h3>
+                <div class="code-block">docker exec webapp ss -tlnp</div>
+                <p><strong>¿Qué buscar?</strong> Misma información en formato diferente</p>
+            </div>
+
+            <div class="step">
+                <h3>3. Ver configuración de nginx</h3>
+                <div class="code-block">docker exec webapp cat /etc/nginx/conf.d/default.conf</div>
+                <p><strong>¿Qué buscar?</strong> La directiva "listen" - ¿en qué dirección está configurada?</p>
+            </div>
+
+            <div style="background: #fef5e7; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #f39c12;">
+                <h3 style="color: #d68910; margin-bottom: 10px;">💡 Concepto Clave</h3>
+                <p style="color: #7d6608; line-height: 1.6;">
+                    <strong>127.0.0.1</strong> (localhost) significa "solo acepta conexiones desde esta misma máquina"<br>
+                    <strong>0.0.0.0</strong> significa "acepta conexiones desde cualquier interfaz de red"
+                </p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿En qué dirección está escuchando el servicio?</li>
+                    <li>¿Qué diferencia hay entre 127.0.0.1 y 0.0.0.0?</li>
+                    <li>¿Por qué el mapeo de puertos no es suficiente?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Resolver -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔐 Momento de Resolver</h2>
+
+            <p style="color: #4a5568; margin-bottom: 30px; font-size: 16px; line-height: 1.8;">
+                Has completado el diagnóstico y deberías haber identificado la causa raíz del problema.
+                Para verificar tu comprensión, responde la siguiente pregunta:
+            </p>
+
+            <div style="background: #ebf8ff; padding: 25px; border-radius: 8px; border-left: 4px solid #3182ce;">
+                <h3 style="color: #2c5282; margin-bottom: 15px;">❓ Pregunta de verificación:</h3>
+                <p style="color: #2d3748; font-size: 16px; line-height: 1.6;">
+                    ¿En qué dirección IP debe escuchar el servicio dentro del contenedor para que sea
+                    accesible desde el host, incluso cuando el puerto está mapeado correctamente?
+                </p>
+                <p style="color: #4a5568; font-size: 14px; margin-top: 15px;">
+                    <strong>Pista:</strong> Es una dirección IP de 4 números separados por puntos.
+                </p>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-solve" onclick="showSolveModal()">
+                    🔓 Ingresar Respuesta
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 6: Completado -->
+        <div class="slide">
+            <div class="completion">
+                <div class="emoji">🏆</div>
+                <h2>¡Laboratorio Completado!</h2>
+                <p>Has diagnosticado exitosamente el problema de puerto mapeado pero no accesible.</p>
+                
+                <div style="background: #f7fafc; padding: 30px; border-radius: 8px; margin-top: 30px; text-align: left;">
+                    <h3 style="color: #2d3748; margin-bottom: 20px;">📚 Conceptos clave aprendidos:</h3>
+                    <ul style="color: #4a5568; line-height: 2; list-style: none;">
+                        <li>✅ Diferencia entre 127.0.0.1 (localhost) y 0.0.0.0 (todas las interfaces)</li>
+                        <li>✅ El mapeo de puertos de Docker requiere que el servicio escuche en 0.0.0.0</li>
+                        <li>✅ Uso de netstat/ss para diagnosticar puertos en escucha</li>
+                        <li>✅ Verificación de conectividad desde dentro y fuera del contenedor</li>
+                        <li>✅ Configuración correcta de servicios en contenedores</li>
+                    </ul>
+                </div>
+
+                <div style="background: #e6fffa; padding: 25px; border-radius: 8px; margin-top: 20px; text-align: left;">
+                    <h3 style="color: #234e52; margin-bottom: 15px;">🎯 Aplicación en el mundo real:</h3>
+                    <p style="color: #285e61; line-height: 1.8;">
+                        Este problema es extremadamente común al contenedorizar aplicaciones existentes.
+                        Siempre verifica que tus aplicaciones estén configuradas para escuchar en 0.0.0.0
+                        cuando las despliegues en contenedores, especialmente con frameworks como Express.js,
+                        Flask, Django, Spring Boot, etc.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="padding: 30px; background: #f7fafc;">
+        <div class="navigation">
+            <button class="btn btn-prev" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+            <button class="btn btn-next" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ingresar solución -->
+<div class="modal" id="solveModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span style="font-size: 32px;">🔑</span>
+            <h2>Verificar Respuesta</h2>
+        </div>
+
+        <p style="color: #4a5568; margin-bottom: 20px;">
+            Ingresa la dirección IP en la que debe escuchar el servicio para ser accesible desde fuera del contenedor.
+        </p>
+
+        <div class="hints">
+            <h4>💡 Pistas:</h4>
+            <p>• Ejecuta: <code>docker exec webapp netstat -tlnp</code></p>
+            <p>• Observa la columna "Local Address"</p>
+            <p>• ¿Qué IP permite conexiones desde cualquier interfaz?</p>
+            <p>• No es 127.0.0.1 (que solo acepta conexiones locales)</p>
+            <p>• Es la dirección que representa "todas las interfaces"</p>
+        </div>
+
+        <div class="input-group">
+            <label for="solutionKey">Dirección IP:</label>
+            <input type="text" id="solutionKey" placeholder="Ejemplo: X.X.X.X">
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            ❌ Respuesta incorrecta. Revisa las pistas y vuelve a intentar.
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-top: 25px;">
+            <button class="btn btn-prev" onclick="closeSolveModal()" style="flex: 1;">Cancelar</button>
+            <button class="btn btn-solve" onclick="checkSolution()" style="flex: 1;">Verificar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para mostrar solución -->
+<div class="modal" id="solutionModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span style="font-size: 32px;">✅</span>
+            <h2>¡Respuesta Correcta!</h2>
+        </div>
+
+        <span class="success-badge">Problema Resuelto</span>
+
+        <div class="solution-content">
+            <h3>Explicación del Problema</h3>
+            <p>
+                El servicio dentro del contenedor estaba configurado para escuchar solo en <strong>127.0.0.1:8080</strong>
+                (localhost), lo que significa que solo acepta conexiones desde dentro del mismo contenedor.
+            </p>
+            <p>
+                Aunque Docker mapea correctamente el puerto con <code>-p 8080:8080</code>, el tráfico del host
+                intenta conectarse a través de la interfaz de red del contenedor (eth0), no a través de localhost.
+                Por lo tanto, la conexión es rechazada.
+            </p>
+
+            <h3 style="margin-top: 25px;">🔧 Solución</h3>
+            <p>
+                Configurar el servicio para escuchar en <strong>0.0.0.0:8080</strong>, que significa "todas las
+                interfaces de red". Esto permite que el servicio acepte conexiones desde cualquier interfaz,
+                incluyendo la que Docker usa para el mapeo de puertos.
+            </p>
+
+            <h4 style="color: #2d3748; margin-top: 20px; margin-bottom: 10px;">Comando para corregir nginx:</h4>
+            <div class="code-block">
+                <span class="command"># Detener el contenedor problemático</span>
+                <br>docker stop webapp
+                <br>docker rm webapp
+                <br><br><span class="command"># Crear contenedor correctamente configurado</span>
+                <br>docker run -d --name webapp \
+                <br>  -p 8080:8080 \
+                <br>  nginx:alpine \
+                <br>  sh -c "echo 'server { listen 0.0.0.0:8080; location / { return 200 \"Funciona!\"; } }' > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+                <br><br><span class="command"># Ahora debería funcionar desde el host</span>
+                <br>curl localhost:8080
+            </div>
+
+            <h4 style="color: #2d3748; margin-top: 20px; margin-bottom: 10px;">Ejemplos en otros lenguajes:</h4>
+            <div class="code-block">
+                <span class="command"># Node.js/Express</span>
+                <br>app.listen(8080, '0.0.0.0');
+                <br><br><span class="command"># Python/Flask</span>
+                <br>app.run(host='0.0.0.0', port=8080)
+                <br><br><span class="command"># Python/Django</span>
+                <br>python manage.py runserver 0.0.0.0:8080
+            </div>
+        </div>
+
+        <button class="btn btn-next" onclick="closeSolutionModal()" style="width: 100%; margin-top: 25px;">
+            Continuar →
+        </button>
+    </div>
+</div>
+
+<script>
+    let currentSlide = 0;
+
+    function updateProgress() {
+        const totalSlides = document.querySelectorAll('.slide').length;
+        const progress = ((currentSlide) / (totalSlides - 1)) * 100;
+        document.getElementById('progressBar').style.width = progress + '%';
+    }
+
+    function showSlide(n) {
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        if (n >= slides.length) {
+            currentSlide = slides.length - 1;
+            return;
+        }
+        if (n < 0) {
+            currentSlide = 0;
+            return;
+        }
+
+        currentSlide = n;
+
+        slides.forEach(slide => slide.classList.remove('active'));
+        slides[currentSlide].classList.add('active');
+
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.style.display = currentSlide === slides.length - 1 ? 'none' : 'flex';
+
+        updateProgress();
+        window.scrollTo(0, 0);
+    }
+
+    function changeSlide(direction) {
+        showSlide(currentSlide + direction);
+    }
+
+    function showSolveModal() {
+        const modal = document.getElementById('solveModal');
+        document.getElementById('solutionKey').value = '';
+        document.getElementById('errorMessage').classList.remove('show');
+        modal.classList.add('active');
+    }
+
+    function closeSolveModal() {
+        document.getElementById('solveModal').classList.remove('active');
+    }
+
+    function checkSolution() {
+        const input = document.getElementById('solutionKey').value.trim();
+        const errorMessage = document.getElementById('errorMessage');
+
+        if (input === '0.0.0.0') {
+            closeSolveModal();
+            showSolutionModal();
+        } else {
+            errorMessage.classList.add('show');
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+            }, 3000);
+        }
+    }
+
+    function showSolutionModal() {
+        const modal = document.getElementById('solutionModal');
+        modal.classList.add('active');
+    }
+
+    function closeSolutionModal() {
+        document.getElementById('solutionModal').classList.remove('active');
+        changeSlide(1);
+    }
+
+    window.onclick = function(event) {
+        const solveModal = document.getElementById('solveModal');
+        const solutionModal = document.getElementById('solutionModal');
+
+        if (event.target === solveModal) {
+            closeSolveModal();
+        }
+        if (event.target === solutionModal) {
+            closeSolutionModal();
+        }
+    }
+
+    document.getElementById('solutionKey').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            checkSolution();
+        }
+    });
+
+    showSlide(0);
+</script>
+</body>
+</html>
