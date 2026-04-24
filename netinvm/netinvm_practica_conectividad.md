@@ -194,6 +194,17 @@ tcpdump -i eth0 -n host intb.example.net
 # En inta: Simular problema de firewall
 iptables -I OUTPUT -d intb.example.net -j DROP
 
+
+## Solucion alternativa
+### Primero, ver las reglas numeradas para identificar la regla
+sudo iptables -L OUTPUT --line-numbers
+
+### Eliminar la regla por número (generalmente será la #1 si fue la primera que agregaste)
+sudo iptables -D OUTPUT 1
+
+### O eliminar la regla específica por contenido
+sudo iptables -D OUTPUT -d intb.example.net -j DROP
+
 # En intb: Simular problema de DNS
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
 ```

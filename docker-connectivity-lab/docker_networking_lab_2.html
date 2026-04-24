@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Docker 2 - Diagnóstico Avanzado de Redes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: #f093fb;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .slide-container {
+            padding: 40px;
+            min-height: 500px;
+        }
+
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .problem-title {
+            color: #e53e3e;
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .diagnostic-title {
+            color: #3182ce;
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #68d391;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .command {
+            color: #ffd700;
+        }
+
+        .step {
+            background: #f7fafc;
+            padding: 20px;
+            border-left: 4px solid #3182ce;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .step h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .step p {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .questions {
+            background: #fff5e6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #f6ad55;
+        }
+
+        .questions h3 {
+            color: #c05621;
+            margin-bottom: 15px;
+        }
+
+        .questions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .questions li {
+            color: #744210;
+            margin: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .questions li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-prev {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .btn-prev:hover:not(:disabled) {
+            background: #cbd5e0;
+            transform: translateX(-3px);
+        }
+
+        .btn-next {
+            background: #f5576c;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-next:hover:not(:disabled) {
+            background: #d63447;
+            transform: translateX(3px);
+        }
+
+        .btn-solve {
+            background: #48bb78;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-solve:hover {
+            background: #38a169;
+            transform: scale(1.05);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modal-header h2 {
+            color: #2d3748;
+            font-size: 24px;
+        }
+
+        .input-group {
+            margin: 20px 0;
+        }
+
+        .input-group label {
+            display: block;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #f5576c;
+        }
+
+        .hints {
+            background: #fef5e7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #f39c12;
+        }
+
+        .hints h4 {
+            color: #d68910;
+            margin-bottom: 10px;
+        }
+
+        .hints p {
+            color: #7d6608;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .solution-content {
+            margin-top: 25px;
+        }
+
+        .solution-content h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .solution-content p {
+            color: #4a5568;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .success-badge {
+            display: inline-block;
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-10px);
+            }
+            75% {
+                transform: translateX(10px);
+            }
+        }
+
+        .completion {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .completion h2 {
+            color: #2d3748;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .completion p {
+            color: #4a5568;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        .emoji {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🚀 Laboratorio Docker: Diagnóstico Avanzado - Práctica 2</h1>
+        <p style="margin-top: 10px; opacity: 0.9;">Resuelve problemas complejos de conectividad y configuración</p>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slideContainer">
+        <!-- Slide 0: Introducción -->
+        <div class="slide active">
+            <div style="text-align: center; padding: 20px;">
+                <div class="emoji">🎯</div>
+                <h2 style="color: #2d3748; margin-bottom: 20px;">Bienvenido a la Práctica 2</h2>
+                <p style="color: #4a5568; line-height: 1.8; margin-bottom: 30px;">
+                    Esta es una práctica avanzada con 5 nuevos ejercicios de diagnóstico de redes Docker.
+                    Los problemas son más complejos y requieren análisis profundo de la configuración.
+                </p>
+                <div style="background: #f7fafc; padding: 20px; border-radius: 8px; text-align: left;">
+                    <h3 style="color: #2d3748; margin-bottom: 15px;">📋 Preparación del entorno:</h3>
+                    <div class="code-block">
+                        <span class="command"># Crear el entorno de la práctica 2</span>
+                        <br>git clone https://github.com/pablopedernera0/docker-networking-lab2.git
+                        <br>cd docker-networking-lab2
+                        <br>sh setup-practica-2.sh
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ejercicio 1: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Ejercicio 1: Volumen no Persistente</h2>
+            <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
+                Un contenedor está usando datos de otro contenedor, pero cuando se reinicia,
+                los datos desaparecen. Los volúmenes no están correctamente configurados.
+            </p>
+
+            <div class="step">
+                <h3>🔧 Simular el problema</h3>
+                <div class="code-block">
+                    <span class="command"># Preparar el problema 1</span>
+                    <br>sh problema-1-p2.sh
+                </div>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>Los datos persisten después de crear un archivo</li>
+                    <li>Al reiniciar el contenedor, se pierden los datos</li>
+                    <li>No se usa volumen nombrado</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 1: Diagnóstico -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Ejercicio 1: Diagnóstico</h2>
+
+            <div class="step">
+                <h3>Paso 1: Crear archivo de prueba</h3>
+                <div class="code-block">docker exec data-app echo "datos-importantes" > /data/app.txt</div>
+                <p><strong>Resultado esperado:</strong> Archivo creado</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 2: Verificar archivos en el contenedor</h3>
+                <div class="code-block">docker exec data-app ls -la /data/</div>
+                <p><strong>Busca:</strong> ¿El archivo app.txt existe?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 3: Listar volúmenes</h3>
+                <div class="code-block">docker volume ls</div>
+                <p><strong>Busca:</strong> ¿Qué volúmenes están disponibles?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 4: Inspeccionar el contenedor</h3>
+                <div class="code-block">docker inspect data-app | grep -A 15 Mounts</div>
+                <p><strong>Busca:</strong> La sección Mounts - ¿hay volúmenes montados? ¿Qué tipo?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 5: Detener y reiniciar</h3>
+                <div class="code-block">
+                    <br>docker stop data-app
+                    <br>docker start data-app
+                    <br>docker exec data-app ls -la /data/
+                </div>
+                <p><strong>Busca:</strong> ¿El archivo sigue existiendo después de reiniciar?</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿El archivo desaparece después del reinicio?</li>
+                    <li>¿Qué tipo de almacenamiento está usando el contenedor?</li>
+                    <li>¿Cómo se puede hacer persistente el directorio /data?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 2: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Ejercicio 2: Puerto Publicado Incorrectamente</h2>
+            <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
+                Un servicio está corriendo pero no es accesible desde el host,
+                aunque el puerto parece estar mapeado.
+            </p>
+
+            <div class="step">
+                <h3>🔧 Simular el problema</h3>
+                <div class="code-block">
+                    <span class="command"># Preparar el problema 2</span>
+                    <br>sh problema-2-p2.sh
+                </div>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>No se puede acceder al servicio desde localhost</li>
+                    <li>El puerto parece estar mapeado</li>
+                    <li>Dentro del contenedor funciona correctamente</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 2: Diagnóstico -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Ejercicio 2: Diagnóstico</h2>
+
+            <div class="step">
+                <h3>Paso 1: Verificar puerto del contenedor</h3>
+                <div class="code-block">docker exec web-service netstat -tlnp | grep LISTEN</div>
+                <p><strong>Busca:</strong> En qué puerto está escuchando internamente</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 2: Ver mapping de puertos</h3>
+                <div class="code-block">docker port web-service</div>
+                <p><strong>Resultado:</strong> Anota el mapeo de puertos</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 3: Verificar con netstat en el host</h3>
+                <div class="code-block">netstat -tlnp | grep LISTEN</div>
+                <p><strong>Busca:</strong> ¿Está escuchando en 127.0.0.1 o en 0.0.0.0?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 4: Intentar acceso desde host</h3>
+                <div class="code-block">curl http://localhost:9090</div>
+                <p><strong>Resultado:</strong> ¿Funciona o da error de conexión?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 5: Inspeccionar puerto en container</h3>
+                <div class="code-block">docker inspect web-service | grep -A 10 "PortBindings"</div>
+                <p><strong>Busca:</strong> La dirección IP de binding - ¿es 127.0.0.1 o 0.0.0.0?</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿El puerto está mapeado a 127.0.0.1 en lugar de 0.0.0.0?</li>
+                    <li>¿Qué diferencia hay entre binding en localhost y en todas las interfaces?</li>
+                    <li>¿Cómo se remapea el puerto correctamente?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 3: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Ejercicio 3: Variables de Entorno No Heredadas</h2>
+            <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
+                Una aplicación no está recibiendo las variables de entorno configuradas,
+                causando fallos en la conexión a bases de datos.
+            </p>
+
+            <div class="step">
+                <h3>🔧 Simular el problema</h3>
+                <div class="code-block">
+                    <span class="command"># Preparar el problema 3</span>
+                    <br>sh problema-3-p2.sh
+                </div>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>La aplicación falla sin conectarse a la BD</li>
+                    <li>Las variables de entorno no son detectadas</li>
+                    <li>Logs muestran variables undefined</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 3: Diagnóstico -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Ejercicio 3: Diagnóstico</h2>
+
+            <div class="step">
+                <h3>Paso 1: Listar variables de entorno</h3>
+                <div class="code-block">docker exec app-service env | grep -i database</div>
+                <p><strong>Busca:</strong> ¿Aparecen las variables DATABASE_*?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 2: Ver todas las variables</h3>
+                <div class="code-block">docker exec app-service env</div>
+                <p><strong>Resultado:</strong> Lista completa de variables</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 3: Inspeccionar configuración del contenedor</h3>
+                <div class="code-block">docker inspect app-service | grep -A 20 "Env"</div>
+                <p><strong>Busca:</strong> La sección Env en la salida</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 4: Ver los logs de la aplicación</h3>
+                <div class="code-block">docker logs app-service | head -20</div>
+                <p><strong>Busca:</strong> Mensajes de error relacionados con conexión</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 5: Verificar archivo de configuración</h3>
+                <div class="code-block">docker exec app-service cat /app/config.sh</div>
+                <p><strong>Busca:</strong> El nombre de la variable de entorno que se debe usar</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿Las variables de entorno están definidas en el contenedor?</li>
+                    <li>¿La aplicación las está buscando con el nombre correcto?</li>
+                    <li>¿Dónde se deberían definir estas variables?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 4: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Ejercicio 4: Límites de Recursos Excedidos</h2>
+            <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
+                Un contenedor se detiene inesperadamente sin mensaje de error claro.
+                Posiblemente alcanzó límites de recursos.
+            </p>
+
+            <div class="step">
+                <h3>🔧 Simular el problema</h3>
+                <div class="code-block">
+                    <span class="command"># Preparar el problema 4</span>
+                    <br>sh problema-4-p2.sh
+                </div>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>El contenedor se detiene de forma inesperada</li>
+                    <li>Sin mensajes de error en los logs</li>
+                    <li>Status del contenedor es "Exited"</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 4: Diagnóstico -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Ejercicio 4: Diagnóstico</h2>
+
+            <div class="step">
+                <h3>Paso 1: Ver estado del contenedor</h3>
+                <div class="code-block">docker ps -a | grep worker-app</div>
+                <p><strong>Busca:</strong> El status y el exit code</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 2: Ver logs detallados</h3>
+                <div class="code-block">docker logs worker-app</div>
+                <p><strong>Busca:</strong> Mensajes de OOM o error killer</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 3: Inspeccionar limites de recursos</h3>
+                <div class="code-block">docker inspect worker-app | grep -A 5 "Memory"</div>
+                <p><strong>Busca:</strong> Los valores de MemoryLimit</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 4: Ver estadísticas de uso</h3>
+                <div class="code-block">docker stats worker-app --no-stream</div>
+                <p><strong>Busca:</strong> El consumo de MEM</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 5: Verificar OOMKilled</h3>
+                <div class="code-block">docker inspect worker-app | grep OOMKilled</div>
+                <p><strong>Busca:</strong> El valor de OOMKilled - ¿es true o false?</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿Dice OOMKilled: true?</li>
+                    <li>¿Cuál es el límite de memoria asignado?</li>
+                    <li>¿Cómo se pueden aumentar los límites de recursos?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 5: Problema -->
+        <div class="slide">
+            <h2 class="problem-title">🔴 Ejercicio 5: Health Check No Configurado</h2>
+            <p style="color: #4a5568; margin-bottom: 20px; font-size: 16px;">
+                Un contenedor parece estar corriendo pero la aplicación adentro no responde.
+                No hay forma de saber si el servicio está realmente saludable.
+            </p>
+
+            <div class="step">
+                <h3>🔧 Simular el problema</h3>
+                <div class="code-block">
+                    <span class="command"># Preparar el problema 5</span>
+                    <br>sh problema-5-p2.sh
+                </div>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #fc8181;">
+                <h3 style="color: #c53030; margin-bottom: 10px;">⚠️ Síntomas observados:</h3>
+                <ul style="color: #742a2a; padding-left: 20px;">
+                    <li>El contenedor aparenta estar "Up"</li>
+                    <li>No hay información sobre salud del servicio</li>
+                    <li>El servicio podría estar caído internamente</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ejercicio 5: Diagnóstico -->
+        <div class="slide">
+            <h2 class="diagnostic-title">🔍 Ejercicio 5: Diagnóstico</h2>
+
+            <div class="step">
+                <h3>Paso 1: Verificar status del contenedor</h3>
+                <div class="code-block">docker ps | grep health-service</div>
+                <p><strong>Busca:</strong> El status completo y health</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 2: Inspeccionar health status</h3>
+                <div class="code-block">docker inspect health-service | grep -A 10 "Health"</div>
+                <p><strong>Busca:</strong> La sección Health - ¿qué dice?</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 3: Intentar conexión al servicio</h3>
+                <div class="code-block">docker exec health-service curl -s http://localhost:3000/health</div>
+                <p><strong>Busca:</strong> La respuesta del endpoint de health</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 4: Ver configuración del Dockerfile</h3>
+                <div class="code-block">docker inspect health-service | grep -i healthcheck</div>
+                <p><strong>Busca:</strong> Si hay HEALTHCHECK configurado</p>
+            </div>
+
+            <div class="step">
+                <h3>Paso 5: Ver el intervalo de health check</h3>
+                <div class="code-block">docker inspect health-service | grep -A 5 "Health"</div>
+                <p><strong>Busca:</strong> El campo "Status" - ¿es "none" o vacío?</p>
+            </div>
+
+            <div class="questions">
+                <h3>🤔 Preguntas para reflexionar:</h3>
+                <ul>
+                    <li>¿Hay un health check configurado en el contenedor?</li>
+                    <li>¿Cuál debería ser el endpoint de health check?</li>
+                    <li>¿Cómo se configura un HEALTHCHECK en Docker?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Final -->
+        <div class="slide">
+            <div class="completion">
+                <div class="emoji">🎓</div>
+                <h2>¡Práctica 2 Completada!</h2>
+                <p>Has diagnosticado y resuelto 5 problemas avanzados de Docker y redes.</p>
+                <p style="margin-top: 20px;">Conceptos clave de esta práctica:</p>
+                <div style="background: #f7fafc; padding: 30px; border-radius: 8px; margin-top: 30px; text-align: left;">
+                    <ul style="color: #2d3748; line-height: 2;">
+                        <li>✅ Volúmenes nombrados vs. volúmenes anónimos</li>
+                        <li>✅ Port binding y dirección de escucha (0.0.0.0 vs 127.0.0.1)</li>
+                        <li>✅ Variables de entorno en contenedores</li>
+                        <li>✅ Límites de recursos y gestión de memoria</li>
+                        <li>✅ Health checks para monitoreo de servicios</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="padding: 30px; background: #f7fafc;">
+        <div class="navigation">
+            <button class="btn btn-prev" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+            <button class="btn btn-next" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+            <button class="btn btn-solve" id="solveBtn" onclick="showSolveModal()" style="display: none;">🔓 Resolver
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ingresar solución -->
+<div class="modal" id="solveModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span style="font-size: 32px;">🔑</span>
+            <h2>Desbloquear Solución</h2>
+        </div>
+
+        <p style="color: #4a5568; margin-bottom: 20px;">
+            Para desbloquear la solución, ingresa la clave que encontraste en el diagnóstico.
+        </p>
+
+        <div class="hints" id="hintsContainer"></div>
+
+        <div class="input-group">
+            <label for="solutionKey">Clave de solución:</label>
+            <input type="text" id="solutionKey" placeholder="Ingresa la clave aquí...">
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            ❌ Clave incorrecta. Revisa las pistas y vuelve a intentar.
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-top: 25px;">
+            <button class="btn btn-prev" onclick="closeSolveModal()" style="flex: 1;">Cancelar</button>
+            <button class="btn btn-solve" onclick="checkSolution()" style="flex: 1;">Verificar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para mostrar solución -->
+<div class="modal" id="solutionModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span style="font-size: 32px;">✅</span>
+            <h2>¡Solución Correcta!</h2>
+        </div>
+
+        <span class="success-badge">Problema Resuelto</span>
+
+        <div class="solution-content" id="solutionContent"></div>
+
+        <button class="btn btn-next" onclick="closeSolutionModal()" style="width: 100%; margin-top: 25px;">
+            Continuar →
+        </button>
+    </div>
+</div>
+
+<script>
+    let currentSlide = 0;
+    let currentExercise = 0;
+
+    const exercises = [
+        {
+            problemSlide: 1,
+            diagnosticSlide: 2,
+            key: "overlay",
+            hints: [
+                "💡 Ejecuta 'docker inspect data-app | grep -A 15 Mounts'",
+                "💡 Busca la línea que dice 'Type'",
+                "💡 Puede ser 'bind' o 'volume' - Docker crea automáticamente uno sin nombre"
+            ],
+            hintText: "La clave es el tipo de volumen que está montado (Type field).",
+            solution: {
+                title: "Problema: Volumen no Persistente",
+                description: "El contenedor está usando un volumen anónimo creado automáticamente por Docker, que se elimina cuando el contenedor se detiene. Es necesario usar un volumen nombrado para que los datos persistan entre reinicios.",
+                command: "# Crear volumen nombrado\ndocker volume create app-data\n\n# Recrear el contenedor con volumen persistente\ndocker rm -f data-app\ndocker run -d --name data-app \\\n  -v app-data:/data \\\n  alpine:latest sleep 3600"
+            }
+        },
+        {
+            problemSlide: 3,
+            diagnosticSlide: 4,
+            key: "127.0.0.1:9090",
+            hints: [
+                "💡 Ejecuta 'docker inspect web-service | grep -A 10 PortBindings'",
+                "💡 Busca la sección HostIp",
+                "💡 Si es 127.0.0.1, solo es accesible localmente dentro del host"
+            ],
+            hintText: "La clave es el binding completo mostrado en PortBindings (ip:puerto).",
+            solution: {
+                title: "Problema: Puerto Publicado a localhost",
+                description: "El puerto está mapeado a 127.0.0.1 (localhost) en lugar de 0.0.0.0 (todas las interfaces). Esto hace que el servicio sea inaccesible desde fuera del contenedor o desde otros hosts.",
+                command: "# Recrear con puerto publicado correctamente\ndocker rm -f web-service\ndocker run -d --name web-service \\\n  -p 0.0.0.0:9090:8080 \\\n  nginx:latest"
+            }
+        },
+        {
+            problemSlide: 5,
+            diagnosticSlide: 6,
+            key: "DATABASE_URL",
+            hints: [
+                "💡 Ejecuta 'docker exec app-service env | grep -i database'",
+                "💡 Busca en los logs qué variable intenta usar la aplicación",
+                "💡 Probablemente la variable existe pero con otro nombre"
+            ],
+            hintText: "La clave es el nombre correcto de la variable de entorno que busca la aplicación.",
+            solution: {
+                title: "Problema: Variable de Entorno Incorrecta",
+                description: "La aplicación espera una variable de entorno con un nombre específico, pero fue creada con otro nombre. Las variables de entorno son case-sensitive y deben coincidir exactamente con lo que la aplicación busca.",
+                command: "# Recrear el contenedor con la variable correcta\ndocker rm -f app-service\ndocker run -d --name app-service \\\n  -e DATABASE_URL='postgresql://db:5432/app' \\\n  myapp:latest"
+            }
+        },
+        {
+            problemSlide: 7,
+            diagnosticSlide: 8,
+            key: "true",
+            hints: [
+                "💡 Ejecuta 'docker inspect worker-app | grep OOMKilled'",
+                "💡 El valor será 'true' o 'false'",
+                "💡 Si es true, significa que fue killed por falta de memoria"
+            ],
+            hintText: "La clave es el valor del campo OOMKilled (verdadero/falso en inglés).",
+            solution: {
+                title: "Problema: Contenedor Matado por OOM (Out of Memory)",
+                description: "El contenedor alcanzó el límite de memoria configurado y fue terminado por el kernel. OOMKilled: true indica que fue la causa de la detención. Es necesario aumentar el límite de memoria o optimizar la aplicación.",
+                command: "# Recrear con más memoria\ndocker rm -f worker-app\ndocker run -d --name worker-app \\\n  -m 512m \\\n  --memory-swap 1g \\\n  myworker:latest"
+            }
+        },
+        {
+            problemSlide: 9,
+            diagnosticSlide: 10,
+            key: "none",
+            hints: [
+                "💡 Ejecuta 'docker inspect health-service | grep -A 10 Health'",
+                "💡 Busca el campo 'Status' en la sección Health",
+                "💡 Si no hay salud configurada, mostrará 'none'"
+            ],
+            hintText: "La clave es el estado del health check cuando no está configurado.",
+            solution: {
+                title: "Problema: Sin Health Check Configurado",
+                description: "El contenedor no tiene un HEALTHCHECK configurado, por lo que Docker no puede determinar si el servicio está realmente saludable. Un contenedor puede aparecer corriendo pero con la aplicación caída adentro.",
+                command: "# Crear Dockerfile con HEALTHCHECK\nFROM node:latest\nWORKDIR /app\nCOPY . .\nRUN npm install\nHEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \\\n  CMD curl -f http://localhost:3000/health || exit 1\nCMD npm start"
+            }
+        }
+    ];
+
+    function updateProgress() {
+        const totalSlides = document.querySelectorAll('.slide').length;
+        const progress = ((currentSlide) / (totalSlides - 1)) * 100;
+        document.getElementById('progressBar').style.width = progress + '%';
+    }
+
+    function showSlide(n) {
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const solveBtn = document.getElementById('solveBtn');
+
+        if (n >= slides.length) {
+            currentSlide = slides.length - 1;
+            return;
+        }
+        if (n < 0) {
+            currentSlide = 0;
+            return;
+        }
+
+        currentSlide = n;
+
+        slides.forEach(slide => slide.classList.remove('active'));
+        slides[currentSlide].classList.add('active');
+
+        // Control de botones
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.style.display = currentSlide === slides.length - 1 ? 'none' : 'flex';
+
+        // Mostrar botón resolver solo en slides de diagnóstico
+        const isDiagnosticSlide = exercises.some(ex => ex.diagnosticSlide === currentSlide);
+        solveBtn.style.display = isDiagnosticSlide ? 'flex' : 'none';
+
+        // Actualizar ejercicio actual
+        exercises.forEach((ex, idx) => {
+            if (ex.diagnosticSlide === currentSlide) {
+                currentExercise = idx;
+            }
+        });
+
+        updateProgress();
+        window.scrollTo(0, 0);
+    }
+
+    function changeSlide(direction) {
+        showSlide(currentSlide + direction);
+    }
+
+    function showSolveModal() {
+        const modal = document.getElementById('solveModal');
+        const hintsContainer = document.getElementById('hintsContainer');
+        const exercise = exercises[currentExercise];
+
+        let hintsHTML = '<h4>💡 Pistas:</h4>';
+        exercise.hints.forEach(hint => {
+            hintsHTML += `<p>${hint}</p>`;
+        });
+        hintsHTML += `<p style="margin-top: 15px; font-weight: 600;">${exercise.hintText}</p>`;
+
+        hintsContainer.innerHTML = hintsHTML;
+        document.getElementById('solutionKey').value = '';
+        document.getElementById('errorMessage').classList.remove('show');
+
+        modal.classList.add('active');
+    }
+
+    function closeSolveModal() {
+        document.getElementById('solveModal').classList.remove('active');
+    }
+
+    function checkSolution() {
+        const input = document.getElementById('solutionKey').value.trim();
+        const exercise = exercises[currentExercise];
+        const errorMessage = document.getElementById('errorMessage');
+
+        if (input.toLowerCase() === exercise.key.toLowerCase()) {
+            closeSolveModal();
+            showSolutionModal();
+        } else {
+            errorMessage.classList.add('show');
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+            }, 3000);
+        }
+    }
+
+    function showSolutionModal() {
+        const modal = document.getElementById('solutionModal');
+        const content = document.getElementById('solutionContent');
+        const exercise = exercises[currentExercise];
+        const solution = exercise.solution;
+
+        content.innerHTML = `
+                <h3>${solution.title}</h3>
+                <p>${solution.description}</p>
+                <div style="margin-top: 20px;">
+                    <h4 style="color: #2d3748; margin-bottom: 10px;">🔧 Comando de solución:</h4>
+                    <div class="code-block">${solution.command.replace(/\n/g, '<br>')}</div>
+                </div>
+            `;
+
+        modal.classList.add('active');
+    }
+
+    function closeSolutionModal() {
+        document.getElementById('solutionModal').classList.remove('active');
+        // Avanzar automáticamente a la siguiente slide
+        changeSlide(1);
+    }
+
+    // Cerrar modales al hacer clic fuera
+    window.onclick = function (event) {
+        const solveModal = document.getElementById('solveModal');
+        const solutionModal = document.getElementById('solutionModal');
+
+        if (event.target === solveModal) {
+            closeSolveModal();
+        }
+        if (event.target === solutionModal) {
+            closeSolutionModal();
+        }
+    }
+
+    // Permitir Enter para verificar solución
+    document.getElementById('solutionKey').addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            checkSolution();
+        }
+    });
+
+    // Inicializar
+    showSlide(0);
+</script>
+</body>
+</html>

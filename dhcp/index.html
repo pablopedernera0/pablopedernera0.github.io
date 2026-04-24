@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DHCP — Proceso DORA</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b24;
+    --bg3: #1e2533;
+    --border: rgba(255,255,255,0.08);
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --faint: #30363d;
+
+    --d-color: #58a6ff;
+    --d-bg: rgba(88,166,255,0.1);
+    --o-color: #3fb950;
+    --o-bg: rgba(63,185,80,0.1);
+    --r-color: #f0883e;
+    --r-bg: rgba(240,136,62,0.1);
+    --a-color: #ff7b72;
+    --a-bg: rgba(255,123,114,0.1);
+
+    --speed: 1200ms;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ─── Header ─── */
+  header {
+    width: 100%;
+    max-width: 900px;
+    padding: 2.5rem 2rem 1rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .header-left h1 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  .header-left h1 span { color: var(--d-color); }
+  .header-left p {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 0.35rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .badge {
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  /* ─── Speed control ─── */
+  .speed-bar {
+    width: 100%;
+    max-width: 900px;
+    padding: 0.75rem 2rem;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .speed-bar label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+  }
+  .speed-bar input[type=range] {
+    flex: 1;
+    min-width: 120px;
+    max-width: 280px;
+    accent-color: var(--d-color);
+    cursor: pointer;
+    height: 4px;
+  }
+  #speed-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text);
+    min-width: 52px;
+  }
+  .speed-presets { display: flex; gap: 6px; }
+  .preset-btn {
+    font-size: 0.65rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all .15s;
+  }
+  .preset-btn:hover, .preset-btn.active {
+    border-color: var(--d-color);
+    color: var(--d-color);
+    background: var(--d-bg);
+  }
+
+  /* ─── Main ─── */
+  main {
+    width: 100%;
+    max-width: 900px;
+    padding: 1.5rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  /* ─── Scene ─── */
+  .scene-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .scene-header {
+    padding: 0.65rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  #scene {
+    position: relative;
+    height: 210px;
+    padding: 0 1.25rem;
+  }
+
+  /* Cable / canal */
+  .cable {
+    position: absolute;
+    top: 100px;
+    left: 170px;
+    right: 170px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--faint) 10%, var(--faint) 90%, transparent);
+  }
+  .cable-label {
+    position: absolute;
+    top: 106px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 0.6rem;
+    color: var(--faint);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Nodos */
+  .node-box {
+    position: absolute;
+    top: 28px;
+    width: 140px;
+    text-align: center;
+    transition: transform .15s;
+  }
+  #client-node { left: 14px; }
+  #server-node { right: 14px; }
+
+  .node-icon {
+    font-size: 2rem;
+    margin-bottom: 4px;
+    transition: filter .3s;
+  }
+  .node-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 10px;
+  }
+  .node-title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .node-ip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 4px;
+    padding: 2px 6px;
+    background: var(--bg);
+    border-radius: 6px;
+    transition: all .4s;
+  }
+  .node-ip.got-ip {
+    color: var(--o-color);
+    border: 1px solid rgba(63,185,80,0.3);
+  }
+  .node-meta {
+    margin-top: 6px;
+    font-size: 0.6rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.6;
+  }
+
+  /* Pulso al recibir */
+  @keyframes nodePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+  .node-box.pulse { animation: nodePulse .35s ease; }
+
+  /* Paquetes animados */
+  #pkt-layer { position: absolute; inset: 0; pointer-events: none; }
+
+  .pkt {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid;
+    transition: none;
+  }
+
+  .bcast-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid;
+    animation: ringExpand var(--speed) ease-out forwards;
+    pointer-events: none;
+  }
+  @keyframes ringExpand {
+    from { transform: scale(0.5); opacity: 0.7; }
+    to   { transform: scale(2.5); opacity: 0;   }
+  }
+
+  /* Indicador estado */
+  #status-bar {
+    position: absolute;
+    bottom: 10px;
+    left: 0; right: 0;
+    text-align: center;
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    opacity: 0;
+    transition: opacity .3s;
+  }
+
+  /* ─── Progreso DORA ─── */
+  .dora-track {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .dora-step {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    transition: all .35s;
+    position: relative;
+    overflow: hidden;
+  }
+  .dora-step::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--step-bg, transparent);
+    opacity: 0;
+    transition: opacity .35s;
+  }
+  .dora-step.active::before { opacity: 1; }
+  .dora-step.done { border-color: var(--step-color, var(--border)); }
+  .dora-step.done .step-letter { opacity: 1; }
+
+  .step-letter {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--step-color);
+    opacity: 0.2;
+    transition: opacity .35s;
+    position: relative;
+  }
+  .step-name {
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    margin-top: 2px;
+    position: relative;
+  }
+  .step-tag {
+    font-size: 0.6rem;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 6px;
+    padding: 2px 7px;
+    border-radius: 8px;
+    border: 1px solid var(--step-color);
+    color: var(--step-color);
+    opacity: 0;
+    display: inline-block;
+    transition: opacity .35s;
+    position: relative;
+  }
+  .dora-step.done .step-tag { opacity: 1; }
+
+  /* ─── Info panel ─── */
+  .info-panel {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    min-height: 130px;
+  }
+  .info-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .step-badge {
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 2px 10px;
+    border-radius: 20px;
+  }
+  .info-desc {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 0.75rem;
+  }
+  .fields-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .field-chip {
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 3px 10px;
+    border-radius: 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .field-chip span { color: var(--text); }
+
+  /* ─── Controles ─── */
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  .btn {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.6rem 1.6rem;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: all .15s;
+  }
+  .btn-primary {
+    background: var(--d-color);
+    color: #0d1117;
+    border-color: transparent;
+  }
+  .btn-primary:hover { filter: brightness(1.12); }
+  .btn-primary:disabled { filter: brightness(0.5); cursor: default; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--muted);
+  }
+  .btn-secondary:hover { background: var(--bg3); color: var(--text); }
+
+  /* ─── Footer ─── */
+  footer {
+    padding: 1.5rem;
+    font-size: 0.65rem;
+    color: var(--faint);
+    font-family: 'JetBrains Mono', monospace;
+    text-align: center;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 600px) {
+    header { flex-direction: column; align-items: flex-start; }
+    .dora-track { grid-template-columns: repeat(2,1fr); }
+    #scene { height: 260px; }
+    .node-box { width: 110px; }
+    #client-node { left: 4px; }
+    #server-node { right: 4px; }
+    .cable { left: 120px; right: 120px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>DHCP — Proceso <span>DORA</span></h1>
+    <p>Dynamic Host Configuration Protocol · RFC 2131</p>
+  </div>
+  <div class="badge">Redes · Capa Aplicación</div>
+</header>
+
+<!-- Speed control -->
+<div class="speed-bar">
+  <label>Velocidad del paquete</label>
+  <input type="range" id="speed-slider" min="300" max="4000" value="1500" step="100" oninput="setSpeed(this.value)">
+  <span id="speed-val">1500 ms</span>
+  <div class="speed-presets">
+    <button class="preset-btn" onclick="setPreset(600,'Rápido')">Rápido</button>
+    <button class="preset-btn active" onclick="setPreset(1500,'Normal')">Normal</button>
+    <button class="preset-btn" onclick="setPreset(2800,'Lento')">Lento</button>
+    <button class="preset-btn" onclick="setPreset(4000,'Muy lento')">Muy lento</button>
+  </div>
+</div>
+
+<main>
+
+  <!-- Escena animada -->
+  <div class="scene-wrap">
+    <div class="scene-header">
+      <div class="dot" style="background:#ff5f57"></div>
+      <div class="dot" style="background:#febc2e"></div>
+      <div class="dot" style="background:#28c840"></div>
+      <span style="font-size:0.65rem; color:var(--muted); font-family:'JetBrains Mono',monospace; margin-left:6px;">red local · broadcast domain</span>
+    </div>
+    <div id="scene">
+      <div class="cable"></div>
+      <div class="cable-label">LAN / Ethernet</div>
+
+      <!-- Cliente -->
+      <div class="node-box" id="client-node">
+        <div class="node-icon">💻</div>
+        <div class="node-card">
+          <div class="node-title">Cliente DHCP</div>
+          <div class="node-ip" id="client-ip">0.0.0.0</div>
+        </div>
+        <div class="node-meta">MAC: AA:BB:CC:DD:EE:FF<br>Puerto UDP: 68</div>
+      </div>
+
+      <!-- Servidor -->
+      <div class="node-box" id="server-node">
+        <div class="node-icon">🖥️</div>
+        <div class="node-card">
+          <div class="node-title">Servidor DHCP</div>
+          <div class="node-ip">192.168.1.1</div>
+        </div>
+        <div class="node-meta">Pool: .100 – .200<br>Puerto UDP: 67</div>
+      </div>
+
+      <div id="pkt-layer"></div>
+      <div id="status-bar"></div>
+    </div>
+  </div>
+
+  <!-- Indicadores DORA -->
+  <div class="dora-track">
+    <div class="dora-step" id="step-d" style="--step-color:var(--d-color);--step-bg:var(--d-bg)">
+      <div class="step-letter">D</div>
+      <div class="step-name">DISCOVER</div>
+      <div class="step-tag">DHCPDISCOVER</div>
+    </div>
+    <div class="dora-step" id="step-o" style="--step-color:var(--o-color);--step-bg:var(--o-bg)">
+      <div class="step-letter">O</div>
+      <div class="step-name">OFFER</div>
+      <div class="step-tag">DHCPOFFER</div>
+    </div>
+    <div class="dora-step" id="step-r" style="--step-color:var(--r-color);--step-bg:var(--r-bg)">
+      <div class="step-letter">R</div>
+      <div class="step-name">REQUEST</div>
+      <div class="step-tag">DHCPREQUEST</div>
+    </div>
+    <div class="dora-step" id="step-a" style="--step-color:var(--a-color);--step-bg:var(--a-bg)">
+      <div class="step-letter">A</div>
+      <div class="step-name">ACKNOWLEDGE</div>
+      <div class="step-tag">DHCPACK</div>
+    </div>
+  </div>
+
+  <!-- Info panel -->
+  <div class="info-panel" id="info-panel">
+    <div class="info-desc" style="margin:0; display:flex; align-items:center; height:100%; padding:0.5rem 0;">
+      Presiona <strong style="color:var(--text); margin:0 4px;">Siguiente</strong> para iniciar el proceso DORA paso a paso.
+    </div>
+  </div>
+
+  <!-- Controles -->
+  <div class="controls">
+    <button class="btn btn-secondary" onclick="resetAll()">↺ Reiniciar</button>
+    <button class="btn btn-primary" id="btn-next" onclick="nextStep()">Siguiente →</button>
+  </div>
+
+</main>
+
+<footer>DHCP — RFC 2131 · Proceso DORA · Discover · Offer · Request · Acknowledge</footer>
+
+<script>
+const steps = [
+  {
+    id: 'step-d',
+    dir: 'right',
+    color: '#58a6ff',
+    borderColor: 'rgba(88,166,255,0.5)',
+    bgPkt: 'rgba(88,166,255,0.12)',
+    label: '→ DHCPDISCOVER',
+    status: '🔊 Broadcast · src: 0.0.0.0:68 → dst: 255.255.255.255:67',
+    clientIp: '0.0.0.0',
+    bcast: true,
+    title: 'D — DISCOVER',
+    badgeColor: '#58a6ff',
+    badgeBg: 'rgba(88,166,255,0.15)',
+    desc: 'El cliente no tiene dirección IP asignada. Emite un <strong style="color:#e6edf3">broadcast</strong> a toda la red buscando un servidor DHCP. Como no conoce su propia IP, usa 0.0.0.0 como origen; como no conoce al servidor, usa 255.255.255.255 como destino. Todos los dispositivos reciben este paquete — solo el servidor DHCP responde.',
+    fields: [
+      ['src IP','0.0.0.0'],['dst IP','255.255.255.255'],
+      ['src MAC','AA:BB:CC:DD:EE:FF'],['dst MAC','FF:FF:FF:FF:FF:FF'],
+      ['src port','UDP 68'],['dst port','UDP 67'],
+      ['Tipo L2','Broadcast'],['Tipo L3','Broadcast'],
+    ]
+  },
+  {
+    id: 'step-o',
+    dir: 'left',
+    color: '#3fb950',
+    borderColor: 'rgba(63,185,80,0.5)',
+    bgPkt: 'rgba(63,185,80,0.12)',
+    label: '← DHCPOFFER',
+    status: '📨 Unicast L2 / Broadcast L3 · src: 192.168.1.1:67 → dst: 255.255.255.255:68',
+    clientIp: '0.0.0.0',
+    bcast: false,
+    title: 'O — OFFER',
+    badgeColor: '#3fb950',
+    badgeBg: 'rgba(63,185,80,0.15)',
+    desc: 'El servidor responde con una <strong style="color:#e6edf3">oferta</strong> que incluye: una IP disponible del pool, máscara de subred, gateway predeterminado, servidores DNS y tiempo de arrendamiento (lease). Aunque usa 255.255.255.255 en la capa de red (el cliente aún no tiene IP), envía el frame Ethernet directamente a la MAC del cliente — es <strong style="color:#e6edf3">unicast en L2, broadcast en L3</strong>.',
+    fields: [
+      ['IP ofrecida','192.168.1.105'],['Máscara','255.255.255.0'],
+      ['Gateway','192.168.1.1'],['DNS','8.8.8.8'],
+      ['Lease','86400 s (1 día)'],['src IP','192.168.1.1'],
+      ['dst IP','255.255.255.255'],['dst MAC','AA:BB:CC:DD:EE:FF'],
+    ]
+  },
+  {
+    id: 'step-r',
+    dir: 'right',
+    color: '#f0883e',
+    borderColor: 'rgba(240,136,62,0.5)',
+    bgPkt: 'rgba(240,136,62,0.12)',
+    label: '→ DHCPREQUEST',
+    status: '🔊 Broadcast · avisa a TODOS los servidores · src: 0.0.0.0:68 → 255.255.255.255:67',
+    clientIp: '0.0.0.0',
+    bcast: true,
+    title: 'R — REQUEST',
+    badgeColor: '#f0883e',
+    badgeBg: 'rgba(240,136,62,0.15)',
+    desc: 'El cliente acepta la oferta y lo anuncia en <strong style="color:#e6edf3">broadcast</strong>. Aunque ya conoce la IP, sigue usando 0.0.0.0 como origen porque aún no está confirmada. El broadcast es intencional: informa a <em>todos</em> los servidores DHCP que puedan haber respondido, para que los demás cancelen sus ofertas y devuelvan las IPs al pool.',
+    fields: [
+      ['IP solicitada','192.168.1.105'],['Servidor elegido','192.168.1.1'],
+      ['src IP','0.0.0.0'],['dst IP','255.255.255.255'],
+      ['src MAC','AA:BB:CC:DD:EE:FF'],['dst MAC','FF:FF:FF:FF:FF:FF'],
+      ['src port','UDP 68'],['dst port','UDP 67'],
+    ]
+  },
+  {
+    id: 'step-a',
+    dir: 'left',
+    color: '#ff7b72',
+    borderColor: 'rgba(255,123,114,0.5)',
+    bgPkt: 'rgba(255,123,114,0.12)',
+    label: '← DHCPACK',
+    status: '✅ Confirmación · El cliente configura la interfaz con 192.168.1.105',
+    clientIp: '192.168.1.105',
+    bcast: false,
+    title: 'A — ACKNOWLEDGE',
+    badgeColor: '#ff7b72',
+    badgeBg: 'rgba(255,123,114,0.15)',
+    desc: 'El servidor confirma la asignación con un <strong style="color:#e6edf3">ACK</strong>. Al recibir este mensaje, el cliente configura su interfaz de red con la dirección IP y demás parámetros. El lease tiene un tiempo límite: el cliente intentará renovarlo al 50% del tiempo (T1) y si falla, a 87.5% (T2). Si no logra renovar, debe repetir el proceso DORA completo.',
+    fields: [
+      ['IP asignada','192.168.1.105'],['Máscara','255.255.255.0'],
+      ['Gateway','192.168.1.1'],['DNS','8.8.8.8'],
+      ['Lease','86400 s'],['T1 (renovar)','43200 s'],
+      ['T2 (rebind)','75600 s'],['Estado','✓ Configurado'],
+    ]
+  }
+];
+
+let current = -1;
+let animating = false;
+let speed = 1500;
+
+function setSpeed(v) {
+  speed = parseInt(v);
+  document.getElementById('speed-val').textContent = v + ' ms';
+  document.documentElement.style.setProperty('--speed', v + 'ms');
+  // actualiza presets activo
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+}
+
+function setPreset(v, name) {
+  speed = v;
+  document.getElementById('speed-slider').value = v;
+  document.getElementById('speed-val').textContent = v + ' ms';
+  document.documentElement.style.setProperty('--speed', v + 'ms');
+  document.querySelectorAll('.preset-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent === name);
+  });
+}
+
+function nextStep() {
+  if (animating) return;
+  current++;
+  if (current >= steps.length) return;
+  animating = true;
+  document.getElementById('btn-next').disabled = true;
+
+  const s = steps[current];
+  const scene = document.getElementById('scene');
+  const sceneRect = scene.getBoundingClientRect();
+  const sceneW = scene.offsetWidth;
+
+  // status bar
+  const sb = document.getElementById('status-bar');
+  sb.textContent = s.status;
+  sb.style.opacity = '1';
+
+  // DORA step highlight
+  const stepEl = document.getElementById(s.id);
+  stepEl.classList.add('active', 'done');
+
+  // animate packet
+  const pktLayer = document.getElementById('pkt-layer');
+
+  // broadcast ring (only for broadcast packets)
+  if (s.bcast) {
+    const originX = s.dir === 'right' ? 80 : sceneW - 80;
+    const ring = document.createElement('div');
+    ring.className = 'bcast-ring';
+    ring.style.cssText = `
+      width: 60px; height: 60px;
+      left: ${originX - 30}px; top: 70px;
+      border-color: ${s.color};
+      --speed: ${speed}ms;
+    `;
+    pktLayer.appendChild(ring);
+    setTimeout(() => ring.remove(), speed + 200);
+  }
+
+  // packet element
+  const pkt = document.createElement('div');
+  pkt.className = 'pkt';
+  pkt.style.cssText = `
+    background: ${s.bgPkt};
+    border-color: ${s.borderColor};
+    color: ${s.color};
+  `;
+  pkt.textContent = s.label;
+
+  // start position
+  const startX = s.dir === 'right' ? 155 : sceneW - 155 - 160;
+  const endX   = s.dir === 'right' ? sceneW - 180 : 20;
+  pkt.style.left = startX + 'px';
+  pkt.style.top  = '85px';
+  pktLayer.appendChild(pkt);
+
+  const anim = pkt.animate([
+    { transform: 'translateX(0)', opacity: 1 },
+    { transform: `translateX(${endX - startX}px)`, opacity: 0 }
+  ], { duration: speed, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', fill: 'forwards' });
+
+  anim.onfinish = () => {
+    pkt.remove();
+
+    // pulse receiving node
+    const receiver = s.dir === 'right' ? 'server-node' : 'client-node';
+    const receiverEl = document.getElementById(receiver);
+    receiverEl.classList.remove('pulse');
+    void receiverEl.offsetWidth;
+    receiverEl.classList.add('pulse');
+
+    // update client IP
+    const ipEl = document.getElementById('client-ip');
+    ipEl.textContent = s.clientIp;
+    if (s.clientIp !== '0.0.0.0') {
+      ipEl.classList.add('got-ip');
+    }
+
+    // update info panel
+    updatePanel(s);
+
+    // remove active highlight (keep done)
+    stepEl.classList.remove('active');
+
+    animating = false;
+    if (current < steps.length - 1) {
+      document.getElementById('btn-next').disabled = false;
+    } else {
+      document.getElementById('btn-next').textContent = '✓ Completado';
+    }
+  };
+}
+
+function updatePanel(s) {
+  const panel = document.getElementById('info-panel');
+  const fieldsHTML = s.fields.map(([k,v]) =>
+    `<div class="field-chip">${k}: <span>${v}</span></div>`
+  ).join('');
+  panel.style.opacity = '0';
+  panel.style.transform = 'translateY(8px)';
+  setTimeout(() => {
+    panel.innerHTML = `
+      <div class="info-title">
+        <span class="step-badge" style="background:${s.badgeBg};color:${s.badgeColor}">${s.title}</span>
+      </div>
+      <div class="info-desc">${s.desc}</div>
+      <div class="fields-grid">${fieldsHTML}</div>`;
+    panel.style.transition = 'all .3s ease';
+    panel.style.opacity = '1';
+    panel.style.transform = 'translateY(0)';
+  }, 80);
+}
+
+function resetAll() {
+  if (animating) return;
+  current = -1;
+  document.getElementById('pkt-layer').innerHTML = '';
+  document.getElementById('client-ip').textContent = '0.0.0.0';
+  document.getElementById('client-ip').classList.remove('got-ip');
+  document.getElementById('status-bar').style.opacity = '0';
+  document.getElementById('btn-next').disabled = false;
+  document.getElementById('btn-next').textContent = 'Siguiente →';
+  document.querySelectorAll('.dora-step').forEach(el => el.classList.remove('active','done'));
+  document.getElementById('info-panel').innerHTML = `
+    <div class="info-desc" style="margin:0;display:flex;align-items:center;height:100%;padding:.5rem 0;">
+      Presiona <strong style="color:var(--text);margin:0 4px;">Siguiente</strong> para iniciar el proceso DORA paso a paso.
+    </div>`;
+  document.querySelectorAll('.node-box').forEach(el => el.classList.remove('pulse'));
+}
+</script>
+</body>
+</html>
