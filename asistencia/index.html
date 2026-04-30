@@ -300,6 +300,8 @@
     // ============================================================
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrO_URMR0hN7knj5EhqsZGK-V4Omb_kpb0sUzauuiPIxB3_D3BNyXx8XK6_4PUp6d34w/exec";
 
+    const params = new URLSearchParams(window.location.search);
+
     const materia = params.get("materia") || "Asistencia";
 
     // ============================================================
@@ -309,7 +311,6 @@
     let filaSeleccionada = null;
 
     // Detectar modo docente por parámetro URL
-    const params = new URLSearchParams(window.location.search);
     if (params.get("modo") === "docente") {
         document.getElementById("vista-alumnos").style.display = "none";
         document.getElementById("vista-docente").style.display = "block";
