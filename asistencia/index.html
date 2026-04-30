@@ -396,15 +396,15 @@
     }
 
     async function confirmar() {
+        const fila = filaSeleccionada; // ✅ Guardar ANTES de cerrar
         cerrar();
         try {
-            const res = await post({ accion: "marcar", fila: filaSeleccionada, clave: claveActiva });
+            const res = await post({ accion: "marcar", fila: fila, clave: claveActiva });
             mostrarResultado(res.ok, res.msg, res.ok ? "Tu asistencia quedó registrada ✓" : "");
         } catch {
             mostrarResultado(false, "Error de conexión", "Intentá de nuevo");
         }
     }
-
     // ============================================================
     // DOCENTE — activar sesión
     // ============================================================
