@@ -298,7 +298,7 @@
     // ============================================================
     // CONFIGURACIÓN — reemplazá con tu URL del script
     // ============================================================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuXuYDsH7mXd9xGyjLeq9pBqWq4l4SyGweo-ILDtZIoa9mAQ750Vn4maFG1WTYOgd5ww/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw8cvEWnw5CtWEkOD_YchnBG8ZXrC8O9e8fn4B4xGgCcNd5gt1HO5AOmbBJ6jqjZKRwpA/exec";
 
     // ============================================================
     // INIT
@@ -361,8 +361,7 @@
         lista.innerHTML = `<div class="loading"><div class="spinner"></div>Cargando alumnos...</div>`;
 
         try {
-            const res = await fetch(SCRIPT_URL + "?accion=alumnos");
-            const data = await res.json();
+            const data = await post({ accion: "alumnos" });
             renderLista(data);
         } catch {
             lista.innerHTML = `<div class="loading">Error al cargar la lista. Recargá la página.</div>`;
