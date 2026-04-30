@@ -298,7 +298,9 @@
     // ============================================================
     // CONFIGURACIÓN — reemplazá con tu URL del script
     // ============================================================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwicvcktkl4Bf-mGqUBNQKqYRANWYY0FVvvHFXGHhFr0jSOqoqVucpC34IkpaL2Cfxviw/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrO_URMR0hN7knj5EhqsZGK-V4Omb_kpb0sUzauuiPIxB3_D3BNyXx8XK6_4PUp6d34w/exec";
+
+    const materia = params.get("materia") || "Asistencia";
 
     // ============================================================
     // INIT
@@ -361,7 +363,7 @@
         lista.innerHTML = `<div class="loading"><div class="spinner"></div>Cargando alumnos...</div>`;
 
         try {
-            const data = await post({ accion: "alumnos" });
+            const data = await post({ accion: "alumnos", materia });
             renderLista(data);
         } catch {
             lista.innerHTML = `<div class="loading">Error al cargar la lista. Recargá la página.</div>`;
@@ -399,7 +401,7 @@
         const fila = filaSeleccionada; // ✅ Guardar ANTES de cerrar
         cerrar();
         try {
-            const res = await post({ accion: "marcar", fila: fila, clave: claveActiva });
+            const res = await post({ accion: "marcar", fila, clave: claveActiva, materia });
             mostrarResultado(res.ok, res.msg, res.ok ? "Tu asistencia quedó registrada ✓" : "");
         } catch {
             mostrarResultado(false, "Error de conexión", "Intentá de nuevo");
