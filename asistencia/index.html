@@ -2,669 +2,459 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Asistencia</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Asistencia</title>
     <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f0f4ff;
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 24px 16px;
         }
-        .main-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+
+        /* ---- Header ---- */
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
         }
+        .header h1 {
+            font-size: 1.5rem;
+            color: #2d3282;
+            font-weight: 700;
+        }
+        .header .subtitulo {
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 4px;
+        }
+        .badge-fecha {
+            display: inline-block;
+            background: #e8ebff;
+            color: #2d3282;
+            border-radius: 20px;
+            padding: 6px 18px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        /* ---- Card ---- */
         .card {
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            border: none;
-        }
-        .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px 15px 0 0 !important;
-            padding: 1.5rem;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #63408b 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        .student-item {
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-        .student-item.present {
-            background-color: #d4edda;
-            border-left-color: #28a745;
-        }
-        .student-item.absent {
-            background-color: #f8d7da;
-            border-left-color: #dc3545;
-        }
-        .stats-card {
             background: white;
+            border-radius: 18px;
+            padding: 24px;
+            max-width: 480px;
+            margin: 0 auto 16px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+        }
+
+        /* ---- Inputs ---- */
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        input[type=text], input[type=date], input[type=password] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e4f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            margin-bottom: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+        }
+        input:focus { border-color: #3b3f8c; }
+
+        /* ---- Botones ---- */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+        .btn:active { transform: scale(0.98); opacity: 0.9; }
+        .btn-primary { background: #3b3f8c; color: white; }
+        .btn-primary:disabled { background: #aaa; cursor: not-allowed; transform: none; }
+
+        /* ---- Mensajes ---- */
+        .msg {
+            text-align: center;
+            margin-top: 14px;
+            font-size: 0.95rem;
+            padding: 12px;
             border-radius: 10px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        .stats-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #667eea;
-        }
-        .hidden {
             display: none;
         }
-        .alert-custom {
-            border-radius: 10px;
-            border: none;
-        }
-        .materia-card {
+        .msg.ok    { background: #e6ffed; color: #1a7a3a; display: block; }
+        .msg.error { background: #fff0f0; color: #c0392b; display: block; }
+        .msg.info  { background: #f0f4ff; color: #3b3f8c; display: block; }
+
+        /* ---- Lista de alumnos ---- */
+        #seccion-lista { max-width: 480px; margin: 0 auto; }
+        .lista { display: flex; flex-direction: column; gap: 10px; }
+        .btn-alumno {
+            background: white;
+            border: 2px solid #dde2ff;
+            border-radius: 14px;
+            padding: 18px 20px;
+            font-size: 1.05rem;
+            color: #222;
             cursor: pointer;
-            transition: all 0.3s ease;
+            text-align: left;
+            transition: background 0.15s, border-color 0.15s;
+            width: 100%;
         }
-        .materia-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        .btn-alumno:hover  { background: #eef0ff; border-color: #3b3f8c; }
+        .btn-alumno:active { transform: scale(0.98); }
+
+        /* ---- Modal de confirmación ---- */
+        .overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 100;
+            padding: 0;
         }
-        .codigo-display {
-            font-size: 2rem;
-            letter-spacing: 0.5rem;
-            font-weight: bold;
-            color: #667eea;
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 10px;
+        .overlay.visible { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 24px 24px 0 0;
+            padding: 32px 24px 40px;
+            width: 100%;
+            max-width: 480px;
             text-align: center;
+        }
+        .modal-handle {
+            width: 40px; height: 4px;
+            background: #ddd;
+            border-radius: 2px;
+            margin: 0 auto 24px;
+        }
+        .modal h2 { color: #2d3282; margin-bottom: 8px; font-size: 1.25rem; }
+        .modal .nombre-modal {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 28px;
+            padding: 14px;
+            background: #f0f4ff;
+            border-radius: 12px;
+        }
+        .modal-btns { display: flex; gap: 12px; }
+        .btn-confirmar {
+            flex: 2;
+            background: #3b3f8c; color: white;
+            border: none; border-radius: 14px;
+            padding: 16px; font-size: 1rem;
+            font-weight: 700; cursor: pointer;
+        }
+        .btn-cancelar {
+            flex: 1;
+            background: #f0f0f0; color: #555;
+            border: none; border-radius: 14px;
+            padding: 16px; font-size: 1rem;
+            cursor: pointer;
+        }
+
+        /* ---- Pantalla resultado ---- */
+        .resultado {
+            display: none;
+            position: fixed; inset: 0;
+            background: #2d3282;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+            text-align: center;
+            padding: 40px 24px;
+            z-index: 200;
+        }
+        .resultado.visible { display: flex; }
+        .resultado.error-bg { background: #8c2d2d; }
+        .resultado .icono { font-size: 5rem; margin-bottom: 20px; }
+        .resultado .res-msg { font-size: 1.4rem; font-weight: 700; }
+        .resultado .res-sub { font-size: 1rem; opacity: 0.8; margin-top: 10px; }
+
+        /* ---- Loading spinner ---- */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+        .spinner {
+            width: 32px; height: 32px;
+            border: 3px solid #e0e4f0;
+            border-top-color: #3b3f8c;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ---- Panel docente ---- */
+        .docente-badge {
+            text-align: center;
+            background: #fff8e6;
+            color: #7a5800;
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
         }
     </style>
 </head>
 <body>
-    <div class="main-container">
-        <!-- Pantalla de Selección de Rol -->
-        <div id="roleSelection" class="text-center">
-            <div class="card mx-auto" style="max-width: 500px;">
-                <div class="card-header">
-                    <h2><i class="fas fa-graduation-cap"></i> Sistema de Asistencia</h2>
-                </div>
-                <div class="card-body p-5">
-                    <h4 class="mb-4">Seleccione su rol</h4>
-                    <div class="d-grid gap-3">
-                        <button class="btn btn-primary btn-lg" onclick="showLogin()">
-                            <i class="fas fa-chalkboard-teacher"></i> Soy Profesor
-                        </button>
-                        <button class="btn btn-success btn-lg" onclick="showStudentView()">
-                            <i class="fas fa-user-graduate"></i> Soy Estudiante
-                        </button>
-                    </div>
-                </div>
-            </div>
+
+<!-- ===== VISTA ALUMNOS ===== -->
+<div id="vista-alumnos">
+    <div class="header">
+        <h1>📋 Marcar Asistencia</h1>
+        <div class="subtitulo">Ingresá la clave que te dio el docente</div>
+    </div>
+
+    <div class="card" id="card-clave">
+        <label for="clave-alumno">Clave del día</label>
+        <input type="password" id="clave-alumno" placeholder="Ingresá la clave..."
+               autocomplete="off" inputmode="text"
+               onkeydown="if(event.key==='Enter') verificar()">
+        <button class="btn btn-primary" onclick="verificar()" id="btn-verificar">Entrar</button>
+        <div class="msg" id="msg-clave"></div>
+    </div>
+
+    <div id="seccion-lista" style="display:none">
+        <div class="header">
+            <div class="badge-fecha" id="badge-fecha"></div>
+            <div class="subtitulo" style="margin-top:12px">Tocá tu nombre para registrar tu asistencia</div>
         </div>
-
-        <!-- Login Profesor -->
-        <div id="loginView" class="hidden">
-            <div class="card mx-auto" style="max-width: 500px;">
-                <div class="card-header">
-                    <h3><i class="fas fa-sign-in-alt"></i> Login Profesor</h3>
-                </div>
-                <div class="card-body p-4">
-                    <div id="loginAlert"></div>
-                    <form id="loginForm">
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" id="loginEmail" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="loginPassword" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Ingresar</button>
-                        <button type="button" class="btn btn-link w-100" onclick="backToRole()">Volver</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Vista Materias Profesor -->
-        <div id="materiasView" class="hidden">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3><i class="fas fa-book"></i> Mis Materias</h3>
-                    <button class="btn btn-light btn-sm" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i> Salir
-                    </button>
-                </div>
-                <div class="card-body">
-                    <div id="materiasList" class="row g-3"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Vista Dashboard Profesor -->
-        <div id="dashboardView" class="hidden">
-            <div class="card mb-3">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 id="dashboardTitle"><i class="fas fa-chalkboard"></i> </h3>
-                    <button class="btn btn-light btn-sm" onclick="backToMaterias()">
-                        <i class="fas fa-arrow-left"></i> Volver
-                    </button>
-                </div>
-            </div>
-
-            <!-- Control de Asistencia -->
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div id="sessionInactive">
-                        <h5>Habilitar Asistencia</h5>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <input type="text" class="form-control" id="codigoClase" placeholder="Ingrese código (ej: ABC123)" maxlength="10">
-                            </div>
-                            <div class="col-md-6">
-                                <button class="btn btn-success w-100" onclick="habilitarAsistencia()">
-                                    <i class="fas fa-play"></i> Habilitar Asistencia
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="sessionActive" class="hidden">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h5>Sesión Activa</h5>
-                                <div class="codigo-display" id="codigoActivo"></div>
-                                <p class="text-muted mt-2"><i class="fas fa-clock"></i> Horario válido: <span id="horarioValido"></span></p>
-                            </div>
-                            <div class="col-md-4 text-end">
-                                <button class="btn btn-danger" onclick="cerrarSesion()">
-                                    <i class="fas fa-stop"></i> Cerrar Sesión
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Estadísticas -->
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <div class="stats-card text-center">
-                        <div class="stats-number" id="totalPresentes">0</div>
-                        <div class="text-muted">Presentes</div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stats-card text-center">
-                        <div class="stats-number" id="totalAusentes">0</div>
-                        <div class="text-muted">Ausentes</div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stats-card text-center">
-                        <div class="stats-number" id="totalEstudiantes">0</div>
-                        <div class="text-muted">Total</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Lista de Estudiantes -->
-            <div class="card">
-                <div class="card-header">
-                    <h5><i class="fas fa-users"></i> Lista de Estudiantes</h5>
-                    <input type="text" class="form-control mt-2" id="searchStudent" placeholder="Buscar estudiante...">
-                </div>
-                <div class="card-body">
-                    <div id="studentsList"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Vista Estudiante -->
-        <div id="studentView" class="hidden">
-            <div class="card mx-auto" style="max-width: 500px;">
-                <div class="card-header">
-                    <h3><i class="fas fa-clipboard-check"></i> Marcar Asistencia</h3>
-                </div>
-                <div class="card-body p-4">
-                    <div id="studentAlert"></div>
-                    <form id="studentForm">
-                        <div class="mb-3">
-                            <label class="form-label">Número de DNI</label>
-                            <input type="text" class="form-control" id="studentDNI" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Código de Clase</label>
-                            <input type="text" class="form-control" id="studentCodigo" required>
-                        </div>
-                        <button type="submit" class="btn btn-success w-100">
-                            <i class="fas fa-check"></i> Marcar Presente
-                        </button>
-                        <button type="button" class="btn btn-link w-100" onclick="backToRole()">Volver</button>
-                    </form>
-                </div>
+        <div class="lista" id="lista">
+            <div class="loading">
+                <div class="spinner"></div>
+                Cargando alumnos...
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script type="module">
-        // Importar Firebase desde CDN
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, set, push, get, onValue, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+<!-- ===== VISTA DOCENTE ===== -->
+<div id="vista-docente" style="display:none">
+    <div class="docente-badge">⚙️ Modo docente</div>
+    <div class="header">
+        <h1>Activar sesión</h1>
+        <div class="subtitulo">Configurá la clase antes de que lleguen los alumnos</div>
+    </div>
+    <div class="card">
+        <label for="fecha-docente">Fecha de la clase</label>
+        <input type="date" id="fecha-docente">
+        <label for="clave-docente">Clave del día</label>
+        <input type="text" id="clave-docente"
+               placeholder="Ej: AZUL47"
+               autocomplete="off"
+               style="text-transform:uppercase"
+               oninput="this.value=this.value.toUpperCase()"
+               onkeydown="if(event.key==='Enter') activar()">
+        <button class="btn btn-primary" onclick="activar()" id="btn-activar">Activar sesión</button>
+        <div class="msg" id="msg-docente"></div>
+    </div>
+</div>
 
-        // CONFIGURACIÓN - DEBES REEMPLAZAR CON TUS CREDENCIALES
-        const firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "TU_AUTH_DOMAIN",
-            databaseURL: "TU_DATABASE_URL",
-            projectId: "TU_PROJECT_ID",
-            storageBucket: "TU_STORAGE_BUCKET",
-            messagingSenderId: "TU_MESSAGING_SENDER_ID",
-            appId: "TU_APP_ID"
-        };
+<!-- ===== MODAL CONFIRMACIÓN ===== -->
+<div class="overlay" id="overlay" onclick="if(event.target===this) cerrar()">
+    <div class="modal">
+        <div class="modal-handle"></div>
+        <h2>¿Sos vos?</h2>
+        <div class="nombre-modal" id="modal-nombre"></div>
+        <div class="modal-btns">
+            <button class="btn-cancelar" onclick="cerrar()">Cancelar</button>
+            <button class="btn-confirmar" onclick="confirmar()">Sí, soy yo ✓</button>
+        </div>
+    </div>
+</div>
 
-        // Inicializar Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-        
-        // Hacer disponibles globalmente
-        window.firebaseDB = database;
-        window.firebaseRef = ref;
-        window.firebaseSet = set;
-        window.firebasePush = push;
-        window.firebaseGet = get;
-        window.firebaseOnValue = onValue;
-        window.firebaseQuery = query;
-        window.firebaseOrderByChild = orderByChild;
-        window.firebaseEqualTo = equalTo;
+<!-- ===== PANTALLA RESULTADO ===== -->
+<div class="resultado" id="resultado">
+    <div class="icono" id="res-icono"></div>
+    <div class="res-msg" id="res-mensaje"></div>
+    <div class="res-sub" id="res-sub"></div>
+</div>
 
-        // Variables globales
-        let currentUser = null;
-        let currentMateria = null;
-        let activeSession = null;
-        let estudiantes = [];
+<script>
+    // ============================================================
+    // CONFIGURACIÓN — reemplazá con tu URL del script
+    // ============================================================
+    const SCRIPT_URL = "https://script.google.com/macros/s/TU_URL_AQUI/exec";
 
-        // Navegación entre vistas
-        function showView(viewId) {
-            $('.main-container > div').addClass('hidden');
-            $('#' + viewId).removeClass('hidden');
-        }
+    // ============================================================
+    // INIT
+    // ============================================================
+    let claveActiva = "";
+    let filaSeleccionada = null;
 
-        function showLogin() {
-            showView('loginView');
-        }
+    // Detectar modo docente por parámetro URL
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("modo") === "docente") {
+        document.getElementById("vista-alumnos").style.display = "none";
+        document.getElementById("vista-docente").style.display = "block";
+        // Fecha de hoy por defecto
+        const hoy = new Date();
+        const yyyy = hoy.getFullYear();
+        const mm = String(hoy.getMonth() + 1).padStart(2, "0");
+        const dd = String(hoy.getDate()).padStart(2, "0");
+        document.getElementById("fecha-docente").value = `${yyyy}-${mm}-${dd}`;
+    }
 
-        function showStudentView() {
-            showView('studentView');
-        }
+    // ============================================================
+    // ALUMNO — verificar clave
+    // ============================================================
+    async function verificar() {
+        const clave = document.getElementById("clave-alumno").value.trim();
+        const msg = document.getElementById("msg-clave");
+        const btn = document.getElementById("btn-verificar");
 
-        function backToRole() {
-            showView('roleSelection');
-        }
+        if (!clave) { showMsg(msg, "Ingresá la clave.", "error"); return; }
 
-        function backToMaterias() {
-            showView('materiasView');
-            currentMateria = null;
-            activeSession = null;
-        }
+        btn.disabled = true;
+        btn.textContent = "Verificando...";
+        showMsg(msg, "Verificando...", "info");
 
-        function logout() {
-            currentUser = null;
-            backToRole();
-        }
-
-        // Login Profesor
-        $('#loginForm').on('submit', function(e) {
-            e.preventDefault();
-            const email = $('#loginEmail').val();
-            const password = $('#loginPassword').val();
-
-            // Buscar profesor en Firebase
-            const profesoresRef = window.firebaseRef(window.firebaseDB, 'profesores');
-            const q = window.firebaseQuery(profesoresRef, window.firebaseOrderByChild('email'), window.firebaseEqualTo(email));
-            
-            window.firebaseGet(q)
-                .then(snapshot => {
-                    if (snapshot.exists()) {
-                        const profesorData = Object.values(snapshot.val())[0];
-                        const profesorId = Object.keys(snapshot.val())[0];
-                        
-                        if (profesorData.password === password) {
-                            currentUser = { id: profesorId, ...profesorData };
-                            loadMaterias();
-                            showView('materiasView');
-                        } else {
-                            showAlert('loginAlert', 'Contraseña incorrecta', 'danger');
-                        }
-                    } else {
-                        showAlert('loginAlert', 'Usuario no encontrado', 'danger');
-                    }
-                })
-                .catch(error => {
-                    showAlert('loginAlert', 'Error al iniciar sesión: ' + error.message, 'danger');
-                });
-        });
-
-        // Cargar materias del profesor
-        function loadMaterias() {
-            if (!currentUser || !currentUser.materias) {
-                $('#materiasList').html('<div class="col-12"><p class="text-center text-muted">No hay materias configuradas</p></div>');
-                return;
+        try {
+            const res = await post({ accion: "verificar", clave });
+            if (res.ok) {
+                claveActiva = clave;
+                document.getElementById("card-clave").style.display = "none";
+                document.getElementById("seccion-lista").style.display = "block";
+                document.getElementById("badge-fecha").textContent = "📅 Clase del " + res.fecha;
+                cargarAlumnos();
+            } else {
+                showMsg(msg, res.msg, "error");
+                btn.disabled = false;
+                btn.textContent = "Entrar";
             }
-
-            let html = '';
-            Object.entries(currentUser.materias).forEach(([id, materia]) => {
-                html += `
-                    <div class="col-md-6">
-                        <div class="card materia-card" onclick="selectMateria('${id}')">
-                            <div class="card-body">
-                                <h5><i class="fas fa-book-open"></i> ${materia.nombre}</h5>
-                                <p class="text-muted mb-0">Año: ${materia.anio}</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            $('#materiasList').html(html);
+        } catch {
+            showMsg(msg, "Error de conexión. Revisá el WiFi.", "error");
+            btn.disabled = false;
+            btn.textContent = "Entrar";
         }
+    }
 
-        // Seleccionar materia y cargar estudiantes
-        function selectMateria(materiaId) {
-            currentMateria = { id: materiaId, ...currentUser.materias[materiaId] };
-            $('#dashboardTitle').html(`<i class="fas fa-chalkboard"></i> ${currentMateria.nombre}`);
-            
-            loadEstudiantes();
-            checkActiveSession();
-            showView('dashboardView');
+    // ============================================================
+    // ALUMNO — cargar lista
+    // ============================================================
+    async function cargarAlumnos() {
+        const lista = document.getElementById("lista");
+        lista.innerHTML = `<div class="loading"><div class="spinner"></div>Cargando alumnos...</div>`;
+
+        try {
+            const res = await fetch(SCRIPT_URL + "?accion=alumnos");
+            const data = await res.json();
+            renderLista(data);
+        } catch {
+            lista.innerHTML = `<div class="loading">Error al cargar la lista. Recargá la página.</div>`;
         }
+    }
 
-        // Cargar estudiantes desde Google Sheets
-        function loadEstudiantes() {
-            const sheetId = currentMateria.googleSheetId;
-            const apiKey = currentMateria.apiKey || 'TU_GOOGLE_API_KEY';
-            const range = currentMateria.range || 'A4:Z100';
-
-            const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
-
-            $.get(url)
-                .done(function(data) {
-                    if (data.values && data.values.length > 0) {
-                        const headers = data.values[0];
-                        const dniIndex = headers.findIndex(h => h.toLowerCase().includes('dni'));
-                        const nombreIndex = 0;
-
-                        estudiantes = data.values.slice(1).map((row, idx) => ({
-                            rowIndex: idx + 5,
-                            nombre: row[nombreIndex] || '',
-                            dni: row[dniIndex] || '',
-                            asistencias: row.slice(2)
-                        })).filter(e => e.nombre && e.dni);
-
-                        updateStudentsList();
-                        updateStats();
-                    }
-                })
-                .fail(function() {
-                    showAlert('studentAlert', 'Error al cargar estudiantes desde Google Sheets', 'danger');
-                });
+    function renderLista(alumnos) {
+        const lista = document.getElementById("lista");
+        if (!alumnos.length) {
+            lista.innerHTML = `<div class="loading">No hay alumnos cargados en la hoja.</div>`;
+            return;
         }
+        lista.innerHTML = alumnos
+            .map(a => `<button class="btn-alumno" onclick="seleccionar(${a.fila}, '${a.nombre.replace(/'/g, "\\'")}')">
+        ${a.nombre}
+      </button>`)
+            .join("");
+    }
 
-        // Actualizar lista de estudiantes
-        function updateStudentsList() {
-            const searchTerm = $('#searchStudent').val().toLowerCase();
-            const todayColumn = getTodayColumnIndex();
-            
-            let html = '';
-            estudiantes.forEach(estudiante => {
-                if (searchTerm && !estudiante.nombre.toLowerCase().includes(searchTerm) && 
-                    !estudiante.dni.includes(searchTerm)) {
-                    return;
-                }
+    // ============================================================
+    // ALUMNO — seleccionar y confirmar
+    // ============================================================
+    function seleccionar(fila, nombre) {
+        filaSeleccionada = fila;
+        document.getElementById("modal-nombre").textContent = nombre;
+        document.getElementById("overlay").classList.add("visible");
+    }
 
-                const asistenciaHoy = estudiante.asistencias[todayColumn] || '';
-                const isPresent = asistenciaHoy.startsWith('P');
-                const clase = isPresent ? 'present' : 'absent';
-                const icon = isPresent ? 'check-circle' : 'times-circle';
-                const color = isPresent ? 'success' : 'danger';
+    function cerrar() {
+        document.getElementById("overlay").classList.remove("visible");
+        filaSeleccionada = null;
+    }
 
-                html += `
-                    <div class="student-item ${clase} p-3 mb-2 rounded">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-1">${estudiante.nombre}</h6>
-                                <small class="text-muted">DNI: ${estudiante.dni}</small>
-                            </div>
-                            <div class="text-end">
-                                <i class="fas fa-${icon} text-${color} fa-2x"></i>
-                                ${isPresent ? `<div class="small text-muted">${asistenciaHoy.substring(2)}</div>` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            $('#studentsList').html(html || '<p class="text-center text-muted">No hay estudiantes</p>');
+    async function confirmar() {
+        cerrar();
+        try {
+            const res = await post({ accion: "marcar", fila: filaSeleccionada, clave: claveActiva });
+            mostrarResultado(res.ok, res.msg, res.ok ? "Tu asistencia quedó registrada ✓" : "");
+        } catch {
+            mostrarResultado(false, "Error de conexión", "Intentá de nuevo");
         }
+    }
 
-        // Actualizar estadísticas
-        function updateStats() {
-            const todayColumn = getTodayColumnIndex();
-            let presentes = 0;
-            
-            estudiantes.forEach(est => {
-                if (est.asistencias[todayColumn] && est.asistencias[todayColumn].startsWith('P')) {
-                    presentes++;
-                }
-            });
+    // ============================================================
+    // DOCENTE — activar sesión
+    // ============================================================
+    async function activar() {
+        const fecha = document.getElementById("fecha-docente").value;
+        const clave = document.getElementById("clave-docente").value.trim();
+        const msg = document.getElementById("msg-docente");
+        const btn = document.getElementById("btn-activar");
 
-            $('#totalPresentes').text(presentes);
-            $('#totalAusentes').text(estudiantes.length - presentes);
-            $('#totalEstudiantes').text(estudiantes.length);
+        if (!fecha || !clave) { showMsg(msg, "Completá fecha y clave.", "error"); return; }
+
+        btn.disabled = true;
+        btn.textContent = "Activando...";
+
+        try {
+            const res = await post({ accion: "activar", clave, fecha });
+            showMsg(msg, res.msg, res.ok ? "ok" : "error");
+        } catch {
+            showMsg(msg, "Error de conexión.", "error");
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Activar sesión";
         }
+    }
 
-        // Obtener índice de columna de hoy
-        function getTodayColumnIndex() {
-            const today = new Date();
-            const day = String(today.getDate()).padStart(2, '0');
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            return 0; // Simplificado, deberías calcular basándote en las fechas del header
-        }
-
-        // Verificar sesión activa
-        function checkActiveSession() {
-            const today = new Date().toISOString().split('T')[0];
-            const sessionRef = window.firebaseRef(window.firebaseDB, `sesiones/${currentMateria.id}/${today}`);
-            
-            window.firebaseOnValue(sessionRef, snapshot => {
-                if (snapshot.exists()) {
-                    activeSession = snapshot.val();
-                    if (activeSession.habilitada) {
-                        showActiveSession();
-                    } else {
-                        showInactiveSession();
-                    }
-                } else {
-                    showInactiveSession();
-                }
-            });
-        }
-
-        function showActiveSession() {
-            $('#sessionInactive').addClass('hidden');
-            $('#sessionActive').removeClass('hidden');
-            $('#codigoActivo').text(activeSession.codigo);
-            
-            const inicio = new Date(activeSession.horaInicio);
-            const fin = new Date(activeSession.horaFin);
-            $('#horarioValido').text(`${inicio.toLocaleTimeString('es-AR')} - ${fin.toLocaleTimeString('es-AR')}`);
-        }
-
-        function showInactiveSession() {
-            $('#sessionInactive').removeClass('hidden');
-            $('#sessionActive').addClass('hidden');
-        }
-
-        // Habilitar asistencia
-        function habilitarAsistencia() {
-            const codigo = $('#codigoClase').val().trim();
-            if (!codigo) {
-                alert('Debe ingresar un código');
-                return;
-            }
-
-            const now = new Date();
-            const inicio = new Date(now.getTime() - 15 * 60000);
-            const fin = new Date(now.getTime() + 30 * 60000);
-            const today = now.toISOString().split('T')[0];
-
-            const sessionData = {
-                codigo: codigo,
-                horaInicio: inicio.toISOString(),
-                horaFin: fin.toISOString(),
-                habilitada: true,
-                presentes: []
-            };
-
-            const sessionRef = window.firebaseRef(window.firebaseDB, `sesiones/${currentMateria.id}/${today}`);
-            window.firebaseSet(sessionRef, sessionData)
-                .then(() => {
-                    $('#codigoClase').val('');
-                })
-                .catch(error => {
-                    alert('Error al habilitar asistencia: ' + error.message);
-                });
-        }
-
-        // Cerrar sesión de asistencia
-        function cerrarSesion() {
-            const today = new Date().toISOString().split('T')[0];
-            const sessionRef = window.firebaseRef(window.firebaseDB, `sesiones/${currentMateria.id}/${today}/habilitada`);
-            window.firebaseSet(sessionRef, false);
-        }
-
-        // Marcar asistencia estudiante
-        $('#studentForm').on('submit', function(e) {
-            e.preventDefault();
-            const dni = $('#studentDNI').val().trim();
-            const codigo = $('#studentCodigo').val().trim();
-
-            // Buscar sesión activa con este código
-            const today = new Date().toISOString().split('T')[0];
-            const sesionesRef = window.firebaseRef(window.firebaseDB, 'sesiones');
-            
-            window.firebaseGet(sesionesRef)
-                .then(snapshot => {
-                    let sessionFound = null;
-                    let materiaId = null;
-
-                    snapshot.forEach(materiaSnap => {
-                        materiaSnap.forEach(dateSnap => {
-                            if (dateSnap.key === today) {
-                                const session = dateSnap.val();
-                                if (session.codigo === codigo && session.habilitada) {
-                                    const now = new Date();
-                                    const inicio = new Date(session.horaInicio);
-                                    const fin = new Date(session.horaFin);
-                                    
-                                    if (now >= inicio && now <= fin) {
-                                        sessionFound = session;
-                                        materiaId = materiaSnap.key;
-                                    }
-                                }
-                            }
-                        });
-                    });
-
-                    if (!sessionFound) {
-                        showAlert('studentAlert', 'Código inválido o fuera de horario', 'danger');
-                        return;
-                    }
-
-                    // Verificar si ya marcó
-                    if (sessionFound.presentes && sessionFound.presentes.includes(dni)) {
-                        showAlert('studentAlert', 'Ya marcaste asistencia para esta clase', 'warning');
-                        return;
-                    }
-
-                    // Registrar asistencia
-                    marcarAsistenciaGoogle(materiaId, dni);
-                })
-                .catch(error => {
-                    showAlert('studentAlert', 'Error: ' + error.message, 'danger');
-                });
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    async function post(body) {
+        const res = await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify(body)
         });
+        return res.json();
+    }
 
-        // Marcar asistencia en Google Sheets
-        function marcarAsistenciaGoogle(materiaId, dni) {
-            // Esta función requiere implementación específica con Google Sheets API
-            // Por ahora simulamos el éxito
-            const now = new Date();
-            const timestamp = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-            const today = now.toISOString().split('T')[0];
+    function showMsg(el, texto, tipo) {
+        el.textContent = texto;
+        el.className = "msg " + tipo;
+    }
 
-            // Actualizar Firebase
-            const presentesRef = window.firebaseRef(window.firebaseDB, `sesiones/${materiaId}/${today}/presentes`);
-            window.firebasePush(presentesRef, dni);
-            
-            showAlert('studentAlert', `¡Asistencia registrada correctamente! Hora: ${timestamp}`, 'success');
-            $('#studentForm')[0].reset();
-        }
-
-        // Buscar estudiantes
-        $('#searchStudent').on('input', function() {
-            updateStudentsList();
-        });
-
-        // Mostrar alertas
-        function showAlert(containerId, message, type) {
-            const html = `
-                <div class="alert alert-${type} alert-dismissible alert-custom fade show" role="alert">
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
-            $('#' + containerId).html(html);
-        }
-
-        // Inicialización
-        $(document).ready(function() {
-            console.log('Sistema de Asistencia inicializado');
-            // Para desarrollo: crear datos de prueba
-            // crearDatosPrueba();
-        });
-
-        // Función auxiliar para crear datos de prueba
-        function crearDatosPrueba() {
-            const profesorPrueba = {
-                nombre: "Juan Pérez",
-                email: "profesor@ejemplo.com",
-                password: "123456",
-                materias: {
-                    "materia1": {
-                        nombre: "Desarrollo Sistemas Web",
-                        anio: "2025",
-                        googleSheetId: "TU_SHEET_ID",
-                        apiKey: "TU_API_KEY",
-                        range: "A4:Z100"
-                    }
-                }
-            };
-
-            const profesoresRef = window.firebaseRef(window.firebaseDB, 'profesores');
-            window.firebasePush(profesoresRef, profesorPrueba)
-                .then(() => console.log('Datos de prueba creados'))
-                .catch(error => console.error('Error:', error));
-        }
-    </script>
+    function mostrarResultado(ok, mensaje, sub) {
+        const el = document.getElementById("resultado");
+        document.getElementById("res-icono").textContent = ok ? "✅" : "⚠️";
+        document.getElementById("res-mensaje").textContent = mensaje;
+        document.getElementById("res-sub").textContent = sub;
+        el.className = "resultado visible" + (ok ? "" : " error-bg");
+        setTimeout(() => { el.className = "resultado"; }, 3000);
+    }
+</script>
 </body>
 </html>
