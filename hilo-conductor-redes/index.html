@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Guia docente del hilo conductor de redes: deploy, stress test, ataques y SQLi sobre una misma infraestructura CRUD.">
+<meta name="description" content="Guia docente del hilo conductor de redes completo (6 etapas): deploy, stress test, login, ataques, SQLi, logs y monitoreo con Prometheus/Grafana sobre una misma infraestructura CRUD.">
 <title>Guía docente — Hilo conductor de redes</title>
 <style>
   @font-face {
@@ -426,6 +426,8 @@
     <a class="navlink" href="#etapa-2">Etapa 2</a>
     <a class="navlink" href="#etapa-3">Etapa 3</a>
     <a class="navlink" href="#etapa-4">Etapa 4</a>
+    <a class="navlink" href="#etapa-5">Etapa 5</a>
+    <a class="navlink" href="#etapa-6">Etapa 6</a>
     <a class="navlink" href="#notas">Notas técnicas</a>
   </div>
 </nav>
@@ -435,11 +437,11 @@
   <header class="hero">
     <p class="eyebrow">Guía docente — no es material para el alumno</p>
     <h1>Hilo conductor de redes</h1>
-    <p class="hero-sub">Cuatro prácticas encadenadas sobre la misma infraestructura (Nginx + MySQL + PhpMyAdmin + una app Flask CRUD): se despliega, se mide, se ataca y se explota. Cada escenario es autocontenido — no depende de que el alumno haya dejado nada corriendo de la práctica anterior.</p>
+    <p class="hero-sub">Seis prácticas encadenadas sobre la misma infraestructura (MySQL + una app Flask CRUD, con Nginx/PhpMyAdmin en las primeras etapas): se despliega, se mide, se protege, se ataca, se investiga y se monitorea en vivo. Cada escenario es autocontenido — no depende de que el alumno haya dejado nada corriendo de la práctica anterior.</p>
     <div class="hero-meta">
-      <span><strong>4</strong> etapas implementadas</span>
-      <span><strong>170 min</strong> de duración total</span>
-      <span>App: <a href="https://github.com/pablopedernera0/crud-python/tree/feature-login" class="mono">crud-python</a> <span class="mono">(branch feature-login)</span></span>
+      <span><strong>6</strong> etapas implementadas — hilo completo</span>
+      <span><strong>255 min</strong> de duración total</span>
+      <span>App: <a href="https://github.com/pablopedernera0/crud-python" class="mono">crud-python</a> <span class="mono">(branches feature-login / monitoring)</span></span>
     </div>
   </header>
 
@@ -481,10 +483,22 @@
             <td>Bypass manual y explotación automatizada con sqlmap</td>
             <td class="mono">feature-login</td>
           </tr>
+          <tr>
+            <td class="mono">5</td>
+            <td>crud-logs-analisis-cli</td>
+            <td>Forense con grep/awk sobre logs de la app y general_log de MySQL</td>
+            <td class="mono">feature-login</td>
+          </tr>
+          <tr>
+            <td class="mono">6</td>
+            <td>crud-monitoreo-prometheus-grafana</td>
+            <td>Prometheus + Grafana + cAdvisor + mysqld-exporter, en vivo</td>
+            <td class="mono">monitoring</td>
+          </tr>
         </tbody>
       </table>
     </div>
-    <p style="margin-top:0.9rem; font-size:0.92rem; color:var(--text-muted); max-width:70ch;">Cada escenario despliega su propia infraestructura desde cero vía <code>setup.sh</code>. Lo que importa es el orden narrativo: cada <code>finish.md</code> da por sentado que el alumno ya vio lo anterior. Las etapas 5 (análisis de logs) y 6 (Prometheus/Grafana) todavía no están construidas — se agregan a esta guía cuando existan.</p>
+    <p style="margin-top:0.9rem; font-size:0.92rem; color:var(--text-muted); max-width:70ch;">Cada escenario despliega su propia infraestructura desde cero vía <code>setup.sh</code>. Lo que importa es el orden narrativo: cada <code>finish.md</code> da por sentado que el alumno ya vio lo anterior. La etapa 5 además genera su propio tráfico de referencia en el <code>setup.sh</code>, así que tampoco depende de las etapas 1-4.</p>
   </section>
 
   <section id="etica">
@@ -502,7 +516,7 @@
 
   <section id="logistica">
     <h2>Logística general</h2>
-    <p>Duración total de las 4 etapas: <strong class="mono">45 + 35 + 45 + 45 = 170 min</strong> (~2h 50). No entra en una sola clase — conviene repartirlo en tres encuentros.</p>
+    <p>Duración total de las 6 etapas: <strong class="mono">45 + 35 + 45 + 45 + 40 + 45 = 255 min</strong> (~4h 15). No entra en pocas clases — conviene repartirlo en cuatro encuentros.</p>
     <div class="card-grid" style="margin-top:1.1rem;">
       <div class="mini-card">
         <span class="num">A</span>
@@ -519,8 +533,13 @@
         <h3>Tercer encuentro</h3>
         <p>crud-sqli — dejar margen extra, sqlmap puede tardar varios minutos</p>
       </div>
+      <div class="mini-card">
+        <span class="num">D</span>
+        <h3>Cuarto encuentro</h3>
+        <p>crud-logs-analisis-cli + crud-monitoreo-prometheus-grafana</p>
+      </div>
     </div>
-    <p style="margin-top:1.1rem;">Verificar antes de la clase el plan de Killercoda utilizado y el tiempo de sandbox disponible por sesión. Credenciales base compartidas por todas las etapas: MySQL <code>root</code> / <code>mysecretpassword</code>; app <code>admin</code> / <code>admin123</code>.</p>
+    <p style="margin-top:1.1rem;">Verificar antes de la clase el plan de Killercoda utilizado y el tiempo de sandbox disponible por sesión — la etapa 6 en particular levanta 5 contenedores. Credenciales base compartidas por todas las etapas: MySQL <code>root</code> / <code>mysecretpassword</code>; app <code>admin</code> / <code>admin123</code>.</p>
   </section>
 
   <!-- ETAPA 1 -->
@@ -682,12 +701,83 @@ Table: usuarios
     <span class="risk-tag">Ética: repetir la nota general — cerrar mostrando el fix (parametrizar), no dejar la app "rota para siempre"</span>
   </div>
 
+  <!-- ETAPA 5 -->
+  <div class="etapa" id="etapa-5" style="scroll-margin-top:4rem;">
+    <div class="etapa-head">
+      <span class="etapa-chip">Etapa 5</span>
+      <span class="etapa-slug">crud-logs-analisis-cli</span>
+      <span class="etapa-time">40 min</span>
+    </div>
+    <div class="etapa-grid">
+      <div class="etapa-block">
+        <h3>Objetivos de aprendizaje</h3>
+        <ul>
+          <li>Leer logs de acceso (formato Werkzeug) y encontrar patrones agrupando por timestamp</li>
+          <li>Distinguir un pico de carga y una fuerza bruta solo por volumen y agrupamiento temporal</li>
+          <li>Habilitar y leer el <code>general_log</code> de MySQL — expone el SQL exacto, incluido el inyectado</li>
+          <li>Correlacionar dos fuentes de log para armar una línea de tiempo</li>
+        </ul>
+      </div>
+      <div class="etapa-block">
+        <h3>Qué debería mostrar el alumno</h3>
+        <ul>
+          <li><code>grep '"GET / ' | awk -F'[][]' '{print $2}' | uniq -c</code> mostrando el pico de carga</li>
+          <li><code>grep '"POST /login' | awk '{print $9}' | sort | uniq -c</code> mostrando el patrón de fuerza bruta</li>
+          <li><code>grep -- "-- " general.log</code> mostrando el texto exacto de la inyección SQL</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:1.3rem;">
+      <h3>Resultados esperados <span style="text-transform:none; letter-spacing:0; font-family:var(--font-body); color:var(--text-muted); font-weight:400;">— el setup.sh genera su propio tráfico, no depende de las etapas 1-4</span></h3>
+      <div class="term" style="margin-top:0.6rem;">
+        <div class="term-titlebar"><span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span><span class="term-label">referencia rápida</span></div>
+        <div class="term-body">pico de carga: <span class="ok">60</span> requests en el mismo segundo
+POST /login: <span class="ok">10</span> fallidos (200) / <span class="ok">4</span> exitosos (302)
+general_log: <span class="dim">usuario = 'admin' -- ' AND password = 'x'</span>
+general_log: <span class="dim">usuario = '' OR '1'='1' -- ' AND password = 'x'</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ETAPA 6 -->
+  <div class="etapa" id="etapa-6" style="scroll-margin-top:4rem;">
+    <div class="etapa-head">
+      <span class="etapa-chip">Etapa 6</span>
+      <span class="etapa-slug">crud-monitoreo-prometheus-grafana</span>
+      <span class="etapa-time">45 min<span style="opacity:0.6;"> · puede extenderse</span></span>
+    </div>
+    <div class="etapa-grid">
+      <div class="etapa-block">
+        <h3>Objetivos de aprendizaje</h3>
+        <ul>
+          <li>Diferenciar métricas (series numéricas) de logs (eventos)</li>
+          <li>Entender el modelo de "scrape" de Prometheus</li>
+          <li>Escribir consultas PromQL básicas: <code>up</code>, <code>rate(...)</code>, filtros por etiqueta</li>
+          <li>Conectar Grafana a Prometheus y armar un dashboard propio</li>
+        </ul>
+      </div>
+      <div class="etapa-block">
+        <h3>Qué debería mostrar el alumno</h3>
+        <ul>
+          <li>Los 4 targets de Prometheus (<code>prometheus</code>, <code>cadvisor</code>, <code>mysql</code>, <code>crud-app</code>) en <code>UP</code></li>
+          <li>Un dashboard de Grafana con al menos 2 paneles propios</li>
+          <li>El panel de requests/segundo subiendo en vivo mientras corre <code>ab -n 2000 -c 50</code> contra el puerto 8888</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:1.3rem;">
+      <h3>Nota de infraestructura</h3>
+      <p style="font-size:0.9rem; color:var(--text-muted); max-width:70ch;">Esta etapa dropea PhpMyAdmin y Nginx (no aportan al monitoreo) y usa la branch <code>monitoring</code> de <code>crud-python</code> (sin login, basada en <code>main</code>), para poder pegarle <code>ab</code> directo al endpoint <code>/</code> como en la etapa 1. La app sigue corriendo en el host, no dockerizada; Prometheus la alcanza vía <code>host.docker.internal:8888</code>.</p>
+    </div>
+  </div>
+
   <section id="notas" style="margin-top:3rem;">
     <h2>Notas técnicas para quien mantenga estos escenarios</h2>
     <p style="color:var(--text-muted); font-size:0.92rem; margin-bottom:0.9rem;">No es material para dar en clase.</p>
     <ul style="font-size:0.93rem; color:var(--text-muted); max-width:72ch;">
-      <li style="margin-bottom:0.6em;">Los cuatro <code>setup.sh</code> usan <code>docker exec -i &lt;container&gt; mysql ... &lt;&lt; 'EOSQL'</code> — la flag <code>-i</code> es obligatoria; sin ella el heredoc no llega al contenedor y la tabla no se crea, en silencio. <code>cloud-storage-101/assets/setup.sh</code> (escenario más viejo) tiene este mismo bug sin corregir.</li>
-      <li style="margin-bottom:0.6em;">Las cuatro etapas clonan <code>crud-python</code>; las etapas 2-4 usan la branch <code>feature-login</code>, la etapa 1 usa <code>main</code>.</li>
+      <li style="margin-bottom:0.6em;">Todos los <code>setup.sh</code> usan <code>docker exec -i &lt;container&gt; mysql ... &lt;&lt; 'EOSQL'</code> — la flag <code>-i</code> es obligatoria; sin ella el heredoc no llega al contenedor y la tabla no se crea, en silencio. <code>cloud-storage-101/assets/setup.sh</code> (escenario más viejo) tiene este mismo bug sin corregir.</li>
+      <li style="margin-bottom:0.6em;">Las seis etapas clonan <code>crud-python</code>; las etapas 2-5 usan la branch <code>feature-login</code>, las etapas 1 y 6 usan <code>main</code>/<code>monitoring</code> (sin login).</li>
+      <li style="margin-bottom:0.6em;"><strong style="color:var(--text);">Etapa 6:</strong> el exporter de MySQL no puede llamarse <code>mysqld-exporter</code> en el compose — <code>docker ps -qf "name=mysql"</code> lo matchea por substring y <code>docker exec</code> puede apuntar al contenedor equivocado. Se llama <code>dbexporter</code>. Además <code>prom/mysqld-exporter:latest</code> (v0.19+) ya no soporta <code>DATA_SOURCE_NAME</code> por env var — necesita un <code>.my.cnf</code> montado y <code>--config.my-cnf=/.my.cnf</code>.</li>
       <li>Credenciales de referencia usadas en todo el hilo: MySQL <code>root</code>/<code>mysecretpassword</code>; app <code>admin</code>/<code>admin123</code> y <code>soporte</code>/<code>sopor23!</code> (esta última solo sembrada en <code>crud-sqli</code>, para que el <code>--dump</code> muestre más de una fila).</li>
     </ul>
   </section>
