@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS y Cloud Computing - Introducción</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #131a22, #232f3e);
+            color: white;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: #ff9900;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.4rem;
+            margin-bottom: 1.2rem;
+            color: #ff9900;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: #7dd3fc;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: #ff9900;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+            max-width: 850px;
+        }
+
+        .slide p.center, .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 850px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #b8c4d0;
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(255, 153, 0, 0.15);
+            border: 1px solid #ff9900;
+            color: #ff9900;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Grid de tarjetas (modelos de servicio, categorías, etc.) */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 153, 0, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 153, 0, 0.1);
+        }
+
+        .card .icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .card h4 {
+            margin-bottom: 0.4rem;
+        }
+
+        .card p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            color: #d8e0e8;
+        }
+
+        /* Diagrama simple de arquitectura */
+        .arch-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1.5rem 0;
+        }
+
+        .arch-box {
+            background: rgba(255, 255, 255, 0.07);
+            border: 2px solid #ff9900;
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            min-width: 140px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .arch-box .icon {
+            font-size: 1.6rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .arch-box.floci {
+            border-color: #7dd3fc;
+        }
+
+        .arch-arrow {
+            font-size: 1.8rem;
+            color: #ff9900;
+        }
+
+        /* Comparación IaaS/PaaS/SaaS con capas */
+        .layer-compare {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            width: 100%;
+            max-width: 950px;
+            margin: 1rem 0;
+        }
+
+        .layer-col {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .layer-col h4 {
+            color: #ff9900;
+            margin-bottom: 0.6rem;
+        }
+
+        .layer-stack div {
+            padding: 0.4rem;
+            margin-bottom: 0.35rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .layer-you {
+            background: #7dd3fc;
+            color: #131a22;
+            font-weight: bold;
+        }
+
+        .layer-vendor {
+            background: rgba(255, 153, 0, 0.55);
+            color: #131a22;
+        }
+
+        .link-section {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .link-item a {
+            color: #7dd3fc;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .link-item a:hover {
+            text-decoration: underline;
+        }
+
+        .link-item p {
+            font-size: 0.9rem;
+            color: #b8c4d0;
+            margin-bottom: 0;
+        }
+
+        strong {
+            color: #ffb84d;
+        }
+
+        code {
+            background: rgba(255,255,255,0.1);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #7dd3fc;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(125, 211, 252, 0.15);
+            border: 1px solid #7dd3fc;
+            color: #7dd3fc;
+            padding: 0.2rem 0.7rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 0.4rem;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #ff9900;
+            color: #131a22;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #ffb84d;
+        }
+
+        .roadmap {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            width: 100%;
+            max-width: 750px;
+            margin: 1rem 0;
+        }
+
+        .roadmap-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+        }
+
+        .roadmap-item .status {
+            font-size: 1.3rem;
+        }
+
+        .roadmap-item.done { border-left: 4px solid #4ade80; }
+        .roadmap-item.next { border-left: 4px solid #ff9900; }
+        .roadmap-item.future { border-left: 4px solid #7dd3fc; opacity: 0.75; }
+
+        @media (max-width: 800px) {
+            .layer-compare { grid-template-columns: 1fr; }
+            .slide h1 { font-size: 2.1rem; }
+            .slide h2 { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Infraestructura de Redes · Terciario Urquiza</div>
+        <h1>☁️ AWS y Cloud Computing</h1>
+        <p class="subtitle">Introducción antes de arrancar la práctica <strong>Cloud Storage 101</strong></p>
+        <div class="arch-diagram">
+            <div class="arch-box"><span class="icon">💾</span>Storage</div>
+            <div class="arch-box"><span class="icon">🖥️</span>Compute</div>
+            <div class="arch-box"><span class="icon">🔐</span>IAM</div>
+            <div class="arch-box"><span class="icon">🌐</span>Networking</div>
+            <div class="arch-box"><span class="icon">🗄️</span>Database</div>
+        </div>
+        <p class="center" style="opacity:0.75; font-style:italic;">Vamos a entender qué es la nube y cómo se organiza AWS antes de tocar la práctica hands-on.</p>
+    </div>
+
+    <!-- Slide 2: ¿Qué es cloud computing? -->
+    <div class="slide">
+        <h2>¿Qué es la computación en la nube?</h2>
+        <p class="center">Es la entrega de recursos de cómputo — servidores, almacenamiento, bases de datos, redes — <strong>a demanda</strong>, a través de Internet, con pago por uso.</p>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">⚡</span>
+                <h4>Elasticidad</h4>
+                <p>Escalás recursos hacia arriba o abajo según la demanda, en minutos.</p>
+            </div>
+            <div class="card">
+                <span class="icon">💳</span>
+                <h4>Pago por uso</h4>
+                <p>Pagás solo lo que consumís, sin comprar hardware por adelantado.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🌍</span>
+                <h4>Acceso global</h4>
+                <p>Los recursos están disponibles desde cualquier lugar con Internet.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🛠️</span>
+                <h4>Autoservicio</h4>
+                <p>Aprovisionás recursos vos mismo, sin pedirle nada a un técnico de datacenter.</p>
+            </div>
+        </div>
+        <p class="center" style="margin-top:1rem; opacity:0.8;">Antes: comprabas un servidor físico y esperabas semanas. Ahora: creás uno con un click o un comando.</p>
+    </div>
+
+    <!-- Slide 3: Modelos de servicio -->
+    <div class="slide">
+        <h2>Modelos de servicio</h2>
+        <h3>¿Cuánto administrás vos y cuánto el proveedor?</h3>
+        <div class="layer-compare">
+            <div class="layer-col">
+                <h4>IaaS</h4>
+                <div class="layer-stack">
+                    <div class="layer-you">App + Datos</div>
+                    <div class="layer-you">Runtime + OS</div>
+                    <div class="layer-vendor">Servidores</div>
+                    <div class="layer-vendor">Red</div>
+                </div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Ej: EC2</p>
+            </div>
+            <div class="layer-col">
+                <h4>PaaS</h4>
+                <div class="layer-stack">
+                    <div class="layer-you">App + Datos</div>
+                    <div class="layer-vendor">Runtime + OS</div>
+                    <div class="layer-vendor">Servidores</div>
+                    <div class="layer-vendor">Red</div>
+                </div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Ej: Elastic Beanstalk</p>
+            </div>
+            <div class="layer-col">
+                <h4>SaaS</h4>
+                <div class="layer-stack">
+                    <div class="layer-vendor">App + Datos</div>
+                    <div class="layer-vendor">Runtime + OS</div>
+                    <div class="layer-vendor">Servidores</div>
+                    <div class="layer-vendor">Red</div>
+                </div>
+                <p style="font-size:0.85rem; margin-top:0.5rem;">Ej: Gmail</p>
+            </div>
+        </div>
+        <p class="center" style="opacity:0.8;"><span style="color:#7dd3fc;">■</span> Lo administrás vos &nbsp;&nbsp; <span style="color:#ffb84d;">■</span> Lo administra el proveedor</p>
+    </div>
+
+    <!-- Slide 4: AWS, el proveedor -->
+    <div class="slide">
+        <h2>Amazon Web Services (AWS)</h2>
+        <p class="center">El proveedor cloud más grande del mundo — más de 200 servicios, presencia en decenas de países.</p>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🌐</span>
+                <h4>Regiones</h4>
+                <p>Ubicaciones geográficas independientes (ej: <code>us-east-1</code>, <code>sa-east-1</code>).</p>
+            </div>
+            <div class="card">
+                <span class="icon">🏢</span>
+                <h4>Zonas de disponibilidad</h4>
+                <p>Datacenters físicamente separados dentro de una región, para tolerancia a fallos.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📦</span>
+                <h4>Servicios administrados</h4>
+                <p>AWS se encarga del mantenimiento, backups y escalado de la infraestructura base.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🎯</span>
+                <h4>Pagás lo que usás</h4>
+                <p>Sin contratos largos — facturación por segundo, GB o request según el servicio.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Categorías de servicios -->
+    <div class="slide">
+        <h2>Categorías principales de servicios</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🖥️</span>
+                <h4>Compute</h4>
+                <p>EC2, Lambda — poder de procesamiento (máquinas virtuales, funciones serverless).</p>
+            </div>
+            <div class="card">
+                <span class="icon">💾</span>
+                <h4>Storage</h4>
+                <p>S3, EBS — almacenamiento de archivos, objetos y discos.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🗄️</span>
+                <h4>Database</h4>
+                <p>RDS, DynamoDB — bases de datos relacionales y NoSQL administradas.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🌐</span>
+                <h4>Networking</h4>
+                <p>VPC, Route 53 — redes privadas virtuales y DNS.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔐</span>
+                <h4>Security &amp; Identity</h4>
+                <p>IAM — quién puede acceder a qué recurso y con qué permisos.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📊</span>
+                <h4>Monitoring</h4>
+                <p>CloudWatch — métricas, logs y alarmas de toda la infraestructura.</p>
+            </div>
+        </div>
+        <p class="center" style="margin-top:1rem;">Hoy nos enfocamos en dos: <strong>Storage (S3)</strong> y <strong>Security (IAM)</strong>.</p>
+    </div>
+
+    <!-- Slide 6: S3 -->
+    <div class="slide">
+        <h2>💾 S3 — Simple Storage Service</h2>
+        <p class="center">El servicio de almacenamiento de objetos más usado de la industria: imágenes, documentos, backups, videos, logs.</p>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🪣</span>
+                <h4>Bucket</h4>
+                <p>Un contenedor de nivel superior donde se guardan los objetos. El nombre debe ser único a nivel global.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📄</span>
+                <h4>Object</h4>
+                <p>El archivo en sí, junto con sus metadatos. Puede pesar desde bytes hasta terabytes.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔑</span>
+                <h4>Key</h4>
+                <p>El identificador único del objeto dentro del bucket. No hay carpetas reales — todo es una key con forma de ruta.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔗</span>
+                <h4>URL</h4>
+                <p>Cada objeto puede tener una URL pública o firmada para acceder desde el navegador.</p>
+            </div>
+        </div>
+        <p class="center" style="opacity:0.8; margin-top:0.5rem;">En la práctica vamos a crear el bucket <code>fotos-alumnos</code> y subir imágenes a través de una app web.</p>
+    </div>
+
+    <!-- Slide 7: IAM -->
+    <div class="slide">
+        <h2>🔐 IAM — Identity and Access Management</h2>
+        <p class="center">El sistema de identidades de AWS: controla <strong>quién</strong> puede hacer <strong>qué</strong> sobre <strong>qué recursos</strong>.</p>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">👤</span>
+                <h4>Usuarios</h4>
+                <p>Identidades individuales — personas o aplicaciones — con credenciales propias.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🎭</span>
+                <h4>Roles</h4>
+                <p>Identidades temporales que puede asumir un usuario o servicio, sin credenciales fijas.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📜</span>
+                <h4>Políticas</h4>
+                <p>Documentos JSON que definen permisos: qué acciones están permitidas sobre qué recursos.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔑</span>
+                <h4>Access Keys</h4>
+                <p><code>AWS_ACCESS_KEY_ID</code> + <code>AWS_SECRET_ACCESS_KEY</code> — las credenciales que usa una app para autenticarse.</p>
+            </div>
+        </div>
+        <p class="center" style="opacity:0.8; margin-top:0.5rem;">Principio clave: <strong>mínimo privilegio</strong> — dar solo los permisos estrictamente necesarios.</p>
+    </div>
+
+    <!-- Slide 8: Arquitectura de la práctica -->
+    <div class="slide">
+        <h2>Cómo se arma la práctica de hoy</h2>
+        <h3>Cloud Storage 101 — S3 + IAM con Floci</h3>
+        <div class="arch-diagram">
+            <div class="arch-box"><span class="icon">🧑‍💻</span>Navegador</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box"><span class="icon">🖼️</span>CRUD Flask<br><span style="opacity:0.7; font-size:0.8rem;">:8888</span></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box floci"><span class="icon">☁️</span>Floci<br><span style="opacity:0.7; font-size:0.8rem;">:4566 (S3 + IAM)</span></div>
+        </div>
+        <div class="arch-diagram">
+            <div class="arch-box"><span class="icon">🧑‍💻</span>Navegador</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box"><span class="icon">🎛️</span>floci-panel<br><span style="opacity:0.7; font-size:0.8rem;">:4580</span></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box floci"><span class="icon">☁️</span>Floci</div>
+        </div>
+        <p class="center" style="opacity:0.8;">Todo corre en contenedores Docker dentro del mismo entorno de práctica (KillerCoda).</p>
+    </div>
+
+    <!-- Slide 9: Por qué un emulador -->
+    <div class="slide">
+        <h2>¿Por qué practicar con un emulador?</h2>
+        <p class="center"><strong>Floci</strong> es un emulador de AWS de código abierto: simula S3 e IAM usando <strong>exactamente la misma API</strong> que AWS real.</p>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">💳</span>
+                <h4>Sin tarjeta de crédito</h4>
+                <p>No hace falta una cuenta AWS real ni riesgo de facturación inesperada.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🧪</span>
+                <h4>Sandbox seguro</h4>
+                <p>Podés romper y recrear todo cuantas veces quieras sin consecuencias.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔁</span>
+                <h4>API idéntica</h4>
+                <p>Los comandos de AWS CLI y el código con <code>boto3</code> funcionan igual en Floci que en AWS real.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🎓</span>
+                <h4>Conocimiento transferible</h4>
+                <p>Lo que aprendés hoy se aplica directamente el día que trabajes con una cuenta de AWS en producción.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Qué vamos a construir -->
+    <div class="slide">
+        <h2>Lo que vamos a construir</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🐳</span>
+                <h4>Floci en Docker</h4>
+                <p>Emulando AWS S3 e IAM.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🪣</span>
+                <h4>Bucket <code>fotos-alumnos</code></h4>
+                <p>El destino de las imágenes que suban los alumnos.</p>
+            </div>
+            <div class="card">
+                <span class="icon">👤</span>
+                <h4>Usuario IAM</h4>
+                <p>Con sus propias API Keys generadas por ustedes.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🖼️</span>
+                <h4>App web CRUD</h4>
+                <p>Conectada a S3 vía <code>boto3</code>, para subir fotos de alumnos.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🎛️</span>
+                <h4>Panel de administración</h4>
+                <p>Para ver los archivos almacenados en el bucket.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Roadmap y cierre -->
+    <div class="slide">
+        <h2>Roadmap de la serie Cloud</h2>
+        <div class="roadmap">
+            <div class="roadmap-item done">
+                <span class="status">✅</span>
+                <div><strong>cloud-storage-101</strong> — S3 + IAM <span class="badge">hoy</span></div>
+            </div>
+            <div class="roadmap-item next">
+                <span class="status">🔜</span>
+                <div><strong>cloud-compute-102</strong> — EC2: instancias, security groups, IPs</div>
+            </div>
+            <div class="roadmap-item future">
+                <span class="status">💡</span>
+                <div><strong>cloud-network-103</strong> — VPC, subnets, security groups</div>
+            </div>
+        </div>
+
+        <div class="link-section">
+            <h4>🔗 Para profundizar</h4>
+            <div class="links-grid">
+                <div class="link-item">
+                    <a href="https://aws.amazon.com/what-is-cloud-computing/" target="_blank">¿Qué es cloud computing? (AWS)</a>
+                    <p>Explicación oficial de AWS</p>
+                </div>
+                <div class="link-item">
+                    <a href="https://docs.aws.amazon.com/s3/" target="_blank">Documentación de S3</a>
+                    <p>Referencia completa del servicio</p>
+                </div>
+                <div class="link-item">
+                    <a href="https://docs.aws.amazon.com/iam/" target="_blank">Documentación de IAM</a>
+                    <p>Usuarios, roles y políticas</p>
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top: 1.5rem; font-style: italic; opacity: 0.85; text-align:center;">
+            Con estos conceptos ya podemos arrancar la práctica: <strong>Cloud Storage 101</strong> 🚀
+        </p>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">11</span>
+</div>
+
+<div class="controls">
+    <button class="btn" onclick="previousSlide()">← Anterior</button>
+    <button class="btn" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function showSlide(n) {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>
