@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git y GitHub - Introducción</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.4rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+            max-width: 850px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 850px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            background: rgba(63, 185, 80, 0.08);
+        }
+
+        .card .icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .card h4 {
+            margin-bottom: 0.4rem;
+        }
+
+        .card p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        /* Diagrama de flujo (áreas de git / local-remoto) */
+        .arch-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1.5rem 0;
+        }
+
+        .arch-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #3fb950;
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            min-width: 150px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .arch-box .icon {
+            font-size: 1.6rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .arch-box.remote {
+            border-color: #58a6ff;
+        }
+
+        .arch-box .cmd {
+            display: block;
+            margin-top: 0.3rem;
+            font-size: 0.8rem;
+            color: #f0883e;
+            font-family: 'Courier New', monospace;
+        }
+
+        .arch-arrow {
+            font-size: 1.8rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .arch-arrow .label {
+            display: block;
+            font-size: 0.75rem;
+            color: #f0883e;
+            font-family: 'Courier New', monospace;
+        }
+
+        .link-section {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .link-item a {
+            color: #58a6ff;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .link-item a:hover {
+            text-decoration: underline;
+        }
+
+        .link-item p {
+            font-size: 0.9rem;
+            color: #8b949e;
+            margin-bottom: 0;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.2rem 0.7rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 0.4rem;
+        }
+
+        /* Tabla de comandos */
+        .cmd-table {
+            width: 100%;
+            max-width: 850px;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .cmd-table th {
+            text-align: left;
+            color: #58a6ff;
+            font-size: 0.95rem;
+            padding: 0.5rem 0.8rem;
+            border-bottom: 2px solid rgba(63,185,80,0.4);
+        }
+
+        .cmd-table td {
+            padding: 0.55rem 0.8rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.95rem;
+        }
+
+        .cmd-table td:first-child {
+            white-space: nowrap;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            width: 100%;
+            max-width: 750px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.1rem;
+            min-width: 1.5rem;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2.1rem; }
+            .slide h2 { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Infraestructura de Redes · Terciario Urquiza</div>
+        <h1>🐙 Git y GitHub</h1>
+        <p class="subtitle">Introducción básica: <strong>commit</strong>, <strong>push</strong> y <strong>pull</strong></p>
+        <div class="arch-diagram">
+            <div class="arch-box"><span class="icon">📁</span>Working Dir</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box"><span class="icon">📋</span>Staging</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box"><span class="icon">📦</span>Repositorio</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box remote"><span class="icon">☁️</span>GitHub</div>
+        </div>
+        <p class="center" style="opacity:0.75; font-style:italic;">De tu carpeta local a un repositorio compartido en la nube.</p>
+    </div>
+
+    <!-- Slide 2: ¿Qué es el control de versiones? -->
+    <div class="slide">
+        <h2>¿Qué es el control de versiones?</h2>
+        <p class="center">Un sistema que registra los cambios en tus archivos a lo largo del tiempo, para poder <strong>volver atrás</strong>, <strong>comparar</strong> y <strong>colaborar</strong> sin pisarse el trabajo.</p>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🕒</span>
+                <h4>Historial completo</h4>
+                <p>Cada cambio queda guardado — sabés qué se modificó, cuándo y por qué.</p>
+            </div>
+            <div class="card">
+                <span class="icon">⏪</span>
+                <h4>Volver atrás</h4>
+                <p>Si algo se rompe, podés recuperar una versión anterior del código.</p>
+            </div>
+            <div class="card">
+                <span class="icon">👥</span>
+                <h4>Trabajo en equipo</h4>
+                <p>Varias personas editan el mismo proyecto sin sobrescribirse entre sí.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🌿</span>
+                <h4>Ramas (branches)</h4>
+                <p>Probás cosas nuevas en paralelo, sin tocar la versión estable.</p>
+            </div>
+        </div>
+        <p class="center" style="margin-top:1rem; opacity:0.8;"><strong>Git</strong> es la herramienta más usada del mundo para esto.</p>
+    </div>
+
+    <!-- Slide 3: Git vs GitHub -->
+    <div class="slide">
+        <h2>Git vs GitHub</h2>
+        <h3>No son lo mismo</h3>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">⚙️</span>
+                <h4>Git</h4>
+                <p>Un programa que corre en <strong>tu computadora</strong>. Lleva el historial de versiones de tu proyecto de forma local, sin necesitar Internet.</p>
+            </div>
+            <div class="card">
+                <span class="icon">☁️</span>
+                <h4>GitHub</h4>
+                <p>Una plataforma web que <strong>hostea repositorios de Git</strong> en la nube. Permite compartir código, colaborar y hacer backup remoto.</p>
+            </div>
+        </div>
+        <p class="center" style="margin-top:1rem; opacity:0.8;">Git es la herramienta. GitHub es uno de los lugares donde alojás ese repositorio (también existen GitLab, Bitbucket, etc.).</p>
+    </div>
+
+    <!-- Slide 4: Las tres áreas -->
+    <div class="slide">
+        <h2>Las tres áreas de Git</h2>
+        <p class="center">Todo archivo pasa por estas etapas antes de quedar guardado en el historial.</p>
+        <div class="arch-diagram">
+            <div class="arch-box">
+                <span class="icon">📁</span>Working Directory
+                <span class="cmd">tus archivos, editando</span>
+            </div>
+            <div class="arch-arrow">→<span class="label">git add</span></div>
+            <div class="arch-box">
+                <span class="icon">📋</span>Staging Area
+                <span class="cmd">listos para guardar</span>
+            </div>
+            <div class="arch-arrow">→<span class="label">git commit</span></div>
+            <div class="arch-box remote">
+                <span class="icon">📦</span>Repositorio local
+                <span class="cmd">guardados en el historial</span>
+            </div>
+        </div>
+        <p class="center" style="opacity:0.8; margin-top:1rem;"><code>git add</code> elige qué cambios van al próximo commit. <code>git commit</code> los guarda en el historial de forma permanente.</p>
+    </div>
+
+    <!-- Slide 5: Commit -->
+    <div class="slide">
+        <h2>📦 Commit</h2>
+        <p class="center">Una <strong>foto</strong> del estado de tus archivos en un momento dado, con un mensaje que explica qué cambió.</p>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">✍️</span>
+                <h4>Mensaje claro</h4>
+                <p>Describe el <strong>qué</strong> y el <strong>por qué</strong> del cambio, no cada línea modificada.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🧩</span>
+                <h4>Commits pequeños</h4>
+                <p>Mejor varios commits chicos y enfocados que uno gigante con todo mezclado.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🆔</span>
+                <h4>Identificador único</h4>
+                <p>Cada commit tiene un hash (ej: <code>897609f</code>) que lo identifica para siempre.</p>
+            </div>
+        </div>
+        <p class="center" style="margin-top:1rem; opacity:0.8;">Ejemplo:</p>
+        <p class="center"><code>git commit -m "Agregar validación de formulario de login"</code></p>
+    </div>
+
+    <!-- Slide 6: Local vs Remoto -->
+    <div class="slide">
+        <h2>Repositorio local vs remoto</h2>
+        <div class="arch-diagram">
+            <div class="arch-box">
+                <span class="icon">💻</span>Tu computadora
+                <span class="cmd">repositorio local</span>
+            </div>
+            <div class="arch-arrow">⇄</div>
+            <div class="arch-box remote">
+                <span class="icon">☁️</span>GitHub
+                <span class="cmd">repositorio remoto</span>
+            </div>
+        </div>
+        <p class="center" style="opacity:0.85;">Tenés una copia completa del historial <strong>en tu máquina</strong>, y otra copia en <strong>GitHub</strong> (el remoto).</p>
+        <p class="center" style="opacity:0.85;">Para mantenerlas sincronizadas usamos dos comandos: <code>push</code> y <code>pull</code>.</p>
+    </div>
+
+    <!-- Slide 7: Push -->
+    <div class="slide">
+        <h2>⬆️ Push</h2>
+        <p class="center">Envía tus <strong>commits locales</strong> al repositorio remoto en GitHub.</p>
+        <div class="arch-diagram">
+            <div class="arch-box">
+                <span class="icon">💻</span>Local
+                <span class="cmd">tenés commits nuevos</span>
+            </div>
+            <div class="arch-arrow">→<span class="label">git push</span></div>
+            <div class="arch-box remote">
+                <span class="icon">☁️</span>GitHub
+                <span class="cmd">recibe los commits</span>
+            </div>
+        </div>
+        <p class="center"><code>git push origin main</code></p>
+        <p class="center" style="opacity:0.8; margin-top:1rem;">Lo usás cuando terminaste de trabajar y querés que tus cambios queden disponibles para el resto del equipo (o como backup).</p>
+    </div>
+
+    <!-- Slide 8: Pull -->
+    <div class="slide">
+        <h2>⬇️ Pull</h2>
+        <p class="center">Trae los <strong>cambios del remoto</strong> y los combina con tu copia local.</p>
+        <div class="arch-diagram">
+            <div class="arch-box remote">
+                <span class="icon">☁️</span>GitHub
+                <span class="cmd">tiene commits nuevos</span>
+            </div>
+            <div class="arch-arrow">→<span class="label">git pull</span></div>
+            <div class="arch-box">
+                <span class="icon">💻</span>Local
+                <span class="cmd">se actualiza</span>
+            </div>
+        </div>
+        <p class="center"><code>git pull origin main</code></p>
+        <p class="center" style="opacity:0.8; margin-top:1rem;"><code>git pull</code> = <code>git fetch</code> (descarga los cambios) + <code>git merge</code> (los une a tu rama). Hacelo <strong>antes</strong> de empezar a trabajar, para no quedar desactualizado.</p>
+    </div>
+
+    <!-- Slide 9: Flujo completo -->
+    <div class="slide">
+        <h2>El flujo completo</h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <div><code>git pull</code> — traés los últimos cambios del remoto antes de empezar.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <div>Editás tus archivos en el <strong>working directory</strong>.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <div><code>git add archivo</code> — mandás los cambios al <strong>staging area</strong>.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">4</span>
+                <div><code>git commit -m "mensaje"</code> — guardás una foto en el historial local.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">5</span>
+                <div><code>git push</code> — subís tus commits al repositorio remoto en GitHub.</div>
+            </div>
+        </div>
+        <p class="center" style="opacity:0.8; margin-top:0.5rem;">Este ciclo se repite todo el tiempo mientras trabajás en un proyecto.</p>
+    </div>
+
+    <!-- Slide 10: Cheatsheet -->
+    <div class="slide">
+        <h2>Comandos básicos — Cheatsheet</h2>
+        <table class="cmd-table">
+            <tr><th>Comando</th><th>Qué hace</th></tr>
+            <tr><td><code>git clone url</code></td><td>Descarga una copia completa de un repo remoto</td></tr>
+            <tr><td><code>git status</code></td><td>Muestra qué archivos cambiaron y en qué área están</td></tr>
+            <tr><td><code>git add archivo</code></td><td>Manda un archivo al staging area</td></tr>
+            <tr><td><code>git commit -m "msj"</code></td><td>Guarda los cambios del staging en el historial local</td></tr>
+            <tr><td><code>git push</code></td><td>Sube tus commits locales al repositorio remoto</td></tr>
+            <tr><td><code>git pull</code></td><td>Trae y combina los cambios del repositorio remoto</td></tr>
+            <tr><td><code>git log</code></td><td>Muestra el historial de commits</td></tr>
+        </table>
+    </div>
+
+    <!-- Slide 11: Buenas prácticas y cierre -->
+    <div class="slide">
+        <h2>Buenas prácticas</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">✅</span>
+                <h4>Pull antes de empezar</h4>
+                <p>Evita conflictos por trabajar sobre una versión desactualizada.</p>
+            </div>
+            <div class="card">
+                <span class="icon">✍️</span>
+                <h4>Mensajes de commit claros</h4>
+                <p>"Fix bug" no ayuda a nadie — describí qué se corrigió y por qué.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🧩</span>
+                <h4>Commits chicos y frecuentes</h4>
+                <p>Más fácil de revisar, entender y revertir si algo sale mal.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔍</span>
+                <h4><code>git status</code> es tu amigo</h4>
+                <p>Revisá siempre qué vas a subir antes de hacer commit o push.</p>
+            </div>
+        </div>
+
+        <div class="link-section">
+            <h4>🔗 Para profundizar</h4>
+            <div class="links-grid">
+                <div class="link-item">
+                    <a href="https://docs.github.com/es/get-started" target="_blank">GitHub Docs — Primeros pasos</a>
+                    <p>Guía oficial en español</p>
+                </div>
+                <div class="link-item">
+                    <a href="https://git-scm.com/book/es/v2" target="_blank">Pro Git (libro gratuito)</a>
+                    <p>Referencia completa de Git</p>
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top: 1.5rem; font-style: italic; opacity: 0.85; text-align:center;">
+            Con esto ya podés clonar un repo, guardar tus cambios y compartirlos 🚀
+        </p>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">11</span>
+</div>
+
+<div class="controls">
+    <button class="btn" onclick="previousSlide()">← Anterior</button>
+    <button class="btn" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function showSlide(n) {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>
