@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S3 + IAM en profundidad</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #131a22, #232f3e);
+            color: white;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: #ff9900;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.4rem;
+            margin-bottom: 1.2rem;
+            color: #ff9900;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: #7dd3fc;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: #ff9900;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+            max-width: 850px;
+        }
+
+        .slide p.center, .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 850px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #b8c4d0;
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(255, 153, 0, 0.15);
+            border: 1px solid #ff9900;
+            color: #ff9900;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Grid de tarjetas */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 153, 0, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 153, 0, 0.1);
+        }
+
+        .card .icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .card h4 {
+            margin-bottom: 0.4rem;
+        }
+
+        .card p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            color: #d8e0e8;
+        }
+
+        /* Diagrama simple de arquitectura */
+        .arch-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1.5rem 0;
+        }
+
+        .arch-box {
+            background: rgba(255, 255, 255, 0.07);
+            border: 2px solid #ff9900;
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            min-width: 140px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .arch-box .icon {
+            font-size: 1.6rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .arch-arrow {
+            font-size: 1.8rem;
+            color: #ff9900;
+        }
+
+        .link-section {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .link-item a {
+            color: #7dd3fc;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .link-item a:hover {
+            text-decoration: underline;
+        }
+
+        .link-item p {
+            font-size: 0.9rem;
+            color: #b8c4d0;
+            margin-bottom: 0;
+        }
+
+        strong {
+            color: #ffb84d;
+        }
+
+        code {
+            background: rgba(255,255,255,0.1);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #7dd3fc;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(125, 211, 252, 0.15);
+            border: 1px solid #7dd3fc;
+            color: #7dd3fc;
+            padding: 0.2rem 0.7rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 0.4rem;
+        }
+
+        /* Pasos de consola web */
+        .console-steps {
+            width: 100%;
+            max-width: 800px;
+            list-style: none;
+            counter-reset: step;
+            margin: 1rem 0;
+        }
+
+        .console-steps li {
+            counter-increment: step;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3px solid #ff9900;
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 0.6rem;
+            max-width: 100%;
+            font-size: 1.05rem;
+        }
+
+        .console-steps li::before {
+            content: counter(step);
+            flex-shrink: 0;
+            background: #ff9900;
+            color: #131a22;
+            font-weight: bold;
+            width: 1.8rem;
+            height: 1.8rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+        }
+
+        .console-note {
+            width: 100%;
+            max-width: 800px;
+            font-size: 0.95rem;
+            opacity: 0.8;
+            font-style: italic;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        /* Bloques de terminal */
+        .terminal {
+            width: 100%;
+            max-width: 850px;
+            background: #0d1117;
+            border: 1px solid rgba(125, 211, 252, 0.35);
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            margin: 0.8rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            text-align: left;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+        }
+
+        .terminal .line {
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.55;
+        }
+
+        .terminal .prompt {
+            color: #4ade80;
+        }
+
+        .terminal .cmd {
+            color: #e8edf2;
+        }
+
+        .terminal .out {
+            color: #8b98a5;
+        }
+
+        .terminal .flag {
+            color: #7dd3fc;
+        }
+
+        /* Bloque de JSON de policy */
+        .json-block {
+            width: 100%;
+            max-width: 850px;
+            background: #0d1117;
+            border: 1px solid rgba(255, 153, 0, 0.35);
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            margin: 0.8rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            text-align: left;
+            color: #d8e0e8;
+            white-space: pre;
+            overflow-x: auto;
+            flex-shrink: 0;
+        }
+
+        .json-block .key { color: #7dd3fc; }
+        .json-block .str { color: #ffb84d; }
+
+        /* Tabla comparativa */
+        .compare-table {
+            width: 100%;
+            max-width: 900px;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 1rem;
+        }
+
+        .compare-table th, .compare-table td {
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 0.7rem 1rem;
+            text-align: left;
+        }
+
+        .compare-table th {
+            background: rgba(255, 153, 0, 0.18);
+            color: #ff9900;
+        }
+
+        .compare-table td:first-child {
+            color: #b8c4d0;
+            font-weight: bold;
+            width: 26%;
+        }
+
+        .compare-table tr:nth-child(even) td {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #ff9900;
+            color: #131a22;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #ffb84d;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2.1rem; }
+            .slide h2 { font-size: 1.7rem; }
+            .compare-table { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Infraestructura de Redes · Terciario Urquiza</div>
+        <h1>🪣🔐 S3 + IAM en profundidad</h1>
+        <p class="subtitle">Consola web y AWS CLI, paso a paso</p>
+        <div class="arch-diagram">
+            <div class="arch-box"><span class="icon">🪣</span>Bucket</div>
+            <div class="arch-box"><span class="icon">📄</span>Object</div>
+            <div class="arch-box"><span class="icon">👤</span>Usuario</div>
+            <div class="arch-box"><span class="icon">📜</span>Policy</div>
+            <div class="arch-box"><span class="icon">🔑</span>Access Key</div>
+        </div>
+        <p class="center" style="opacity:0.75; font-style:italic;">Ya vimos qué son S3 e IAM — hoy vamos un nivel más profundo, con ejemplos reales por consola web y por línea de comandos.</p>
+    </div>
+
+    <!-- Slide 2: Repaso relámpago -->
+    <div class="slide">
+        <h2>Repaso relámpago</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">💾</span>
+                <h4>S3</h4>
+                <p>Almacenamiento de objetos: archivos organizados en <strong>buckets</strong>, cada uno identificado por una <strong>key</strong> única.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔐</span>
+                <h4>IAM</h4>
+                <p>Control de acceso: define <strong>quién</strong> puede hacer <strong>qué</strong> sobre <strong>qué recurso</strong> de AWS.</p>
+            </div>
+        </div>
+        <p class="center" style="opacity:0.8; margin-top:1rem;">Esto ya lo vimos en la clase anterior. Hoy: cada operación explicada y ejecutada, dos veces — una desde el navegador y otra desde la terminal.</p>
+    </div>
+
+    <!-- Slide 3: S3 conceptos clave -->
+    <div class="slide">
+        <h2>💾 S3: conceptos clave</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🪣</span>
+                <h4>Bucket</h4>
+                <p>Contenedor de nivel superior. Su nombre debe ser único <strong>a nivel global</strong> en todo AWS.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📄</span>
+                <h4>Object</h4>
+                <p>El archivo más sus metadatos. Desde bytes hasta 5 TB por objeto.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔑</span>
+                <h4>Key</h4>
+                <p>Identificador único del objeto dentro del bucket. No existen carpetas reales: todo es una key con forma de ruta.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🌎</span>
+                <h4>Región</h4>
+                <p>Cada bucket vive en una región específica (ej. <code>sa-east-1</code>), elegida al crearlo.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔁</span>
+                <h4>Versionado</h4>
+                <p>Opcional: conserva versiones anteriores del mismo objeto ante sobrescrituras o borrados.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📛</span>
+                <h4>Reglas de nombre</h4>
+                <p>Minúsculas, 3 a 63 caracteres, sin espacios ni mayúsculas, único en todo AWS.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: S3 consola web - crear bucket -->
+    <div class="slide">
+        <h2>S3 por consola web: crear un bucket</h2>
+        <ol class="console-steps">
+            <li>Entrar a la consola de AWS y buscar el servicio <strong>S3</strong>.</li>
+            <li>Click en <strong>Create bucket</strong>.</li>
+            <li>Elegir un nombre único (ej. <code>fotos-alumnos-2026</code>) y la región.</li>
+            <li>Dejar bloqueado el <strong>acceso público</strong> por defecto, salvo que el bucket lo necesite explícitamente.</li>
+            <li>Click en <strong>Create bucket</strong> para confirmar.</li>
+        </ol>
+        <p class="console-note">El nombre queda reservado en todo AWS mientras exista el bucket — por eso conviene sumar un sufijo propio (año, curso, etc.).</p>
+    </div>
+
+    <!-- Slide 5: S3 consola web - CRUD objetos -->
+    <div class="slide">
+        <h2>S3 por consola web: subir, descargar, borrar</h2>
+        <ol class="console-steps">
+            <li>Entrar al bucket y click en <strong>Upload</strong>.</li>
+            <li>Arrastrar el archivo o usar <strong>Add files</strong>, luego <strong>Upload</strong> para confirmar.</li>
+            <li>Click sobre el objeto para ver su detalle, y <strong>Download</strong> para descargarlo.</li>
+            <li>Seleccionar el objeto (checkbox) y <strong>Delete</strong> para eliminarlo.</li>
+        </ol>
+        <p class="console-note">Cada objeto puede tener una URL pública o firmada, según los permisos del bucket y del objeto.</p>
+    </div>
+
+    <!-- Slide 6: Preparar la CLI -->
+    <div class="slide">
+        <h2>Antes de usar la CLI</h2>
+        <p class="center">Instalamos AWS CLI y la configuramos una vez con nuestras credenciales.</p>
+        <div class="terminal">
+            <div class="line"><span class="prompt">$</span> <span class="cmd">aws configure</span></div>
+            <div class="line out">AWS Access Key ID [None]: AKIAEXAMPLE123</div>
+            <div class="line out">AWS Secret Access Key [None]: ****************</div>
+            <div class="line out">Default region name [None]: sa-east-1</div>
+            <div class="line out">Default output format [None]: json</div>
+        </div>
+        <p class="center" style="opacity:0.8;">Como estamos contra <strong>Floci</strong> (emulador) y no AWS real, agregamos <code class="flag">--endpoint-url http://localhost:4566</code> a cada comando — o lo exportamos una sola vez como variable de entorno.</p>
+    </div>
+
+    <!-- Slide 7: S3 por CLI 1/2 -->
+    <div class="slide">
+        <h2>S3 por CLI: crear y subir</h2>
+        <div class="terminal">
+            <div class="line"><span class="prompt">$</span> <span class="cmd">aws s3 mb s3://fotos-alumnos-2026</span> <span class="flag">--endpoint-url http://localhost:4566</span></div>
+            <div class="line out">make_bucket: fotos-alumnos-2026</div>
+            <div class="line">&nbsp;</div>
+            <div class="line"><span class="prompt">$</span> <span class="cmd">aws s3 cp foto.jpg s3://fotos-alumnos-2026/</span> <span class="flag">--endpoint-url http://localhost:4566</span></div>
+            <div class="line out">upload: ./foto.jpg to s3://fotos-alumnos-2026/foto.jpg</div>
+            <div class="line">&nbsp;</div>
+            <div class="line"><span class="prompt">$</span> <span class="cmd">aws s3 ls s3://fotos-alumnos-2026</span> <span class="flag">--endpoint-url http://localhost:4566</span></div>
+            <div class="line out">2026-08-06 10:15:32     245678 foto.jpg</div>
+        </div>
+    </div>
+
+    <!-- Slide 8: S3 por CLI 2/2 -->
+    <div class="slide">
+        <h2>S3 por CLI: descargar y borrar</h2>
+        <div class="terminal">
+            <div class="line"><span class="prompt">$</span> <span class="cmd">aws s3 cp s3://fotos-alumnos-2026/foto.jpg ./descarga.jpg</span> <span class="flag">--endpoint-url http://localhost:4566</span></div>
+            <div class="line out">download: s3://fotos-alumnos-2026/foto.jpg to ./descarga.jpg</div>
+            <div class="line">&nbsp;</div>
+            <div class="line"><span class="prompt">$</span> <span class="cmd">aws s3 rm s3://fotos-alumnos-2026/foto.jpg</span> <span class="flag">--endpoint-url http://localhost:4566</span></div>
+            <div class="line out">delete: s3://fotos-alumnos-2026/foto.jpg</div>
+            <div class="line">&nbsp;</div>
+            <div class="line"><span class="prompt">$</span> <span class="cmd">aws s3 rb s3://fotos-alumnos-2026</span> <span class="flag">--endpoint-url http://localhost:4566</span></div>
+            <div class="line out">remove_bucket: fotos-alumnos-2026</div>
+        </div>
+        <p class="console-note">El mismo ciclo CRUD que hicimos con clicks en la consola — pero scripteable y repetible.</p>
+    </div>
+
+    <!-- Slide 9: IAM conceptos clave -->
+    <div class="slide">
+        <h2>🔐 IAM: conceptos clave</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">👤</span>
+                <h4>Usuarios</h4>
+                <p>Identidad individual — persona o aplicación — con credenciales propias.</p>
+            </div>
+            <div class="card">
+                <span class="icon">👥</span>
+                <h4>Grupos</h4>
+                <p>Conjunto de usuarios que comparten permisos. La policy se adjunta al grupo, no a cada usuario.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🎭</span>
+                <h4>Roles</h4>
+                <p>Identidad temporal, sin credenciales fijas, que puede asumir un usuario o un servicio.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📜</span>
+                <h4>Policies</h4>
+                <p>Documento JSON que define qué acciones están permitidas o denegadas sobre qué recursos.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔑</span>
+                <h4>Access Keys</h4>
+                <p><code>AWS_ACCESS_KEY_ID</code> + <code>AWS_SECRET_ACCESS_KEY</code> — credenciales que usa una app para autenticarse.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🎯</span>
+                <h4>Mínimo privilegio</h4>
+                <p>Dar solo los permisos estrictamente necesarios para la tarea, ni uno más.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: IAM consola web -->
+    <div class="slide">
+        <h2>IAM por consola web</h2>
+        <ol class="console-steps">
+            <li>IAM → <strong>Users</strong> → Create user (ej. <code>alumno-app</code>).</li>
+            <li>IAM → <strong>User groups</strong> → Create group (ej. <code>app-s3-access</code>) y agregar al usuario.</li>
+            <li>Adjuntar una <strong>policy</strong> al grupo (managed o custom en JSON).</li>
+            <li>Entrar al usuario → <strong>Security credentials</strong> → Create access key.</li>
+            <li>Guardar el <strong>Access Key ID</strong> y el <strong>Secret Access Key</strong> — solo se muestran una vez.</li>
+        </ol>
+    </div>
+
+    <!-- Slide 11: IAM por CLI 1/2 -->
+    <div class="slide">
+        <h2>IAM por CLI: usuarios y grupos</h2>
+        <div class="terminal">
+            <div class="line"><span class="prompt">$</span> <span class="cmd">aws iam create-user --user-name alumno-app</span> <span class="flag">--endpoint-url http://localhost:4566</span></div>
+            <div class="line">&nbsp;</div>
+            <div class="line"><span class="prompt">$</span> <span class="cmd">aws iam create-group --group-name app-s3-access</span> <span class="flag">--endpoint-url http://localhost:4566</span></div>
+            <div class="line">&nbsp;</div>
+            <div class="line"><span class="prompt">$</span> <span class="cmd">aws iam add-user-to-group --user-name alumno-app \</span></div>
+            <div class="line out">    --group-name app-s3-access <span class="flag">--endpoint-url http://localhost:4566</span></div>
+        </div>
+    </div>
+
+    <!-- Slide 12: IAM por CLI 2/2 -->
+    <div class="slide">
+        <h2>IAM por CLI: policy y access key</h2>
+        <p class="center" style="opacity:0.85;"><code>policy.json</code> — acceso solo al bucket <code>fotos-alumnos-2026</code>:</p>
+        <div class="json-block">{
+  <span class="key">"Version"</span>: <span class="str">"2012-10-17"</span>,
+  <span class="key">"Statement"</span>: [
+    {
+      <span class="key">"Effect"</span>: <span class="str">"Allow"</span>,
+      <span class="key">"Action"</span>: [<span class="str">"s3:GetObject"</span>, <span class="str">"s3:PutObject"</span>, <span class="str">"s3:ListBucket"</span>],
+      <span class="key">"Resource"</span>: [
+        <span class="str">"arn:aws:s3:::fotos-alumnos-2026"</span>,
+        <span class="str">"arn:aws:s3:::fotos-alumnos-2026/*"</span>
+      ]
+    }
+  ]
+}</div>
+        <div class="terminal">
+            <div class="line"><span class="prompt">$</span> <span class="cmd">aws iam put-group-policy --group-name app-s3-access \</span></div>
+            <div class="line out">    --policy-name s3-fotos-access --policy-document file://policy.json <span class="flag">--endpoint-url http://localhost:4566</span></div>
+            <div class="line">&nbsp;</div>
+            <div class="line"><span class="prompt">$</span> <span class="cmd">aws iam create-access-key --user-name alumno-app</span> <span class="flag">--endpoint-url http://localhost:4566</span></div>
+            <div class="line out">{ "AccessKey": { "UserName": "alumno-app", "AccessKeyId": "AKIA...", "SecretAccessKey": "..." } }</div>
+        </div>
+    </div>
+
+    <!-- Slide 13: Consola web vs CLI -->
+    <div class="slide">
+        <h2>Consola web vs CLI: ¿cuándo usar cada una?</h2>
+        <table class="compare-table">
+            <tr><th></th><th>Consola web</th><th>AWS CLI</th></tr>
+            <tr><td>Ideal para</td><td>Explorar, aprender, tareas puntuales</td><td>Automatizar, scripts, tareas repetidas</td></tr>
+            <tr><td>Velocidad (1 acción)</td><td>Rápida, a base de clicks</td><td>Requiere conocer el comando exacto</td></tr>
+            <tr><td>Repetibilidad</td><td>Manual cada vez</td><td>Scripteable y reproducible</td></tr>
+            <tr><td>Trazabilidad</td><td>No queda como código</td><td>Queda como script versionable en git</td></tr>
+            <tr><td>Curva de aprendizaje</td><td>Baja</td><td>Media — sintaxis de comandos</td></tr>
+        </table>
+        <p class="center" style="opacity:0.8;">En la práctica real se usan las dos: la consola para explorar y entender, la CLI/SDK para las apps y la automatización.</p>
+    </div>
+
+    <!-- Slide 14: Buenas prácticas y cierre -->
+    <div class="slide">
+        <h2>Buenas prácticas de seguridad</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🚫</span>
+                <h4>No usar el usuario root</h4>
+                <p>El root es solo para tareas de cuenta. Para trabajo diario, siempre usuarios IAM.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔄</span>
+                <h4>Rotar access keys</h4>
+                <p>Generar nuevas periódicamente y desactivar/eliminar las que ya no se usan.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🙈</span>
+                <h4>Nunca commitear credenciales</h4>
+                <p>Las access keys no van en el código ni en git — se usan variables de entorno o un gestor de secretos.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🎯</span>
+                <h4>Mínimo privilegio</h4>
+                <p>Policies específicas por recurso, nunca <code>AdministratorAccess</code> para una app.</p>
+            </div>
+        </div>
+
+        <div class="link-section">
+            <h4>🔗 Para profundizar</h4>
+            <div class="links-grid">
+                <div class="link-item">
+                    <a href="https://docs.aws.amazon.com/s3/" target="_blank">Documentación de S3</a>
+                    <p>Referencia completa del servicio</p>
+                </div>
+                <div class="link-item">
+                    <a href="https://docs.aws.amazon.com/iam/" target="_blank">Documentación de IAM</a>
+                    <p>Usuarios, grupos, roles y policies</p>
+                </div>
+                <div class="link-item">
+                    <a href="https://docs.aws.amazon.com/cli/latest/reference/s3/" target="_blank">AWS CLI — referencia S3</a>
+                    <p>Todos los subcomandos de <code>aws s3</code></p>
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top: 1.5rem; font-style: italic; opacity: 0.85; text-align:center;">
+            Con esto ya podemos aplicar todo en la práctica: <strong>Cloud Storage 101</strong> 🚀
+        </p>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">14</span>
+</div>
+
+<div class="controls">
+    <button class="btn" onclick="previousSlide()">← Anterior</button>
+    <button class="btn" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function showSlide(n) {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>
