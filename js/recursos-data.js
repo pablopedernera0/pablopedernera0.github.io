@@ -1,4 +1,4 @@
-// Índice de recursos del sitio.
+// Índice de recursos del sitio. Última actualización: 2026-08-06.
 // Cada entrada agrega una carpeta al índice de la home (ver render-recursos.js).
 // Para publicar un recurso nuevo: agregar un objeto acá, no tocar index.html.
 //
