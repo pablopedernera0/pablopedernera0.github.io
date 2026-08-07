@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema EIDAS - Modelo de trabajo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.4rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+            max-width: 850px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 850px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            background: rgba(63, 185, 80, 0.08);
+        }
+
+        .card .icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .card h4 {
+            margin-bottom: 0.4rem;
+        }
+
+        .card p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .arch-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1.5rem 0;
+        }
+
+        .arch-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #3fb950;
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            min-width: 150px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .arch-box .icon {
+            font-size: 1.6rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .arch-box.remote {
+            border-color: #58a6ff;
+        }
+
+        .arch-box .cmd {
+            display: block;
+            margin-top: 0.3rem;
+            font-size: 0.8rem;
+            color: #f0883e;
+            font-family: 'Courier New', monospace;
+        }
+
+        .arch-arrow {
+            font-size: 1.8rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .arch-arrow .label {
+            display: block;
+            font-size: 0.75rem;
+            color: #f0883e;
+            font-family: 'Courier New', monospace;
+        }
+
+        .link-section {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .link-item a {
+            color: #58a6ff;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .link-item a:hover {
+            text-decoration: underline;
+        }
+
+        .link-item p {
+            font-size: 0.9rem;
+            color: #8b949e;
+            margin-bottom: 0;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.2rem 0.7rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 0.4rem;
+        }
+
+        .cmd-table {
+            width: 100%;
+            max-width: 850px;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .cmd-table th {
+            text-align: left;
+            color: #58a6ff;
+            font-size: 0.95rem;
+            padding: 0.5rem 0.8rem;
+            border-bottom: 2px solid rgba(63,185,80,0.4);
+        }
+
+        .cmd-table td {
+            padding: 0.55rem 0.8rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.95rem;
+        }
+
+        .cmd-table td:first-child {
+            white-space: nowrap;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            width: 100%;
+            max-width: 750px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.1rem;
+            min-width: 1.5rem;
+        }
+
+        .tree {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 1.2rem 1.6rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            line-height: 1.7;
+            text-align: left;
+            width: 100%;
+            max-width: 650px;
+            margin: 1rem 0;
+            color: #c9d1d9;
+        }
+
+        .tree .comment {
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 800px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2.1rem; }
+            .slide h2 { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Diseño de Sistemas Web · Analista Funcional · 2do Cuatrimestre 2026</div>
+        <h1>📋 Sistema EIDAS</h1>
+        <p class="subtitle">El nuevo modelo de trabajo para este cuatrimestre</p>
+        <div class="arch-diagram">
+            <div class="arch-box"><span class="icon">📝</span>Su trabajo anterior</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box"><span class="icon">📋</span>Plantilla EIDAS</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box remote"><span class="icon">🤖</span>Corrección con IA</div>
+        </div>
+        <p class="center" style="opacity:0.75; font-style:italic;">Volvemos del receso con una forma nueva de entregar y corregir los trabajos prácticos.</p>
+    </div>
+
+    <!-- Slide 2: Qué es EIDAS -->
+    <div class="slide">
+        <h2>¿Qué es EIDAS?</h2>
+        <p class="center">Un <strong>sistema nuevo</strong> que vamos a usar para corregir los trabajos prácticos de la materia. Todavía se está construyendo — ustedes van a ser de los primeros en usarlo.</p>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🎯</span>
+                <h4>Para qué sirve</h4>
+                <p>Automatizar parte de la corrección de las entregas: requisitos, casos de uso, diagramas y documentación en general.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🧪</span>
+                <h4>En construcción</h4>
+                <p>Es un proyecto piloto que se está diseñando en paralelo a este cuatrimestre. Puede ajustarse sobre la marcha.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📐</span>
+                <h4>Necesita orden</h4>
+                <p>Para poder leer y corregir un trabajo automáticamente, necesita que todos entreguen con la <strong>misma estructura</strong>.</p>
+            </div>
+        </div>
+        <p class="center" style="margin-top:1rem; opacity:0.8;">Por eso hoy vemos las plantillas y el flujo de trabajo que vamos a usar de acá en adelante.</p>
+    </div>
+
+    <!-- Slide 3: Qué cambia para ustedes -->
+    <div class="slide">
+        <h2>¿Qué cambia para ustedes?</h2>
+        <p class="center">No es un trabajo nuevo desde cero.</p>
+        <div class="warning-box">
+            <p>El análisis funcional, los requisitos, los casos de uso y los diagramas que ya presentaron el <strong>cuatrimestre pasado</strong> siguen siendo válidos. Lo que tienen que hacer ahora es <strong>volcar ese contenido</strong> a las plantillas que propone EIDAS.</p>
+        </div>
+        <p class="center" style="margin-top:1.2rem; opacity:0.85;">Es decir: reorganizar y reescribir lo que ya pensaron, en el formato y en los archivos que el sistema va a poder leer.</p>
+    </div>
+
+    <!-- Slide 4: Los dos repos -->
+    <div class="slide">
+        <h2>Los dos repositorios de EIDAS</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🗂️</span>
+                <h4>eidas-template</h4>
+                <p>La plantilla vacía. Cada grupo hace su propia copia a partir de acá — es el punto de partida.</p>
+            </div>
+            <div class="card">
+                <span class="icon">⚙️</span>
+                <h4>sistema-eidas</h4>
+                <p>El sistema de corrección en sí, que estamos diseñando junto con el profesor. Ustedes no trabajan directamente sobre este repo.</p>
+            </div>
+        </div>
+        <p class="center" style="margin-top:1rem; opacity:0.8;">Lo único que cada grupo toca es <strong>su propia copia</strong> de <code>eidas-template</code>.</p>
+    </div>
+
+    <!-- Slide 5: Estructura de la plantilla -->
+    <div class="slide">
+        <h2>Estructura de <code>eidas-template</code></h2>
+        <div class="tree">/<br>
+├── README.md <span class="comment">← nombre del sistema, integrantes, entregas</span><br>
+├── integrantes.md<br>
+├── RECURSOS.md <span class="comment">← leer antes de empezar</span><br>
+├── docs/<br>
+│&nbsp;&nbsp;&nbsp;├── requisitos.md<br>
+│&nbsp;&nbsp;&nbsp;├── historias-de-usuario.md<br>
+│&nbsp;&nbsp;&nbsp;├── casos-de-uso.md<br>
+│&nbsp;&nbsp;&nbsp;├── er-modelo.md<br>
+│&nbsp;&nbsp;&nbsp;├── diseño-ui.md<br>
+│&nbsp;&nbsp;&nbsp;└── stakeholders.md<br>
+├── diagramas/ <span class="comment">← formato PlantUML (.puml)</span><br>
+└── cuestionario/
+        </div>
+        <p class="center" style="opacity:0.8;">Cada archivo de <code>docs/</code> es contenido que ya trabajaron en la materia — ahora tiene un lugar fijo donde ir.</p>
+    </div>
+
+    <!-- Slide 6: Ya vieron esto -->
+    <div class="slide">
+        <h2>Esto ya lo vieron</h2>
+        <p class="center">Los documentos de <code>docs/</code> se corresponden con los temas del repaso de Ingeniería de Software.</p>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">👥</span>
+                <h4>stakeholders.md</h4>
+                <p>Quiénes son los interesados del sistema y qué necesitan.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📋</span>
+                <h4>requisitos.md</h4>
+                <p>Requisitos funcionales y no funcionales.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🎭</span>
+                <h4>casos-de-uso.md</h4>
+                <p>Actores y casos de uso del sistema.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🗃️</span>
+                <h4>er-modelo.md</h4>
+                <p>Entidades, atributos y relaciones.</p>
+            </div>
+        </div>
+        <p class="center" style="margin-top:1rem; opacity:0.8;">No es contenido nuevo — es el mismo análisis funcional, en un formato ordenado.</p>
+    </div>
+
+    <!-- Slide 7: Diagramas en texto -->
+    <div class="slide">
+        <h2>Diagramas como texto: PlantUML</h2>
+        <p class="center">En <code>diagramas/</code>, los casos de uso y el modelo ER no se entregan como imagen — se escriben en <strong>PlantUML</strong>, un lenguaje de texto que genera el diagrama.</p>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">✍️</span>
+                <h4>No hace falta instalar nada</h4>
+                <p>Se escribe y se visualiza directo en <a href="https://www.plantuml.com/plantuml/uml/" target="_blank" style="color:#58a6ff;">plantuml.com</a>.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔍</span>
+                <h4>Se puede leer como texto</h4>
+                <p>Un sistema (o una persona) puede revisar el diagrama sin abrir ningún programa de dibujo.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📜</span>
+                <h4>Versionable con git</h4>
+                <p>Como es texto, Git puede registrar exactamente qué cambió entre una versión del diagrama y la siguiente.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Entregas -->
+    <div class="slide">
+        <h2>Entregas</h2>
+        <table class="cmd-table">
+            <tr><th>Entrega</th><th>Descripción</th></tr>
+            <tr><td>EP-01</td><td>Presentación preliminar</td></tr>
+            <tr><td>EP-02</td><td>Avance intermedio</td></tr>
+            <tr><td>Final</td><td>Versión definitiva</td></tr>
+        </table>
+        <p class="center" style="opacity:0.8; margin-top:1rem;">Fechas exactas: se definen en clase y quedan anotadas en el <code>README.md</code> de cada grupo.</p>
+    </div>
+
+    <!-- Slide 9: Cómo arrancar -->
+    <div class="slide">
+        <h2>Cómo arrancar</h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <div>Un integrante entra a <code>eidas-template</code> y usa <strong>"Use this template" → "Create a new repository"</strong>.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <div>Agrega al resto del grupo como <strong>colaboradores</strong> (Settings → Collaborators).</div>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <div>Todo el grupo agrega al <strong>profesor</strong> como colaborador con permiso de escritura.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">4</span>
+                <div>Cada integrante clona el repo del grupo en su computadora con <code>git clone</code>.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">5</span>
+                <div>Completan <code>integrantes.md</code> y empiezan a volcar su trabajo en <code>docs/</code> y <code>diagramas/</code>.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Por qué Git -->
+    <div class="slide">
+        <h2>¿Por qué usamos Git para esto?</h2>
+        <p class="center">No para programar — para <strong>coordinarse en equipo</strong> y dejar registro del proceso de análisis.</p>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">👥</span>
+                <h4>Trabajo en paralelo</h4>
+                <p>Varios integrantes editan la documentación del sistema sin pisarse el trabajo.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🕒</span>
+                <h4>Historial como evidencia</h4>
+                <p>Los commits muestran quién aportó qué y cuándo — es parte de lo que se evalúa.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔄</span>
+                <h4>Versiones sincronizadas</h4>
+                <p>El profesor, como colaborador, ve siempre la última versión sin pedir que le envíen archivos.</p>
+            </div>
+        </div>
+        <p class="center" style="margin-top:1.5rem; font-style:italic; opacity:0.85;">Ahora sí, vamos a ver en profundidad cómo se usa Git y GitHub 🐙</p>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">10</span>
+</div>
+
+<div class="controls">
+    <button class="btn" onclick="previousSlide()">← Anterior</button>
+    <button class="btn" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function showSlide(n) {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>

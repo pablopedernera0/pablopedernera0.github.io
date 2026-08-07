@@ -1,10 +1,18 @@
-// Índice de recursos del sitio. Última actualización: 2026-08-06 20:38 ART.
+// Índice de recursos del sitio. Última actualización: 2026-08-07 18:27 ART.
 // Cada entrada agrega una carpeta al índice de la home (ver render-recursos.js).
 // Para publicar un recurso nuevo: agregar un objeto acá, no tocar index.html.
 //
 // categoria: debe coincidir con el id de la course-card en index.html
 //   'infraestructura' | 'desarrollo' | 'redes'
 const RECURSOS = [
+    {
+        titulo: "Sistema EIDAS — Modelo de trabajo",
+        categoria: "desarrollo",
+        carpeta: "eidas-modelo-trabajo",
+        icono: "📋",
+        descripcion: "Cómo volcar el análisis funcional ya presentado a las plantillas de EIDAS, el nuevo sistema de corrección.",
+        fecha: "2026-08-07"
+    },
     {
         titulo: "S3 + IAM en profundidad",
         categoria: "infraestructura",
