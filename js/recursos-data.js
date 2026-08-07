@@ -1,10 +1,18 @@
-// Índice de recursos del sitio. Última actualización: 2026-08-07 18:27 ART.
+// Índice de recursos del sitio. Última actualización: 2026-08-07 18:47 ART.
 // Cada entrada agrega una carpeta al índice de la home (ver render-recursos.js).
 // Para publicar un recurso nuevo: agregar un objeto acá, no tocar index.html.
 //
 // categoria: debe coincidir con el id de la course-card en index.html
 //   'infraestructura' | 'desarrollo' | 'redes'
 const RECURSOS = [
+    {
+        titulo: "Dimensionamiento de Servidores — Clase 1",
+        categoria: "redes",
+        carpeta: "dimensionamiento-servidores",
+        icono: "📶",
+        descripcion: "Página completa vs. JSON: datos reales de tamaño y su impacto al escalar de 10 a 10.000 usuarios.",
+        fecha: "2026-08-07"
+    },
     {
         titulo: "Sistema EIDAS — Modelo de trabajo",
         categoria: "desarrollo",

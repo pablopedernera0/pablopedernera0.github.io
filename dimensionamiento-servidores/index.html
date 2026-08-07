@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dimensionamiento de Servidores - Clase 1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px;
+            height: 100vh;
+            overflow-y: auto;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255,255,255,0.3);
+        }
+
+        h2 {
+            font-size: 2.3em;
+            margin-bottom: 25px;
+            color: #87ceeb;
+            border-bottom: 3px solid #87ceeb;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.7em;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .content {
+            font-size: 1.25em;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 30px 0;
+        }
+
+        .comparison-table {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th {
+            background: rgba(135,206,235,0.3);
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.3);
+            font-size: 1.1em;
+            text-align: left;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            font-size: 1em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,165,0,0.2));
+            border-left: 5px solid #ffd700;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .code-block {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 18px 22px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 18px 0;
+            font-size: 0.95em;
+            color: #7ee787;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .source-note {
+            font-size: 0.85em;
+            opacity: 0.7;
+            font-style: italic;
+            margin-top: 8px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.05em;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1.05em;
+            backdrop-filter: blur(10px);
+        }
+
+        .class-indicator {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin: 14px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        li::before {
+            content: "▶";
+            color: #ffd700;
+            position: absolute;
+            left: 0;
+            font-size: 1.1em;
+        }
+
+        .break-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .break-slide.active {
+            display: flex !important;
+        }
+
+        .break-slide h1 {
+            font-size: 3.2em;
+            margin-bottom: 25px;
+        }
+
+        .break-slide p {
+            font-size: 1.5em;
+            opacity: 0.9;
+            max-width: 900px;
+        }
+
+        .resource-link {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 10px;
+            border: 2px solid #ffd700;
+            transition: all 0.3s ease;
+        }
+
+        .resource-link:hover {
+            background: #ffd700;
+            color: #333;
+        }
+
+        .big-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ffd700;
+            text-align: center;
+        }
+
+        .big-number small {
+            display: block;
+            font-size: 0.35em;
+            color: white;
+            opacity: 0.85;
+            font-weight: normal;
+            margin-top: 8px;
+        }
+
+        .vs-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .vs-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            padding: 25px 35px;
+            border: 2px solid rgba(255,255,255,0.2);
+            min-width: 220px;
+            text-align: center;
+        }
+
+        .vs-card.api {
+            border-color: #7ee787;
+        }
+
+        .vs-label {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 900px) {
+            h1 { font-size: 2.1em; }
+            h2 { font-size: 1.7em; }
+            .two-columns { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">15</span>
+        </div>
+
+        <div class="class-indicator" id="classIndicator">CLASE 1</div>
+
+        <!-- Slide 1: Portada -->
+        <div class="slide active">
+            <div class="content">
+                <h1>Dimensionamiento de Servidores</h1>
+                <div style="text-align: center; margin-top: 50px;">
+                    <h3>Cuánto pesa lo que tu servidor entrega — y por qué importa</h3>
+                    <p style="font-size: 1.3em; margin-top: 30px; opacity: 0.9;">
+                        Aplicación web completa vs. backend JSON<br>
+                        Con datos reales, medidos hoy
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Agenda -->
+        <div class="slide">
+            <div class="content">
+                <h2>Agenda — Clase 1</h2>
+                <ul style="font-size: 1.1em;">
+                    <li>Dos formas de responder lo mismo: página completa vs. JSON</li>
+                    <li>Medición real: cuánto pesa una página de login vs. un JSON de login</li>
+                    <li>Escalando el cálculo: 10, 100, 1.000 y 10.000 usuarios</li>
+                    <li>De bytes a ancho de banda: qué le pide esto a un servidor</li>
+                    <li>Usuarios registrados ≠ peticiones simultáneas</li>
+                </ul>
+                <div class="highlight-box" style="margin-top:35px;">
+                    <p><strong>Esta unidad son 3 clases:</strong> hoy la teoría con datos reales, después una práctica guiada en Killercoda, y por último rediseñamos entre todos la <em>Calculadora de Infraestructura</em> para que use estos números en vez de valores inventados.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Dos arquitecturas -->
+        <div class="slide">
+            <div class="content">
+                <h2>Dos formas de responder "iniciá sesión"</h2>
+                <div class="two-columns">
+                    <div class="comparison-table">
+                        <h3 style="text-align:center;">🖥️ Aplicación web completa</h3>
+                        <p>El servidor arma la página entera (HTML + estilos + interactividad) y la manda lista para mostrarse. Estilo Symfony/Twig, WordPress, Django templates.</p>
+                    </div>
+                    <div class="comparison-table">
+                        <h3 style="text-align:center;">🔌 Backend que solo da datos</h3>
+                        <p>El servidor solo contesta con los datos en JSON. La pantalla ya está en el navegador o en la app — sólo necesita saber si el login fue válido.</p>
+                    </div>
+                </div>
+                <div class="highlight-box">
+                    <p>Misma acción del usuario, dos respuestas completamente distintas en tamaño. ¿Cuánto es "distintas"? Vamos a medirlo con casos reales, no inventados.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Medición real - página completa -->
+        <div class="slide">
+            <div class="content">
+                <h2>Medición real #1: una página de login completa</h2>
+                <p>Caso real: la página de inicio de sesión de <strong>WordPress.com</strong> (aplicación de producción, renderizada en el servidor).</p>
+                <div class="comparison-table">
+                    <table>
+                        <tr><th>Medida</th><th>Tamaño</th></tr>
+                        <tr><td>HTML tal cual lo arma el servidor</td><td>155.332 bytes (~152 KB)</td></tr>
+                        <tr><td>Lo que realmente viaja por la red (comprimido, gzip)</td><td>61.016 bytes (~59,6 KB)</td></tr>
+                    </table>
+                </div>
+                <div class="code-block">curl -sL -H "Accept-Encoding: gzip" -o /dev/null -w "%{size_download} bytes\n" \
+  https://wordpress.com/log-in</div>
+                <p class="source-note">Medido el 07/08/2026. Incluso comprimido, es una sola respuesta HTTP con toda la página lista para pintar.</p>
+            </div>
+        </div>
+
+        <!-- Slide 5: Medición real - JSON -->
+        <div class="slide">
+            <div class="content">
+                <h2>Medición real #2: un JSON de login</h2>
+                <p>Dos APIs públicas reales de prueba, mismo tipo de operación (POST de login):</p>
+                <div class="comparison-table">
+                    <table>
+                        <tr><th>API</th><th>Qué devuelve</th><th>Tamaño real</th></tr>
+                        <tr><td>fakestoreapi.com/auth/login</td><td>Solo el token</td><td>152 bytes</td></tr>
+                        <tr><td>dummyjson.com/auth/login</td><td>Token + refresh token + datos del usuario</td><td>930 bytes</td></tr>
+                    </table>
+                </div>
+                <div class="code-block">curl -s -X POST https://dummyjson.com/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"emilys","password":"emilyspass"}' \
+  -w "\nbytes: %{size_download}\n"</div>
+                <p class="source-note">Medido el 07/08/2026. Vamos a usar 930 bytes como referencia "realista" (incluye datos de usuario, no solo el token).</p>
+            </div>
+        </div>
+
+        <!-- Slide 6: La comparación directa -->
+        <div class="slide">
+            <div class="content">
+                <h2>La comparación, cara a cara</h2>
+                <div class="vs-row">
+                    <div class="vs-card">
+                        <div class="vs-label">Página completa (gzip)</div>
+                        <div class="big-number">61 KB</div>
+                    </div>
+                    <div class="vs-card api">
+                        <div class="vs-label">JSON de login</div>
+                        <div class="big-number">930 B</div>
+                    </div>
+                </div>
+                <div class="highlight-box">
+                    <p style="text-align:center; font-size:1.3em;">La página completa pesa <strong>~65 veces más</strong> que el JSON. Contra la versión mínima (152 B, solo token), la diferencia es de <strong>~400 veces</strong>.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Por qué pesa tanto una página completa -->
+        <div class="slide">
+            <div class="content">
+                <h2>¿Por qué pesa tanto la página completa?</h2>
+                <ul>
+                    <li>Trae el <strong>HTML</strong> con toda la estructura y el contenido ya insertado</li>
+                    <li>Trae (o referencia) el <strong>CSS</strong> del framework visual completo, aunque la página use una fracción de esas reglas</li>
+                    <li>Trae el <strong>JavaScript</strong> necesario para que la página sea interactiva</li>
+                    <li>El servidor tiene que <strong>renderizar la plantilla</strong> (Twig, Blade, etc.) en cada request — no es gratis en CPU</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 8: Por qué el JSON pesa tan poco -->
+        <div class="slide">
+            <div class="content">
+                <h2>¿Por qué el JSON pesa tan poco?</h2>
+                <ul>
+                    <li>Solo viajan <strong>datos</strong>: token, id de usuario, algún campo más</li>
+                    <li>No hay presentación — el HTML/CSS/JS <strong>ya está en el cliente</strong> (la app o la SPA), se descargó una sola vez</li>
+                    <li>Serializar un objeto a JSON es una operación mucho más liviana que renderizar una plantilla completa</li>
+                </ul>
+                <div class="highlight-box">
+                    <p>El ahorro no es solo de red: también es de <strong>CPU del servidor</strong>, que ya no arma HTML en cada pedido.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Escalando -->
+        <div class="slide">
+            <div class="content">
+                <h2>Escalando: de 10 a 10.000 logins</h2>
+                <p>Multiplicando cada respuesta por la cantidad de usuarios que inician sesión:</p>
+                <div class="comparison-table">
+                    <table>
+                        <tr><th>Usuarios</th><th>Página completa (gzip, 61 KB c/u)</th><th>JSON (930 B c/u)</th></tr>
+                        <tr><td>10</td><td>610 KB</td><td>9,3 KB</td></tr>
+                        <tr><td>100</td><td>6,1 MB</td><td>93 KB</td></tr>
+                        <tr><td>1.000</td><td>61 MB</td><td>0,9 MB</td></tr>
+                        <tr><td>10.000</td><td>610 MB</td><td>9,3 MB</td></tr>
+                    </table>
+                </div>
+                <p class="source-note">Sin contar recompresión ni caché — es el volumen de datos que el servidor tiene que generar y transmitir.</p>
+            </div>
+        </div>
+
+        <!-- Slide 10: De bytes a ancho de banda -->
+        <div class="slide">
+            <div class="content">
+                <h2>De bytes a ancho de banda</h2>
+                <p>Si esos 10.000 logins ocurren en una ventana corta y realista — por ejemplo, <strong>todos entran en los primeros 10 segundos</strong> (arranque de clase, apertura de un examen, inicio de una inscripción):</p>
+                <div class="vs-row">
+                    <div class="vs-card">
+                        <div class="vs-label">Página completa</div>
+                        <div class="big-number">~488<small>Mbps necesarios</small></div>
+                    </div>
+                    <div class="vs-card api">
+                        <div class="vs-label">JSON</div>
+                        <div class="big-number">~7,4<small>Mbps necesarios</small></div>
+                    </div>
+                </div>
+                <div class="highlight-box">
+                    <p>610 MB ÷ 10 s = 61 MB/s ≈ 488 Mbps. Con JSON, 9,3 MB ÷ 10 s ≈ 7,4 Mbps. Esta es la diferencia real entre dimensionar un enlace de red "grande" o uno modesto.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Usuarios registrados vs concurrentes -->
+        <div class="slide">
+            <div class="content">
+                <h2>Usuarios registrados ≠ peticiones simultáneas</h2>
+                <p>No todos los usuarios registrados usan el sistema al mismo tiempo. Reglas prácticas aproximadas (no son leyes fijas):</p>
+                <ul>
+                    <li><strong>Uso distribuido en el día</strong> (red social, e-commerce): el pico concurrente suele rondar el <strong>5-15%</strong> de los usuarios activos</li>
+                    <li><strong>Uso sincronizado</strong> (examen, asistencia, apertura de inscripción): el pico puede acercarse al <strong>80-100%</strong> en una ventana de segundos o minutos</li>
+                </ul>
+                <div class="highlight-box">
+                    <p>Para dimensionar un servidor hay que diseñar para el <strong>peor escenario realista</strong>, no para el promedio. Un sistema de asistencia donde 30 alumnos entran en el mismo minuto es, en la práctica, un caso de uso sincronizado.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Una sesión no es una sola petición -->
+        <div class="slide">
+            <div class="content">
+                <h2>Una sesión no es una sola petición</h2>
+                <p>El login es apenas el arranque. Una sesión real sigue generando tráfico después:</p>
+                <div class="two-columns">
+                    <div class="comparison-table">
+                        <h3 style="text-align:center;">Aplicación completa (MPA)</h3>
+                        <p>Cada navegación = una página nueva completa. Menos peticiones, pero cada una pesa mucho.</p>
+                    </div>
+                    <div class="comparison-table">
+                        <h3 style="text-align:center;">SPA / API</h3>
+                        <p>Muchas peticiones chicas: cada clic, cada refresco de token, cada dato que cambia. Más peticiones, pero cada una pesa muy poco.</p>
+                    </div>
+                </div>
+                <div class="highlight-box">
+                    <p>Por eso "usuarios" no se traduce directo a "peticiones": hay que multiplicar por <strong>cuántas peticiones genera cada usuario activo por minuto</strong>, y esa cifra depende de la arquitectura elegida.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Conclusiones -->
+        <div class="slide">
+            <div class="content">
+                <h2>Conclusiones clave</h2>
+                <ul>
+                    <li>La arquitectura (página completa vs. JSON) define el peso de <strong>cada</strong> respuesta — acá vimos una diferencia real de ~65x</li>
+                    <li>Ese peso, multiplicado por la cantidad de usuarios, es lo que define el <strong>ancho de banda</strong> y la <strong>CPU</strong> que hay que dimensionar</li>
+                    <li>Hay que dimensionar para el <strong>pico</strong>, no para el promedio — sobre todo si el uso tiende a sincronizarse</li>
+                    <li>"Usuarios" y "peticiones" no son lo mismo: falta el factor de concurrencia y las peticiones por sesión</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 14: Break - próximas clases -->
+        <div class="slide break-slide">
+            <h1>🧪 Próximas clases</h1>
+            <p><strong>Clase 2:</strong> práctica guiada en Killercoda (escenarios de <code>la-cajonera</code>) — medir y comparar en vivo.</p>
+            <p style="margin-top:20px;"><strong>Clase 3:</strong> rediseñamos entre todos la Calculadora de Infraestructura para que use datos reales como los de hoy.</p>
+        </div>
+
+        <!-- Slide 15: Cierre -->
+        <div class="slide">
+            <div class="content">
+                <h2>Para reproducir en casa</h2>
+                <p>Todos los comandos de esta clase son <code>curl</code> simple — cualquiera los puede correr y medir otras páginas o APIs.</p>
+                <a class="resource-link" href="https://wordpress.com/log-in" target="_blank">Página medida: WordPress.com login</a>
+                <a class="resource-link" href="https://dummyjson.com/auth/login" target="_blank">API medida: dummyjson.com</a>
+                <a class="resource-link" href="https://fakestoreapi.com/auth/login" target="_blank">API medida: fakestoreapi.com</a>
+                <p style="margin-top: 30px; font-style: italic; opacity: 0.85; text-align:center;">
+                    Probá medir la página de login de otro sitio y traé el número a la próxima clase.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousSlide()">← Anterior</button>
+        <button class="nav-btn" onclick="nextSlide()">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+    </script>
+</body>
+</html>
