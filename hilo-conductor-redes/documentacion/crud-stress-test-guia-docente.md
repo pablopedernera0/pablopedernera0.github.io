@@ -1,6 +1,8 @@
 # Etapa 1 — crud-stress-test: desarrollo de contenidos
 
-Material de apoyo para el docente. Desarrolla en profundidad cada punto de los "Objetivos de aprendizaje" de la etapa 1 (`crud-stress-test`) del hilo conductor de redes: los cuatro conceptos que mide un stress test, la herramienta `ab`, por qué el servidor de desarrollo de Flask no aguanta carga, y qué resuelve Gunicorn. Pensado para leer antes de dar la clase, no para repartir tal cual a los alumnos.
+Material de apoyo para el docente. Desarrolla en profundidad cada punto de los "Objetivos de aprendizaje" de la etapa 1 (`crud-stress-test`) del hilo conductor de redes: los cuatro conceptos que mide un stress test, las herramientas usadas en cada versión de la práctica, por qué el servidor de desarrollo de Flask no aguanta carga, y qué resuelve Gunicorn. Pensado para leer antes de dar la clase, no para repartir tal cual a los alumnos.
+
+> **Por qué hay dos versiones.** Killercoda bloqueó la cuenta docente el 2026-08-10 corriendo `ab` en esta etapa, y al desbloquearla confirmó por escrito que prohíbe "network stress tools" como categoría, sin importar la intensidad de la carga. Por eso la práctica en Killercoda mide con un loop de `curl` + `xargs` (liviano, sin invocar una herramienta nombrada por categoría), y la versión con `ab` y carga real que rompe la app se movió a [`hilo-conductor-redes-ataques`](https://github.com/pablopedernera0/hilo-conductor-redes-ataques) para correr en la máquina del alumno (o para mostrar en vivo desde la tuya, si el alumno no tiene PC propia). Los objetivos de aprendizaje son los mismos en las dos versiones — cambia la herramienta y, en la liviana, no se llega a romper la app realmente, se explica leyendo código y procesos en el Paso 4.
 
 ---
 
@@ -45,9 +47,23 @@ Es la señal más clara de que un sistema llegó a su límite: mientras el throu
 
 ---
 
-## 2. La herramienta: Apache Bench (`ab`)
+## 2. Las herramientas
 
-`ab` es una utilidad de línea de comandos que viene con el proyecto Apache HTTP Server (paquete `apache2-utils` en Debian/Ubuntu). A pesar del nombre, no depende de que el servidor de destino sea Apache — sirve para generar carga HTTP contra cualquier servidor web, y es una de las herramientas de stress testing más simples y más viejas que existen (por eso es un buen punto de partida didáctico, antes de herramientas más modernas como `wrk`, `k6` o `locust`).
+### 2.1 — Versión liviana (Killercoda): `curl` + `xargs`
+
+En Killercoda no se instala ninguna herramienta dedicada a carga — se combinan dos utilidades genéricas ya presentes en cualquier Linux:
+
+```bash
+time ( seq 1 50 | xargs -P 5 -I{} curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8888/ | sort | uniq -c )
+```
+
+`seq` genera la cantidad de peticiones, `xargs -P` controla la concurrencia (cuántos `curl` corren en paralelo), y `sort | uniq -c` agrupa los códigos de respuesta obtenidos. `time` da el tiempo total, del que se puede derivar un throughput aproximado (`n / tiempo`).
+
+**Limitación real, que conviene anticipar en clase:** con la carga liviana de esta versión (50 peticiones, tabla de pocas filas) la diferencia entre lectura y escritura (Paso 3) puede no notarse, o incluso salir al revés por ruido de medición — no hay volumen suficiente para que la señal supere el ruido. Está tratado explícitamente en el Paso 3 como parte de la lección (es la razón por la que existen las herramientas de carga real), no como un bug de la práctica.
+
+### 2.2 — Versión realista (repo aparte): Apache Bench (`ab`)
+
+`ab` es una utilidad de línea de comandos que viene con el proyecto Apache HTTP Server (paquete `apache2-utils` en Debian/Ubuntu). A pesar del nombre, no depende de que el servidor de destino sea Apache — sirve para generar carga HTTP contra cualquier servidor web, y es una de las herramientas de stress testing más simples y más viejas que existen (por eso es un buen punto de partida didáctico, antes de herramientas más modernas como `wrk`, `k6` o `locust`). Es justamente la categoría de herramienta que Killercoda no permite — por eso esta versión corre en `hilo-conductor-redes-ataques`, en la máquina del alumno.
 
 **Cómo funciona:** `ab` abre hasta `-c` conexiones simultáneas y va disparando peticiones hasta completar un total de `-n`, midiendo el tiempo de cada una y contando éxitos/fallos.
 

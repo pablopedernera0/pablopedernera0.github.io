@@ -1,6 +1,8 @@
 # Etapa 1 — crud-stress-test: guía de estudio
 
-Material de repaso para acompañar la práctica `crud-stress-test`. Desarrolla los conceptos que vas a necesitar para interpretar lo que hagas en cada paso: los cuatro números que mide un stress test, la herramienta `ab`, cómo funciona el servidor de una app Flask y qué es Gunicorn.
+Material de repaso para acompañar la práctica `crud-stress-test`. Desarrolla los conceptos que vas a necesitar para interpretar lo que hagas en cada paso: los cuatro números que mide un stress test, cómo funciona el servidor de una app Flask y qué es Gunicorn.
+
+> **Dos versiones de esta práctica.** En Killercoda vas a medir con un loop de `curl` + `xargs` (versión liviana) — esta plataforma no permite correr herramientas de stress testing reales, sin importar qué tan liviana sea la carga. Si tenés PC propia, existe además una versión con carga real usando **Apache Bench (`ab`)**, que tu docente puede mostrarte en vivo o pasarte para correr en tu máquina. Los conceptos de las secciones 1, 3, 4 y 5 valen para las dos versiones; la sección 2 documenta ambas herramientas.
 
 ---
 
@@ -45,7 +47,25 @@ Es la señal más clara de que un sistema llegó a su límite: el throughput pue
 
 ---
 
-## 2. La herramienta: Apache Bench (`ab`)
+## 2. Las herramientas
+
+### 2.1 — Versión liviana (Killercoda): `curl` + `xargs`
+
+Lo que vas a correr en Killercoda no es una herramienta dedicada a stress testing, sino una combinación de dos utilidades genéricas:
+
+```bash
+time ( seq 1 50 | xargs -P 5 -I{} curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8888/ | sort | uniq -c )
+```
+
+- `seq 1 50` genera 50 números — es la forma de decir "50 peticiones en total".
+- `xargs -P 5` toma esos 50 números y ejecuta hasta **5 procesos en paralelo** (`-P 5` = concurrencia).
+- `-I{} curl ...` arma un `curl` por cada número, pidiendo solo el código HTTP (`-w "%{http_code}"`) sin bajar el cuerpo de la respuesta (`-o /dev/null`).
+- `sort | uniq -c` agrupa y cuenta los códigos de respuesta obtenidos — así ves de un vistazo cuántas dieron `200` y cuántas fallaron.
+- `time (...)` mide el tiempo total (`real`) del bloque completo. Dividiendo la cantidad de peticiones por ese tiempo obtenés un throughput aproximado.
+
+Es un mapeo directo a los cuatro conceptos de la sección 1, pero sin las estadísticas de latencia detalladas (percentiles, desglose de conexión) que sí da `ab`.
+
+### 2.2 — Versión realista (repo aparte, en tu propia máquina): Apache Bench (`ab`)
 
 `ab` es una utilidad de línea de comandos que viene con el proyecto Apache HTTP Server (paquete `apache2-utils` en Debian/Ubuntu). A pesar del nombre, no depende de que el servidor de destino sea Apache — sirve para generar carga HTTP contra cualquier servidor web, y es una de las herramientas de stress testing más simples que existen.
 
