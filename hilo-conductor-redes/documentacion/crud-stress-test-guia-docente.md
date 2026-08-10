@@ -71,7 +71,29 @@ Es la señal más clara de que un sistema llegó a su límite: mientras el throu
 
 ---
 
-## 3. Por qué el servidor de desarrollo de Flask se degrada bajo concurrencia
+## 3. Procesos e hilos: la base para entender lo que viene
+
+Antes de explicar por qué Werkzeug se traba y por qué Gunicorn no, conviene dejar clara la diferencia entre dos formas de ejecutar código en paralelo que el sistema operativo ofrece. Es la misma distinción que después reaparece, en la práctica de ataques, cuando se comparan procesos con `ps aux`.
+
+### Proceso
+
+Un **proceso** es un programa en ejecución con su propio espacio de memoria, aislado del de cualquier otro proceso. El sistema operativo le asigna recursos (memoria, descriptores de archivo, etc.) y lo va turnando en la CPU mediante el *scheduler*. Dos procesos no pueden leer la memoria uno del otro directamente — si necesitan comunicarse, tienen que hacerlo por mecanismos explícitos del sistema operativo (sockets, pipes, memoria compartida). Ese aislamiento tiene un costo: crear un proceso nuevo y cambiar de uno a otro (*context switch*) es relativamente caro.
+
+### Hilo (thread)
+
+Un **hilo** es una unidad de ejecución que corre **dentro** de un proceso, compartiendo su mismo espacio de memoria con los demás hilos de ese proceso. Son mucho más livianos de crear y de intercambiar que procesos completos, pero esa liviandad tiene la contracara de que, al compartir memoria, dos hilos pueden pisarse si acceden a los mismos datos al mismo tiempo sin coordinarse (*condiciones de carrera*) — por eso hacen falta mecanismos de sincronización (locks) cuando varios hilos tocan el mismo dato.
+
+En criollo: **multiproceso = aislamiento total, más pesado. Multihilo = comparten memoria, más liviano, pero hay que cuidar la sincronización.**
+
+### El intérprete de Python y el GIL
+
+CPython (el intérprete estándar de Python, el que se usa en esta práctica) tiene una particularidad importante: el **GIL** (*Global Interpreter Lock*), un lock global que permite que **un solo hilo ejecute bytecode Python a la vez**, incluso en una máquina con varios núcleos. Esto tiene una consecuencia directa y muchas veces contraintuitiva: **agregar hilos en Python no logra paralelismo real para trabajo de CPU** (cálculos), aunque sí puede ayudar en trabajo de **I/O** (esperar una respuesta de red o de disco), porque el GIL se libera mientras un hilo está bloqueado esperando esa I/O.
+
+**Por qué esto importa acá:** nuestra app pasa la mayor parte del tiempo de cada petición esperando la respuesta de MySQL — es decir, es un caso de I/O, no de cálculo puro. Aun así, Werkzeug en su modo por defecto no usa ni siquiera esa ventaja: es single-threaded, un solo hilo, una petición a la vez. Si se activara `threaded=True`, ganaría algo (varias peticiones podrían superponerse mientras esperan a MySQL), pero seguiría atada al mismo proceso y al mismo GIL. Gunicorn, en cambio, resuelve esto por otro camino — usando **procesos**, no hilos — como se ve en la sección 5.
+
+---
+
+## 4. Por qué el servidor de desarrollo de Flask se degrada bajo concurrencia
 
 ### WSGI, en una línea
 
@@ -89,11 +111,13 @@ Cada petición que llega mientras el servidor está ocupado con otra **no se pro
 
 ---
 
-## 4. Gunicorn
+## 5. Gunicorn
 
 **Gunicorn** ("Green Unicorn") es un servidor WSGI HTTP pensado para producción, inspirado en el servidor Unicorn de Ruby. La diferencia central con el servidor de desarrollo de Flask es el **modelo de workers**: un proceso *master* que no atiende peticiones él mismo, sino que administra varios procesos *worker* independientes (`-w 4` en la práctica levanta 4), cada uno con su propia copia de la aplicación cargada en memoria.
 
-**Por qué esto soluciona el problema de concurrencia:** al ser procesos del sistema operativo separados (no hilos dentro de un mismo proceso), varios workers pueden atender peticiones **verdaderamente en paralelo**, cada uno en su propio núcleo de CPU si hace falta. Con 4 workers, hasta 4 peticiones pueden estar siendo procesadas al mismo tiempo en vez de una sola — que es exactamente lo que se mide al repetir el mismo `ab` del Paso 4 contra el puerto de Gunicorn y comparar `Requests per second` y `Failed requests`.
+**Por qué esto soluciona el problema de concurrencia:** retomando la sección 3 — Gunicorn logra paralelismo usando **procesos**, no hilos. Cada worker es un proceso del sistema operativo completamente separado, con su propio intérprete Python y, por lo tanto, su propio GIL. El GIL de un worker no tiene nada que ver con el GIL de otro: por eso varios workers sí pueden atender peticiones **verdaderamente en paralelo**, cada uno en su propio núcleo de CPU si hace falta, sin ninguna de las limitaciones que tendría intentar lo mismo con hilos dentro de un único proceso Python. Con 4 workers, hasta 4 peticiones pueden estar siendo procesadas al mismo tiempo en vez de una sola — que es exactamente lo que se mide al repetir el mismo `ab` del Paso 4 contra el puerto de Gunicorn y comparar `Requests per second` y `Failed requests`.
+
+El costo de este enfoque es memoria: cada worker carga su propia copia completa de la aplicación (y de todo lo que haya importado), a diferencia de los hilos, que comparten esa memoria. Es el trade-off clásico de la sección 3: más aislamiento y paralelismo real, a cambio de más uso de recursos.
 
 **Flags usados en la práctica:**
 
