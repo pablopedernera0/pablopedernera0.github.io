@@ -1,10 +1,26 @@
-// Índice de recursos del sitio. Última actualización: 2026-08-07 18:47 ART.
+// Índice de recursos del sitio. Última actualización: 2026-08-13 ART.
 // Cada entrada agrega una carpeta al índice de la home (ver render-recursos.js).
 // Para publicar un recurso nuevo: agregar un objeto acá, no tocar index.html.
 //
 // categoria: debe coincidir con el id de la course-card en index.html
 //   'infraestructura' | 'desarrollo' | 'redes'
 const RECURSOS = [
+    {
+        titulo: "Alternativas gratuitas a Claude Code",
+        categoria: "desarrollo",
+        carpeta: "alternativas-claude-code",
+        icono: "🆓",
+        descripcion: "Gemini CLI y otras herramientas agénticas de terminal, gratis, para seguir practicando el mismo flujo de trabajo sin costo.",
+        fecha: "2026-08-13"
+    },
+    {
+        titulo: "IA Aplicada: Introducción, Análisis Funcional y Redes/DevOps",
+        categoria: "desarrollo",
+        carpeta: "ia-analisis-devops",
+        icono: "🧭",
+        descripcion: "Serie de 3 páginas: cómo escribir un buen prompt, y dos casos concretos — ajustar un modelo ER y leer logs de un incidente.",
+        fecha: "2026-08-13"
+    },
     {
         titulo: "Dimensionamiento de Servidores — Clase 1",
         categoria: "redes",
@@ -86,12 +102,12 @@ const RECURSOS = [
         fecha: "2025-09-26"
     },
     {
-        titulo: "IA Aplicada al Diseño de Sistemas Web",
+        titulo: "IA y Diseño de Sistemas Web",
         categoria: "desarrollo",
         carpeta: "ia-disenio-sistemas-web",
-        icono: "🤖",
-        descripcion: "Cómo aplicar herramientas de IA en el diseño de sistemas web.",
-        fecha: "2025-09-10"
+        icono: "🧠",
+        descripcion: "Charla introductoria: historia, cómo funciona y dónde entra la IA en el trabajo de análisis funcional.",
+        fecha: "2026-08-13"
     },
     {
         titulo: "Análisis Funcional - Sistema de Pedidos a Domicilio",

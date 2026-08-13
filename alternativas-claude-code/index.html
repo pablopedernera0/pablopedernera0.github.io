@@ -162,6 +162,20 @@
             text-align: left;
         }
 
+        .success-box {
+            background: rgba(63, 185, 80, 0.1);
+            border: 1px solid #3fb950;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 900px;
+            margin: 1rem 0;
+        }
+
+        .success-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
         strong {
             color: #3fb950;
         }
@@ -214,7 +228,7 @@
             border-radius: 10px;
             padding: 1rem 1.3rem;
             font-family: 'Courier New', monospace;
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             line-height: 1.6;
             text-align: left;
             width: 100%;
@@ -227,6 +241,14 @@
         .mono-block .comment {
             color: #8b949e;
             font-style: italic;
+        }
+
+        .mono-block .diff-add {
+            color: #3fb950;
+        }
+
+        .mono-block .diff-del {
+            color: #f85149;
         }
 
         .cmd-table {
@@ -247,7 +269,7 @@
         .cmd-table td {
             padding: 0.55rem 0.8rem;
             border-bottom: 1px solid rgba(255,255,255,0.08);
-            font-size: 0.92rem;
+            font-size: 0.9rem;
         }
 
         .slide-counter {
@@ -300,151 +322,156 @@
     <div class="slide active">
         <div class="eyebrow">Para estudiantes</div>
         <h1>🆓 Alternativas gratuitas a Claude Code</h1>
-        <p class="subtitle">Un asistente de terminal tipo agente, sin costo</p>
+        <p class="subtitle">Un asistente de terminal tipo agente, sin costo — probadas en serio, no solo leídas de la documentación</p>
     </div>
 
     <!-- Slide 2: El objetivo -->
     <div class="slide">
         <h2>¿Qué buscamos?</h2>
         <p class="center">A lo largo de la materia viste cómo un asistente <strong>agéntico</strong> — que no solo chatea, sino que lee archivos, los edita y corre comandos por su cuenta — puede acelerar mucho el trabajo técnico.</p>
-        <p class="center" style="opacity:0.85;">Claude Code es una opción paga. Esta página junta alternativas <strong>gratuitas</strong> para que puedas seguir practicando ese flujo de trabajo sin gastar nada.</p>
+        <p class="center" style="opacity:0.85;">Claude Code es una opción paga. Esta página junta alternativas <strong>gratuitas</strong> que probamos de verdad — instalando, corriendo y, en varios casos, encontrando problemas reales que la documentación no menciona.</p>
     </div>
 
-    <!-- Slide 3: Opción principal intro -->
+    <!-- Slide 3: Opción principal: GitHub Copilot -->
     <div class="slide">
-        <h2>Opción principal: Gemini CLI</h2>
+        <h2>Opción principal: GitHub Copilot para estudiantes</h2>
         <div class="card-grid" style="max-width: 850px;">
             <div class="card">
-                <span class="icon">🆓</span>
-                <h4>Gratis con una cuenta de Google</h4>
-                <p>No pide tarjeta — solo una cuenta de Google normal.</p>
-            </div>
-            <div class="card">
-                <span class="icon">🔓</span>
-                <h4>Código abierto</h4>
-                <p>Mantenido por Google, con el código disponible públicamente.</p>
+                <span class="icon">🎓</span>
+                <h4>Gratis, verificando que sos estudiante</h4>
+                <p>GitHub Education reabrió el plan gratuito para estudiantes en 2026: completions ilimitadas + 200 créditos mensuales para chat y modo agente.</p>
             </div>
             <div class="card">
                 <span class="icon">🤖</span>
-                <h4>Agéntico, en terminal</h4>
-                <p>Funciona muy parecido a Claude Code: lee y edita archivos, corre comandos, todo desde la línea de comandos.</p>
+                <h4>CLI agéntica, ya estable</h4>
+                <p>GitHub Copilot CLI llegó a disponibilidad general en febrero 2026 — terminal, no solo el editor: planifica, edita archivos y corre comandos.</p>
+            </div>
+            <div class="card">
+                <span class="icon">💳</span>
+                <h4>Sin tarjeta</h4>
+                <p>El plan estudiante no pide método de pago — solo verificar tu condición de estudiante.</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 4: Instalación básica -->
+    <!-- Slide 4: Verificarte como estudiante -->
     <div class="slide">
-        <h2>Para usarlo en tu máquina</h2>
-        <p class="center">La forma normal de entrar es hacer login con tu cuenta de Google — se abre el navegador, iniciás sesión, y listo. Igual de simple que loguearte en cualquier servicio de Google.</p>
-        <p class="center" style="opacity:0.85;">Para instalarlo y arrancar la primera vez, seguí la documentación oficial de Gemini CLI — la forma exacta de instalación cambia con el tiempo, conviene no depender de una captura vieja.</p>
-    </div>
-
-    <!-- Slide 5: El problema en Docker -->
-    <div class="slide">
-        <h2>El problema si lo corrés en Docker</h2>
-        <p class="center">El login normal abre un navegador y espera que inicies sesión ahí — funciona bien en tu máquina, pero es incómodo (o directamente imposible) dentro de un <strong>contenedor headless</strong>, sin interfaz gráfica ni navegador.</p>
-        <div class="warning-box">
-            <p>Si estuviste siguiendo el hilo conductor de redes, es el mismo tipo de problema que resolvimos con el contenedor <code>toolbox</code>: necesitás que el contenedor arranque y trabaje solo, sin esperar que alguien haga clic en algo.</p>
-        </div>
-    </div>
-
-    <!-- Slide 6: La solución -->
-    <div class="slide">
-        <h2>La solución: API key en vez de login por navegador</h2>
+        <h2>Cómo verificarte</h2>
         <div class="steps-list">
-            <div class="step-item"><span class="num">1</span><div>Generá una API key gratuita en <strong>Google AI Studio</strong> (con la misma cuenta de Google).</div></div>
-            <div class="step-item"><span class="num">2</span><div>Pasala como variable de entorno <code>GEMINI_API_KEY</code> al contenedor.</div></div>
-            <div class="step-item"><span class="num">3</span><div>Con esa variable seteada, Gemini CLI no pide login por navegador — el contenedor queda <strong>no interactivo</strong>, listo para automatizar.</div></div>
+            <div class="step-item"><span class="num">1</span><div>Entrá a <strong>GitHub Education</strong> con tu cuenta de GitHub (creá una si no tenés).</div></div>
+            <div class="step-item"><span class="num">2</span><div>Seguí el flujo de verificación de estudiante — suele pedir alguna prueba de inscripción (mail institucional, carnet, o similar).</div></div>
+            <div class="step-item"><span class="num">3</span><div>Una vez aprobado, activás el plan Copilot Student desde tu cuenta.</div></div>
+            <div class="step-item"><span class="num">4</span><div>Instalás la CLI (el método exacto cambia — <code>brew install --cask copilot-cli</code> en Mac, revisá la doc oficial para Linux/Windows) y hacés login.</div></div>
         </div>
-        <div class="mono-block">
-<span class="comment"># idea general — confirmá los flags/imagen exactos contra la documentación oficial</span><br>
-docker run -e GEMINI_API_KEY="tu-api-key" -it &lt;tu-imagen&gt; gemini
-        </div>
+        <p class="center" style="opacity:0.75; margin-top:0.5rem; font-style:italic;">No probamos nosotros el flujo de verificación completo (necesita tu identidad real) — si te trabás en algún paso, avisale al docente.</p>
     </div>
 
-    <!-- Slide 7: Otras alternativas intro -->
+    <!-- Slide 5: OpenCode -->
     <div class="slide">
-        <h2>Otras alternativas gratuitas</h2>
-        <p class="center">Gemini CLI no es la única opción. Estas herramientas son de código abierto y <strong>vos elegís qué modelo usar por detrás</strong> — podés apuntarlas a la misma API key gratuita de Gemini del paso anterior.</p>
-    </div>
-
-    <!-- Slide 8: Aider -->
-    <div class="slide">
-        <h2>Aider</h2>
-        <p class="center">Asistente de programación en pareja, en terminal, con mucha integración con Git (arma commits automáticamente por cada cambio que hace).</p>
+        <h2>Sin verificación: OpenCode</h2>
+        <p class="center">Agente de código abierto para terminal, con la misma idea que Claude Code — lee tu proyecto, edita archivos, corre comandos — pero <strong>vos elegís qué modelo usar por detrás</strong>, entre más de 70 proveedores distintos (incluidos modelos locales).</p>
         <div class="card-grid" style="max-width: 700px;">
             <div class="card">
                 <span class="icon">🔓</span>
-                <h4>Código abierto</h4>
-                <p>La herramienta en sí es gratis — el costo depende del modelo que le conectes.</p>
+                <h4>100% código abierto</h4>
+                <p>Sin costo de licencia — el único costo posible es el del modelo que elijas conectar.</p>
             </div>
             <div class="card">
                 <span class="icon">🔌</span>
-                <h4>"Bring your own model"</h4>
-                <p>Se lo podés apuntar a tu API key gratuita de Gemini, o a un modelo local.</p>
+                <h4>Flexible</h4>
+                <p>Podés apuntarlo a un modelo local (siguiente slide) para no depender de ninguna cuenta.</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 9: OpenHands -->
+    <!-- Slide 6: Ollama intro -->
     <div class="slide">
-        <h2>OpenHands</h2>
-        <p class="center">Agente de código abierto más autónomo — pensado para tareas de varios pasos, no solo autocompletar. Corre él mismo dentro de un contenedor Docker.</p>
-        <div class="card-grid" style="max-width: 700px;">
+        <h2>Cero cuenta: Ollama + modelo local</h2>
+        <p class="center">Corre el modelo <strong>en tu propia máquina</strong>, sin login, sin API key, sin tarjeta — nada sale de tu computadora.</p>
+        <div class="warning-box">
+            <p>El costo lo paga tu hardware: los modelos ocupan varios GB de disco, y sin una placa de video decente las respuestas tardan más. No es la opción más rápida, pero es la única que no depende de ninguna cuenta externa.</p>
+        </div>
+    </div>
+
+    <!-- Slide 7: Ollama - lo que encontramos probándolo -->
+    <div class="slide">
+        <h2>Lo que encontramos probándolo en serio</h2>
+        <p class="center">Instalamos Ollama + Aider en un contenedor Docker y probamos pedirle una edición real de código con dos tamaños de modelo.</p>
+        <div class="mono-block" style="max-width: 800px;">
+<span class="comment"># con qwen2.5-coder:1.5b (modelo chico)</span><br>
+<span class="diff-del">Resultado: el archivo terminó corrompido — el modelo no</span><br>
+<span class="diff-del">logró seguir el formato de edición. Falló dos veces seguidas.</span><br>
+<br>
+<span class="comment"># con qwen2.5-coder:7b (modelo mediano)</span><br>
+def suma(a, b):<br>
+<span class="diff-del">-    pass</span><br>
+<span class="diff-add">+    return a + b</span><br>
+<span class="comment">Edit aplicado correctamente.</span>
+        </div>
+        <div class="success-box">
+            <p><strong>Conclusión real, no de manual:</strong> para edición de código confiable con Aider, necesitás un modelo de al menos ~7B de parámetros. Los modelos "livianos" (1-2B, pensados para notebooks sin GPU) no alcanzan para tareas agénticas — sirven para autocompletado simple, no para que edite archivos solo.</p>
+        </div>
+    </div>
+
+    <!-- Slide 8: Otras bring-your-own-model -->
+    <div class="slide">
+        <h2>Otras herramientas "traé tu propio modelo"</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">✍️</span>
+                <h4>Aider</h4>
+                <p>La que probamos arriba — mucha integración con Git, arma un commit por cada cambio.</p>
+            </div>
             <div class="card">
                 <span class="icon">🐳</span>
-                <h4>Corre en Docker</h4>
-                <p>Se levanta como su propio contenedor, con una interfaz web local.</p>
+                <h4>OpenHands</h4>
+                <p>Agente más autónomo, corre en su propio contenedor Docker con interfaz web.</p>
             </div>
             <div class="card">
-                <span class="icon">🔌</span>
-                <h4>Modelo configurable</h4>
-                <p>También acepta la misma lógica de "traé tu propia API key" gratuita.</p>
+                <span class="icon">🧩</span>
+                <h4>Continue / Cline</h4>
+                <p>Extensiones de VS Code, no de terminal, pero gratis y agénticas igual.</p>
             </div>
         </div>
+        <p class="center" style="opacity:0.8; margin-top:0.5rem;">Las tres aceptan la misma lógica: modelo local con Ollama, o una capa gratuita de algún proveedor.</p>
     </div>
 
-    <!-- Slide 10: Continue / Cline -->
+    <!-- Slide 9: Gemini CLI -->
     <div class="slide">
-        <h2>Continue y Cline (extensiones de VS Code)</h2>
-        <p class="center">No son de terminal, pero son gratis, de código abierto, y bastante agénticas — leen y editan archivos del proyecto, y pueden correr comandos con tu permiso.</p>
-        <p class="center" style="opacity:0.85;">Buena opción si preferís quedarte en VS Code en vez de la línea de comandos. Igual que las anteriores, elegís qué modelo conectar por detrás.</p>
-    </div>
-
-    <!-- Slide 11: GitHub Copilot para estudiantes -->
-    <div class="slide">
-        <h2>Un caso aparte: GitHub Copilot gratis</h2>
-        <p class="center">GitHub ofrece <strong>Copilot gratis a estudiantes verificados</strong> a través de GitHub Education (GitHub Student Developer Pack).</p>
+        <h2>Opción secundaria: Gemini CLI</h2>
+        <p class="center">Es de Google, de código abierto, y funciona muy parecido a Claude Code. En teoría es gratis con solo una cuenta de Google, sin tarjeta.</p>
         <div class="warning-box">
-            <p>Es un caso distinto a los anteriores: no es "gratis para cualquiera" como Gemini CLI, requiere verificar que sos estudiante. Vale la pena mencionarlo porque la mayoría de la clase ya califica.</p>
+            <p><strong>En la práctica, probándolo, no fue tan simple.</strong> Con dos cuentas distintas (institucional y personal) nos encontramos con "permission denied" al generar la key — un problema conocido y reportado en el foro oficial de Google: cuentas nuevas quedan marcadas con cuota en cero hasta agregar una tarjeta en <a href="https://aistudio.google.com/billing">aistudio.google.com/billing</a> (no te cobra dentro de la capa gratuita, pero la pide como verificación).</p>
         </div>
+        <p class="center" style="opacity:0.8;">Puede que a vos te ande directo — pero si te encontrás con el mismo error, ya sabés que no es un problema tuyo ni nuestro.</p>
     </div>
 
-    <!-- Slide 12: Comparación -->
+    <!-- Slide 10: Comparación -->
     <div class="slide">
         <h2>Comparación rápida</h2>
         <table class="cmd-table">
-            <tr><th>Herramienta</th><th>Dónde corre</th><th>Requiere tarjeta</th><th>Nivel agéntico</th></tr>
-            <tr><td>Gemini CLI</td><td>Terminal</td><td>No</td><td>Alto (como Claude Code)</td></tr>
-            <tr><td>Aider</td><td>Terminal</td><td>Depende del modelo</td><td>Medio-alto</td></tr>
-            <tr><td>OpenHands</td><td>Docker + interfaz web</td><td>Depende del modelo</td><td>Alto</td></tr>
-            <tr><td>Continue / Cline</td><td>VS Code</td><td>Depende del modelo</td><td>Medio-alto</td></tr>
-            <tr><td>GitHub Copilot</td><td>VS Code / terminal</td><td>No (requiere ser estudiante)</td><td>Medio</td></tr>
+            <tr><th>Herramienta</th><th>Dónde corre</th><th>Requiere tarjeta</th><th>Confiabilidad</th></tr>
+            <tr><td>GitHub Copilot (estudiante)</td><td>Terminal / VS Code</td><td>No</td><td>Alta — probado por GitHub a escala</td></tr>
+            <tr><td>OpenCode</td><td>Terminal</td><td>Depende del modelo</td><td>Alta (con buen modelo detrás)</td></tr>
+            <tr><td>Ollama + Aider (7B+)</td><td>Local, sin internet</td><td>No</td><td>Confirmado por nosotros — funciona</td></tr>
+            <tr><td>Ollama + Aider (modelo chico)</td><td>Local, sin internet</td><td>No</td><td>Confirmado por nosotros — <strong>no confiable</strong></td></tr>
+            <tr><td>OpenHands / Continue / Cline</td><td>Docker / VS Code</td><td>Depende del modelo</td><td>Media-alta</td></tr>
+            <tr><td>Gemini CLI</td><td>Terminal</td><td>A veces, en la práctica</td><td>Media — fricción real encontrada</td></tr>
         </table>
-        <p class="center" style="opacity:0.75; margin-top:0.8rem; font-style:italic;">Los límites exactos de cada capa gratuita cambian con el tiempo — revisá la documentación oficial de cada una antes de depender de un número puntual.</p>
+        <p class="center" style="opacity:0.75; margin-top:0.8rem; font-style:italic;">Los límites exactos de cada capa gratuita cambian con el tiempo — esto es lo que encontramos probando en agosto de 2026.</p>
     </div>
 
-    <!-- Slide 13: Cierre -->
+    <!-- Slide 11: Cierre -->
     <div class="slide">
         <h2>Para arrancar</h2>
-        <p class="center">Si nunca usaste ninguna: empezá por <strong>Gemini CLI</strong> — es la más parecida a lo que ya venís usando con Claude Code, y no necesita más que una cuenta de Google.</p>
+        <p class="center">Si podés verificarte como estudiante: <strong>GitHub Copilot</strong> es la opción con menos fricción. Si preferís no depender de ninguna cuenta: <strong>Ollama con un modelo de 7B+</strong>, confirmado que funciona.</p>
         <p class="center" style="opacity:0.85;">Para repasar cómo escribir buenos prompts una vez que tengas la herramienta instalada, volvé a la <a href="../ia-analisis-devops/index.html">serie IA aplicada</a>.</p>
     </div>
 
 </div>
 
 <div class="slide-counter">
-    <span id="current-slide">1</span> / <span id="total-slides">13</span>
+    <span id="current-slide">1</span> / <span id="total-slides">11</span>
 </div>
 
 <div class="controls">
