@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alternativas Gratuitas a Claude Code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.6rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.1rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: left;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            background: rgba(63, 185, 80, 0.08);
+        }
+
+        .card .icon {
+            font-size: 1.6rem;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        .card h4 {
+            margin-bottom: 0.3rem;
+        }
+
+        .card p {
+            font-size: 0.92rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 900px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        a {
+            color: #58a6ff;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.05rem;
+            min-width: 1.4rem;
+        }
+
+        .step-item p, .step-item div {
+            font-size: 0.98rem;
+        }
+
+        .mono-block {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.92rem;
+            line-height: 1.6;
+            text-align: left;
+            width: 100%;
+            max-width: 850px;
+            margin: 1rem 0;
+            color: #c9d1d9;
+            overflow-x: auto;
+        }
+
+        .mono-block .comment {
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .cmd-table {
+            width: 100%;
+            max-width: 950px;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .cmd-table th {
+            text-align: left;
+            color: #58a6ff;
+            font-size: 0.95rem;
+            padding: 0.5rem 0.8rem;
+            border-bottom: 2px solid rgba(63,185,80,0.4);
+        }
+
+        .cmd-table td {
+            padding: 0.55rem 0.8rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.92rem;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.5rem; }
+            .cmd-table { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Para estudiantes</div>
+        <h1>🆓 Alternativas gratuitas a Claude Code</h1>
+        <p class="subtitle">Un asistente de terminal tipo agente, sin costo</p>
+    </div>
+
+    <!-- Slide 2: El objetivo -->
+    <div class="slide">
+        <h2>¿Qué buscamos?</h2>
+        <p class="center">A lo largo de la materia viste cómo un asistente <strong>agéntico</strong> — que no solo chatea, sino que lee archivos, los edita y corre comandos por su cuenta — puede acelerar mucho el trabajo técnico.</p>
+        <p class="center" style="opacity:0.85;">Claude Code es una opción paga. Esta página junta alternativas <strong>gratuitas</strong> para que puedas seguir practicando ese flujo de trabajo sin gastar nada.</p>
+    </div>
+
+    <!-- Slide 3: Opción principal intro -->
+    <div class="slide">
+        <h2>Opción principal: Gemini CLI</h2>
+        <div class="card-grid" style="max-width: 850px;">
+            <div class="card">
+                <span class="icon">🆓</span>
+                <h4>Gratis con una cuenta de Google</h4>
+                <p>No pide tarjeta — solo una cuenta de Google normal.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔓</span>
+                <h4>Código abierto</h4>
+                <p>Mantenido por Google, con el código disponible públicamente.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🤖</span>
+                <h4>Agéntico, en terminal</h4>
+                <p>Funciona muy parecido a Claude Code: lee y edita archivos, corre comandos, todo desde la línea de comandos.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Instalación básica -->
+    <div class="slide">
+        <h2>Para usarlo en tu máquina</h2>
+        <p class="center">La forma normal de entrar es hacer login con tu cuenta de Google — se abre el navegador, iniciás sesión, y listo. Igual de simple que loguearte en cualquier servicio de Google.</p>
+        <p class="center" style="opacity:0.85;">Para instalarlo y arrancar la primera vez, seguí la documentación oficial de Gemini CLI — la forma exacta de instalación cambia con el tiempo, conviene no depender de una captura vieja.</p>
+    </div>
+
+    <!-- Slide 5: El problema en Docker -->
+    <div class="slide">
+        <h2>El problema si lo corrés en Docker</h2>
+        <p class="center">El login normal abre un navegador y espera que inicies sesión ahí — funciona bien en tu máquina, pero es incómodo (o directamente imposible) dentro de un <strong>contenedor headless</strong>, sin interfaz gráfica ni navegador.</p>
+        <div class="warning-box">
+            <p>Si estuviste siguiendo el hilo conductor de redes, es el mismo tipo de problema que resolvimos con el contenedor <code>toolbox</code>: necesitás que el contenedor arranque y trabaje solo, sin esperar que alguien haga clic en algo.</p>
+        </div>
+    </div>
+
+    <!-- Slide 6: La solución -->
+    <div class="slide">
+        <h2>La solución: API key en vez de login por navegador</h2>
+        <div class="steps-list">
+            <div class="step-item"><span class="num">1</span><div>Generá una API key gratuita en <strong>Google AI Studio</strong> (con la misma cuenta de Google).</div></div>
+            <div class="step-item"><span class="num">2</span><div>Pasala como variable de entorno <code>GEMINI_API_KEY</code> al contenedor.</div></div>
+            <div class="step-item"><span class="num">3</span><div>Con esa variable seteada, Gemini CLI no pide login por navegador — el contenedor queda <strong>no interactivo</strong>, listo para automatizar.</div></div>
+        </div>
+        <div class="mono-block">
+<span class="comment"># idea general — confirmá los flags/imagen exactos contra la documentación oficial</span><br>
+docker run -e GEMINI_API_KEY="tu-api-key" -it &lt;tu-imagen&gt; gemini
+        </div>
+    </div>
+
+    <!-- Slide 7: Otras alternativas intro -->
+    <div class="slide">
+        <h2>Otras alternativas gratuitas</h2>
+        <p class="center">Gemini CLI no es la única opción. Estas herramientas son de código abierto y <strong>vos elegís qué modelo usar por detrás</strong> — podés apuntarlas a la misma API key gratuita de Gemini del paso anterior.</p>
+    </div>
+
+    <!-- Slide 8: Aider -->
+    <div class="slide">
+        <h2>Aider</h2>
+        <p class="center">Asistente de programación en pareja, en terminal, con mucha integración con Git (arma commits automáticamente por cada cambio que hace).</p>
+        <div class="card-grid" style="max-width: 700px;">
+            <div class="card">
+                <span class="icon">🔓</span>
+                <h4>Código abierto</h4>
+                <p>La herramienta en sí es gratis — el costo depende del modelo que le conectes.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔌</span>
+                <h4>"Bring your own model"</h4>
+                <p>Se lo podés apuntar a tu API key gratuita de Gemini, o a un modelo local.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: OpenHands -->
+    <div class="slide">
+        <h2>OpenHands</h2>
+        <p class="center">Agente de código abierto más autónomo — pensado para tareas de varios pasos, no solo autocompletar. Corre él mismo dentro de un contenedor Docker.</p>
+        <div class="card-grid" style="max-width: 700px;">
+            <div class="card">
+                <span class="icon">🐳</span>
+                <h4>Corre en Docker</h4>
+                <p>Se levanta como su propio contenedor, con una interfaz web local.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔌</span>
+                <h4>Modelo configurable</h4>
+                <p>También acepta la misma lógica de "traé tu propia API key" gratuita.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Continue / Cline -->
+    <div class="slide">
+        <h2>Continue y Cline (extensiones de VS Code)</h2>
+        <p class="center">No son de terminal, pero son gratis, de código abierto, y bastante agénticas — leen y editan archivos del proyecto, y pueden correr comandos con tu permiso.</p>
+        <p class="center" style="opacity:0.85;">Buena opción si preferís quedarte en VS Code en vez de la línea de comandos. Igual que las anteriores, elegís qué modelo conectar por detrás.</p>
+    </div>
+
+    <!-- Slide 11: GitHub Copilot para estudiantes -->
+    <div class="slide">
+        <h2>Un caso aparte: GitHub Copilot gratis</h2>
+        <p class="center">GitHub ofrece <strong>Copilot gratis a estudiantes verificados</strong> a través de GitHub Education (GitHub Student Developer Pack).</p>
+        <div class="warning-box">
+            <p>Es un caso distinto a los anteriores: no es "gratis para cualquiera" como Gemini CLI, requiere verificar que sos estudiante. Vale la pena mencionarlo porque la mayoría de la clase ya califica.</p>
+        </div>
+    </div>
+
+    <!-- Slide 12: Comparación -->
+    <div class="slide">
+        <h2>Comparación rápida</h2>
+        <table class="cmd-table">
+            <tr><th>Herramienta</th><th>Dónde corre</th><th>Requiere tarjeta</th><th>Nivel agéntico</th></tr>
+            <tr><td>Gemini CLI</td><td>Terminal</td><td>No</td><td>Alto (como Claude Code)</td></tr>
+            <tr><td>Aider</td><td>Terminal</td><td>Depende del modelo</td><td>Medio-alto</td></tr>
+            <tr><td>OpenHands</td><td>Docker + interfaz web</td><td>Depende del modelo</td><td>Alto</td></tr>
+            <tr><td>Continue / Cline</td><td>VS Code</td><td>Depende del modelo</td><td>Medio-alto</td></tr>
+            <tr><td>GitHub Copilot</td><td>VS Code / terminal</td><td>No (requiere ser estudiante)</td><td>Medio</td></tr>
+        </table>
+        <p class="center" style="opacity:0.75; margin-top:0.8rem; font-style:italic;">Los límites exactos de cada capa gratuita cambian con el tiempo — revisá la documentación oficial de cada una antes de depender de un número puntual.</p>
+    </div>
+
+    <!-- Slide 13: Cierre -->
+    <div class="slide">
+        <h2>Para arrancar</h2>
+        <p class="center">Si nunca usaste ninguna: empezá por <strong>Gemini CLI</strong> — es la más parecida a lo que ya venís usando con Claude Code, y no necesita más que una cuenta de Google.</p>
+        <p class="center" style="opacity:0.85;">Para repasar cómo escribir buenos prompts una vez que tengas la herramienta instalada, volvé a la <a href="../ia-analisis-devops/index.html">serie IA aplicada</a>.</p>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">13</span>
+</div>
+
+<div class="controls">
+    <button class="btn" onclick="previousSlide()">← Anterior</button>
+    <button class="btn" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function showSlide(n) {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>
