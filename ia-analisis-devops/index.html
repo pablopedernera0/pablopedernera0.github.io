@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA aplicada: Introducción</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.15rem;
+            margin-bottom: 0.8rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+            max-width: 850px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 850px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 1.2rem;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            background: rgba(63, 185, 80, 0.08);
+        }
+
+        .card .icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .card h4 {
+            margin-bottom: 0.4rem;
+        }
+
+        .card p {
+            font-size: 0.96rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .card a.card-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 800px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            width: 100%;
+            max-width: 780px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.1rem;
+            min-width: 1.5rem;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+        }
+
+        .series-nav a:hover {
+            color: #58a6ff;
+        }
+
+        .series-nav span.current {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.6rem; }
+            .series-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="series-nav">
+    <span class="current">🤖 Introducción</span>
+    <a href="analisis-funcional.html">📋 Análisis Funcional</a>
+    <a href="redes-devops.html">🌐 Redes / DevOps</a>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Terciario Urquiza · 2026</div>
+        <h1>🤖 IA aplicada</h1>
+        <p class="subtitle">Introducción: qué es, cómo funciona, y cómo escribir un buen prompt</p>
+        <p class="center" style="opacity:0.75; font-style:italic;">Primera parte de una serie de tres páginas. Acá vemos la base común; después la aplicamos a Análisis Funcional y a Redes/DevOps.</p>
+    </div>
+
+    <!-- Slide 2: En esta serie -->
+    <div class="slide">
+        <h2>En esta serie</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🤖</span>
+                <h4>Introducción (estás acá)</h4>
+                <p>Qué es un LLM, cómo funciona un prompt, técnicas básicas y límites a tener en cuenta.</p>
+            </div>
+            <a class="card-link" href="analisis-funcional.html">
+                <div class="card">
+                    <span class="icon">📋</span>
+                    <h4>Aplicación en Análisis Funcional</h4>
+                    <p>Prompt malo vs. prompt bueno, y cómo usar IA para proponer y ajustar un modelo ER.</p>
+                </div>
+            </a>
+            <a class="card-link" href="redes-devops.html">
+                <div class="card">
+                    <span class="icon">🌐</span>
+                    <h4>Aplicación en Redes / DevOps</h4>
+                    <p>Usar IA para interpretar logs de un incidente, con el material real de la etapa 5 del hilo conductor.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Slide 3: Qué es un LLM -->
+    <div class="slide">
+        <h2>¿Qué es un LLM?</h2>
+        <p class="center">Un <strong>modelo de lenguaje</strong> (LLM, Large Language Model) es un sistema entrenado con enormes cantidades de texto para hacer una sola cosa muy bien: <strong>predecir qué palabra (o fragmento) sigue</strong>, dado todo el texto anterior.</p>
+        <div class="warning-box">
+            <p>No es una base de datos que "busca" una respuesta guardada, ni "entiende" en el sentido humano. Genera texto plausible en base a patrones estadísticos aprendidos. Eso explica tanto su utilidad como sus errores.</p>
+        </div>
+    </div>
+
+    <!-- Slide 4: De predecir texto a responder preguntas -->
+    <div class="slide">
+        <h2>De "predecir texto" a responder preguntas</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">📚</span>
+                <h4>Preentrenamiento</h4>
+                <p>El modelo aprende patrones del lenguaje leyendo enormes volúmenes de texto público (libros, código, documentación, foros).</p>
+            </div>
+            <div class="card">
+                <span class="icon">🎯</span>
+                <h4>Ajuste posterior</h4>
+                <p>Se lo entrena además para seguir instrucciones y responder en formato de conversación, en vez de solo completar texto.</p>
+            </div>
+            <div class="card">
+                <span class="icon">💬</span>
+                <h4>Lo que ves vos</h4>
+                <p>Un chat: le escribís un <strong>prompt</strong> y devuelve una respuesta generada token por token, en base a todo eso.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Qué es un prompt -->
+    <div class="slide">
+        <h2>¿Qué es un prompt?</h2>
+        <p class="center">El <strong>prompt</strong> es el texto que le das al modelo para condicionar su respuesta. Es la única "entrada" que tenés — no ve tu pantalla, no sabe en qué materia estás, no conoce tu proyecto salvo que se lo digas.</p>
+        <p class="center" style="opacity:0.85;">La calidad de la respuesta depende directamente de cuánta información relevante metiste en el prompt.</p>
+    </div>
+
+    <!-- Slide 6: Anatomía de un buen prompt -->
+    <div class="slide">
+        <h2>Anatomía de un buen prompt</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🎭</span>
+                <h4>Rol</h4>
+                <p>Quién tiene que "ser" el modelo al responder (ej: "actuá como analista funcional revisando requisitos").</p>
+            </div>
+            <div class="card">
+                <span class="icon">🗂️</span>
+                <h4>Contexto</h4>
+                <p>La información real y específica del caso: código, logs, requisitos ya definidos. No un resumen de memoria.</p>
+            </div>
+            <div class="card">
+                <span class="icon">✅</span>
+                <h4>Tarea</h4>
+                <p>Qué querés que haga, concretamente — un verbo claro, no "ayudame con esto".</p>
+            </div>
+            <div class="card">
+                <span class="icon">📐</span>
+                <h4>Formato de salida</h4>
+                <p>Cómo tiene que devolver la respuesta (lista, tabla, mismo formato que ya usás, extensión esperada).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Técnicas -->
+    <div class="slide">
+        <h2>Técnicas básicas de prompting</h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <div><strong>Ser específico.</strong> "Escribime 3 requisitos funcionales para el módulo de pagos, en el mismo formato que RF01-RF06" da mejores resultados que "ayudame con los requisitos".</div>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <div><strong>Dar ejemplos (few-shot).</strong> Si ya tenés casos escritos, pegá uno o dos como referencia de estilo antes de pedir el resto.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <div><strong>Pedir que razone antes de responder.</strong> "Antes de dar la respuesta final, listá qué supuestos estás haciendo" reduce respuestas genéricas.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">4</span>
+                <div><strong>Iterar.</strong> La primera respuesta rara vez es la final. Corregí puntualmente ("esto está mal por X, ajustalo") en vez de empezar de cero.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Límites -->
+    <div class="slide">
+        <h2>Límites que hay que tener presentes</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🎭</span>
+                <h4>Alucina con tono seguro</h4>
+                <p>Puede inventar un dato falso con la misma confianza que uno real. No hay forma de distinguirlo por el tono.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🌫️</span>
+                <h4>Sin contexto, responde genérico</h4>
+                <p>Si no le das el caso real, contesta con lo más probable en general — casi nunca lo que tu proyecto necesita.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🧭</span>
+                <h4>No reemplaza el criterio</h4>
+                <p>No conoce las reglas de negocio, restricciones o decisiones que no estén en el prompt. Eso lo aporta quien pregunta.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Cómo verificar -->
+    <div class="slide">
+        <h2>Antes de dar por buena una respuesta</h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <div>Contrastala contra la fuente original (el requisito, el log, el código) — no contra tu memoria de esa fuente.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <div>Pedile que justifique cada afirmación con algo concreto del contexto que le diste.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <div>No copies y pegues sin leer. Si no podés explicar por qué está bien, no está lista para entregar.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Cierre -->
+    <div class="slide">
+        <h2>Ahora, a los casos concretos</h2>
+        <p class="center" style="margin-bottom: 1.5rem;">Con esta base, veamos cómo se aplica en dos contextos distintos de la materia.</p>
+        <div class="card-grid">
+            <a class="card-link" href="analisis-funcional.html">
+                <div class="card">
+                    <span class="icon">📋</span>
+                    <h4>Análisis Funcional →</h4>
+                    <p>Prompt malo vs. bueno, y ajuste de un modelo ER con IA.</p>
+                </div>
+            </a>
+            <a class="card-link" href="redes-devops.html">
+                <div class="card">
+                    <span class="icon">🌐</span>
+                    <h4>Redes / DevOps →</h4>
+                    <p>Interpretar logs de un incidente real del hilo conductor.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">10</span>
+</div>
+
+<div class="controls">
+    <button class="btn" onclick="previousSlide()">← Anterior</button>
+    <button class="btn" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function showSlide(n) {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>

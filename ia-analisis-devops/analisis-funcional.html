@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA aplicada: Análisis Funcional</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.1rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: left;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            background: rgba(63, 185, 80, 0.08);
+        }
+
+        .card .icon {
+            font-size: 1.6rem;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        .card h4 {
+            margin-bottom: 0.3rem;
+        }
+
+        .card p {
+            font-size: 0.92rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .card a.card-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 900px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 820px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.05rem;
+            min-width: 1.4rem;
+        }
+
+        .step-item p, .step-item div {
+            font-size: 0.98rem;
+        }
+
+        /* Comparación prompt malo vs. bueno */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.2rem;
+            width: 100%;
+            max-width: 1050px;
+            margin: 1rem 0;
+        }
+
+        .compare-card {
+            border-radius: 12px;
+            padding: 1.1rem 1.3rem;
+            text-align: left;
+            background: rgba(255,255,255,0.03);
+        }
+
+        .compare-card.bad {
+            border: 1px solid #f85149;
+        }
+
+        .compare-card.good {
+            border: 1px solid #3fb950;
+        }
+
+        .compare-label {
+            display: inline-block;
+            font-size: 0.78rem;
+            font-weight: bold;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            margin-bottom: 0.7rem;
+        }
+
+        .compare-card.bad .compare-label {
+            background: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+        }
+
+        .compare-card.good .compare-label {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .compare-card .prompt-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .compare-card .result-note {
+            font-size: 0.9rem;
+            color: #b8c0c9;
+            margin-bottom: 0;
+        }
+
+        .mono-block {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.92rem;
+            line-height: 1.6;
+            text-align: left;
+            width: 100%;
+            max-width: 850px;
+            margin: 1rem 0;
+            color: #c9d1d9;
+        }
+
+        .mono-block .er-entity {
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .mono-block .er-issue {
+            color: #f85149;
+        }
+
+        .mono-block .er-fixed {
+            color: #3fb950;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+        }
+
+        .series-nav a:hover {
+            color: #58a6ff;
+        }
+
+        .series-nav span.current {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.5rem; }
+            .series-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="series-nav">
+    <a href="index.html">🤖 Introducción</a>
+    <span class="current">📋 Análisis Funcional</span>
+    <a href="redes-devops.html">🌐 Redes / DevOps</a>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Serie IA aplicada · 2/3</div>
+        <h1>📋 IA en Análisis Funcional</h1>
+        <p class="subtitle">Dos casos concretos: comparar prompts, y ajustar un modelo ER con IA</p>
+        <p class="center" style="opacity:0.75; font-style:italic;">Si te salteaste la <a href="index.html" style="color:#58a6ff;">introducción</a>, conviene verla antes — acá se asume esa base.</p>
+    </div>
+
+    <!-- Slide 2: Dónde entra la IA en AF -->
+    <div class="slide">
+        <h2>¿Dónde entra la IA en el proceso de AF?</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">📝</span>
+                <h4>Relevamiento de requisitos</h4>
+                <p>Ayuda a redactar y completar requisitos a partir de una descripción del negocio.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🎭</span>
+                <h4>Casos de uso</h4>
+                <p>Propone flujos alternativos y casos borde que a veces se pasan por alto.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🗃️</span>
+                <h4>Modelo ER</h4>
+                <p>Sugiere entidades, atributos y relaciones — punto de partida a revisar, no versión final.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔍</span>
+                <h4>Consistencia</h4>
+                <p>Puede detectar contradicciones entre documentos (un requisito que ningún caso de uso cubre, por ejemplo).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Caso 1 intro -->
+    <div class="slide">
+        <h2>Caso 1 — el mismo pedido, dos prompts</h2>
+        <p class="center">Usamos el caso ya conocido de la materia: el <strong>Sistema de Pedidos a Domicilio</strong> (el mismo de la práctica de análisis funcional, con sus actores y RF01–RF06 ya definidos).</p>
+        <p class="center" style="opacity:0.85;">Pedido: necesitamos los requisitos funcionales del <strong>módulo de pagos</strong>, que todavía no está cubierto.</p>
+    </div>
+
+    <!-- Slide 4: Prompt malo vs bueno -->
+    <div class="slide">
+        <h2>Prompt malo vs. prompt bueno</h2>
+        <div class="compare-grid">
+            <div class="compare-card bad">
+                <span class="compare-label">❌ Prompt malo</span>
+                <div class="prompt-text">"Escribime los requisitos funcionales para el módulo de pagos de mi sistema."</div>
+                <p class="result-note">Sin contexto, la IA no sabe qué sistema es, quiénes son los actores, ni qué formato ya venís usando. Devuelve algo genérico de e-commerce (tarjeta, PayPal, factura) que no encaja con RF01–RF06 y hay que reescribir casi entero.</p>
+            </div>
+            <div class="compare-card good">
+                <span class="compare-label">✅ Prompt bueno</span>
+                <div class="prompt-text">"Actuá como analista funcional. Este es el sistema: [pegar RF01–RF06 y los actores]. Redactá RF07 - Gestión de Pagos, mismo formato que los anteriores, cubriendo pago aprobado, rechazado y reintento. Al final, listá qué supuestos hiciste."</div>
+                <p class="result-note">Con el contexto real pegado y el formato exigido, el resultado es RF07 usable casi directo, coherente con lo que ya existe — y los supuestos declarados son fáciles de revisar.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Qué hizo la diferencia -->
+    <div class="slide">
+        <h2>Qué hizo la diferencia</h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <div><strong>Contexto real, no descripto de memoria.</strong> Pegar los RF existentes en vez de resumirlos de palabra.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <div><strong>Formato exigido explícitamente.</strong> "Mismo formato que los anteriores" evita que invente una estructura nueva.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <div><strong>Casos borde pedidos a propósito.</strong> "Pago rechazado y reintento" — si no se pide, suele omitirse.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">4</span>
+                <div><strong>Supuestos declarados.</strong> Pedirle que los liste da algo concreto para revisar, en vez de aceptar todo a ciegas.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Caso 2 intro -->
+    <div class="slide">
+        <h2>Caso 2 — ajustar un modelo ER con IA</h2>
+        <p class="center">Partimos de los mismos RF01–RF07 y le pedimos a la IA una <strong>primera propuesta</strong> de modelo entidad-relación. La idea no es que la IA "diseñe" el modelo — es usarla para arrancar más rápido y después iterar con criterio propio.</p>
+    </div>
+
+    <!-- Slide 7: Primera propuesta con problema -->
+    <div class="slide">
+        <h2>Primera propuesta (con un problema)</h2>
+        <div class="mono-block">
+<span class="er-entity">Pedido</span>(id, fecha, estado, total)<br>
+<span class="er-entity">Cliente</span>(id, nombre, direccion)<br>
+<span class="er-entity">Producto</span>(id, nombre, precio)<br>
+<span class="er-entity">Pago</span>(id, monto, estado_pago)<br>
+<span class="er-issue">// falta relación entre Pago y Pedido</span><br>
+<span class="er-issue">// Repartidor no aparece, aunque RF04 lo requiere</span>
+        </div>
+        <div class="warning-box">
+            <p>La IA no tenía el RF04 (Gestión de Entregas) en el contexto de este prompt puntual — por eso el modelo quedó incompleto. Es exactamente el tipo de cosa que hay que revisar, no algo que se note a simple vista si no conocés el dominio.</p>
+        </div>
+    </div>
+
+    <!-- Slide 8: Iterar con corrección puntual -->
+    <div class="slide">
+        <h2>Iterar con una corrección puntual</h2>
+        <div class="compare-card good" style="max-width: 850px;">
+            <span class="compare-label">✅ Prompt de corrección</span>
+            <div class="prompt-text">"Al modelo anterior le falta la relación Pago–Pedido (un pedido puede tener más de un intento de pago) y la entidad Repartidor de RF04. Ajustá el modelo agregando eso, sin tocar el resto."</div>
+        </div>
+        <div class="mono-block" style="margin-top: 1rem;">
+<span class="er-entity">Pago</span>(id, monto, estado_pago, <span class="er-fixed">pedido_id</span>)<br>
+<span class="er-fixed">Repartidor</span>(id, nombre, zona)<br>
+<span class="er-fixed">Pedido</span>(..., repartidor_id)
+        </div>
+    </div>
+
+    <!-- Slide 9: Por qué revisar igual -->
+    <div class="slide">
+        <h2>Por qué se revisa igual</h2>
+        <p class="center">La IA no conoce las <strong>reglas de negocio</strong> (RN01–RN05: horarios, zonas de entrega, stock, precios, tiempos) a menos que se las des explícitamente en el prompt.</p>
+        <div class="warning-box">
+            <p>Un modelo ER puede ser correcto en su forma (entidades, claves, relaciones) y aun así no reflejar una regla de negocio real. Eso solo lo detecta quien conoce el dominio — el equipo, no la IA.</p>
+        </div>
+    </div>
+
+    <!-- Slide 10: Checklist -->
+    <div class="slide">
+        <h2>Checklist de uso responsable</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🗂️</span>
+                <h4>Contexto real</h4>
+                <p>Pegar los documentos existentes, no resumirlos de memoria.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🧩</span>
+                <h4>Pedir supuestos</h4>
+                <p>Que declare qué asumió — da algo concreto para revisar.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔄</span>
+                <h4>Iterar, no aceptar la primera</h4>
+                <p>Corregir puntualmente en vez de descartar y empezar de cero.</p>
+            </div>
+            <div class="card">
+                <span class="icon">✍️</span>
+                <h4>La firma el equipo</h4>
+                <p>La versión final del análisis la valida y entrega el equipo, no la IA.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Cierre -->
+    <div class="slide">
+        <h2>Seguimos con el otro caso</h2>
+        <div class="card-grid">
+            <a class="card-link" href="index.html">
+                <div class="card">
+                    <span class="icon">🤖</span>
+                    <h4>← Introducción</h4>
+                    <p>Repasar la base: qué es un LLM y cómo armar un buen prompt.</p>
+                </div>
+            </a>
+            <a class="card-link" href="redes-devops.html">
+                <div class="card">
+                    <span class="icon">🌐</span>
+                    <h4>Redes / DevOps →</h4>
+                    <p>Usar IA para interpretar logs de un incidente real del hilo conductor.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">11</span>
+</div>
+
+<div class="controls">
+    <button class="btn" onclick="previousSlide()">← Anterior</button>
+    <button class="btn" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function showSlide(n) {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>

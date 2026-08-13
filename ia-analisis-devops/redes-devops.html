@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA aplicada: Redes / DevOps</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.1rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: left;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            background: rgba(63, 185, 80, 0.08);
+        }
+
+        .card .icon {
+            font-size: 1.6rem;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        .card h4 {
+            margin-bottom: 0.3rem;
+        }
+
+        .card p {
+            font-size: 0.92rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .card a.card-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 900px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.05rem;
+            min-width: 1.4rem;
+        }
+
+        .step-item p, .step-item div {
+            font-size: 0.98rem;
+        }
+
+        .compare-card {
+            border-radius: 12px;
+            padding: 1.1rem 1.3rem;
+            text-align: left;
+            background: rgba(255,255,255,0.03);
+            width: 100%;
+        }
+
+        .compare-card.good {
+            border: 1px solid #3fb950;
+        }
+
+        .compare-label {
+            display: inline-block;
+            font-size: 0.78rem;
+            font-weight: bold;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            margin-bottom: 0.7rem;
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .compare-card .prompt-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .mono-block {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            text-align: left;
+            width: 100%;
+            max-width: 880px;
+            margin: 1rem 0;
+            color: #c9d1d9;
+            overflow-x: auto;
+        }
+
+        .mono-block .hl-bad {
+            color: #f85149;
+        }
+
+        .mono-block .hl-good {
+            color: #3fb950;
+        }
+
+        .mono-block .comment {
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+        }
+
+        .series-nav a:hover {
+            color: #58a6ff;
+        }
+
+        .series-nav span.current {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.5rem; }
+            .series-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="series-nav">
+    <a href="index.html">🤖 Introducción</a>
+    <a href="analisis-funcional.html">📋 Análisis Funcional</a>
+    <span class="current">🌐 Redes / DevOps</span>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Serie IA aplicada · 3/3</div>
+        <h1>🌐 IA en Redes / DevOps</h1>
+        <p class="subtitle">De los logs de la etapa 5 del hilo conductor a un diagnóstico asistido</p>
+        <p class="center" style="opacity:0.75; font-style:italic;">Si te salteaste la <a href="index.html" style="color:#58a6ff;">introducción</a>, conviene verla antes.</p>
+    </div>
+
+    <!-- Slide 2: Dónde entra la IA en DevOps -->
+    <div class="slide">
+        <h2>¿Dónde entra la IA en infraestructura / DevOps?</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🔎</span>
+                <h4>Interpretar logs</h4>
+                <p>Resumir y correlacionar líneas de log de distintas fuentes para reconstruir un incidente.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🛠️</span>
+                <h4>Escribir y depurar scripts</h4>
+                <p>Ayuda con un <code>setup.sh</code> o un comando de <code>docker</code>, dado el error exacto.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📖</span>
+                <h4>Explicar salidas de herramientas</h4>
+                <p>Traducir la salida de un comando poco familiar a lenguaje claro.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📊</span>
+                <h4>Resumir métricas</h4>
+                <p>Leer un dashboard de monitoreo y señalar qué mirar primero.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: El caso -->
+    <div class="slide">
+        <h2>El caso: retomamos la etapa 5</h2>
+        <p class="center"><code>crud-logs-analisis-cli</code> — la práctica donde, sin haber generado el ataque, hay que reconstruir <strong>solo mirando los logs</strong> qué pasó: un pico de carga, una fuerza bruta contra <code>/login</code>, y una inyección SQL.</p>
+        <p class="center" style="opacity:0.85;">Ahí se investiga a mano con <code>grep</code>/<code>awk</code> sobre el log de acceso de la app y el <code>general_log</code> de MySQL. Ahora sumamos IA a ese mismo proceso, con la misma evidencia.</p>
+    </div>
+
+    <!-- Slide 4: La evidencia -->
+    <div class="slide">
+        <h2>La evidencia (la misma del Paso 2 y 3)</h2>
+        <div class="mono-block">
+$ grep '"POST /login' app.log | awk '{print $9}' | sort | uniq -c<br>
+     10 200<br>
+      4 302<br>
+<span class="comment">→ diez intentos fallidos, agrupados en el mismo segundo</span>
+        </div>
+        <div class="mono-block">
+$ grep -- "-- " /var/lib/mysql/general.log<br>
+SELECT id, usuario FROM usuarios WHERE usuario = 'admin' <span class="hl-bad">-- ' AND password = 'x'</span><br>
+SELECT id, usuario FROM usuarios WHERE usuario = '' <span class="hl-bad">OR '1'='1' -- ' AND password = 'x'</span>
+        </div>
+    </div>
+
+    <!-- Slide 5: El prompt -->
+    <div class="slide">
+        <h2>El prompt: pegar la evidencia, no describirla</h2>
+        <div class="compare-card good" style="max-width: 900px;">
+            <span class="compare-label">✅ Prompt</span>
+            <div class="prompt-text">"Estos son fragmentos reales de app.log y del general_log de MySQL de un sistema con login [pegar ambos bloques]. Reconstruí qué pasó y en qué orden, citando qué línea sostiene cada paso de tu conclusión."</div>
+        </div>
+        <p class="center" style="margin-top: 1rem; opacity:0.85;">Nota la diferencia con la Página 2: acá el "contexto real" no es texto de requisitos, es <strong>evidencia forense exacta</strong> — copiada tal cual, sin resumir.</p>
+    </div>
+
+    <!-- Slide 6: Comparar contra el análisis manual -->
+    <div class="slide">
+        <h2>Comparar contra el análisis manual</h2>
+        <p class="center">La respuesta esperada debería identificar dos eventos distintos y en qué orden: primero la <strong>fuerza bruta</strong> (10 fallos + 1 éxito, agrupados en el tiempo), después el <strong>bypass por inyección</strong> (la condición <code>OR '1'='1'</code> reescribe el WHERE).</p>
+        <div class="warning-box">
+            <p>Esto es exactamente la línea de tiempo que ya armaste a mano en el Paso 4 de la etapa 5. Si la IA se salteó un paso, mezcló el orden, o "vio" algo que no está en las líneas pegadas — ahí está la falla, y solo la notás porque hiciste el análisis manual primero.</p>
+        </div>
+    </div>
+
+    <!-- Slide 7: Por qué es verificación cruzada -->
+    <div class="slide">
+        <h2>Verificación cruzada, no atajo</h2>
+        <p class="center">Si el análisis manual <strong>no</strong> se hizo antes, no hay con qué confirmar si la IA alucinó un paso, se perdió una línea, o acertó de casualidad.</p>
+        <p class="center" style="opacity:0.85;">En un incidente real pasa lo mismo con cualquier herramienta automática de detección: tiene falsos positivos y falsos negativos. La lectura humana de la evidencia sigue siendo necesaria — la IA acelera, no reemplaza ese paso.</p>
+    </div>
+
+    <!-- Slide 8: Otro uso rápido -->
+    <div class="slide">
+        <h2>Otro uso rápido: depurar un script</h2>
+        <p class="center">Ejemplo real de este mismo repositorio: un <code>docker exec &lt;container&gt; mysql ... &lt;&lt; 'EOSQL'</code> sin la flag <code>-i</code> falla en <strong>silencio</strong> (exit 0, no crea nada) — un bug difícil de sospechar si no conocés esa particularidad.</p>
+        <div class="warning-box">
+            <p>Dado el script completo y el síntoma exacto ("el heredoc no llega al contenedor, pero el script no tira error"), una IA puede señalar candidatos como este. Igual hay que <strong>probarlo</strong> — no correr el script de nuevo asumiendo que ya está arreglado.</p>
+        </div>
+    </div>
+
+    <!-- Slide 9: Checklist -->
+    <div class="slide">
+        <h2>Buenas prácticas para DevOps con IA</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">📋</span>
+                <h4>Evidencia real, no resumen</h4>
+                <p>Pegar las líneas de log exactas, no contarlas de memoria.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔗</span>
+                <h4>Pedir la cita</h4>
+                <p>Que señale qué línea sostiene cada conclusión — permite verificar.</p>
+            </div>
+            <div class="card">
+                <span class="icon">⚠️</span>
+                <h4>No ejecutar a ciegas</h4>
+                <p>Ningún comando sugerido se corre sin entenderlo, menos con <code>sudo</code> o contra algo real.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🗒️</span>
+                <h4>Documentarlo</h4>
+                <p>Qué se le preguntó y qué contestó puede formar parte del informe del incidente que se entrega.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Cierre -->
+    <div class="slide">
+        <h2>Volver</h2>
+        <div class="card-grid">
+            <a class="card-link" href="index.html">
+                <div class="card">
+                    <span class="icon">🤖</span>
+                    <h4>← Introducción</h4>
+                    <p>Qué es un LLM y cómo armar un buen prompt.</p>
+                </div>
+            </a>
+            <a class="card-link" href="analisis-funcional.html">
+                <div class="card">
+                    <span class="icon">📋</span>
+                    <h4>← Análisis Funcional</h4>
+                    <p>Prompt malo vs. bueno, y ajuste de un modelo ER.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">10</span>
+</div>
+
+<div class="controls">
+    <button class="btn" onclick="previousSlide()">← Anterior</button>
+    <button class="btn" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function showSlide(n) {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>
