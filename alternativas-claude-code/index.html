@@ -413,7 +413,22 @@ def suma(a, b):<br>
         </div>
     </div>
 
-    <!-- Slide 8: Otras bring-your-own-model -->
+    <!-- Slide 8: Open WebUI -->
+    <div class="slide">
+        <h2>Más fácil: Open WebUI (sin terminal)</h2>
+        <p class="center">El mismo repo Docker que instala Ollama suma <strong>Open WebUI</strong>: una interfaz de chat en el navegador, tipo ChatGPT, para hablar con el modelo local sin tocar la terminal.</p>
+        <div class="steps-list">
+            <div class="step-item"><span class="num">1</span><div>Cloná <a href="https://github.com/pablopedernera0/alternativas-claude-code">el repo de infraestructura</a> y levantalo con <code>docker compose up -d --build</code> (el mismo que usa Ollama + Aider).</div></div>
+            <div class="step-item"><span class="num">2</span><div>Bajá un modelo (mínimo 7B, como en la slide anterior): <code>docker compose exec ollama ollama pull qwen2.5-coder:7b</code>.</div></div>
+            <div class="step-item"><span class="num">3</span><div>Abrí <code>http://localhost:3000</code> — entrás directo, sin crear cuenta ni loguearte.</div></div>
+            <div class="step-item"><span class="num">4</span><div>Elegís el modelo que bajaste y chateás.</div></div>
+        </div>
+        <div class="warning-box">
+            <p>Es una interfaz de <strong>chat</strong>, no de edición: sirve para probar el modelo y para preguntas puntuales de código, pero no toca los archivos de tu proyecto — para eso seguís necesitando Aider (slide anterior). Y como corre por CPU sin placa de video potente, cada respuesta con un modelo de 7B puede tardar uno o varios minutos — no es que se cuelgue, es CPU-only.</p>
+        </div>
+    </div>
+
+    <!-- Slide 9: Otras bring-your-own-model -->
     <div class="slide">
         <h2>Otras herramientas "traé tu propio modelo"</h2>
         <div class="card-grid">
@@ -436,7 +451,7 @@ def suma(a, b):<br>
         <p class="center" style="opacity:0.8; margin-top:0.5rem;">Las tres aceptan la misma lógica: modelo local con Ollama, o una capa gratuita de algún proveedor.</p>
     </div>
 
-    <!-- Slide 9: Gemini CLI -->
+    <!-- Slide 10: Gemini CLI -->
     <div class="slide">
         <h2>Opción secundaria: Gemini CLI</h2>
         <p class="center">Es de Google, de código abierto, y funciona muy parecido a Claude Code. En teoría es gratis con solo una cuenta de Google, sin tarjeta.</p>
@@ -446,7 +461,7 @@ def suma(a, b):<br>
         <p class="center" style="opacity:0.8;">Puede que a vos te ande directo — pero si te encontrás con el mismo error, ya sabés que no es un problema tuyo ni nuestro.</p>
     </div>
 
-    <!-- Slide 10: Comparación -->
+    <!-- Slide 11: Comparación -->
     <div class="slide">
         <h2>Comparación rápida</h2>
         <table class="cmd-table">
@@ -455,13 +470,14 @@ def suma(a, b):<br>
             <tr><td>OpenCode</td><td>Terminal</td><td>Depende del modelo</td><td>Alta (con buen modelo detrás)</td></tr>
             <tr><td>Ollama + Aider (7B+)</td><td>Local, sin internet</td><td>No</td><td>Confirmado por nosotros — funciona</td></tr>
             <tr><td>Ollama + Aider (modelo chico)</td><td>Local, sin internet</td><td>No</td><td>Confirmado por nosotros — <strong>no confiable</strong></td></tr>
+            <tr><td>Ollama + Open WebUI</td><td>Local, sin internet</td><td>No</td><td>Confirmado por nosotros — funciona, pero solo chat (no edita archivos)</td></tr>
             <tr><td>OpenHands / Continue / Cline</td><td>Docker / VS Code</td><td>Depende del modelo</td><td>Media-alta</td></tr>
             <tr><td>Gemini CLI</td><td>Terminal</td><td>A veces, en la práctica</td><td>Media — fricción real encontrada</td></tr>
         </table>
         <p class="center" style="opacity:0.75; margin-top:0.8rem; font-style:italic;">Los límites exactos de cada capa gratuita cambian con el tiempo — esto es lo que encontramos probando en agosto de 2026.</p>
     </div>
 
-    <!-- Slide 11: Cierre -->
+    <!-- Slide 12: Cierre -->
     <div class="slide">
         <h2>Para arrancar</h2>
         <p class="center">Si podés verificarte como estudiante: <strong>GitHub Copilot</strong> es la opción con menos fricción. Si preferís no depender de ninguna cuenta: <strong>Ollama con un modelo de 7B+</strong>, confirmado que funciona.</p>
