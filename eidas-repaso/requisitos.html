@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repaso EIDAS: Requisitos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide.slide-tall {
+            justify-content: flex-start;
+            padding-top: 5.5rem;
+            padding-bottom: 6rem;
+        }
+
+        .slide h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.1rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: left;
+        }
+
+        .card .icon {
+            font-size: 1.6rem;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        .card h4 {
+            margin-bottom: 0.3rem;
+        }
+
+        .card p {
+            font-size: 0.92rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 900px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        /* Comparación bueno vs malo */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.2rem;
+            width: 100%;
+            max-width: 1050px;
+            margin: 1rem 0;
+        }
+
+        .compare-card {
+            border-radius: 12px;
+            padding: 1.1rem 1.3rem;
+            text-align: left;
+            background: rgba(255,255,255,0.03);
+        }
+
+        .compare-card.bad {
+            border: 1px solid #f85149;
+        }
+
+        .compare-card.good {
+            border: 1px solid #3fb950;
+        }
+
+        .compare-label {
+            display: inline-block;
+            font-size: 0.78rem;
+            font-weight: bold;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            margin-bottom: 0.7rem;
+        }
+
+        .compare-card.bad .compare-label {
+            background: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+        }
+
+        .compare-card.good .compare-label {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .compare-card .prompt-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .compare-card .result-note {
+            font-size: 0.9rem;
+            color: #b8c0c9;
+            margin-bottom: 0;
+        }
+
+        .mono-block {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            text-align: left;
+            width: 100%;
+            max-width: 900px;
+            margin: 1rem 0;
+            color: #c9d1d9;
+        }
+
+        .mono-block .rf-id {
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .mono-block .rnf-id {
+            color: #3fb950;
+            font-weight: bold;
+        }
+
+        /* Niveles de rúbrica */
+        .rubric-levels {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            width: 100%;
+            max-width: 950px;
+            margin: 1rem 0;
+        }
+
+        .rubric-level {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.65rem 1rem;
+            border-left: 4px solid #8b949e;
+        }
+
+        .rubric-level.muy-bueno { border-left-color: #3fb950; }
+        .rubric-level.bueno { border-left-color: #58a6ff; }
+        .rubric-level.regular { border-left-color: #f0883e; }
+        .rubric-level.insuficiente { border-left-color: #f85149; }
+
+        .rubric-level .tag {
+            min-width: 110px;
+            font-weight: bold;
+            font-size: 0.88rem;
+        }
+
+        .rubric-level.muy-bueno .tag { color: #3fb950; }
+        .rubric-level.bueno .tag { color: #58a6ff; }
+        .rubric-level.regular .tag { color: #f0883e; }
+        .rubric-level.insuficiente .tag { color: #f85149; }
+
+        .rubric-level p {
+            font-size: 0.92rem;
+            margin-bottom: 0;
+        }
+
+        .checklist-simple {
+            width: 100%;
+            max-width: 750px;
+            text-align: left;
+            margin: 1rem 0;
+        }
+
+        .checklist-simple li {
+            list-style: none;
+            margin-bottom: 0.6rem;
+            font-size: 1rem;
+        }
+
+        .checklist-simple li::before {
+            content: "☐ ";
+            color: #3fb950;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+        }
+
+        .series-nav a:hover {
+            color: #58a6ff;
+        }
+
+        .series-nav span.current {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.5rem; }
+            .series-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="series-nav">
+    <a href="index.html">📚 Repaso</a>
+    <a href="stakeholders.html">👥 Stakeholders</a>
+    <span class="current">📋 Requisitos</span>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Repaso EIDAS · Sección de rúbrica: Requisitos (15 pts)</div>
+        <h1>📋 Requisitos</h1>
+        <p class="subtitle">La diferencia entre un requisito que se puede verificar y uno que solo suena bien</p>
+    </div>
+
+    <!-- Slide 2: RF vs RNF -->
+    <div class="slide">
+        <h2>RF vs. RNF: la pregunta que responde cada uno</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🎯</span>
+                <h4>Requisito Funcional (RF)</h4>
+                <p>Responde <strong>"¿qué hace el sistema?"</strong> — un comportamiento observable: crear un pedido, asignar un repartidor, generar un reporte.</p>
+            </div>
+            <div class="card">
+                <span class="icon">⚡</span>
+                <h4>Requisito No Funcional (RNF)</h4>
+                <p>Responde <strong>"¿cómo lo hace?"</strong> — una cualidad medible: qué tan rápido, qué tan seguro, cuánta carga soporta.</p>
+            </div>
+        </div>
+        <div class="warning-box" style="margin-top:1rem;">
+            <p>Mezclar los dos en la misma lista es el error más común: "el sistema debe procesar pagos de forma segura y rápida" mete un RF (procesar pagos) y dos RNF (seguridad, performance) en una sola frase.</p>
+        </div>
+    </div>
+
+    <!-- Slide 3: Genérico vs medible (RNF) -->
+    <div class="slide">
+        <h2>Un RNF vago vs. uno medible</h2>
+        <div class="compare-grid">
+            <div class="compare-card bad">
+                <span class="compare-label">❌ Vago</span>
+                <div class="prompt-text">"El sistema debe ser rápido y fácil de usar."</div>
+                <p class="result-note">No se puede verificar. ¿Rápido comparado con qué? ¿Fácil según quién? Nadie puede decir si esto se cumplió o no.</p>
+            </div>
+            <div class="compare-card good">
+                <span class="compare-label">✅ Medible</span>
+                <div class="prompt-text">"Tiempo de respuesta &lt; 2 segundos. Soporte para 500 usuarios concurrentes por sucursal. Tiempo de aprendizaje &lt; 15 minutos para un usuario nuevo."</div>
+                <p class="result-note">Cada número es un criterio de aceptación: se puede medir y decir con certeza si el sistema lo cumple.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Genérico vs observable (RF) -->
+    <div class="slide">
+        <h2>Un RF vago vs. uno observable</h2>
+        <div class="compare-grid">
+            <div class="compare-card bad">
+                <span class="compare-label">❌ Vago</span>
+                <div class="prompt-text">"El sistema debe gestionar bien los pedidos."</div>
+                <p class="result-note">"Gestionar bien" no es un comportamiento — es una intención. No dice qué acciones puede hacer un usuario.</p>
+            </div>
+            <div class="compare-card good">
+                <span class="compare-label">✅ Observable</span>
+                <div class="prompt-text">"El sistema permite crear, modificar y cancelar un pedido, con seguimiento en tiempo real y estimación del tiempo de entrega."</div>
+                <p class="result-note">Cada verbo es algo que un usuario puede hacer y que se puede probar directamente.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Caso resuelto -->
+    <div class="slide slide-tall">
+        <h2>El caso: Sistema de Pedidos a Domicilio</h2>
+        <p class="center" style="margin-bottom: 1rem;">Agrupados por módulo, con ID — así se espera el archivo <code>requisitos.md</code>.</p>
+        <div class="mono-block">
+<strong>Requisitos Funcionales</strong><br>
+<span class="rf-id">RF01</span> Gestión de Pedidos — crear, modificar, cancelar; seguimiento en tiempo real<br>
+<span class="rf-id">RF04</span> Gestión de Entregas — asignación automática de repartidor, tracking GPS<br>
+<span class="rf-id">RF05</span> Gestión de Pagos — múltiples métodos, procesamiento seguro<br>
+<br>
+<strong>Requisitos No Funcionales</strong><br>
+<span class="rnf-id">RNF01</span> Performance — respuesta &lt; 2s, 500 usuarios concurrentes por sucursal<br>
+<span class="rnf-id">RNF03</span> Seguridad — cumplimiento PCI DSS para pagos (lo exige el stakeholder "procesador de pagos")<br>
+<span class="rnf-id">RNF05</span> Escalabilidad — fácil incorporación de nuevas sucursales
+        </div>
+        <div class="warning-box">
+            <p>Notá la coherencia con Stakeholders: RNF03 no es un capricho técnico — existe porque el procesador de pagos (sistema externo) lo exige. Eso es justamente lo que la rúbrica llama "coherencia con el caso".</p>
+        </div>
+    </div>
+
+    <!-- Slide 6: Qué mira la rúbrica -->
+    <div class="slide">
+        <h2>Qué mira la rúbrica (15 puntos)</h2>
+        <div class="rubric-levels">
+            <div class="rubric-level muy-bueno">
+                <span class="tag">Muy bueno (13-15)</span>
+                <p>Agrupados por módulo con IDs claros. Los RF describen comportamiento observable, no intenciones. Los RNF tienen valores medibles. Hay coherencia entre los RF y el caso de estudio.</p>
+            </div>
+            <div class="rubric-level bueno">
+                <span class="tag">Bueno (10-12)</span>
+                <p>Presentes y agrupados. La mayoría son observables y medibles, pero alguno queda vago o genérico.</p>
+            </div>
+            <div class="rubric-level regular">
+                <span class="tag">Regular (6-9)</span>
+                <p>Incompletos o mezclados sin distinguir RF de RNF. Predominan enunciados genéricos ("el sistema debe ser rápido") sin valores concretos.</p>
+            </div>
+            <div class="rubric-level insuficiente">
+                <span class="tag">Insuficiente (0-5)</span>
+                <p>Faltan requisitos relevantes para el caso, o los presentes describen características deseables sin especificación real.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Checklist -->
+    <div class="slide">
+        <h2>Antes de dar por cerrado el archivo</h2>
+        <ul class="checklist-simple">
+            <li>¿Cada RF describe algo que el usuario puede hacer, no una intención genérica?</li>
+            <li>¿Cada RNF tiene un número o valor concreto (tiempo, porcentaje, cantidad)?</li>
+            <li>¿Los RF están agrupados por módulo, con ID (RF01, RF02...)?</li>
+            <li>¿Cada requisito se conecta con algo real del caso de estudio (no serviría igual para cualquier sistema)?</li>
+        </ul>
+    </div>
+
+    <!-- Slide 8: Cierre -->
+    <div class="slide">
+        <h2>Seguimos la próxima clase</h2>
+        <div class="card-grid">
+            <a class="card-link" href="stakeholders.html" style="text-decoration:none; color:inherit;">
+                <div class="card">
+                    <span class="icon">👥</span>
+                    <h4>← Stakeholders</h4>
+                    <p>Repasar quiénes tienen interés en el sistema.</p>
+                </div>
+            </a>
+            <a class="card-link" href="index.html" style="text-decoration:none; color:inherit;">
+                <div class="card">
+                    <span class="icon">📚</span>
+                    <h4>← Volver al índice</h4>
+                    <p>Historias de Usuario y Casos de Uso, próximamente.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">8</span>
+</div>
+
+<div class="controls">
+    <button class="btn" onclick="previousSlide()">← Anterior</button>
+    <button class="btn" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function showSlide(n) {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>

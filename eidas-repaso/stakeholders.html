@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repaso EIDAS: Stakeholders</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide.slide-tall {
+            justify-content: flex-start;
+            padding-top: 5.5rem;
+            padding-bottom: 6rem;
+        }
+
+        .slide h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.1rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: left;
+        }
+
+        .card .icon {
+            font-size: 1.6rem;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        .card h4 {
+            margin-bottom: 0.3rem;
+        }
+
+        .card p {
+            font-size: 0.92rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 900px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 820px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.05rem;
+            min-width: 1.4rem;
+        }
+
+        .step-item p, .step-item div {
+            font-size: 0.98rem;
+        }
+
+        /* Comparación genérica vs. específica */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.2rem;
+            width: 100%;
+            max-width: 1050px;
+            margin: 1rem 0;
+        }
+
+        .compare-card {
+            border-radius: 12px;
+            padding: 1.1rem 1.3rem;
+            text-align: left;
+            background: rgba(255,255,255,0.03);
+        }
+
+        .compare-card.bad {
+            border: 1px solid #f85149;
+        }
+
+        .compare-card.good {
+            border: 1px solid #3fb950;
+        }
+
+        .compare-label {
+            display: inline-block;
+            font-size: 0.78rem;
+            font-weight: bold;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            margin-bottom: 0.7rem;
+        }
+
+        .compare-card.bad .compare-label {
+            background: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+        }
+
+        .compare-card.good .compare-label {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .compare-card .prompt-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .compare-card .result-note {
+            font-size: 0.9rem;
+            color: #b8c0c9;
+            margin-bottom: 0;
+        }
+
+        /* Tabla de stakeholders del caso */
+        .stakeholder-table {
+            width: 100%;
+            max-width: 950px;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+        }
+
+        .stakeholder-table th, .stakeholder-table td {
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.55rem 0.8rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .stakeholder-table th {
+            background: rgba(88, 166, 255, 0.1);
+            color: #58a6ff;
+        }
+
+        .impact-alto { color: #f85149; font-weight: bold; }
+        .impact-medio { color: #f0883e; font-weight: bold; }
+        .impact-bajo { color: #8b949e; }
+
+        /* Niveles de rúbrica */
+        .rubric-levels {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            width: 100%;
+            max-width: 950px;
+            margin: 1rem 0;
+        }
+
+        .rubric-level {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.65rem 1rem;
+            border-left: 4px solid #8b949e;
+        }
+
+        .rubric-level.muy-bueno { border-left-color: #3fb950; }
+        .rubric-level.bueno { border-left-color: #58a6ff; }
+        .rubric-level.regular { border-left-color: #f0883e; }
+        .rubric-level.insuficiente { border-left-color: #f85149; }
+
+        .rubric-level .tag {
+            min-width: 110px;
+            font-weight: bold;
+            font-size: 0.88rem;
+        }
+
+        .rubric-level.muy-bueno .tag { color: #3fb950; }
+        .rubric-level.bueno .tag { color: #58a6ff; }
+        .rubric-level.regular .tag { color: #f0883e; }
+        .rubric-level.insuficiente .tag { color: #f85149; }
+
+        .rubric-level p {
+            font-size: 0.92rem;
+            margin-bottom: 0;
+        }
+
+        .checklist-simple {
+            width: 100%;
+            max-width: 750px;
+            text-align: left;
+            margin: 1rem 0;
+        }
+
+        .checklist-simple li {
+            list-style: none;
+            margin-bottom: 0.6rem;
+            font-size: 1rem;
+        }
+
+        .checklist-simple li::before {
+            content: "☐ ";
+            color: #3fb950;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+        }
+
+        .series-nav a:hover {
+            color: #58a6ff;
+        }
+
+        .series-nav span.current {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.5rem; }
+            .series-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="series-nav">
+    <a href="index.html">📚 Repaso</a>
+    <span class="current">👥 Stakeholders</span>
+    <a href="requisitos.html">📋 Requisitos</a>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Repaso EIDAS · Sección de rúbrica: Stakeholders (5 pts)</div>
+        <h1>👥 Stakeholders</h1>
+        <p class="subtitle">Quién tiene interés en el sistema — y por qué eso es más amplio que "quién lo usa"</p>
+    </div>
+
+    <!-- Slide 2: Qué es un stakeholder -->
+    <div class="slide">
+        <h2>¿Qué es un stakeholder?</h2>
+        <p class="center">Un <strong>stakeholder</strong> es cualquier persona, grupo u organización con interés en el sistema o que puede verse afectada por él — <strong>lo use directamente o no</strong>.</p>
+        <div class="warning-box">
+            <p><strong>No es lo mismo que "actor".</strong> Un actor interactúa directamente con el sistema (hace clic, envía datos, recibe respuestas). Un stakeholder puede no tocar el sistema nunca y aun así ser clave: quien lo financia, quien lo regula, quien depende de sus resultados.</p>
+        </div>
+    </div>
+
+    <!-- Slide 3: Tipos -->
+    <div class="slide">
+        <h2>Tres tipos, según el template</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🏢</span>
+                <h4>Interno</h4>
+                <p>Forma parte de la organización dueña del sistema: dueños, empleados, áreas internas.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🌐</span>
+                <h4>Externo</h4>
+                <p>Fuera de la organización pero con interés directo: clientes, proveedores, reguladores.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔌</span>
+                <h4>Sistema externo</h4>
+                <p>Otro sistema con el que el nuestro necesita integrarse — no es una persona, pero tiene "requisitos" propios que hay que respetar.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Caso - tabla -->
+    <div class="slide slide-tall">
+        <h2>El caso: Sistema de Pedidos a Domicilio</h2>
+        <p class="center" style="margin-bottom: 1rem;">Cadena de comida rápida, 5 sucursales, con POS existente. Estos son los stakeholders — no solo los actores que ya conocés del análisis funcional.</p>
+        <table class="stakeholder-table">
+            <tr>
+                <th>Stakeholder</th>
+                <th>Tipo</th>
+                <th>Por qué es clave</th>
+                <th>Impacto</th>
+            </tr>
+            <tr>
+                <td>Dueños de la cadena</td>
+                <td>Interno</td>
+                <td>Financian el proyecto y definen el objetivo de negocio (crecer a más sucursales).</td>
+                <td class="impact-alto">Alto</td>
+            </tr>
+            <tr>
+                <td>Administrador de sucursal</td>
+                <td>Interno</td>
+                <td>Opera el sistema día a día; sus necesidades definen buena parte de RF02 y RF06.</td>
+                <td class="impact-alto">Alto</td>
+            </tr>
+            <tr>
+                <td>Cliente</td>
+                <td>Externo</td>
+                <td>Sin pedidos no hay sistema que gestionar. Su necesidad de tracking en tiempo real motiva RF01 y RNF01.</td>
+                <td class="impact-alto">Alto</td>
+            </tr>
+            <tr>
+                <td>Repartidor</td>
+                <td>Externo</td>
+                <td>Suele ser tercerizado, no empleado directo — condiciona cómo se diseña la asignación de entregas (RF04).</td>
+                <td class="impact-medio">Medio</td>
+            </tr>
+            <tr>
+                <td>Procesador de pagos</td>
+                <td>Sistema externo</td>
+                <td>Impone su propio estándar de seguridad — por eso existe RNF03 (cumplimiento PCI DSS), no es una decisión libre del equipo.</td>
+                <td class="impact-alto">Alto</td>
+            </tr>
+            <tr>
+                <td>Sistema POS existente</td>
+                <td>Sistema externo</td>
+                <td>Ya existe y no se puede romper — condiciona RF06 (integración) a su formato de datos, no al revés.</td>
+                <td class="impact-medio">Medio</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Slide 5: Genérico vs específico -->
+    <div class="slide">
+        <h2>Justificación genérica vs. específica</h2>
+        <div class="compare-grid">
+            <div class="compare-card bad">
+                <span class="compare-label">❌ Genérica</span>
+                <div class="prompt-text">Cliente — Tipo: Externo<br>Por qué es clave: porque usa el sistema.</div>
+                <p class="result-note">Es intercambiable: serviría para describir al cliente de cualquier sistema del mundo. No dice nada del caso puntual.</p>
+            </div>
+            <div class="compare-card good">
+                <span class="compare-label">✅ Específica</span>
+                <div class="prompt-text">Cliente — Tipo: Externo<br>Por qué es clave: sin pedidos no hay operación que gestionar; su necesidad de ver el estado en tiempo real es lo que justifica RF01 (seguimiento) y RNF01 (tiempo de respuesta &lt; 2s).</div>
+                <p class="result-note">Conecta al stakeholder con requisitos concretos del propio caso — es lo que la rúbrica busca.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Qué mira la rúbrica -->
+    <div class="slide">
+        <h2>Qué mira la rúbrica (5 puntos)</h2>
+        <div class="rubric-levels">
+            <div class="rubric-level muy-bueno">
+                <span class="tag">Muy bueno (5)</span>
+                <p>Todos los stakeholders relevantes están identificados, incluidos sistemas externos. Cada justificación es específica del caso. El nivel de impacto está argumentado, no solo tildado.</p>
+            </div>
+            <div class="rubric-level bueno">
+                <span class="tag">Bueno (4)</span>
+                <p>Los principales están identificados con justificación mayormente correcta. Puede faltar algún secundario o el impacto sin argumentar.</p>
+            </div>
+            <div class="rubric-level regular">
+                <span class="tag">Regular (2-3)</span>
+                <p>Están listados pero las justificaciones son genéricas o intercambiables entre sí. Falta algún stakeholder relevante.</p>
+            </div>
+            <div class="rubric-level insuficiente">
+                <span class="tag">Insuficiente (0-1)</span>
+                <p>Faltan stakeholders clave, o las justificaciones no tienen relación real con el caso.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Checklist -->
+    <div class="slide">
+        <h2>Antes de dar por cerrado el archivo</h2>
+        <ul class="checklist-simple">
+            <li>¿Incluiste al menos un sistema externo, si el caso tiene alguno (pagos, POS, geolocalización, etc.)?</li>
+            <li>¿Cada justificación menciona algo específico del caso, no una frase que serviría para cualquier sistema?</li>
+            <li>¿El nivel de impacto (Alto/Medio/Bajo) tiene una razón escrita, no solo la palabra?</li>
+            <li>¿Revisaste que no falte ningún actor del análisis funcional que también debería estar acá como stakeholder?</li>
+        </ul>
+    </div>
+
+    <!-- Slide 8: Cierre -->
+    <div class="slide">
+        <h2>Seguimos con Requisitos</h2>
+        <p class="center" style="margin-bottom: 1.5rem;">Varios de los stakeholders que acabamos de ver son, literalmente, el origen de un requisito. Eso es lo que viene ahora.</p>
+        <div class="card-grid">
+            <a class="card-link" href="requisitos.html" style="text-decoration:none; color:inherit;">
+                <div class="card">
+                    <span class="icon">📋</span>
+                    <h4>Requisitos →</h4>
+                    <p>RF vs. RNF, y cómo pasar de una idea vaga a algo verificable.</p>
+                </div>
+            </a>
+            <a class="card-link" href="index.html" style="text-decoration:none; color:inherit;">
+                <div class="card">
+                    <span class="icon">📚</span>
+                    <h4>← Volver al índice</h4>
+                    <p>Ver todas las secciones del repaso.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">8</span>
+</div>
+
+<div class="controls">
+    <button class="btn" onclick="previousSlide()">← Anterior</button>
+    <button class="btn" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function showSlide(n) {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>

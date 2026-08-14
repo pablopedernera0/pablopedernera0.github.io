@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repaso EIDAS: Introducción</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.15rem;
+            margin-bottom: 0.8rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+            max-width: 850px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 850px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 1.2rem;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            background: rgba(63, 185, 80, 0.08);
+        }
+
+        .card.disabled {
+            border: 1px solid rgba(255,255,255,0.12);
+            opacity: 0.55;
+        }
+
+        .card .icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .card h4 {
+            margin-bottom: 0.4rem;
+        }
+
+        .card p {
+            font-size: 0.96rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .card a.card-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .pill {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: bold;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+        }
+
+        .pill.ready {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .pill.pending {
+            background: rgba(255,255,255,0.08);
+            color: #8b949e;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 800px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+        }
+
+        .series-nav a:hover {
+            color: #58a6ff;
+        }
+
+        .series-nav span.current {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.6rem; }
+            .series-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="series-nav">
+    <span class="current">📚 Repaso EIDAS</span>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Diseño de Sistemas Web · Sistema EIDAS · 2026</div>
+        <h1>📚 Repaso de contenidos</h1>
+        <p class="subtitle">Una presentación de apoyo por cada sección de la rúbrica, para usar en clase cuando todavía no hay trabajo de los grupos para revisar.</p>
+        <p class="center" style="opacity:0.75; font-style:italic;">Todos los ejemplos usan el mismo caso de la materia: el <strong>Sistema de Pedidos a Domicilio</strong>.</p>
+    </div>
+
+    <!-- Slide 2: Secciones -->
+    <div class="slide">
+        <h2>Secciones de la rúbrica</h2>
+        <div class="card-grid">
+            <a class="card-link" href="stakeholders.html">
+                <div class="card">
+                    <span class="pill ready">Listo</span>
+                    <span class="icon">👥</span>
+                    <h4>Stakeholders</h4>
+                    <p>Quiénes tienen interés en el sistema, y por qué eso importa más allá de "quién lo usa".</p>
+                </div>
+            </a>
+            <a class="card-link" href="requisitos.html">
+                <div class="card">
+                    <span class="pill ready">Listo</span>
+                    <span class="icon">📋</span>
+                    <h4>Requisitos</h4>
+                    <p>RF vs. RNF, y la diferencia entre un requisito verificable y uno genérico.</p>
+                </div>
+            </a>
+            <div class="card disabled">
+                <span class="pill pending">Próximamente</span>
+                <span class="icon">📝</span>
+                <h4>Historias de Usuario</h4>
+                <p>Se arma antes de la sesión del 28/08.</p>
+            </div>
+            <div class="card disabled">
+                <span class="pill pending">Próximamente</span>
+                <span class="icon">🎭</span>
+                <h4>Casos de Uso</h4>
+                <p>Se arma antes de la sesión del 28/08.</p>
+            </div>
+            <div class="card disabled">
+                <span class="pill pending">Próximamente</span>
+                <span class="icon">🗃️</span>
+                <h4>Modelo ER</h4>
+                <p>Se arma antes de la sesión del 23/09.</p>
+            </div>
+            <div class="card disabled">
+                <span class="pill pending">Próximamente</span>
+                <span class="icon">🎨</span>
+                <h4>Diseño UI</h4>
+                <p>Se arma antes de la sesión del 25/09.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Cómo usar esto -->
+    <div class="slide">
+        <h2>Cómo usar esto en clase</h2>
+        <div class="warning-box">
+            <p>No reemplaza revisar lo que subió cada grupo. Es el respaldo para cuando todavía no hay nada volcado (o nada revisable) al momento de la clase — virtual o presencial.</p>
+        </div>
+        <p class="center" style="margin-top:1rem;">Cada sección tiene: el concepto, un ejemplo bueno vs. uno flojo, el mismo caso de la materia resuelto, y qué mira puntualmente la rúbrica al calificar.</p>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">3</span>
+</div>
+
+<div class="controls">
+    <button class="btn" onclick="previousSlide()">← Anterior</button>
+    <button class="btn" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function showSlide(n) {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>
