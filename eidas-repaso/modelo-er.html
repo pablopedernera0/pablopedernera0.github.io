@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repaso EIDAS: Historias de Usuario</title>
+    <title>Repaso EIDAS: Modelo ER</title>
     <style>
         * {
             margin: 0;
@@ -150,47 +150,6 @@
             color: #b8c0c9;
         }
 
-        .invest-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.9rem;
-            width: 100%;
-            max-width: 1050px;
-            margin: 1rem 0;
-        }
-
-        .invest-card {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(88, 166, 255, 0.35);
-            border-radius: 10px;
-            padding: 0.9rem 1.1rem;
-            text-align: left;
-        }
-
-        .invest-card .letter {
-            display: inline-block;
-            width: 1.8rem;
-            height: 1.8rem;
-            line-height: 1.8rem;
-            text-align: center;
-            border-radius: 50%;
-            background: rgba(88, 166, 255, 0.15);
-            color: #58a6ff;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        .invest-card h4 {
-            font-size: 0.98rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .invest-card p {
-            font-size: 0.85rem;
-            color: #b8c0c9;
-            margin-bottom: 0;
-        }
-
         .warning-box {
             background: rgba(240, 136, 62, 0.1);
             border: 1px solid #f0883e;
@@ -259,7 +218,7 @@
 
         .compare-card .prompt-text {
             font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             line-height: 1.5;
             background: rgba(0,0,0,0.3);
             border-radius: 8px;
@@ -273,59 +232,25 @@
             margin-bottom: 0;
         }
 
-        .hu-card {
+        .mono-block {
             background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(63, 185, 80, 0.35);
-            border-radius: 12px;
-            padding: 1.2rem 1.4rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.86rem;
+            line-height: 1.7;
             text-align: left;
             width: 100%;
             max-width: 900px;
             margin: 1rem 0;
+            color: #c9d1d9;
         }
 
-        .hu-card .hu-title {
-            color: #3fb950;
-            font-weight: bold;
-            font-size: 1.05rem;
-            margin-bottom: 0.6rem;
-        }
-
-        .hu-card .hu-statement {
-            font-family: 'Courier New', monospace;
-            font-size: 0.95rem;
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-            padding: 0.8rem 1rem;
-            margin-bottom: 0.7rem;
-        }
-
-        .hu-card ul {
-            margin: 0;
-            max-width: 100%;
-        }
-
-        .invest-table {
-            width: 100%;
-            max-width: 950px;
-            border-collapse: collapse;
-            margin: 1rem 0;
-            font-size: 0.88rem;
-        }
-
-        .invest-table th, .invest-table td {
-            border: 1px solid rgba(255,255,255,0.12);
-            padding: 0.5rem 0.75rem;
-            text-align: left;
-            vertical-align: top;
-        }
-
-        .invest-table th {
-            background: rgba(88, 166, 255, 0.1);
-            color: #58a6ff;
-        }
-
-        .invest-table .si { color: #3fb950; font-weight: bold; }
+        .mono-block .er-entity { color: #3fb950; font-weight: bold; }
+        .mono-block .er-pk { color: #58a6ff; font-weight: bold; }
+        .mono-block .er-fk { color: #f0883e; font-weight: bold; }
+        .mono-block .er-rel { color: #8b949e; font-style: italic; }
 
         .rubric-levels {
             display: flex;
@@ -466,9 +391,9 @@
     <a href="index.html">📚 Repaso</a>
     <a href="stakeholders.html">👥 Stakeholders</a>
     <a href="requisitos.html">📋 Requisitos</a>
-    <span class="current">📝 HU</span>
+    <a href="historias-usuario.html">📝 HU</a>
     <a href="casos-de-uso.html">🎭 CU</a>
-    <a href="modelo-er.html">🗃️ ER</a>
+    <span class="current">🗃️ ER</span>
     <a href="diseno-ui.html">🎨 UI</a>
 </div>
 
@@ -476,118 +401,96 @@
 
     <!-- Slide 1: Portada -->
     <div class="slide active">
-        <div class="eyebrow">Repaso EIDAS · Sección de rúbrica: Historias de Usuario (15 pts)</div>
-        <h1>📝 Historias de Usuario</h1>
-        <p class="subtitle">La misma necesidad que un RF, contada desde el punto de vista de quien la vive</p>
+        <div class="eyebrow">Repaso EIDAS · Sección de rúbrica: Modelo ER (10 pts)</div>
+        <h1>🗃️ Modelo Entidad-Relación</h1>
+        <p class="subtitle">Cómo se guardan los datos que los Casos de Uso ya definieron que hacen falta</p>
     </div>
 
-    <!-- Slide 2: Qué es una HU -->
+    <!-- Slide 2: Qué es -->
     <div class="slide">
-        <h2>¿Qué es una Historia de Usuario?</h2>
-        <p class="center">Una HU describe una necesidad concreta con el formato clásico:</p>
-        <div class="hu-card" style="text-align:center;">
-            <div class="hu-statement" style="text-align:left;">Como <strong>[rol]</strong>, quiero <strong>[acción]</strong>, para <strong>[objetivo]</strong>.</div>
-        </div>
+        <h2>¿Qué es un modelo ER?</h2>
+        <p class="center">Representa las <strong>entidades</strong> del sistema (las "cosas" que hay que guardar), sus <strong>atributos</strong> (los datos de cada una) y las <strong>relaciones</strong> entre ellas — con qué cardinalidad se conectan.</p>
         <div class="warning-box">
-            <p>No reemplaza al RF, lo complementa: el RF dice qué hace el sistema en términos técnicos; la HU cuenta la misma necesidad desde la perspectiva de la persona que la tiene, y agrega criterios de aceptación concretos para saber cuándo está "terminada".</p>
+            <p>No sale de la nada: cada entidad debería poder rastrearse hasta un RF o un CU. Si el modelo tiene una entidad que nadie pidió, o le falta una que un CU necesita, ahí está el problema de coherencia que marca la rúbrica.</p>
         </div>
     </div>
 
-    <!-- Slide 3: INVEST -->
+    <!-- Slide 3: PK/FK y cardinalidad -->
     <div class="slide">
-        <h2>Validar la HU con INVEST</h2>
-        <div class="invest-grid">
-            <div class="invest-card">
-                <span class="letter">I</span>
-                <h4>Independiente</h4>
-                <p>Se puede desarrollar sin depender de que otra HU esté terminada primero.</p>
+        <h2>PK, FK y cardinalidad</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🔑</span>
+                <h4>PK (Primary Key)</h4>
+                <p>El identificador único de cada fila de la entidad. No se repite nunca.</p>
             </div>
-            <div class="invest-card">
-                <span class="letter">N</span>
-                <h4>Negociable</h4>
-                <p>No es un contrato cerrado — el cómo se puede discutir entre equipo y usuario.</p>
+            <div class="card">
+                <span class="icon">🔗</span>
+                <h4>FK (Foreign Key)</h4>
+                <p>Un atributo que apunta a la PK de otra entidad — así se modela la relación.</p>
             </div>
-            <div class="invest-card">
-                <span class="letter">V</span>
-                <h4>Valiosa</h4>
-                <p>Aporta algo que el usuario o el negocio realmente necesita, no es relleno.</p>
-            </div>
-            <div class="invest-card">
-                <span class="letter">E</span>
-                <h4>Estimable</h4>
-                <p>El equipo puede darse una idea del esfuerzo que implica, aunque sea aproximada.</p>
-            </div>
-            <div class="invest-card">
-                <span class="letter">S</span>
-                <h4>Pequeña (Small)</h4>
-                <p>Entra en una iteración de trabajo razonable — si es enorme, hay que partirla.</p>
-            </div>
-            <div class="invest-card">
-                <span class="letter">T</span>
-                <h4>Verificable (Testable)</h4>
-                <p>Existe una forma concreta de comprobar si se cumplió o no.</p>
+            <div class="card">
+                <span class="icon">🔢</span>
+                <h4>Cardinalidad</h4>
+                <p>Cuántas instancias de una entidad se relacionan con cuántas de la otra: 1:1, 1:N o N:M.</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 4: Vago vs específico -->
+    <!-- Slide 4: Caso resuelto -->
+    <div class="slide slide-tall">
+        <h2>El caso: un recorte del modelo completo</h2>
+        <p class="center" style="margin-bottom: 1rem;">El modelo real de este caso tiene 15 entidades — acá un recorte de las 5 centrales, para que se lea.</p>
+        <div class="mono-block">
+<span class="er-entity">CLIENTE</span>(<span class="er-pk">cliente_id</span> PK, nombre, email, telefono)<br>
+<span class="er-entity">PEDIDO</span>(<span class="er-pk">pedido_id</span> PK, <span class="er-fk">cliente_id</span> FK, <span class="er-fk">sucursal_id</span> FK, <span class="er-fk">repartidor_id</span> FK, estado, total)<br>
+<span class="er-entity">DETALLE_PEDIDO</span>(<span class="er-pk">detalle_id</span> PK, <span class="er-fk">pedido_id</span> FK, <span class="er-fk">producto_id</span> FK, cantidad, subtotal)<br>
+<span class="er-entity">PRODUCTO</span>(<span class="er-pk">producto_id</span> PK, nombre, precio_base)<br>
+<span class="er-entity">PAGO</span>(<span class="er-pk">pago_id</span> PK, <span class="er-fk">pedido_id</span> FK, metodo_pago, estado_pago)<br>
+<br>
+<span class="er-rel">CLIENTE ||--o{ PEDIDO : realiza (1:N)</span><br>
+<span class="er-rel">PEDIDO ||--o{ DETALLE_PEDIDO : contiene (1:N)</span><br>
+<span class="er-rel">PRODUCTO ||--o{ DETALLE_PEDIDO : incluido_en (1:N)</span><br>
+<span class="er-rel">PEDIDO ||--o| PAGO : procesado_con (1:1)</span>
+        </div>
+    </div>
+
+    <!-- Slide 5: Decisión justificada -->
     <div class="slide">
-        <h2>INVEST hecho en serio vs. de compromiso</h2>
+        <h2>Decisión enunciada vs. justificada</h2>
         <div class="compare-grid">
             <div class="compare-card bad">
-                <span class="compare-label">❌ De compromiso</span>
-                <div class="prompt-text">Verificable — ¿Se cumple? Sí<br>Observación: sí, se puede verificar.</div>
-                <p class="result-note">La rúbrica lo llama "monosílabo": responde la pregunta sin pensarla. No dice cómo se verificaría.</p>
+                <span class="compare-label">❌ Enunciada</span>
+                <div class="prompt-text">Decisión: agregamos la entidad PRODUCTO_SUCURSAL.</div>
+                <p class="result-note">Dice el qué, no el por qué. La rúbrica lo marca como "sin justificar".</p>
             </div>
             <div class="compare-card good">
-                <span class="compare-label">✅ Real</span>
-                <div class="prompt-text">Verificable — ¿Se cumple? Sí<br>Observación: se comprueba viendo que el estado del pedido cambia en la pantalla del cliente dentro de los 2 segundos definidos en RNF01, sin recargar la página.</div>
-                <p class="result-note">La observación demuestra que pensaron el criterio contra un requisito real, no que completaron una casilla.</p>
+                <span class="compare-label">✅ Justificada</span>
+                <div class="prompt-text">Decisión: el precio de un producto varía por sucursal (RF02). Si lo guardábamos como atributo fijo en PRODUCTO, una promo local en una sucursal afectaría el precio en las otras cinco. Por eso el precio vive en PRODUCTO_SUCURSAL, no en PRODUCTO.</div>
+                <p class="result-note">Explica la alternativa descartada (precio fijo en PRODUCTO) y por qué no servía para este caso.</p>
             </div>
         </div>
-    </div>
-
-    <!-- Slide 5: Caso resuelto -->
-    <div class="slide slide-tall">
-        <h2>El caso: HU derivada de RF01</h2>
-        <div class="hu-card">
-            <div class="hu-title">HU-01 — Seguimiento del pedido en tiempo real</div>
-            <div class="hu-statement">Como <strong>cliente</strong>, quiero <strong>ver el estado de mi pedido actualizado en tiempo real</strong>, para <strong>saber cuándo va a llegar sin tener que llamar al local</strong>.</div>
-            <p style="margin-bottom:0.4rem;"><strong>Módulo:</strong> Gestión de Pedidos &nbsp;|&nbsp; <strong>Requisitos relacionados:</strong> RF01, RNF01</p>
-            <h4 style="margin-top:0.8rem;">Criterios de aceptación</h4>
-            <ul>
-                <li>El estado cambia entre "confirmado", "en preparación", "en camino" y "entregado".</li>
-                <li>La actualización se ve en pantalla en menos de 2 segundos desde el cambio real (RNF01).</li>
-                <li>Si el pedido se demora más del estimado, el cliente recibe una notificación.</li>
-            </ul>
-        </div>
-        <table class="invest-table">
-            <tr><th>Criterio</th><th>¿Se cumple?</th><th>Observación</th></tr>
-            <tr><td>Independiente</td><td class="si">Sí</td><td>No depende de HU de pagos ni de entregas, solo de que RF01 exista.</td></tr>
-            <tr><td>Valiosa</td><td class="si">Sí</td><td>Reduce llamadas al local — valor medible para el negocio, no solo "lindo de tener".</td></tr>
-            <tr><td>Verificable</td><td class="si">Sí</td><td>Se prueba comparando el estado en pantalla contra el estado real en menos de 2s.</td></tr>
-        </table>
     </div>
 
     <!-- Slide 6: Rúbrica -->
     <div class="slide">
-        <h2>Qué mira la rúbrica (15 puntos)</h2>
+        <h2>Qué mira la rúbrica (10 puntos)</h2>
         <div class="rubric-levels">
             <div class="rubric-level muy-bueno">
-                <span class="tag">Muy bueno (13-15)</span>
-                <p>Al menos una HU por módulo relevante. Formato clásico completo. Criterios verificables y específicos. INVEST con observaciones reales, no monosílabos.</p>
+                <span class="tag">Muy bueno (9-10)</span>
+                <p>Diagrama completo con atributos tipados, PK y FK identificadas, cardinalidades correctas. Decisiones justificadas (el porqué, no solo el qué). Atributos reflejan los requisitos (ej: marcas temporales si hay métricas).</p>
             </div>
             <div class="rubric-level bueno">
-                <span class="tag">Bueno (10-12)</span>
-                <p>HU presentes con formato correcto. Criterios mayormente verificables. INVEST completo pero con observaciones algo superficiales.</p>
+                <span class="tag">Bueno (7-8)</span>
+                <p>Diagrama mayormente correcto. Al menos una decisión justificada. Algún atributo ausente o cardinalidad imprecisa.</p>
             </div>
             <div class="rubric-level regular">
-                <span class="tag">Regular (6-9)</span>
-                <p>HU incompletas o les falta algún componente del formato. Criterios vagos o no verificables. INVEST sin justificación real.</p>
+                <span class="tag">Regular (4-6)</span>
+                <p>Hay entidades pero faltan atributos relevantes, cardinalidades incorrectas o FK no identificadas. Decisiones enunciadas sin justificar.</p>
             </div>
             <div class="rubric-level insuficiente">
-                <span class="tag">Insuficiente (0-5)</span>
-                <p>Faltan HU de módulos relevantes, no siguen el formato, o los criterios son inexistentes.</p>
+                <span class="tag">Insuficiente (0-3)</span>
+                <p>Diagrama incompleto o no refleja el caso. Faltan entidades relevantes o relaciones incorrectas. No hay decisiones de diseño.</p>
             </div>
         </div>
     </div>
@@ -596,23 +499,22 @@
     <div class="slide">
         <h2>Antes de dar por cerrado el archivo</h2>
         <ul class="checklist-simple">
-            <li>¿Hay al menos una HU por cada módulo relevante de Requisitos?</li>
-            <li>¿La frase respeta el formato "Como / quiero / para" completo?</li>
-            <li>¿Cada criterio de aceptación se puede comprobar mirando el sistema, no es una opinión?</li>
-            <li>¿Las observaciones de INVEST explican el porqué, no solo dicen "sí" o "no"?</li>
+            <li>¿Cada entidad del diagrama corresponde a algo que un RF o CU realmente necesita guardar?</li>
+            <li>¿Todas las PK y FK están marcadas explícitamente?</li>
+            <li>¿Las cardinalidades (1:1, 1:N, N:M) están dibujadas, no solo la línea de relación?</li>
+            <li>¿Justificaste al menos dos decisiones explicando qué alternativa descartaste y por qué?</li>
         </ul>
     </div>
 
     <!-- Slide 8: Cierre -->
     <div class="slide">
-        <h2>Seguimos con Casos de Uso</h2>
-        <p class="center" style="margin-bottom: 1.5rem;">Cada HU suele convertirse en uno o más Casos de Uso desarrollados con el detalle técnico de la interacción.</p>
+        <h2>Seguimos con Diseño UI</h2>
         <div class="card-grid">
-            <a class="card-link" href="casos-de-uso.html" style="text-decoration:none; color:inherit;">
+            <a class="card-link" href="diseno-ui.html" style="text-decoration:none; color:inherit;">
                 <div class="card">
-                    <span class="icon">🎭</span>
-                    <h4>Casos de Uso →</h4>
-                    <p>Diagrama general, include/extend, y el desarrollo completo de un CU.</p>
+                    <span class="icon">🎨</span>
+                    <h4>Diseño UI →</h4>
+                    <p>Wireframes, patrones justificados y accesibilidad concreta.</p>
                 </div>
             </a>
             <a class="card-link" href="index.html" style="text-decoration:none; color:inherit;">

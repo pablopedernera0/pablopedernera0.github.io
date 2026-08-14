@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repaso EIDAS: Historias de Usuario</title>
+    <title>Repaso EIDAS: Diseño UI</title>
     <style>
         * {
             margin: 0;
@@ -150,47 +150,6 @@
             color: #b8c0c9;
         }
 
-        .invest-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.9rem;
-            width: 100%;
-            max-width: 1050px;
-            margin: 1rem 0;
-        }
-
-        .invest-card {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(88, 166, 255, 0.35);
-            border-radius: 10px;
-            padding: 0.9rem 1.1rem;
-            text-align: left;
-        }
-
-        .invest-card .letter {
-            display: inline-block;
-            width: 1.8rem;
-            height: 1.8rem;
-            line-height: 1.8rem;
-            text-align: center;
-            border-radius: 50%;
-            background: rgba(88, 166, 255, 0.15);
-            color: #58a6ff;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        .invest-card h4 {
-            font-size: 0.98rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .invest-card p {
-            font-size: 0.85rem;
-            color: #b8c0c9;
-            margin-bottom: 0;
-        }
-
         .warning-box {
             background: rgba(240, 136, 62, 0.1);
             border: 1px solid #f0883e;
@@ -259,7 +218,7 @@
 
         .compare-card .prompt-text {
             font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             line-height: 1.5;
             background: rgba(0,0,0,0.3);
             border-radius: 8px;
@@ -273,59 +232,83 @@
             margin-bottom: 0;
         }
 
-        .hu-card {
+        /* Wireframe textual */
+        .wireframe {
             background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(63, 185, 80, 0.35);
-            border-radius: 12px;
-            padding: 1.2rem 1.4rem;
-            text-align: left;
+            border: 1px dashed rgba(255,255,255,0.25);
+            border-radius: 10px;
+            padding: 1.1rem 1.3rem;
             width: 100%;
-            max-width: 900px;
+            max-width: 820px;
             margin: 1rem 0;
+            text-align: left;
         }
 
-        .hu-card .hu-title {
-            color: #3fb950;
+        .wireframe .wf-title {
+            color: #58a6ff;
             font-weight: bold;
-            font-size: 1.05rem;
+            font-size: 1rem;
+            margin-bottom: 0.7rem;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            padding-bottom: 0.5rem;
+        }
+
+        .wf-row {
+            display: flex;
+            gap: 0.8rem;
             margin-bottom: 0.6rem;
         }
 
-        .hu-card .hu-statement {
-            font-family: 'Courier New', monospace;
-            font-size: 0.95rem;
+        .wf-field {
+            flex: 1;
             background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-            padding: 0.8rem 1rem;
-            margin-bottom: 0.7rem;
-        }
-
-        .hu-card ul {
-            margin: 0;
-            max-width: 100%;
-        }
-
-        .invest-table {
-            width: 100%;
-            max-width: 950px;
-            border-collapse: collapse;
-            margin: 1rem 0;
-            font-size: 0.88rem;
-        }
-
-        .invest-table th, .invest-table td {
             border: 1px solid rgba(255,255,255,0.12);
-            padding: 0.5rem 0.75rem;
-            text-align: left;
-            vertical-align: top;
+            border-radius: 6px;
+            padding: 0.5rem 0.7rem;
+            font-size: 0.85rem;
         }
 
-        .invest-table th {
-            background: rgba(88, 166, 255, 0.1);
-            color: #58a6ff;
+        .wf-field .wf-label {
+            color: #8b949e;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            display: block;
+            margin-bottom: 0.15rem;
         }
 
-        .invest-table .si { color: #3fb950; font-weight: bold; }
+        .wf-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 6px;
+            padding: 0.5rem 0.7rem;
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .wf-item .stepper {
+            color: #3fb950;
+            font-family: 'Courier New', monospace;
+        }
+
+        .wf-actions {
+            display: flex;
+            gap: 0.6rem;
+            justify-content: flex-end;
+            margin-top: 0.8rem;
+        }
+
+        .wf-btn {
+            font-size: 0.8rem;
+            padding: 0.35rem 0.8rem;
+            border-radius: 6px;
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+            border: 1px solid rgba(63, 185, 80, 0.4);
+        }
 
         .rubric-levels {
             display: flex;
@@ -466,160 +449,161 @@
     <a href="index.html">📚 Repaso</a>
     <a href="stakeholders.html">👥 Stakeholders</a>
     <a href="requisitos.html">📋 Requisitos</a>
-    <span class="current">📝 HU</span>
+    <a href="historias-usuario.html">📝 HU</a>
     <a href="casos-de-uso.html">🎭 CU</a>
     <a href="modelo-er.html">🗃️ ER</a>
-    <a href="diseno-ui.html">🎨 UI</a>
+    <span class="current">🎨 UI</span>
 </div>
 
 <div class="presentation-container">
 
     <!-- Slide 1: Portada -->
     <div class="slide active">
-        <div class="eyebrow">Repaso EIDAS · Sección de rúbrica: Historias de Usuario (15 pts)</div>
-        <h1>📝 Historias de Usuario</h1>
-        <p class="subtitle">La misma necesidad que un RF, contada desde el punto de vista de quien la vive</p>
+        <div class="eyebrow">Repaso EIDAS · Sección de rúbrica: Diseño UI (10 pts)</div>
+        <h1>🎨 Diseño UI</h1>
+        <p class="subtitle">Última sección del repo — y la única donde "queda lindo" no es una justificación válida</p>
     </div>
 
-    <!-- Slide 2: Qué es una HU -->
+    <!-- Slide 2: Qué se espera -->
     <div class="slide">
-        <h2>¿Qué es una Historia de Usuario?</h2>
-        <p class="center">Una HU describe una necesidad concreta con el formato clásico:</p>
-        <div class="hu-card" style="text-align:center;">
-            <div class="hu-statement" style="text-align:left;">Como <strong>[rol]</strong>, quiero <strong>[acción]</strong>, para <strong>[objetivo]</strong>.</div>
-        </div>
-        <div class="warning-box">
-            <p>No reemplaza al RF, lo complementa: el RF dice qué hace el sistema en términos técnicos; la HU cuenta la misma necesidad desde la perspectiva de la persona que la tiene, y agrega criterios de aceptación concretos para saber cuándo está "terminada".</p>
-        </div>
-    </div>
-
-    <!-- Slide 3: INVEST -->
-    <div class="slide">
-        <h2>Validar la HU con INVEST</h2>
-        <div class="invest-grid">
-            <div class="invest-card">
-                <span class="letter">I</span>
-                <h4>Independiente</h4>
-                <p>Se puede desarrollar sin depender de que otra HU esté terminada primero.</p>
-            </div>
-            <div class="invest-card">
-                <span class="letter">N</span>
-                <h4>Negociable</h4>
-                <p>No es un contrato cerrado — el cómo se puede discutir entre equipo y usuario.</p>
-            </div>
-            <div class="invest-card">
-                <span class="letter">V</span>
-                <h4>Valiosa</h4>
-                <p>Aporta algo que el usuario o el negocio realmente necesita, no es relleno.</p>
-            </div>
-            <div class="invest-card">
-                <span class="letter">E</span>
-                <h4>Estimable</h4>
-                <p>El equipo puede darse una idea del esfuerzo que implica, aunque sea aproximada.</p>
-            </div>
-            <div class="invest-card">
-                <span class="letter">S</span>
-                <h4>Pequeña (Small)</h4>
-                <p>Entra en una iteración de trabajo razonable — si es enorme, hay que partirla.</p>
-            </div>
-            <div class="invest-card">
-                <span class="letter">T</span>
-                <h4>Verificable (Testable)</h4>
-                <p>Existe una forma concreta de comprobar si se cumplió o no.</p>
-            </div>
+        <h2>¿Qué se espera del archivo?</h2>
+        <div class="card-grid">
+            <div class="card"><span class="icon">🖼️</span><h4>Al menos un wireframe</h4><p>Por cada pantalla o módulo relevante del sistema.</p></div>
+            <div class="card"><span class="icon">🧩</span><h4>Patrones justificados</h4><p>No alcanza con nombrar el patrón — hay que explicar por qué encaja acá.</p></div>
+            <div class="card"><span class="icon">📝</span><h4>Formularios pensados</h4><p>Cantidad de campos, si van todos juntos o por pasos, qué se valida.</p></div>
+            <div class="card"><span class="icon">♿</span><h4>Accesibilidad concreta</h4><p>Una consideración real del caso, no "cumple con WCAG" sin más.</p></div>
         </div>
     </div>
 
-    <!-- Slide 4: Vago vs específico -->
+    <!-- Slide 3: Patrones -->
     <div class="slide">
-        <h2>INVEST hecho en serio vs. de compromiso</h2>
+        <h2>Patrones de diseño comunes</h2>
+        <div class="card-grid">
+            <div class="card"><span class="icon">🃏</span><h4>Card</h4><p>Para listar ítems comparables de un vistazo (productos, pedidos).</p></div>
+            <div class="card"><span class="icon">🪟</span><h4>Modal</h4><p>Para una acción puntual que no amerita cambiar de pantalla.</p></div>
+            <div class="card"><span class="icon">🔢</span><h4>Step-by-step</h4><p>Cuando el formulario es largo y conviene dividirlo en pasos.</p></div>
+            <div class="card"><span class="icon">📋</span><h4>Tabla con paginación</h4><p>Para listados largos que alguien necesita revisar o buscar.</p></div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Genérico vs específico -->
+    <div class="slide">
+        <h2>Nombrar el patrón vs. justificarlo</h2>
         <div class="compare-grid">
             <div class="compare-card bad">
-                <span class="compare-label">❌ De compromiso</span>
-                <div class="prompt-text">Verificable — ¿Se cumple? Sí<br>Observación: sí, se puede verificar.</div>
-                <p class="result-note">La rúbrica lo llama "monosílabo": responde la pregunta sin pensarla. No dice cómo se verificaría.</p>
+                <span class="compare-label">❌ Solo nombrado</span>
+                <div class="prompt-text">Patrón utilizado: Card.</div>
+                <p class="result-note">No dice para qué pantalla, ni por qué Card y no una tabla. La rúbrica lo detecta como "elección arbitraria".</p>
             </div>
             <div class="compare-card good">
-                <span class="compare-label">✅ Real</span>
-                <div class="prompt-text">Verificable — ¿Se cumple? Sí<br>Observación: se comprueba viendo que el estado del pedido cambia en la pantalla del cliente dentro de los 2 segundos definidos en RNF01, sin recargar la página.</div>
-                <p class="result-note">La observación demuestra que pensaron el criterio contra un requisito real, no que completaron una casilla.</p>
+                <span class="compare-label">✅ Justificado</span>
+                <div class="prompt-text">Patrón: Card, para el listado de productos del menú. El cliente necesita comparar varias opciones de un vistazo — imagen, precio y botón de agregar visibles sin scroll. Una tabla obligaría a leer fila por fila.</div>
+                <p class="result-note">Conecta el patrón con el usuario real (el cliente, en el módulo de menú) y descarta la alternativa obvia (tabla).</p>
             </div>
         </div>
     </div>
 
     <!-- Slide 5: Caso resuelto -->
     <div class="slide slide-tall">
-        <h2>El caso: HU derivada de RF01</h2>
-        <div class="hu-card">
-            <div class="hu-title">HU-01 — Seguimiento del pedido en tiempo real</div>
-            <div class="hu-statement">Como <strong>cliente</strong>, quiero <strong>ver el estado de mi pedido actualizado en tiempo real</strong>, para <strong>saber cuándo va a llegar sin tener que llamar al local</strong>.</div>
-            <p style="margin-bottom:0.4rem;"><strong>Módulo:</strong> Gestión de Pedidos &nbsp;|&nbsp; <strong>Requisitos relacionados:</strong> RF01, RNF01</p>
-            <h4 style="margin-top:0.8rem;">Criterios de aceptación</h4>
-            <ul>
-                <li>El estado cambia entre "confirmado", "en preparación", "en camino" y "entregado".</li>
-                <li>La actualización se ve en pantalla en menos de 2 segundos desde el cambio real (RNF01).</li>
-                <li>Si el pedido se demora más del estimado, el cliente recibe una notificación.</li>
-            </ul>
+        <h2>El caso: formulario "Crear Nuevo Pedido"</h2>
+        <div class="wireframe">
+            <div class="wf-title">➕ Crear Nuevo Pedido</div>
+            <div class="wf-row">
+                <div class="wf-field"><span class="wf-label">Sucursal *</span>Seleccionar sucursal ▾</div>
+                <div class="wf-field"><span class="wf-label">Fecha y hora *</span>29/08/2026 14:50</div>
+            </div>
+            <div class="wf-row">
+                <div class="wf-field"><span class="wf-label">Cliente *</span>Nombre completo</div>
+                <div class="wf-field"><span class="wf-label">Teléfono *</span>(341) 555-0123</div>
+            </div>
+            <div class="wf-row">
+                <div class="wf-field"><span class="wf-label">Método de pago *</span>Seleccionar método ▾</div>
+                <div class="wf-field"><span class="wf-label">Dirección de entrega *</span>Calle, número, referencias</div>
+            </div>
+            <div class="wf-item">🍔 Hamburguesa Clásica — $450 <span class="stepper">[ − 2 + ]</span> $900 ❌</div>
+            <div class="wf-item">🍟 Papas Fritas Grandes — $350 <span class="stepper">[ − 1 + ]</span> $350 ❌</div>
+            <div class="wf-row">
+                <div class="wf-field"><span class="wf-label">Subtotal (solo lectura)</span>$1.250</div>
+                <div class="wf-field"><span class="wf-label">Total (solo lectura)</span>$1.400</div>
+            </div>
+            <div class="wf-actions">
+                <span class="wf-btn">💾 Guardar borrador</span>
+                <span class="wf-btn">✅ Confirmar pedido</span>
+            </div>
         </div>
-        <table class="invest-table">
-            <tr><th>Criterio</th><th>¿Se cumple?</th><th>Observación</th></tr>
-            <tr><td>Independiente</td><td class="si">Sí</td><td>No depende de HU de pagos ni de entregas, solo de que RF01 exista.</td></tr>
-            <tr><td>Valiosa</td><td class="si">Sí</td><td>Reduce llamadas al local — valor medible para el negocio, no solo "lindo de tener".</td></tr>
-            <tr><td>Verificable</td><td class="si">Sí</td><td>Se prueba comparando el estado en pantalla contra el estado real en menos de 2s.</td></tr>
-        </table>
+        <div class="warning-box">
+            <p><strong>Patrón:</strong> formulario agrupado en secciones (no step-by-step) porque son ~10 campos, manejable en una sola pantalla para un empleado que ya conoce el flujo. La lista de productos usa un stepper de cantidad en vez de reescribir el número, y el subtotal/total quedan de solo lectura porque son calculados — evita que alguien los pise a mano.</p>
+        </div>
     </div>
 
-    <!-- Slide 6: Rúbrica -->
+    <!-- Slide 6: Accesibilidad -->
     <div class="slide">
-        <h2>Qué mira la rúbrica (15 puntos)</h2>
+        <h2>Accesibilidad concreta, no genérica</h2>
+        <div class="compare-grid">
+            <div class="compare-card bad">
+                <span class="compare-label">❌ Genérica</span>
+                <div class="prompt-text">El sistema cumple con WCAG 2.1 nivel AA.</div>
+                <p class="result-note">Es una frase que serviría para cualquier sistema del mundo. No dice qué se hizo ni para quién.</p>
+            </div>
+            <div class="compare-card good">
+                <span class="compare-label">✅ Concreta</span>
+                <div class="prompt-text">El repartidor usa la pantalla de "marcar entregado" desde el celular, caminando, a veces con lluvia. Los botones de acción tienen un tap target mínimo de 44×44px y alto contraste, para que se puedan tocar sin apuntar con precisión.</div>
+                <p class="result-note">Está atada a un stakeholder real del caso (el repartidor) y a una pantalla concreta, no a una checklist abstracta.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Rúbrica -->
+    <div class="slide">
+        <h2>Qué mira la rúbrica (10 puntos)</h2>
         <div class="rubric-levels">
             <div class="rubric-level muy-bueno">
-                <span class="tag">Muy bueno (13-15)</span>
-                <p>Al menos una HU por módulo relevante. Formato clásico completo. Criterios verificables y específicos. INVEST con observaciones reales, no monosílabos.</p>
+                <span class="tag">Muy bueno (9-10)</span>
+                <p>Al menos un wireframe por pantalla/módulo relevante. Patrones justificados en función del caso y los usuarios. Formularios pensados (campos, flujo, usabilidad). Al menos una consideración de accesibilidad concreta.</p>
             </div>
             <div class="rubric-level bueno">
-                <span class="tag">Bueno (10-12)</span>
-                <p>HU presentes con formato correcto. Criterios mayormente verificables. INVEST completo pero con observaciones algo superficiales.</p>
+                <span class="tag">Bueno (7-8)</span>
+                <p>Wireframes presentes, patrones adecuados. Justificación mayormente correcta, pero alguna decisión sin argumentar.</p>
             </div>
             <div class="rubric-level regular">
-                <span class="tag">Regular (6-9)</span>
-                <p>HU incompletas o les falta algún componente del formato. Criterios vagos o no verificables. INVEST sin justificación real.</p>
+                <span class="tag">Regular (4-6)</span>
+                <p>Wireframes escasos o muy esquemáticos. Patrones mencionados pero no justificados en función del caso concreto.</p>
             </div>
             <div class="rubric-level insuficiente">
-                <span class="tag">Insuficiente (0-5)</span>
-                <p>Faltan HU de módulos relevantes, no siguen el formato, o los criterios son inexistentes.</p>
+                <span class="tag">Insuficiente (0-3)</span>
+                <p>No hay wireframes o son irreconocibles. Patrones ausentes o genéricos, sin relación con el sistema analizado.</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 7: Checklist -->
+    <!-- Slide 8: Checklist -->
     <div class="slide">
         <h2>Antes de dar por cerrado el archivo</h2>
         <ul class="checklist-simple">
-            <li>¿Hay al menos una HU por cada módulo relevante de Requisitos?</li>
-            <li>¿La frase respeta el formato "Como / quiero / para" completo?</li>
-            <li>¿Cada criterio de aceptación se puede comprobar mirando el sistema, no es una opinión?</li>
-            <li>¿Las observaciones de INVEST explican el porqué, no solo dicen "sí" o "no"?</li>
+            <li>¿Hay un wireframe por cada pantalla o módulo relevante, no solo la principal?</li>
+            <li>¿Cada patrón está justificado en función del usuario real de esa pantalla?</li>
+            <li>¿Para los formularios, quedó explícito si van todos los campos juntos o por pasos, y por qué?</li>
+            <li>¿La consideración de accesibilidad menciona una pantalla y un usuario concretos del caso?</li>
         </ul>
     </div>
 
-    <!-- Slide 8: Cierre -->
+    <!-- Slide 9: Cierre -->
     <div class="slide">
-        <h2>Seguimos con Casos de Uso</h2>
-        <p class="center" style="margin-bottom: 1.5rem;">Cada HU suele convertirse en uno o más Casos de Uso desarrollados con el detalle técnico de la interacción.</p>
+        <h2>Repaso completo</h2>
+        <p class="center" style="margin-bottom: 1.5rem;">Las 6 secciones de la rúbrica ya están. El repaso queda como respaldo para cualquier clase, virtual o presencial.</p>
         <div class="card-grid">
-            <a class="card-link" href="casos-de-uso.html" style="text-decoration:none; color:inherit;">
+            <a class="card-link" href="modelo-er.html" style="text-decoration:none; color:inherit;">
                 <div class="card">
-                    <span class="icon">🎭</span>
-                    <h4>Casos de Uso →</h4>
-                    <p>Diagrama general, include/extend, y el desarrollo completo de un CU.</p>
+                    <span class="icon">🗃️</span>
+                    <h4>← Modelo ER</h4>
+                    <p>Repasar entidades, PK/FK y cardinalidad.</p>
                 </div>
             </a>
             <a class="card-link" href="index.html" style="text-decoration:none; color:inherit;">
                 <div class="card">
                     <span class="icon">📚</span>
                     <h4>← Volver al índice</h4>
-                    <p>Ver todas las secciones del repaso.</p>
+                    <p>Ver las 6 secciones del repaso.</p>
                 </div>
             </a>
         </div>
@@ -628,7 +612,7 @@
 </div>
 
 <div class="slide-counter">
-    <span id="current-slide">1</span> / <span id="total-slides">8</span>
+    <span id="current-slide">1</span> / <span id="total-slides">9</span>
 </div>
 
 <div class="controls">
