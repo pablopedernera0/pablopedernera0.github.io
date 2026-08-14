@@ -29,6 +29,7 @@
             height: 100%;
             position: absolute;
             opacity: 0;
+            pointer-events: none;
             transform: translateX(100px);
             transition: all 0.6s ease;
             padding: 2rem 3rem;
@@ -41,7 +42,14 @@
 
         .slide.active {
             opacity: 1;
+            pointer-events: auto;
             transform: translateX(0);
+        }
+
+        .slide.slide-tall {
+            justify-content: flex-start;
+            padding-top: 5.5rem;
+            padding-bottom: 6rem;
         }
 
         .slide h1 {
@@ -300,6 +308,80 @@
             color: #3fb950;
         }
 
+        .exercise-form {
+            width: 100%;
+            max-width: 780px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: left;
+            margin: 0.5rem 0 1.5rem;
+        }
+
+        .form-field label {
+            display: block;
+            font-size: 0.92rem;
+            color: #8b949e;
+            margin-bottom: 0.35rem;
+        }
+
+        .form-field input[type="text"],
+        .form-field textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: 0.6rem 0.8rem;
+            color: #c9d1d9;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 0.95rem;
+            resize: vertical;
+        }
+
+        .form-field textarea {
+            min-height: 70px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        .form-field input[type="text"]:focus,
+        .form-field textarea:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+
+        .checklist-field {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .checklist-field input[type="checkbox"] {
+            margin-top: 0.3rem;
+            width: 1rem;
+            height: 1rem;
+            accent-color: #3fb950;
+            flex-shrink: 0;
+        }
+
+        .checklist-field label {
+            font-size: 0.92rem;
+            color: #c9d1d9;
+            margin-bottom: 0;
+        }
+
+        .download-status {
+            font-size: 0.88rem;
+            color: #3fb950;
+            min-height: 1.2rem;
+            margin-top: 0.6rem;
+        }
+
+        .download-status.error {
+            color: #f85149;
+        }
+
         .slide-counter {
             position: fixed;
             top: 1.2rem;
@@ -464,6 +546,91 @@
         </div>
     </div>
 
+    <!-- Slide: Actividad instrucciones -->
+    <div class="slide">
+        <h2>Actividad — probalo vos</h2>
+        <p class="center" style="margin-bottom:1rem;">Repetí la comparación del Caso 1, pero con tu propio prompt. Al final vas a poder descargar lo que hiciste para entregarlo en Classroom.</p>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <div>Elegí un módulo del Sistema de Pedidos a Domicilio que <strong>no</strong> esté cubierto por RF01–RF06 (o usá pagos, como en el Caso 1, si no se te ocurre otro).</div>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <div>En tu IA de preferencia, escribí un <strong>prompt vago</strong> pidiendo los requisitos de ese módulo — sin pegar los RF existentes ni el formato. Copiá el resultado.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <div>Reformulá el prompt: agregá <strong>rol, contexto real</strong> (pegá tus RF01–RF06), <strong>tarea</strong> concreta y <strong>formato</strong> exigido. Copiá este segundo resultado.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">4</span>
+                <div>En la siguiente pantalla, pegá ambos prompts y resultados, completá la checklist comparándolos y agregá una reflexión corta.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">5</span>
+                <div>Descargá el archivo con el botón al final y subilo como entrega en Classroom.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide: Actividad formulario -->
+    <div class="slide slide-tall">
+        <h2>Actividad — completá y descargá</h2>
+        <div class="exercise-form">
+            <div class="form-field">
+                <label for="ej-nombre">Nombre y comisión</label>
+                <input type="text" id="ej-nombre" placeholder="Ej: Pérez Juan - ITI 2°1°">
+            </div>
+            <div class="form-field">
+                <label for="ej-prompt-malo">Prompt vago que usaste</label>
+                <textarea id="ej-prompt-malo" placeholder="Pegá acá el prompt vago..."></textarea>
+            </div>
+            <div class="form-field">
+                <label for="ej-resultado-malo">Resultado que te dio</label>
+                <textarea id="ej-resultado-malo" placeholder="Pegá acá lo que respondió la IA..."></textarea>
+            </div>
+            <div class="form-field">
+                <label for="ej-prompt-bueno">Prompt reformulado (rol + contexto + tarea + formato)</label>
+                <textarea id="ej-prompt-bueno" placeholder="Pegá acá el prompt reformulado..."></textarea>
+            </div>
+            <div class="form-field">
+                <label for="ej-resultado-bueno">Resultado que te dio esta vez</label>
+                <textarea id="ej-resultado-bueno" placeholder="Pegá acá el segundo resultado..."></textarea>
+            </div>
+
+            <div class="form-field">
+                <label>Checklist de comparación</label>
+                <div class="checklist-field">
+                    <input type="checkbox" id="ej-check-contexto">
+                    <label for="ej-check-contexto">El segundo prompt tenía contexto real pegado (los RF existentes), no un resumen de memoria.</label>
+                </div>
+                <div class="checklist-field">
+                    <input type="checkbox" id="ej-check-formato">
+                    <label for="ej-check-formato">El segundo prompt exigió explícitamente el formato a usar.</label>
+                </div>
+                <div class="checklist-field">
+                    <input type="checkbox" id="ej-check-bordes">
+                    <label for="ej-check-bordes">El segundo prompt pidió a propósito casos borde (rechazos, errores, excepciones).</label>
+                </div>
+                <div class="checklist-field">
+                    <input type="checkbox" id="ej-check-supuestos">
+                    <label for="ej-check-supuestos">Le pediste que declare los supuestos que hizo.</label>
+                </div>
+            </div>
+
+            <div class="form-field">
+                <label for="ej-reflexion">Reflexión breve: ¿qué cambió entre los dos resultados y por qué?</label>
+                <textarea id="ej-reflexion" placeholder="2-3 líneas..."></textarea>
+            </div>
+
+            <div>
+                <button type="button" class="btn" id="ej-download-btn">⬇ Descargar mi ejercicio (.md)</button>
+                <p class="download-status" id="ej-download-status"></p>
+            </div>
+        </div>
+    </div>
+
     <!-- Slide 6: Caso 2 intro -->
     <div class="slide">
         <h2>Caso 2 — ajustar un modelo ER con IA</h2>
@@ -591,11 +758,92 @@
     }
 
     document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
         if (e.key === 'ArrowRight' || e.key === ' ') {
             nextSlide();
         } else if (e.key === 'ArrowLeft') {
             previousSlide();
         }
+    });
+
+    function slugify(str) {
+        return str
+            .toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '') || 'anonimo';
+    }
+
+    document.getElementById('ej-download-btn').addEventListener('click', () => {
+        const statusEl = document.getElementById('ej-download-status');
+        const nombre = document.getElementById('ej-nombre').value.trim();
+        const promptMalo = document.getElementById('ej-prompt-malo').value.trim();
+        const resultadoMalo = document.getElementById('ej-resultado-malo').value.trim();
+        const promptBueno = document.getElementById('ej-prompt-bueno').value.trim();
+        const resultadoBueno = document.getElementById('ej-resultado-bueno').value.trim();
+        const reflexion = document.getElementById('ej-reflexion').value.trim();
+
+        if (!nombre || !promptMalo || !promptBueno) {
+            statusEl.textContent = 'Completá al menos nombre, prompt vago y prompt reformulado antes de descargar.';
+            statusEl.classList.add('error');
+            return;
+        }
+        statusEl.classList.remove('error');
+
+        const checks = [
+            ['Contexto real pegado', 'ej-check-contexto'],
+            ['Formato exigido explícitamente', 'ej-check-formato'],
+            ['Casos borde pedidos a propósito', 'ej-check-bordes'],
+            ['Supuestos declarados', 'ej-check-supuestos'],
+        ];
+        const checklistText = checks
+            .map(([label, id]) => `- [${document.getElementById(id).checked ? 'x' : ' '}] ${label}`)
+            .join('\n');
+
+        const fecha = new Date().toLocaleString('es-AR');
+
+        const contenido = `# Actividad — comparar prompts (IA en Análisis Funcional)
+
+**Nombre y comisión:** ${nombre}
+**Fecha:** ${fecha}
+
+## Prompt vago
+
+${promptMalo}
+
+### Resultado obtenido
+
+${resultadoMalo}
+
+## Prompt reformulado
+
+${promptBueno}
+
+### Resultado obtenido
+
+${resultadoBueno}
+
+## Checklist de comparación
+
+${checklistText}
+
+## Reflexión
+
+${reflexion}
+`;
+
+        const blob = new Blob([contenido], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ejercicio-prompts-${slugify(nombre)}.md`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        statusEl.textContent = 'Descargado. Subilo a Classroom.';
     });
 </script>
 </body>
