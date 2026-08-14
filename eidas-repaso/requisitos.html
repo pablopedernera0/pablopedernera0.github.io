@@ -343,6 +343,8 @@
             border-radius: 20px;
             font-size: 0.85rem;
             z-index: 10;
+            flex-wrap: wrap;
+            max-width: 60vw;
         }
 
         .series-nav a, .series-nav span.current {
@@ -350,6 +352,7 @@
             padding: 0.15rem 0.5rem;
             border-radius: 12px;
             color: #8b949e;
+            white-space: nowrap;
         }
 
         .series-nav a:hover {
@@ -400,6 +403,8 @@
     <a href="index.html">📚 Repaso</a>
     <a href="stakeholders.html">👥 Stakeholders</a>
     <span class="current">📋 Requisitos</span>
+    <a href="historias-usuario.html">📝 HU</a>
+    <a href="casos-de-uso.html">🎭 CU</a>
 </div>
 
 <div class="presentation-container">
@@ -521,20 +526,20 @@
 
     <!-- Slide 8: Cierre -->
     <div class="slide">
-        <h2>Seguimos la próxima clase</h2>
+        <h2>Seguimos con Historias de Usuario</h2>
         <div class="card-grid">
+            <a class="card-link" href="historias-usuario.html" style="text-decoration:none; color:inherit;">
+                <div class="card">
+                    <span class="icon">📝</span>
+                    <h4>Historias de Usuario →</h4>
+                    <p>La misma necesidad, contada desde el punto de vista de quien la vive.</p>
+                </div>
+            </a>
             <a class="card-link" href="stakeholders.html" style="text-decoration:none; color:inherit;">
                 <div class="card">
                     <span class="icon">👥</span>
                     <h4>← Stakeholders</h4>
                     <p>Repasar quiénes tienen interés en el sistema.</p>
-                </div>
-            </a>
-            <a class="card-link" href="index.html" style="text-decoration:none; color:inherit;">
-                <div class="card">
-                    <span class="icon">📚</span>
-                    <h4>← Volver al índice</h4>
-                    <p>Historias de Usuario y Casos de Uso, próximamente.</p>
                 </div>
             </a>
         </div>
