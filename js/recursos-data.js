@@ -1,10 +1,18 @@
-// Índice de recursos del sitio. Última actualización: 2026-08-13 ART.
+// Índice de recursos del sitio. Última actualización: 2026-08-14 ART.
 // Cada entrada agrega una carpeta al índice de la home (ver render-recursos.js).
 // Para publicar un recurso nuevo: agregar un objeto acá, no tocar index.html.
 //
 // categoria: debe coincidir con el id de la course-card en index.html
 //   'infraestructura' | 'desarrollo' | 'redes'
 const RECURSOS = [
+    {
+        titulo: "El Contrato REST",
+        categoria: "redes",
+        carpeta: "api-rest",
+        icono: "📡",
+        descripcion: "Cómo se hablan los sistemas: HTTP, JSON, endpoints, y los casos reales — Mercado Pago, AFIP, turnos médicos.",
+        fecha: "2026-08-14"
+    },
     {
         titulo: "Alternativas gratuitas a Claude Code",
         categoria: "desarrollo",
