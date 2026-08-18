@@ -244,7 +244,7 @@
 <body>
     <div class="presentation-container">
         <div class="slide-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">25</span>
+            <span id="current-slide">1</span> / <span id="total-slides">28</span>
         </div>
         
         <div class="class-info">
@@ -407,7 +407,82 @@
             </div>
         </div>
 
-        <!-- Slide 9: Break Slide -->
+        <!-- Slides 9-11: NUEVO — Migración VMware → KVM/Xen. A partir de acá los
+             números de slide en los comentarios quedan desalineados en +3 (no afecta
+             funcionalidad, es solo referencia para quien edite el archivo). -->
+
+        <!-- Slide 9: Por qué migrar desde VMware -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Un cambio de contexto: por qué migrar desde VMware</h2>
+                <ul class="content-list">
+                    <li><strong>Adquisición y reestructuración:</strong> tras su compra por Broadcom, VMware redefinió el enfoque hacia un segmento más acotado de clientes</li>
+                    <li><strong>Licenciamiento:</strong> modelos de suscripción obligatorios y bundles que incrementan el costo total de propiedad (TCO)</li>
+                    <li><strong>Consecuencia:</strong> muchas organizaciones evalúan alternativas abiertas — KVM y Xen — que ofrecen costo, estabilidad y un camino de evolución sostenible</li>
+                </ul>
+                <div class="break-indicator" style="margin-top: 30px;">
+                    La migración desde VMware ya no es solo una posibilidad técnica: es una estrategia empresarial para garantizar autonomía sobre la infraestructura.
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Parámetros técnicos de la migración -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Migrar una VM: qué hay que traducir</h2>
+                <div class="two-column">
+                    <div class="tool-card">
+                        <h4>💽 Disco</h4>
+                        <ul class="content-list">
+                            <li>VMDK (VMware) → QCOW2 o RAW (KVM)</li>
+                            <li>Controlador: LSI Logic / PVSCSI → virtio-scsi o virtio-blk</li>
+                        </ul>
+                    </div>
+                    <div class="tool-card">
+                        <h4>🌐 Red</h4>
+                        <ul class="content-list">
+                            <li>Driver vmxnet3 → virtio-net</li>
+                            <li>Sin este paso, la VM arranca sin conectividad</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tool-card" style="margin-top: 20px;">
+                    <h4>⚙️ CPU y memoria</h4>
+                    <ul class="content-list">
+                        <li>Modelos de CPU <em>host-passthrough</em> o <em>host-model</em> para compatibilidad de instrucciones</li>
+                        <li>Memoria: <em>ballooning</em> vía virtio-balloon</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Migración incremental y a gran escala -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>De una VM a miles: incremental y automatizada</h2>
+                <div class="two-column">
+                    <div class="comparison-table">
+                        <h4>📉 Migración manual</h4>
+                        <ul class="content-list">
+                            <li>Un ingeniero por VM, en ventanas nocturnas</li>
+                            <li>Proceso secuencial: escala mal a cientos de VMs</li>
+                            <li>Las prácticas se relajan tras muchas repeticiones</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-table">
+                        <h4>📈 Incremental automatizada</h4>
+                        <ul class="content-list">
+                            <li>Replicación continua por bloques (CBT) antes del corte final</li>
+                            <li><em>Cutover</em> con downtime mínimo</li>
+                            <li>Certificación automática (boot + validación funcional) y <em>rollback</em> masivo si falla</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="subtitle" style="margin-top: 20px; font-size: 1.1rem;">Fuente: Whitestack, "Estrategias de migración de VMs desde VMware"</p>
+            </div>
+        </div>
+
+        <!-- Slide 12 (antes 9): Break Slide -->
         <div class="slide">
             <div class="slide-content">
                 <h2>⏰ BREAK - 10 minutos</h2>
@@ -816,8 +891,8 @@
         // Class breaks - slide indices where classes change
         const classBreaks = {
             0: "CLASE 1 - Introducción",
-            9: "CLASE 1 - Después del Break",
-            15: "CLASE 2 - Mantenimiento"
+            12: "CLASE 1 - Después del Break",
+            18: "CLASE 2 - Mantenimiento"
         };
 
         document.getElementById('total-slides').textContent = totalSlides;
