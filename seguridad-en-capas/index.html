@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seguridad en Capas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.6rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.1rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+        }
+
+        .card.attack {
+            border-color: rgba(248, 81, 73, 0.45);
+        }
+
+        .card h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            font-size: 0.96rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: bold;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 0.6rem;
+        }
+
+        .tag.defend {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .tag.attack {
+            background: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .quote-box {
+            background: rgba(88, 166, 255, 0.08);
+            border-left: 4px solid #58a6ff;
+            border-radius: 0 10px 10px 0;
+            padding: 1.1rem 1.5rem;
+            max-width: 850px;
+            margin: 1rem 0;
+            font-style: italic;
+            font-size: 1.15rem;
+        }
+
+        .quote-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.05rem;
+            min-width: 4.2rem;
+        }
+
+        .step-item p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.4rem 1rem;
+            text-align: center;
+        }
+
+        .stat-card .stat-number {
+            display: block;
+            font-size: 2.1rem;
+            font-weight: bold;
+            color: #58a6ff;
+            margin-bottom: 0.4rem;
+        }
+
+        .stat-card p {
+            font-size: 0.92rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+            text-align: center;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        .btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+            background: #3fb950;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Infraestructura de Redes · Cierre conceptual del hilo conductor</div>
+        <h1>Seguridad en capas</h1>
+        <p class="subtitle">Cómo se defiende en producción un sistema como el que armaste este cuatrimestre.</p>
+    </div>
+
+    <!-- Slide 2: Dónde estamos parados -->
+    <div class="slide">
+        <h2>Dónde estamos parados</h2>
+        <p>A lo largo del cuatrimestre ya recorriste buena parte de lo que significa operar un sistema real:</p>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">Medir</span>
+                <p>Carga y rendimiento bajo estrés.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">Autenticar</span>
+                <p>Login y sesiones de usuarios.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">Leer</span>
+                <p>El rastro que queda en los logs después de un incidente.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">Observar</span>
+                <p>El estado del sistema en vivo, con Prometheus y Grafana.</p>
+            </div>
+        </div>
+        <div class="warning-box">
+            <p>Lo que no hicimos en este hilo fue atacar activamente ese sistema (reconocimiento de red, fuerza bruta, inyección SQL) — esas prácticas quedaron en un repositorio aparte, fuera de Killercoda. Esta charla no necesita esas herramientas: es el marco de cómo se defiende un sistema en producción, apoyado en todo lo que ya mediste y monitoreaste.</p>
+        </div>
+    </div>
+
+    <!-- Slide 3: Panorama regional -->
+    <div class="slide">
+        <h2>El panorama en América Latina</h2>
+        <p>La región es uno de los blancos más atacados del mundo.</p>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <span class="stat-number">+1.600</span>
+                <p>ciberataques reportados por segundo en la región</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">31%</span>
+                <p>de los ataques apuntan al sector gobierno</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">12% / 11%</span>
+                <p>manufactura y comercio, los siguientes sectores más atacados</p>
+            </div>
+        </div>
+        <p>El ransomware es la amenaza principal, y ya no se limita a las grandes corporaciones: Brasil, México y Colombia concentran el mayor volumen.</p>
+    </div>
+
+    <!-- Slide 4: Por qué es un blanco fácil -->
+    <div class="slide">
+        <h2>Por qué la región es un blanco fácil</h2>
+        <ul>
+            <li>La digitalización post-pandemia fue rápida y forzada: trabajo remoto y nube se adoptaron sobre infraestructura vieja, sin las herramientas ni la orientación adecuadas.</li>
+            <li>Muchas organizaciones siguen en modo <strong>reactivo</strong> (arreglar cuando algo se rompe) en vez de construir resiliencia desde el diseño.</li>
+            <li>La seguridad suele estar fragmentada entre equipos sobrecargados, o directamente no gestionada.</li>
+            <li>No existe un estándar unificado de ciberseguridad como en Estados Unidos o la Unión Europea, así que la seguridad compite con otras prioridades — y pierde.</li>
+        </ul>
+        <div class="warning-box">
+            <p>Las PYMEs son el blanco más fácil, no el menos atractivo: tienen menos recursos, defensas más débiles y creen (equivocadamente) que son demasiado chicas para que alguien se moleste en atacarlas.</p>
+        </div>
+    </div>
+
+    <!-- Slide 5: Una sola capa ya no alcanza -->
+    <div class="slide">
+        <h2>Por qué una sola capa ya no alcanza</h2>
+        <ul>
+            <li>El ransomware moderno no solo cifra archivos: también busca <strong>eliminar los respaldos</strong> antes de pedir el rescate.</li>
+            <li>Con el modelo de <strong>Ransomware como Servicio (RaaS)</strong>, cualquiera puede comprar un kit de ataque listo para usar, sin saber programar — solo necesita una tarjeta de crédito.</li>
+            <li>El malware potenciado por IA se adapta y se propaga más rápido de lo que una defensa estática puede reaccionar.</li>
+        </ul>
+        <p>Un antivirus que solo mira archivos conocidos ya no cubre el escenario real.</p>
+    </div>
+
+    <!-- Slide 6: El modelo de capas -->
+    <div class="slide">
+        <h2>El modelo de capas</h2>
+        <p>La idea central: cada capa cubre lo que la anterior deja pasar.</p>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">AV</span>
+                <p><strong>Antivirus.</strong> Primera línea: bloquea amenazas ya conocidas.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">EDR</span>
+                <p><strong>Detección y respuesta en endpoints.</strong> Si algo desconocido pasó, monitorea su comportamiento y aísla el dispositivo si actúa como una amenaza.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">MDR</span>
+                <p><strong>Detección y respuesta gestionada.</strong> Personas monitoreando alertas 24/7, investigando lo que las capas automáticas no supieron resolver solas.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">Backup</span>
+                <p><strong>Copia de seguridad.</strong> Si a pesar de todo el ataque causa daño, permite recuperar los datos sin pagar rescate y sin arrancar de cero.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Escenario concreto -->
+    <div class="slide">
+        <h2>Un escenario concreto</h2>
+        <div class="quote-box">
+            <p>Un empleado hace clic en un enlace de phishing.</p>
+        </div>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <p>El <strong>antivirus</strong> reconoce el archivo como una amenaza conocida y lo bloquea. Caso cerrado.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <p>Si el archivo es nuevo y pasa el antivirus, el <strong>EDR</strong> nota que intenta acceder a datos sensibles o elevar privilegios, y aísla el equipo.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <p>Si la actividad es lo bastante rara, el <strong>MDR</strong> — un humano mirando alertas — la investiga y contiene la amenaza en tiempo real.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">4</span>
+                <p>Si el ataque logró causar daño de todas formas, el <strong>backup</strong> permite recuperar los datos sin pagar nada ni perder días de trabajo.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: El espejo - IA de ataque -->
+    <div class="slide">
+        <h2>El espejo: la misma IA, dos lados</h2>
+        <h3>Cómo la usan los atacantes</h3>
+        <div class="card-grid">
+            <div class="card attack">
+                <span class="tag attack">Generación</span>
+                <p>Correos de phishing convincentes, redactados en segundos, sin errores que los delaten.</p>
+            </div>
+            <div class="card attack">
+                <span class="tag attack">Reconocimiento</span>
+                <p>Escaneo automatizado de redes en busca de vulnerabilidades conocidas.</p>
+            </div>
+            <div class="card attack">
+                <span class="tag attack">Evasión</span>
+                <p>Bots que imitan el comportamiento de un usuario real para no ser detectados.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: El espejo - IA de defensa -->
+    <div class="slide">
+        <h2>El mismo espejo, del otro lado</h2>
+        <h3>Cómo la usan los equipos de defensa</h3>
+        <div class="card-grid">
+            <div class="card">
+                <span class="tag defend">Detección</span>
+                <p>Reconocer comportamientos inusuales en un dispositivo antes de que se conviertan en un incidente.</p>
+            </div>
+            <div class="card">
+                <span class="tag defend">Priorización</span>
+                <p>Decidir qué sistemas parchear primero según el riesgo real, no por orden de llegada.</p>
+            </div>
+            <div class="card">
+                <span class="tag defend">Contención</span>
+                <p>Aislar automáticamente un dispositivo comprometido antes de que la amenaza se propague, y reducir el ruido de falsos positivos.</p>
+            </div>
+        </div>
+        <p>La tecnología es la misma de la slide anterior. Lo que cambia es para quién trabaja.</p>
+    </div>
+
+    <!-- Slide 10: Cierre -->
+    <div class="slide">
+        <h2>El hilo completo</h2>
+        <p>Medir carga, autenticar usuarios, leer logs, monitorear en vivo — y ahora, entender cómo se arma una defensa real alrededor de todo eso.</p>
+        <div class="warning-box">
+            <p>Ninguna capa sola alcanza. La seguridad en capas no es una lista de productos: es la idea de que cada mecanismo cubre el punto ciego del anterior — incluyendo el punto ciego más grande de todos, que es asumir que con uno solo ya está.</p>
+        </div>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">10</span>
+</div>
+
+<div class="controls">
+    <button class="btn prev" onclick="previousSlide()">← Anterior</button>
+    <button class="btn next" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const prevBtn = document.querySelector('.btn.prev');
+    const nextBtn = document.querySelector('.btn.next');
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function updateControls() {
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide === totalSlides - 1;
+        nextBtn.textContent = currentSlide === totalSlides - 1 ? 'Fin de la presentación' : 'Siguiente →';
+    }
+
+    function showSlide(n) {
+        const target = Math.max(0, Math.min(n, totalSlides - 1));
+        if (target === currentSlide) return;
+        slides[currentSlide].classList.remove('active');
+        currentSlide = target;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+        updateControls();
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    updateControls();
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>

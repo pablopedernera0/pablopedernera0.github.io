@@ -6,6 +6,14 @@
 //   'infraestructura' | 'desarrollo' | 'redes'
 const RECURSOS = [
     {
+        titulo: "Seguridad en Capas",
+        categoria: "infraestructura",
+        carpeta: "seguridad-en-capas",
+        icono: "▸",
+        descripcion: "Cierre conceptual del hilo conductor de redes: panorama de ciberataques en América Latina, el modelo AV-EDR-MDR-backup, y el espejo entre IA de ataque e IA de defensa.",
+        fecha: "2026-08-18"
+    },
+    {
         titulo: "Qué pide el mercado",
         categoria: "desarrollo",
         carpeta: "que-pide-el-mercado",
