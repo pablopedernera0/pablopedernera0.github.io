@@ -164,6 +164,37 @@
             color: #f85149;
         }
 
+        .pair-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.9rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .idea-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.35);
+            border-radius: 12px;
+            padding: 1.4rem 1.6rem;
+            text-align: center;
+        }
+
+        .idea-card .idea-label {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #58a6ff;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .idea-card p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
         .warning-box {
             background: rgba(240, 136, 62, 0.1);
             border: 1px solid #f0883e;
@@ -312,6 +343,7 @@
             .slide h1 { font-size: 2rem; }
             .slide h2 { font-size: 1.6rem; }
             .series-nav { display: none; }
+            .pair-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -330,7 +362,24 @@
         <p class="subtitle">De una historia que suena lista a una historia que se puede cortar sin romper nada.</p>
     </div>
 
-    <!-- Slide 2: Agenda -->
+    <!-- Slide 2: La idea inicial -->
+    <div class="slide">
+        <h2>La idea, antes de los detalles</h2>
+        <p>Una historia entra a desarrollo cuando pasa dos filtros:</p>
+        <div class="pair-grid">
+            <div class="idea-card">
+                <span class="idea-label">Está lista</span>
+                <p>El equipo se puso de acuerdo, antes de empezar, en qué significa "lista para trabajar". Eso es el Definition of Ready.</p>
+            </div>
+            <div class="idea-card">
+                <span class="idea-label">Tiene el tamaño correcto</span>
+                <p>Entrega algo usable de punta a punta, no es una tarea técnica suelta ni una épica gigante sin cortar. Eso es el slicing vertical.</p>
+            </div>
+        </div>
+        <p>Hoy vemos las dos ideas. Cortar la épica en historias es trabajo del taller.</p>
+    </div>
+
+    <!-- Slide 3: Agenda -->
     <div class="slide">
         <h2>Qué vemos hoy</h2>
         <div class="steps-list">
@@ -348,7 +397,7 @@
         </div>
     </div>
 
-    <!-- Slide 3: El problema que resuelve el DoR -->
+    <!-- Slide 4: El problema que resuelve el DoR -->
     <div class="slide">
         <h2>El problema que resuelve el DoR</h2>
         <p>Una historia entra a desarrollo sin que nadie se puso de acuerdo en qué significa "lista". A mitad de sprint aparecen preguntas que debieron responderse antes: ¿qué pasa si falla esto? ¿de quién depende aquello? ¿qué significa "rápido" en esta historia?</p>
@@ -358,7 +407,7 @@
         <p>El Definition of Ready mueve esa conversación al momento en el que todavía es barata.</p>
     </div>
 
-    <!-- Slide 4: Qué es un DoR -->
+    <!-- Slide 5: Qué es un DoR -->
     <div class="slide">
         <h2>Qué es un Definition of Ready</h2>
         <p>Un acuerdo del equipo sobre qué condiciones mínimas tiene que cumplir una historia para considerarse "lista para trabajar".</p>
@@ -374,45 +423,98 @@
         </div>
     </div>
 
-    <!-- Slide 5: Verificable vs deseo -->
+    <!-- Slide 6: Verificable vs deseo -->
     <div class="slide">
         <h2>Verificable, no un deseo</h2>
-        <p>Cada ítem de la checklist tiene que poder responderse sí o no, sin discutir.</p>
-        <div class="card-grid">
+        <p>Cada ítem de la checklist tiene que poder responderse sí o no, sin discutir. Tres ejemplos:</p>
+        <div class="pair-grid">
             <div class="card">
                 <span class="tag ok">Verificable</span>
-                <h4>"La historia tiene criterios de aceptación escritos"</h4>
-                <p>Se abre el documento, están o no están. No hay margen de interpretación.</p>
+                <p>"La historia tiene criterios de aceptación escritos."</p>
             </div>
             <div class="card bad">
                 <span class="tag no">No verificable</span>
-                <h4>"La historia está bien definida"</h4>
-                <p>¿Bien definida según quién? Dos personas del mismo equipo pueden responder distinto.</p>
+                <p>"La historia está bien definida."</p>
+            </div>
+            <div class="card">
+                <span class="tag ok">Verificable</span>
+                <p>"El RNF dice: tiempo de respuesta menor a 2 segundos."</p>
+            </div>
+            <div class="card bad">
+                <span class="tag no">No verificable</span>
+                <p>"El sistema tiene que ser rápido."</p>
+            </div>
+            <div class="card">
+                <span class="tag ok">Verificable</span>
+                <p>"Está escrito qué pasa si el pago falla a mitad de camino."</p>
+            </div>
+            <div class="card bad">
+                <span class="tag no">No verificable</span>
+                <p>"Los casos raros se resuelven sobre la marcha."</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 6: La consigna del DoR -->
+    <!-- Slide 7: Vertical vs horizontal -->
     <div class="slide">
-        <h2>La consigna: <code>DoR.md</code></h2>
+        <h2>Historia vertical vs. capa horizontal</h2>
+        <p>Vertical significa que la historia, sola, entrega algo usable de punta a punta. Tres ejemplos sobre la misma billetera:</p>
+        <div class="pair-grid">
+            <div class="card bad">
+                <span class="tag no">Capa horizontal</span>
+                <p>"Diseñar la pantalla de envío."</p>
+            </div>
+            <div class="card">
+                <span class="tag ok">Vertical</span>
+                <p>"Enviar dinero a un contacto de la agenda con saldo suficiente."</p>
+            </div>
+            <div class="card bad">
+                <span class="tag no">Capa horizontal</span>
+                <p>"Armar el endpoint de transferencias en el backend."</p>
+            </div>
+            <div class="card">
+                <span class="tag ok">Vertical</span>
+                <p>"Enviar dinero a un contacto nuevo, agregándolo primero a la agenda."</p>
+            </div>
+            <div class="card bad">
+                <span class="tag no">Capa horizontal</span>
+                <p>"Escribir las validaciones de saldo."</p>
+            </div>
+            <div class="card">
+                <span class="tag ok">Vertical</span>
+                <p>"Recibir una notificación cuando alguien te envía dinero."</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Paso 1 - armar la checklist -->
+    <div class="slide">
+        <h2>El trabajo concreto — paso 1</h2>
+        <h3>Armar la checklist</h3>
         <div class="steps-list">
             <div class="step-item">
-                <span class="num">1</span>
-                <p>Checklist del equipo, entre 6 y 10 ítems, cada uno verificable.</p>
+                <span class="num">Qué</span>
+                <p>Entre 6 y 10 ítems, cada uno verificable — se responde sí o no sin discutir.</p>
             </div>
             <div class="step-item">
-                <span class="num">2</span>
-                <p>Justificación breve (máximo 3 renglones) de cada ítem: qué problema evita.</p>
-            </div>
-            <div class="step-item">
-                <span class="num">3</span>
-                <p>Aplicación: pasar TRES historias propias del primer semestre por su propia checklist. Indicar si pasan o no, y qué les falta.</p>
+                <span class="num">Y</span>
+                <p>Por cada ítem, una justificación de máximo 3 renglones: qué problema evita tenerlo en la lista.</p>
             </div>
         </div>
-        <p>Es esperable —y deseable— que alguna de las tres no pase.</p>
+        <p>Todo esto va en <code>DoR.md</code>, en la raíz del repo del grupo.</p>
     </div>
 
-    <!-- Slide 7: Criterios de evaluación -->
+    <!-- Slide 9: Paso 2 - aplicarla a 3 historias -->
+    <div class="slide">
+        <h2>El trabajo concreto — paso 2</h2>
+        <h3>Aplicarla a tres historias propias</h3>
+        <p>Elijan TRES historias de usuario de su propio trabajo del primer semestre y pásenlas por su propia checklist.</p>
+        <div class="warning-box">
+            <p>Para cada una: ¿pasa o no pasa? Si no pasa, ¿qué le falta? Es esperable —y deseable— que alguna de las tres no pase.</p>
+        </div>
+    </div>
+
+    <!-- Slide 10: Qué se mira al corregir -->
     <div class="slide">
         <h2>Qué se mira al corregir</h2>
         <ul>
@@ -423,27 +525,9 @@
         </ul>
     </div>
 
-    <!-- Slide 8: Vertical vs horizontal -->
+    <!-- Slide 11: La épica -->
     <div class="slide">
-        <h2>Historia vertical vs. capa horizontal</h2>
-        <p>Vertical significa que la historia, sola, entrega algo usable de punta a punta.</p>
-        <div class="card-grid">
-            <div class="card bad">
-                <span class="tag no">Capa horizontal</span>
-                <h4>"Diseñar la pantalla de envío"</h4>
-                <p>No entrega nada usable por sí sola. Es una tarea técnica dentro de una historia, no una historia.</p>
-            </div>
-            <div class="card">
-                <span class="tag ok">Vertical</span>
-                <h4>"Enviar dinero a un contacto de la agenda con saldo suficiente"</h4>
-                <p>Atraviesa toda la pila — interfaz, lógica, datos— y al terminarla hay algo que un usuario puede usar.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 9: La épica -->
-    <div class="slide">
-        <h2>La épica que vamos a cortar</h2>
+        <h2>La épica que vamos a cortar en el taller</h2>
         <div class="quote-box">
             <p>Como usuario de la billetera, quiero enviar dinero a otro usuario de la app para pagarle sin usar efectivo.</p>
         </div>
@@ -455,7 +539,7 @@
         </ul>
     </div>
 
-    <!-- Slide 10: Qué sigue -->
+    <!-- Slide 12: Qué sigue -->
     <div class="slide">
         <h2>Qué sigue</h2>
         <p>En el taller van a partir esta épica en historias verticales y van a pensar, para una de ellas, los caminos que no salen bien.</p>
@@ -467,7 +551,7 @@
 </div>
 
 <div class="slide-counter">
-    <span id="current-slide">1</span> / <span id="total-slides">10</span>
+    <span id="current-slide">1</span> / <span id="total-slides">12</span>
 </div>
 
 <div class="controls">
