@@ -270,6 +270,31 @@
             text-align: center;
         }
 
+        .mirror-table {
+            width: 100%;
+            max-width: 950px;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+        }
+
+        .mirror-table th, .mirror-table td {
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.7rem 1rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .mirror-table th:first-child {
+            background: rgba(248, 81, 73, 0.12);
+            color: #f85149;
+        }
+
+        .mirror-table th:last-child {
+            background: rgba(63, 185, 80, 0.12);
+            color: #3fb950;
+        }
+
         .slide-counter {
             position: fixed;
             top: 1.2rem;
@@ -452,48 +477,33 @@
         </div>
     </div>
 
-    <!-- Slide 8: El espejo - IA de ataque -->
+    <!-- Slide 8: El espejo - IA de ataque y de defensa -->
     <div class="slide">
         <h2>El espejo: la misma IA, dos lados</h2>
-        <h3>Cómo la usan los atacantes</h3>
-        <div class="card-grid">
-            <div class="card attack">
-                <span class="tag attack">Generación</span>
-                <p>Correos de phishing convincentes, redactados en segundos, sin errores que los delaten.</p>
-            </div>
-            <div class="card attack">
-                <span class="tag attack">Reconocimiento</span>
-                <p>Escaneo automatizado de redes en busca de vulnerabilidades conocidas.</p>
-            </div>
-            <div class="card attack">
-                <span class="tag attack">Evasión</span>
-                <p>Bots que imitan el comportamiento de un usuario real para no ser detectados.</p>
-            </div>
+        <div style="width: 100%; max-width: 950px; overflow-x: auto;">
+        <table class="mirror-table">
+            <tr>
+                <th>Cómo la usan los atacantes</th>
+                <th>Cómo la usan los equipos de defensa</th>
+            </tr>
+            <tr>
+                <td>Generan correos de phishing convincentes, redactados en segundos, sin errores que los delaten.</td>
+                <td>Detectan comportamientos inusuales en un dispositivo antes de que se conviertan en un incidente.</td>
+            </tr>
+            <tr>
+                <td>Escanean automáticamente redes en busca de vulnerabilidades conocidas.</td>
+                <td>Priorizan qué sistemas parchear primero según el riesgo real, no por orden de llegada.</td>
+            </tr>
+            <tr>
+                <td>Despliegan bots que imitan el comportamiento de un usuario real para no ser detectados.</td>
+                <td>Aíslan automáticamente un dispositivo comprometido y reducen el ruido de falsos positivos.</td>
+            </tr>
+        </table>
         </div>
+        <p style="margin-top: 1rem;">La tecnología es la misma. Lo que cambia es para quién trabaja.</p>
     </div>
 
-    <!-- Slide 9: El espejo - IA de defensa -->
-    <div class="slide">
-        <h2>El mismo espejo, del otro lado</h2>
-        <h3>Cómo la usan los equipos de defensa</h3>
-        <div class="card-grid">
-            <div class="card">
-                <span class="tag defend">Detección</span>
-                <p>Reconocer comportamientos inusuales en un dispositivo antes de que se conviertan en un incidente.</p>
-            </div>
-            <div class="card">
-                <span class="tag defend">Priorización</span>
-                <p>Decidir qué sistemas parchear primero según el riesgo real, no por orden de llegada.</p>
-            </div>
-            <div class="card">
-                <span class="tag defend">Contención</span>
-                <p>Aislar automáticamente un dispositivo comprometido antes de que la amenaza se propague, y reducir el ruido de falsos positivos.</p>
-            </div>
-        </div>
-        <p>La tecnología es la misma de la slide anterior. Lo que cambia es para quién trabaja.</p>
-    </div>
-
-    <!-- Slide 10: Cierre -->
+    <!-- Slide 9: Cierre -->
     <div class="slide">
         <h2>El hilo completo</h2>
         <p>Medir carga, autenticar usuarios, leer logs, monitorear en vivo — y ahora, entender cómo se arma una defensa real alrededor de todo eso.</p>
@@ -505,7 +515,7 @@
 </div>
 
 <div class="slide-counter">
-    <span id="current-slide">1</span> / <span id="total-slides">10</span>
+    <span id="current-slide">1</span> / <span id="total-slides">9</span>
 </div>
 
 <div class="controls">
