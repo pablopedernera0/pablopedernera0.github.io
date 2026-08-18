@@ -298,6 +298,13 @@
             background: #56d364;
         }
 
+        .btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+            background: #3fb950;
+        }
+
         @media (max-width: 800px) {
             .slide h1 { font-size: 2rem; }
             .slide h2 { font-size: 1.6rem; }
@@ -478,22 +485,33 @@
 </div>
 
 <div class="controls">
-    <button class="btn" onclick="previousSlide()">← Anterior</button>
-    <button class="btn" onclick="nextSlide()">Siguiente →</button>
+    <button class="btn prev" onclick="previousSlide()">← Anterior</button>
+    <button class="btn next" onclick="nextSlide()">Siguiente →</button>
 </div>
 
 <script>
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide');
     const totalSlides = slides.length;
+    const prevBtn = document.querySelector('.btn.prev');
+    const nextBtn = document.querySelector('.btn.next');
 
     document.getElementById('total-slides').textContent = totalSlides;
 
+    function updateControls() {
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide === totalSlides - 1;
+        nextBtn.textContent = currentSlide === totalSlides - 1 ? 'Fin de la presentación' : 'Siguiente →';
+    }
+
     function showSlide(n) {
+        const target = Math.max(0, Math.min(n, totalSlides - 1));
+        if (target === currentSlide) return;
         slides[currentSlide].classList.remove('active');
-        currentSlide = (n + totalSlides) % totalSlides;
+        currentSlide = target;
         slides[currentSlide].classList.add('active');
         document.getElementById('current-slide').textContent = currentSlide + 1;
+        updateControls();
     }
 
     function nextSlide() {
@@ -503,6 +521,8 @@
     function previousSlide() {
         showSlide(currentSlide - 1);
     }
+
+    updateControls();
 
     document.addEventListener('keydown', (e) => {
         const tag = e.target.tagName;
