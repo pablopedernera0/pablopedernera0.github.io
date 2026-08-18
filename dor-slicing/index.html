@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Definition of Ready y Slicing Vertical</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.6rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.1rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+        }
+
+        .card.bad {
+            border-color: rgba(248, 81, 73, 0.45);
+        }
+
+        .card h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            font-size: 0.96rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: bold;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 0.6rem;
+        }
+
+        .tag.ok {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .tag.no {
+            background: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .quote-box {
+            background: rgba(88, 166, 255, 0.08);
+            border-left: 4px solid #58a6ff;
+            border-radius: 0 10px 10px 0;
+            padding: 1.1rem 1.5rem;
+            max-width: 850px;
+            margin: 1rem 0;
+            font-style: italic;
+            font-size: 1.15rem;
+        }
+
+        .quote-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        a {
+            color: #58a6ff;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 820px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.05rem;
+            min-width: 1.4rem;
+        }
+
+        .step-item p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+        }
+
+        .series-nav a:hover {
+            color: #58a6ff;
+        }
+
+        .series-nav span.current {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.6rem; }
+            .series-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="series-nav">
+    <span class="current">DoR y Slicing</span>
+    <a href="taller-slicing.html">Taller de Slicing</a>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Diseño de Sistemas Web · 3°1° y 3°2° · Semana 1</div>
+        <h1>Definition of Ready y Slicing Vertical</h1>
+        <p class="subtitle">De una historia que suena lista a una historia que se puede cortar sin romper nada.</p>
+    </div>
+
+    <!-- Slide 2: Agenda -->
+    <div class="slide">
+        <h2>Qué vemos hoy</h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <p><strong>Definition of Ready</strong> — el concepto completo y la consigna de entrega.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <p><strong>Slicing vertical</strong> — solo el concepto y la lectura de la épica que vamos a cortar.</p>
+            </div>
+        </div>
+        <div class="warning-box">
+            <p>El corte de la épica en historias y el análisis de excepciones se hacen en el taller, no hoy.</p>
+        </div>
+    </div>
+
+    <!-- Slide 3: El problema que resuelve el DoR -->
+    <div class="slide">
+        <h2>El problema que resuelve el DoR</h2>
+        <p>Una historia entra a desarrollo sin que nadie se puso de acuerdo en qué significa "lista". A mitad de sprint aparecen preguntas que debieron responderse antes: ¿qué pasa si falla esto? ¿de quién depende aquello? ¿qué significa "rápido" en esta historia?</p>
+        <div class="warning-box">
+            <p>El costo de esas preguntas no es el mismo antes que después. Antes de empezar, es una conversación. A mitad de desarrollo, es retrabajo.</p>
+        </div>
+        <p>El Definition of Ready mueve esa conversación al momento en el que todavía es barata.</p>
+    </div>
+
+    <!-- Slide 4: Qué es un DoR -->
+    <div class="slide">
+        <h2>Qué es un Definition of Ready</h2>
+        <p>Un acuerdo del equipo sobre qué condiciones mínimas tiene que cumplir una historia para considerarse "lista para trabajar".</p>
+        <div class="card-grid">
+            <div class="card">
+                <h4>Es un filtro, no un trámite</h4>
+                <p>Si una historia no cumple el DoR, vuelve a refinamiento. No se negocia caso por caso.</p>
+            </div>
+            <div class="card">
+                <h4>Lo define el equipo</h4>
+                <p>No lo impone una sola persona. Es un acuerdo compartido sobre qué es suficiente para empezar.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Verificable vs deseo -->
+    <div class="slide">
+        <h2>Verificable, no un deseo</h2>
+        <p>Cada ítem de la checklist tiene que poder responderse sí o no, sin discutir.</p>
+        <div class="card-grid">
+            <div class="card">
+                <span class="tag ok">Verificable</span>
+                <h4>"La historia tiene criterios de aceptación escritos"</h4>
+                <p>Se abre el documento, están o no están. No hay margen de interpretación.</p>
+            </div>
+            <div class="card bad">
+                <span class="tag no">No verificable</span>
+                <h4>"La historia está bien definida"</h4>
+                <p>¿Bien definida según quién? Dos personas del mismo equipo pueden responder distinto.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: La consigna del DoR -->
+    <div class="slide">
+        <h2>La consigna: <code>DoR.md</code></h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <p>Checklist del equipo, entre 6 y 10 ítems, cada uno verificable.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <p>Justificación breve (máximo 3 renglones) de cada ítem: qué problema evita.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <p>Aplicación: pasar TRES historias propias del primer semestre por su propia checklist. Indicar si pasan o no, y qué les falta.</p>
+            </div>
+        </div>
+        <p>Es esperable —y deseable— que alguna de las tres no pase.</p>
+    </div>
+
+    <!-- Slide 7: Criterios de evaluación -->
+    <div class="slide">
+        <h2>Qué se mira al corregir</h2>
+        <ul>
+            <li>Los ítems son verificables: se puede responder sí/no sin discutir.</li>
+            <li>La checklist cubre como mínimo: criterios de aceptación, flujos alternativos o excepciones, dependencias, y algún requerimiento no funcional.</li>
+            <li>La autoevaluación es honesta. Un grupo que detecta sus propias faltas puntúa mejor que uno que declara que todo pasa sin observaciones.</li>
+            <li>El archivo está versionado en el repo — se mira el commit.</li>
+        </ul>
+    </div>
+
+    <!-- Slide 8: Vertical vs horizontal -->
+    <div class="slide">
+        <h2>Historia vertical vs. capa horizontal</h2>
+        <p>Vertical significa que la historia, sola, entrega algo usable de punta a punta.</p>
+        <div class="card-grid">
+            <div class="card bad">
+                <span class="tag no">Capa horizontal</span>
+                <h4>"Diseñar la pantalla de envío"</h4>
+                <p>No entrega nada usable por sí sola. Es una tarea técnica dentro de una historia, no una historia.</p>
+            </div>
+            <div class="card">
+                <span class="tag ok">Vertical</span>
+                <h4>"Enviar dinero a un contacto de la agenda con saldo suficiente"</h4>
+                <p>Atraviesa toda la pila — interfaz, lógica, datos— y al terminarla hay algo que un usuario puede usar.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: La épica -->
+    <div class="slide">
+        <h2>La épica que vamos a cortar</h2>
+        <div class="quote-box">
+            <p>Como usuario de la billetera, quiero enviar dinero a otro usuario de la app para pagarle sin usar efectivo.</p>
+        </div>
+        <p>Así como está, es una épica gorda:</p>
+        <ul>
+            <li>No se puede estimar.</li>
+            <li>No se puede terminar en una iteración.</li>
+            <li>Esconde decisiones que todavía nadie tomó — ¿qué pasa si algo falla a mitad de camino?</li>
+        </ul>
+    </div>
+
+    <!-- Slide 10: Qué sigue -->
+    <div class="slide">
+        <h2>Qué sigue</h2>
+        <p>En el taller van a partir esta épica en historias verticales y van a pensar, para una de ellas, los caminos que no salen bien.</p>
+        <div class="warning-box">
+            <p><code>DoR.md</code> se entrega la semana que viene, no hoy. <code>slicing.md</code> sale del taller mismo.</p>
+        </div>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">10</span>
+</div>
+
+<div class="controls">
+    <button class="btn" onclick="previousSlide()">← Anterior</button>
+    <button class="btn" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function showSlide(n) {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>

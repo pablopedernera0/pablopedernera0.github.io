@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qué pide el mercado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.6rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.1rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .job-card {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 14px;
+            padding: 1.6rem 2rem;
+            margin: 1rem 0;
+        }
+
+        .job-card .company {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #3fb950;
+            margin-bottom: 0.3rem;
+        }
+
+        .job-card .role {
+            font-size: 1.05rem;
+            color: #8b949e;
+            margin-bottom: 1rem;
+        }
+
+        .job-card ul {
+            max-width: 100%;
+            margin-bottom: 0;
+        }
+
+        .job-card li {
+            margin-bottom: 0.5rem;
+        }
+
+        .pill {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: bold;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+        }
+
+        .pill.entry {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .pill.mid {
+            background: rgba(240, 136, 62, 0.15);
+            color: #f0883e;
+        }
+
+        .pill.senior {
+            background: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 900px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        .comparison-table {
+            width: 100%;
+            max-width: 950px;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.88rem;
+        }
+
+        .comparison-table th, .comparison-table td {
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.5rem 0.7rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .comparison-table th {
+            background: rgba(88, 166, 255, 0.1);
+            color: #58a6ff;
+        }
+
+        .comparison-table td:first-child, .comparison-table th:first-child {
+            text-align: left;
+            color: #c9d1d9;
+        }
+
+        .comparison-table .yes {
+            color: #3fb950;
+            font-weight: bold;
+        }
+
+        .comparison-table .no {
+            color: #8b949e;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            border-left: 4px solid #f85149;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #f85149;
+            font-size: 1.05rem;
+            min-width: 1.4rem;
+        }
+
+        .step-item p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.6rem; }
+            .comparison-table { font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Diseño de Sistemas Web · Semana 2</div>
+        <h1>Qué pide el mercado</h1>
+        <p class="subtitle">Tres avisos reales de analista funcional y analista de procesos, leídos con la misma mirada crítica que venimos aplicando en la materia.</p>
+    </div>
+
+    <!-- Slide 2: Contexto -->
+    <div class="slide">
+        <h2>De dónde salen estos avisos</h2>
+        <p>Cada uno de ustedes trajo dos avisos de analista funcional o analista de procesos.</p>
+        <p>Hoy no los leemos para ver "qué piden" en abstracto. Los leemos comparándolos con lo que efectivamente dimos en esta materia hasta ahora: requerimientos, historias de usuario, casos de uso, modelo de datos — y ahora DoR y slicing.</p>
+    </div>
+
+    <!-- Slide 3: Avalian -->
+    <div class="slide">
+        <h2>Aviso 1</h2>
+        <div class="job-card">
+            <span class="pill entry">Junior / próximo a graduarse</span>
+            <div class="company">Avalian</div>
+            <div class="role">Analista Funcional / Analista de Procesos</div>
+            <ul>
+                <li>Pide "carreras afines" y "próximos a graduarse".</li>
+                <li>El título terciario califica: un estudiante de 3° año puede postularse hoy.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 4: Federada -->
+    <div class="slide">
+        <h2>Aviso 2</h2>
+        <div class="job-card">
+            <span class="pill mid">3 a 5 años de experiencia</span>
+            <div class="company">Federada</div>
+            <div class="role">Analista Funcional — Rosario, 3 vacantes</div>
+            <ul>
+                <li>3 a 5 años de experiencia, radicación en Rosario, 3 vacantes abiertas.</li>
+                <li>Pide formación universitaria completa.</li>
+            </ul>
+        </div>
+        <div class="warning-box">
+            <p>Acá el título terciario NO califica. Sirve para hablar de la diferencia entre un filtro duro de RRHH (el título exigido) y un requisito que en la práctica se negocia (los años de experiencia, según el resto del perfil).</p>
+        </div>
+    </div>
+
+    <!-- Slide 5: Claro Pay -->
+    <div class="slide">
+        <h2>Aviso 3</h2>
+        <div class="job-card">
+            <span class="pill senior">Senior — 8 años</span>
+            <div class="company">Claro Pay</div>
+            <div class="role">Analista Funcional Senior — dominio fintech</div>
+            <ul>
+                <li>Perfil senior, dominio de fintech, 8 años de recorrido profesional.</li>
+            </ul>
+        </div>
+        <p>Este es un horizonte, no una meta de esta etapa de la carrera.</p>
+    </div>
+
+    <!-- Slide 6: Cuadro comparativo -->
+    <div class="slide">
+        <h2>Los tres avisos, lado a lado</h2>
+        <div style="width: 100%; max-width: 950px; overflow-x: auto;">
+        <table class="comparison-table">
+            <tr>
+                <th>Requisito</th>
+                <th>Claro Pay</th>
+                <th>Federada</th>
+                <th>Avalian</th>
+            </tr>
+            <tr>
+                <td>Seniority</td>
+                <td>Senior</td>
+                <td>3-5 años</td>
+                <td>2 años, próx. a graduarse</td>
+            </tr>
+            <tr>
+                <td>Título terciario califica</td>
+                <td class="no">No</td>
+                <td class="no">No</td>
+                <td class="yes">Sí</td>
+            </tr>
+            <tr>
+                <td>Stakeholders / relevamiento</td>
+                <td class="yes">Sí</td>
+                <td class="yes">Sí</td>
+                <td class="yes">Sí</td>
+            </tr>
+            <tr>
+                <td>Factibilidad técnica</td>
+                <td class="yes">Sí</td>
+                <td class="yes">Sí</td>
+                <td class="yes">Sí</td>
+            </tr>
+            <tr>
+                <td>Trabajo interdisciplinario</td>
+                <td class="yes">Sí</td>
+                <td class="yes">Sí</td>
+                <td class="yes">Sí</td>
+            </tr>
+            <tr>
+                <td>Documentación</td>
+                <td class="yes">Sí</td>
+                <td class="yes">Sí</td>
+                <td class="yes">Sí</td>
+            </tr>
+            <tr>
+                <td>Jira</td>
+                <td class="yes">Sí</td>
+                <td class="yes">Sí</td>
+                <td class="yes">Sí</td>
+            </tr>
+            <tr>
+                <td>Métricas / indicadores</td>
+                <td class="yes">Sí</td>
+                <td class="yes">Sí</td>
+                <td class="yes">Sí</td>
+            </tr>
+            <tr>
+                <td>Modelado de procesos (BPMN)</td>
+                <td class="no">—</td>
+                <td class="yes">Sí</td>
+                <td class="yes">Sí</td>
+            </tr>
+            <tr>
+                <td>Automatización / n8n</td>
+                <td class="no">—</td>
+                <td class="yes">Sí</td>
+                <td class="yes">Sí</td>
+            </tr>
+        </table>
+        </div>
+    </div>
+
+    <!-- Slide 7: Dato n8n -->
+    <div class="slide">
+        <h2>Un dato para tener en cuenta</h2>
+        <p>Avalian pide <code>n8n</code>.</p>
+        <div class="warning-box">
+            <p>Es exactamente la herramienta con la que se automatiza el circuito de devoluciones de esta materia — el mismo sistema EIDAS con el que reciben las correcciones.</p>
+        </div>
+    </div>
+
+    <!-- Slide 8: Cierre — las deudas -->
+    <div class="slide">
+        <h2>Las tres deudas de la materia</h2>
+        <p>Aparecen en los tres avisos. No están en ninguna de las dos unidades que dimos hasta ahora.</p>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <p><strong>Jira</strong> — o cualquier herramienta de gestión de tickets/backlog.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <p><strong>Métricas e indicadores</strong> — medir el trabajo, no solo documentarlo.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <p><strong>Modelado de procesos (BPMN)</strong> — el negocio antes del sistema.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">8</span>
+</div>
+
+<div class="controls">
+    <button class="btn" onclick="previousSlide()">← Anterior</button>
+    <button class="btn" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function showSlide(n) {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>

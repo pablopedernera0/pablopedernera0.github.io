@@ -1,10 +1,26 @@
-// Índice de recursos del sitio. Última actualización: 2026-08-14 ART.
+// Índice de recursos del sitio. Última actualización: 2026-08-18 ART.
 // Cada entrada agrega una carpeta al índice de la home (ver render-recursos.js).
 // Para publicar un recurso nuevo: agregar un objeto acá, no tocar index.html.
 //
 // categoria: debe coincidir con el id de la course-card en index.html
 //   'infraestructura' | 'desarrollo' | 'redes'
 const RECURSOS = [
+    {
+        titulo: "Qué pide el mercado",
+        categoria: "desarrollo",
+        carpeta: "que-pide-el-mercado",
+        icono: "▸",
+        descripcion: "Tres avisos reales de analista funcional, leídos en orden ascendente de seniority — y las tres deudas de la materia que aparecen en los tres.",
+        fecha: "2026-08-18"
+    },
+    {
+        titulo: "Definition of Ready y Slicing Vertical",
+        categoria: "desarrollo",
+        carpeta: "dor-slicing",
+        icono: "▸",
+        descripcion: "Qué condiciones tiene que cumplir una historia antes de entrar a desarrollo, y cómo partir una épica en historias que entregan algo usable de punta a punta. Incluye el soporte del taller de slicing.",
+        fecha: "2026-08-18"
+    },
     {
         titulo: "El Contrato REST",
         categoria: "redes",
