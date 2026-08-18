@@ -297,6 +297,11 @@
             h2 { font-size: 1.7em; }
             .two-columns { grid-template-columns: 1fr; }
         }
+    
+        .prev:disabled, .next:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -556,8 +561,8 @@
     </div>
 
     <div class="navigation">
-        <button class="nav-btn" onclick="previousSlide()">← Anterior</button>
-        <button class="nav-btn" onclick="nextSlide()">Siguiente →</button>
+        <button class="nav-btn prev" onclick="previousSlide()">← Anterior</button>
+        <button class="nav-btn next" onclick="nextSlide()">Siguiente →</button>
     </div>
 
     <script>
@@ -568,10 +573,13 @@
         document.getElementById('totalSlides').textContent = totalSlides;
 
         function showSlide(n) {
+            if (n < 0 || n >= totalSlides) return;
             slides[currentSlide].classList.remove('active');
-            currentSlide = (n + totalSlides) % totalSlides;
+            currentSlide = n;
             slides[currentSlide].classList.add('active');
             document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.querySelector('.prev').disabled = currentSlide === 0;
+            document.querySelector('.next').disabled = currentSlide === totalSlides - 1;
         }
 
         function nextSlide() {

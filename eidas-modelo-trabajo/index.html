@@ -378,6 +378,11 @@
             .slide h1 { font-size: 2.1rem; }
             .slide h2 { font-size: 1.7rem; }
         }
+    
+        .prev:disabled, .next:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -592,8 +597,8 @@
 </div>
 
 <div class="controls">
-    <button class="btn" onclick="previousSlide()">← Anterior</button>
-    <button class="btn" onclick="nextSlide()">Siguiente →</button>
+    <button class="btn prev" onclick="previousSlide()">← Anterior</button>
+    <button class="btn next" onclick="nextSlide()">Siguiente →</button>
 </div>
 
 <script>
@@ -604,10 +609,13 @@
     document.getElementById('total-slides').textContent = totalSlides;
 
     function showSlide(n) {
+        if (n < 0 || n >= totalSlides) return;
         slides[currentSlide].classList.remove('active');
-        currentSlide = (n + totalSlides) % totalSlides;
+        currentSlide = n;
         slides[currentSlide].classList.add('active');
         document.getElementById('current-slide').textContent = currentSlide + 1;
+        document.querySelector('.prev').disabled = currentSlide === 0;
+        document.querySelector('.next').disabled = currentSlide === totalSlides - 1;
     }
 
     function nextSlide() {
