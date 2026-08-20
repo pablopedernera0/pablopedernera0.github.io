@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stress Testing — guía de estudio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.6rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.1rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul, .slide ol {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+        }
+
+        .card.bad {
+            border-color: rgba(248, 81, 73, 0.45);
+        }
+
+        .card h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            font-size: 0.96rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: bold;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 0.6rem;
+        }
+
+        .tag.ok {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .tag.no {
+            background: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+        }
+
+        .pair-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.9rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .idea-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.35);
+            border-radius: 12px;
+            padding: 1.4rem 1.6rem;
+            text-align: center;
+        }
+
+        .idea-card .idea-label {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #58a6ff;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .idea-card p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .quote-box {
+            background: rgba(88, 166, 255, 0.08);
+            border-left: 4px solid #58a6ff;
+            border-radius: 0 10px 10px 0;
+            padding: 1.1rem 1.5rem;
+            max-width: 850px;
+            margin: 1rem 0;
+            font-style: italic;
+            font-size: 1.15rem;
+        }
+
+        .quote-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        pre {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            max-width: 900px;
+            width: 100%;
+            overflow-x: auto;
+            margin: 0.8rem 0;
+            text-align: left;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: #79c0ff;
+            font-size: 0.92rem;
+        }
+
+        a {
+            color: #58a6ff;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.05rem;
+            min-width: 2.2rem;
+        }
+
+        .step-item p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.4rem 1rem;
+            text-align: center;
+        }
+
+        .stat-card .stat-number {
+            display: block;
+            font-size: 1.9rem;
+            font-weight: bold;
+            color: #58a6ff;
+            margin-bottom: 0.4rem;
+        }
+
+        .stat-card p {
+            font-size: 0.92rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+            text-align: center;
+        }
+
+        .mirror-table, .flags-table {
+            width: 100%;
+            max-width: 950px;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+        }
+
+        .mirror-table th, .mirror-table td,
+        .flags-table th, .flags-table td {
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.7rem 1rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .mirror-table th:first-child {
+            background: rgba(240, 136, 62, 0.12);
+            color: #f0883e;
+        }
+
+        .mirror-table th:last-child {
+            background: rgba(63, 185, 80, 0.12);
+            color: #3fb950;
+        }
+
+        .flags-table th {
+            background: rgba(88, 166, 255, 0.12);
+            color: #58a6ff;
+        }
+
+        .flags-table code {
+            white-space: nowrap;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+        }
+
+        .series-nav a:hover {
+            color: #58a6ff;
+        }
+
+        .series-nav span.current {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        .btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+            background: #3fb950;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.6rem; }
+            .series-nav { display: none; }
+            .pair-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="series-nav">
+    <a href="../index.html">← Hilo conductor</a>
+    <span class="current">Guía de estudio</span>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Infraestructura de Redes · Etapa 1 · crud-stress-test</div>
+        <h1>Stress Testing</h1>
+        <p class="subtitle">Los cuatro números que mide un test de carga, cómo atiende peticiones el servidor de Flask, y por qué Gunicorn lo resuelve. Guía de repaso para acompañar la práctica.</p>
+    </div>
+
+    <!-- Slide 2: Dos versiones -->
+    <div class="slide">
+        <h2>Dos versiones de esta práctica</h2>
+        <p>En Killercoda vas a medir con un loop de <code>curl</code> + <code>xargs</code> — la plataforma no permite correr herramientas de stress testing reales, sin importar qué tan liviana sea la carga.</p>
+        <div class="warning-box">
+            <p>Si tenés PC propia, existe además una versión con carga real usando <strong>Apache Bench (<code>ab</code>)</strong>, que tu docente puede mostrarte en vivo o pasarte para correr en tu máquina.</p>
+        </div>
+        <p>Los conceptos de las secciones 1, 3, 4 y 5 valen para las dos versiones; la sección 2 documenta ambas herramientas.</p>
+    </div>
+
+    <!-- Slide 3: Agenda -->
+    <div class="slide">
+        <h2>Qué vemos en esta guía</h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <p><strong>Los cuatro números</strong> — throughput, latencia, concurrencia, tasa de error.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <p><strong>Las herramientas</strong> — <code>curl</code>+<code>xargs</code> y <code>ab</code>.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <p><strong>Procesos e hilos</strong> — la base para entender por qué Flask se traba.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">4</span>
+                <p><strong>El servidor de Flask</strong> — WSGI y Werkzeug bajo carga.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">5</span>
+                <p><strong>Gunicorn</strong> — por qué resuelve lo que Werkzeug no puede.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Throughput -->
+    <div class="slide">
+        <h2>1. Throughput (rendimiento)</h2>
+        <p>La cantidad de peticiones que el sistema logra completar por unidad de tiempo, normalmente en <strong>requests por segundo (req/s)</strong>. Responde: "¿cuánto tráfico aguanta esta infraestructura, tal como está configurada hoy?"</p>
+        <pre><code>throughput = peticiones completadas / tiempo total del test</code></pre>
+        <p>Es la primera cifra que reporta <code>ab</code> (<code>Requests per second</code>).</p>
+        <div class="warning-box">
+            <p>Un throughput alto por sí solo no alcanza — hay que mirarlo junto con la tasa de error. Un sistema puede sostener un throughput alto simplemente <strong>descartando</strong> peticiones en vez de atenderlas.</p>
+        </div>
+    </div>
+
+    <!-- Slide 5: Latencia -->
+    <div class="slide">
+        <h2>2. Latencia</h2>
+        <p>El tiempo entre que se envía una petición y se recibe la respuesta completa. A diferencia del throughput (medida agregada), la latencia es <strong>por petición individual</strong>.</p>
+        <div class="pair-grid">
+            <div class="idea-card">
+                <span class="idea-label">Promedio (mean)</span>
+                <p>Primer vistazo útil, pero puede engañar: unas pocas peticiones muy lentas pasan desapercibidas si la mayoría fue rápida.</p>
+            </div>
+            <div class="idea-card">
+                <span class="idea-label">Percentiles (p50, p95, p99)</span>
+                <p>Mucho más representativos: p95 es el tiempo bajo el cual respondió el 95% de las peticiones — muestran la "cola" de peor suerte.</p>
+            </div>
+        </div>
+        <p><code>ab</code> reporta ambas: el promedio (<code>Time per request</code>) y la tabla de percentiles.</p>
+    </div>
+
+    <!-- Slide 6: Latencia - aclaración Time per request -->
+    <div class="slide">
+        <h2>Ojo con "Time per request"</h2>
+        <p>En la salida de <code>ab</code>, <code>Time per request</code> aparece <strong>dos veces</strong>, con números distintos:</p>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1ª</span>
+                <p>El tiempo que percibe un cliente individual esperando su respuesta: <code>tiempo_total / (n / concurrencia)</code>.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">2ª</span>
+                <p><em>(mean, across all concurrent requests)</em> — divide por el total de peticiones sin ajustar por concurrencia: <code>tiempo_total / n</code>. Da un número menor y equivale aprox. a <code>1000 / throughput</code>.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Concurrencia -->
+    <div class="slide">
+        <h2>3. Concurrencia</h2>
+        <p>La cantidad de peticiones que están <strong>en curso al mismo tiempo</strong>, no la cantidad total enviada. Se controla con el flag <code>-c</code> de <code>ab</code>: <code>-n 500 -c 20</code> significa "500 peticiones en total, nunca más de 20 al mismo tiempo".</p>
+        <div class="quote-box">
+            <p>Si un servidor atiende una petición a la vez (concurrencia 1) y cada una tarda 100ms, el throughput máximo es 10 req/s, sin importar cuántas peticiones se acumulen esperando. Subir la concurrencia sin más capacidad de proceso no sube el throughput — solo sube la latencia.</p>
+        </div>
+        <p style="font-size:0.9rem; color:#8b949e;">Para profundizar: esta relación es la <strong>Ley de Little</strong> — <code>L = λ × W</code> (concurrencia = throughput × latencia).</p>
+    </div>
+
+    <!-- Slide 8: Tasa de error -->
+    <div class="slide">
+        <h2>4. Tasa de error</h2>
+        <p>La proporción de peticiones que <strong>no</strong> se completaron con éxito: timeouts, conexiones rechazadas, o respuestas con código de error. <code>ab</code> las reporta en <code>Failed requests</code>.</p>
+        <div class="warning-box">
+            <p>Es la señal más clara de que un sistema llegó a su límite. El throughput puede parecer estable bajo carga creciente, pero la tasa de error revela que, en realidad, cada vez se están descartando más peticiones para sostener ese número.</p>
+        </div>
+        <p>Un throughput "bueno" con tasa de error creciente no es un sistema funcionando bien — es un sistema fallando de forma silenciosa.</p>
+    </div>
+
+    <!-- Slide 9: Las herramientas - comparación -->
+    <div class="slide">
+        <h2>2. Las herramientas</h2>
+        <div style="width: 100%; max-width: 950px; overflow-x: auto;">
+        <table class="mirror-table">
+            <tr>
+                <th>Versión liviana (Killercoda)</th>
+                <th>Versión realista (repo aparte)</th>
+            </tr>
+            <tr>
+                <td><code>curl</code> + <code>xargs</code> — combinación de utilidades genéricas.</td>
+                <td><code>ab</code> (Apache Bench) — herramienta dedicada a stress testing.</td>
+            </tr>
+            <tr>
+                <td>Da throughput y tasa de error aproximados.</td>
+                <td>Da además estadísticas de latencia detalladas: percentiles, desglose de conexión.</td>
+            </tr>
+            <tr>
+                <td>Permitida en Killercoda.</td>
+                <td>Corre en tu propia máquina — Killercoda prohíbe la categoría completa de herramientas de stress testing.</td>
+            </tr>
+        </table>
+        </div>
+    </div>
+
+    <!-- Slide 10: curl + xargs -->
+    <div class="slide">
+        <h3 style="color:#58a6ff;">2.1 — curl + xargs</h3>
+        <pre><code>time ( seq 1 50 | xargs -P 5 -I{} curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8888/ | sort | uniq -c )</code></pre>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">·</span>
+                <p><code>seq 1 50</code> genera 50 números — "50 peticiones en total".</p>
+            </div>
+            <div class="step-item">
+                <span class="num">·</span>
+                <p><code>xargs -P 5</code> ejecuta hasta 5 procesos en paralelo (concurrencia).</p>
+            </div>
+            <div class="step-item">
+                <span class="num">·</span>
+                <p><code>curl -w "%{http_code}" -o /dev/null</code> pide solo el código HTTP, sin bajar el cuerpo.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">·</span>
+                <p><code>sort | uniq -c</code> agrupa y cuenta los códigos de respuesta obtenidos.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">·</span>
+                <p><code>time (...)</code> mide el tiempo total — dividiendo peticiones por tiempo se obtiene el throughput aproximado.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: ab intro -->
+    <div class="slide">
+        <h3 style="color:#58a6ff;">2.2 — Apache Bench (ab)</h3>
+        <p><code>ab</code> viene con el proyecto Apache HTTP Server (paquete <code>apache2-utils</code> en Debian/Ubuntu). A pesar del nombre, no depende de que el destino sea Apache — genera carga HTTP contra cualquier servidor web.</p>
+        <div class="quote-box">
+            <p>Abre hasta <code>-c</code> conexiones simultáneas y va disparando peticiones hasta completar un total de <code>-n</code>, midiendo el tiempo de cada una y contando éxitos/fallos.</p>
+        </div>
+    </div>
+
+    <!-- Slide 12: ab flags -->
+    <div class="slide">
+        <h2>Flags de ab que vas a usar</h2>
+        <table class="flags-table">
+            <tr><th>Flag</th><th>Qué hace</th></tr>
+            <tr><td><code>-n &lt;número&gt;</code></td><td>Cantidad total de peticiones a enviar</td></tr>
+            <tr><td><code>-c &lt;número&gt;</code></td><td>Concurrencia: peticiones simultáneas en vuelo</td></tr>
+            <tr><td><code>-p &lt;archivo&gt;</code></td><td>Body a enviar en una petición POST (leído de un archivo)</td></tr>
+            <tr><td><code>-T &lt;content-type&gt;</code></td><td>Header Content-Type a usar junto con -p</td></tr>
+            <tr><td><code>-s &lt;segundos&gt;</code></td><td>Timeout por petición</td></tr>
+        </table>
+    </div>
+
+    <!-- Slide 13: leer salida de ab -->
+    <div class="slide">
+        <h2>Cómo leer la salida de ab</h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <p><code>Complete requests</code> / <code>Failed requests</code> — si las fallidas son muchas, el resto hay que leerlo con cautela.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <p><code>Requests per second</code> — el throughput.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <p><code>Time per request</code> (las dos líneas) — la latencia.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">4</span>
+                <p><code>Connection Times</code> — desglosa Connect / Processing / Waiting / Total.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">5</span>
+                <p><code>Percentage of requests served within a certain time</code> — la tabla de percentiles.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 14: Proceso vs Hilo -->
+    <div class="slide">
+        <h2>3. Procesos e hilos</h2>
+        <p>La base para entender por qué Werkzeug se traba y por qué Gunicorn no.</p>
+        <div class="pair-grid">
+            <div class="idea-card">
+                <span class="idea-label">Proceso</span>
+                <p>Programa en ejecución con su propio espacio de memoria, aislado. Crear uno nuevo y cambiar de contexto es relativamente caro.</p>
+            </div>
+            <div class="idea-card">
+                <span class="idea-label">Hilo (thread)</span>
+                <p>Corre dentro de un proceso, compartiendo memoria con los demás hilos. Más liviano, pero requiere sincronización (locks) para evitar condiciones de carrera.</p>
+            </div>
+        </div>
+        <p style="margin-top:0.5rem;"><strong>Multiproceso = aislamiento total, más pesado. Multihilo = comparten memoria, más liviano, cuidando la sincronización.</strong></p>
+    </div>
+
+    <!-- Slide 15: GIL -->
+    <div class="slide">
+        <h2>El intérprete de Python y el GIL</h2>
+        <p>CPython tiene el <strong>GIL</strong> (<em>Global Interpreter Lock</em>): un lock global que permite que <strong>un solo hilo ejecute bytecode Python a la vez</strong>, incluso con varios núcleos.</p>
+        <div class="warning-box">
+            <p>Agregar hilos en Python no logra paralelismo real para trabajo de CPU, aunque sí puede ayudar en I/O — el GIL se libera mientras un hilo espera una respuesta de red o disco.</p>
+        </div>
+        <p>Nuestra app pasa la mayor parte del tiempo esperando a MySQL (I/O). Aun así, Werkzeug en modo por defecto ni siquiera aprovecha esa ventaja: es single-threaded, una petición a la vez.</p>
+    </div>
+
+    <!-- Slide 16: WSGI y Werkzeug -->
+    <div class="slide">
+        <h2>4. Cómo maneja Flask las peticiones</h2>
+        <p><strong>WSGI</strong> es la interfaz común entre un servidor HTTP y una app Python — permite que la misma app corra sin cambios detrás de servidores distintos. Es lo que comprobás en el Paso 5: el mismo <code>app.py</code> corre con el servidor de desarrollo y después con Gunicorn.</p>
+        <div class="card-grid">
+            <div class="card">
+                <h4>Servidor de desarrollo (Werkzeug)</h4>
+                <p>Pensado exclusivamente para desarrollo: recarga automática, tracebacks detallados. Por defecto, <strong>single-threaded</strong> — una sola petición a la vez.</p>
+            </div>
+            <div class="card">
+                <h4>No es un descuido</h4>
+                <p>Flask lo documenta explícitamente: "do not use it in a production deployment". Con tráfico bajo casi no se nota; con concurrencia alta, sí.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 17: Qué pasa bajo carga -->
+    <div class="slide">
+        <h2>Qué pasa exactamente bajo carga</h2>
+        <p>Cada petición que llega mientras el servidor está ocupado <strong>no se procesa en paralelo</strong>: queda esperando en la cola de conexiones del sistema operativo (el <em>backlog</em> del socket).</p>
+        <div class="quote-box">
+            <p>Si esa cola también se llena, el sistema operativo empieza a rechazar directamente nuevas conexiones. Resultado observable: sube la latencia y, más allá de cierto punto, sube la tasa de error.</p>
+        </div>
+    </div>
+
+    <!-- Slide 18: Gunicorn -->
+    <div class="slide">
+        <h2>5. Gunicorn</h2>
+        <p><strong>Gunicorn</strong> ("Green Unicorn") es un servidor WSGI pensado para producción. Un proceso <em>master</em> administra varios procesos <em>worker</em> independientes, cada uno con su propia copia de la app en memoria.</p>
+        <div class="warning-box">
+            <p>Resuelve la concurrencia usando <strong>procesos</strong>, no hilos: cada worker tiene su propio intérprete y su propio GIL, así que varios workers sí pueden atender peticiones verdaderamente en paralelo.</p>
+        </div>
+        <p style="font-size:0.92rem; color:#8b949e;">El costo: memoria. Cada worker carga su propia copia completa de la app, a diferencia de los hilos, que la comparten.</p>
+    </div>
+
+    <!-- Slide 19: Gunicorn flags + criterio -->
+    <div class="slide">
+        <h2>Gunicorn — flags y criterio</h2>
+        <table class="flags-table">
+            <tr><th>Flag</th><th>Qué hace</th></tr>
+            <tr><td><code>-w &lt;número&gt;</code></td><td>Cantidad de procesos worker a levantar</td></tr>
+            <tr><td><code>-b &lt;host:puerto&gt;</code></td><td>Dirección donde escuchar</td></tr>
+        </table>
+        <div class="stat-grid" style="margin-top:1.2rem;">
+            <div class="stat-card">
+                <span class="stat-number">(2×N)+1</span>
+                <p>Regla de referencia habitual para workers síncronos, siendo N los núcleos de CPU — no es una ley fija.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 20: Para pensar -->
+    <div class="slide">
+        <h2>Para pensar</h2>
+        <div class="quote-box">
+            <p>El código de la aplicación sigue siendo el mismo con Gunicorn, con las mismas consultas a MySQL. Si el cuello de botella real estuviera en la base de datos —por ejemplo, un límite bajo de conexiones concurrentes— ¿hasta qué punto ayudaría agregar más workers? ¿Qué pasaría después de ese punto?</p>
+        </div>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">20</span>
+</div>
+
+<div class="controls">
+    <button class="btn prev" onclick="previousSlide()">← Anterior</button>
+    <button class="btn next" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const prevBtn = document.querySelector('.btn.prev');
+    const nextBtn = document.querySelector('.btn.next');
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function updateControls() {
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide === totalSlides - 1;
+        nextBtn.textContent = currentSlide === totalSlides - 1 ? 'Fin de la guía' : 'Siguiente →';
+    }
+
+    function showSlide(n) {
+        const target = Math.max(0, Math.min(n, totalSlides - 1));
+        if (target === currentSlide) return;
+        slides[currentSlide].classList.remove('active');
+        currentSlide = target;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+        updateControls();
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    updateControls();
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>
