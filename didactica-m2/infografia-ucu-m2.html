@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Levantar las capas de la práctica docente — Trabajo integrador M2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=Public+Sans:ital,wght@0,300;0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --tiza:#F4F6F3;
+  --superficie:#E6EBE5;
+  --piedra:#2C4A52;
+  --lecho:#13212A;
+  --veta:#E0A63C;
+  --veta-suave:#F0D6A0;
+  --tinta:#16232A;
+  --tinta-60:rgba(22,35,42,.62);
+  --claro-70:rgba(234,240,238,.72);
+  --claro:#EAF0EE;
+  --rail:64px;
+  --max:1080px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--tiza);
+  color:var(--tinta);
+  font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-weight:400;
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:"Fraunces",Georgia,serif;font-variation-settings:"SOFT" 0,"WONK" 1;margin:0;line-height:1.06;letter-spacing:-.015em}
+p{margin:0}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;text-transform:uppercase;letter-spacing:.14em;font-size:10.5px;font-weight:500}
+
+/* ---------- bandas y riel de profundidad ---------- */
+.banda{width:100%;position:relative}
+.banda-inner{
+  max-width:var(--max);margin:0 auto;padding:64px 28px 72px;
+  display:grid;grid-template-columns:var(--rail) 1fr;gap:0;
+}
+.riel{position:relative}
+.riel::before{ /* gauge de estrato */
+  content:"";position:absolute;left:18px;top:-200px;bottom:-200px;width:1px;
+  background:currentColor;opacity:.28;
+}
+.riel::after{ /* veta de IA */
+  content:"";position:absolute;left:26px;top:-200px;bottom:-200px;width:0;
+  border-left:2px dashed var(--veta);opacity:.85;
+}
+.riel span{
+  position:absolute;left:40px;top:4px;writing-mode:vertical-rl;
+  font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;
+  letter-spacing:.24em;text-transform:uppercase;opacity:.75;white-space:nowrap;
+}
+.cuerpo{min-width:0;padding-left:8px}
+
+/* ---------- portada ---------- */
+.portada{background:var(--tiza);color:var(--tinta);padding-top:12px}
+.portada .banda-inner{padding-top:52px;padding-bottom:40px}
+.sello{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:baseline;color:var(--tinta-60);margin-bottom:34px}
+.sello b{color:var(--tinta);font-weight:600}
+.pregunta-rotulo{display:inline-block;background:var(--tinta);color:var(--tiza);padding:5px 11px 4px;margin-bottom:18px}
+h1{font-size:clamp(30px,5.1vw,54px);font-weight:800;max-width:19ch;font-variation-settings:"SOFT" 0,"WONK" 1;text-wrap:balance}
+h1 em{font-style:italic;font-weight:400;color:var(--piedra)}
+.bajada{margin-top:26px;max-width:62ch;font-size:16.5px;color:var(--tinta-60)}
+.leyenda{
+  margin-top:38px;display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center;
+  padding-top:18px;border-top:1px solid rgba(22,35,42,.18);color:var(--tinta-60);
+}
+.leyenda i{display:inline-block;width:22px;height:0;border-top:2px dashed var(--veta);vertical-align:middle;margin-right:8px}
+
+/* ---------- capa 1 ---------- */
+.capa1{background:var(--superficie);color:var(--tinta)}
+.capa1 .riel{color:var(--tinta)}
+.rotulo{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:8px;color:var(--tinta-60)}
+h2{font-size:clamp(22px,3.4vw,34px);font-weight:600;margin-bottom:10px}
+.intro{max-width:60ch;color:var(--tinta-60);margin-bottom:30px}
+.supuestos{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:14px}
+.sup{
+  background:var(--tiza);border:1px solid rgba(22,35,42,.14);
+  padding:16px 15px 15px;display:flex;flex-direction:column;gap:9px;position:relative;
+}
+.sup .num{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.16em;color:var(--tinta-60)}
+.sup h3{font-size:16.5px;font-weight:600;line-height:1.2}
+.sup p{font-size:13px;color:var(--tinta-60);line-height:1.45}
+.sup.elegido{background:var(--tinta);color:var(--claro);border-color:var(--tinta)}
+.sup.elegido .num,.sup.elegido p{color:var(--claro-70)}
+.sup.elegido::after{
+  content:"↓ se profundiza";position:absolute;left:15px;bottom:-11px;
+  background:var(--veta);color:var(--lecho);font-family:"IBM Plex Mono",monospace;
+  font-size:9.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;
+}
+.nota-capa{margin-top:34px;font-size:13.5px;color:var(--tinta-60);max-width:58ch;border-left:2px solid var(--veta);padding-left:14px}
+
+/* ---------- capa 2 ---------- */
+.capa2{background:var(--piedra);color:var(--claro)}
+.capa2 .riel{color:var(--claro)}
+.capa2 .rotulo,.capa2 .intro{color:var(--claro-70)}
+.analisis{display:flex;flex-direction:column;gap:0;border-top:1px solid rgba(234,240,238,.22)}
+.bloque{
+  display:grid;grid-template-columns:1.05fr 1fr 1fr;gap:26px;
+  padding:26px 0;border-bottom:1px solid rgba(234,240,238,.22);
+}
+.bloque h3{font-size:20px;font-weight:600;margin-bottom:10px}
+.bloque .col p{font-size:13.5px;color:var(--claro-70);line-height:1.5}
+.etiqueta{display:block;font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--claro-70);margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{border:1px solid rgba(234,240,238,.4);padding:3px 9px 2px;font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase}
+.ia{border-left:2px solid var(--veta);padding-left:14px}
+.ia .etiqueta{color:var(--veta)}
+.autores{margin-top:12px;font-size:12.5px;color:var(--veta-suave);font-family:"IBM Plex Mono",monospace;letter-spacing:.04em;text-transform:none}
+
+/* ---------- capa 3 ---------- */
+.capa3{background:var(--lecho);color:var(--claro)}
+.capa3 .riel{color:var(--claro)}
+.capa3 .rotulo,.capa3 .intro{color:var(--claro-70)}
+.dispositivo-nombre{
+  display:inline-block;border:1px solid var(--veta);color:var(--veta);
+  padding:5px 12px 4px;margin-bottom:22px;
+}
+.movimientos{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:8px}
+.mov{padding:24px 22px;border:1px solid rgba(234,240,238,.24);border-right:0;position:relative}
+.mov:last-child{border-right:1px solid rgba(234,240,238,.24)}
+.mov .paso{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--veta);margin-bottom:10px;display:block}
+.mov h3{font-size:22px;font-weight:600;margin-bottom:10px}
+.mov p{font-size:13.5px;color:var(--claro-70);line-height:1.5}
+.mov .rol-ia{margin-top:16px;padding-top:12px;border-top:1px dashed rgba(224,166,60,.55);font-size:12.5px;color:var(--veta-suave)}
+.mov::after{
+  content:"→";position:absolute;right:-11px;top:50%;transform:translateY(-50%);
+  background:var(--lecho);color:var(--veta);width:22px;text-align:center;font-size:15px;z-index:2;
+}
+.mov:last-child::after{content:""}
+.cierre-ciclo{
+  margin-top:0;border:1px solid rgba(234,240,238,.24);border-top:0;padding:12px 22px;
+  font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--claro-70);
+}
+.paneles{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:36px}
+.panel h3{font-size:17px;font-weight:600;margin-bottom:12px}
+.panel ul{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.panel li{font-size:13.5px;color:var(--claro-70);padding-left:18px;position:relative;line-height:1.45}
+.panel li::before{content:"—";position:absolute;left:0;color:var(--veta)}
+.nucleo{
+  margin-top:34px;padding:22px 24px;background:rgba(224,166,60,.1);border-left:3px solid var(--veta);
+}
+.nucleo p{font-family:"Fraunces",Georgia,serif;font-size:19px;line-height:1.35;font-weight:400;max-width:52ch}
+
+/* ---------- balance IA ---------- */
+.balance{background:var(--tiza);color:var(--tinta)}
+.balance .riel{color:var(--tinta)}
+.balance .riel::after{bottom:calc(100% - 60px)} /* la veta se corta: aquí decide el docente */
+.libro{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
+.asiento{border:1px solid rgba(22,35,42,.16);padding:18px 16px;background:#fff}
+.asiento .marca{font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;display:block;margin-bottom:10px}
+.asiento.rec .marca{color:#2F6B4F}
+.asiento.ref .marca{color:#8A6A16}
+.asiento.des .marca{color:#8C3A2E}
+.asiento h3{font-size:15.5px;font-weight:600;margin-bottom:8px;line-height:1.25}
+.asiento p{font-size:13px;color:var(--tinta-60);line-height:1.45}
+.firma{
+  margin-top:30px;padding-top:18px;border-top:1px solid rgba(22,35,42,.18);
+  font-family:"Fraunces",Georgia,serif;font-size:20px;max-width:54ch;line-height:1.35
+}
+
+/* ---------- pie ---------- */
+.pie{background:var(--superficie);color:var(--tinta-60)}
+.pie .banda-inner{padding-top:38px;padding-bottom:46px}
+.pie .riel{color:var(--tinta)}
+.pie .riel::after{display:none}
+.creditos{
+  display:grid;grid-template-columns:auto auto auto;gap:14px 44px;justify-content:start;
+  padding-bottom:26px;margin-bottom:26px;border-bottom:1px solid rgba(22,35,42,.18);
+}
+.etiqueta-pie{display:block;font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--tinta-60);margin-bottom:7px}
+.nombres{font-family:"Fraunces",Georgia,serif;font-size:17px;font-weight:600;color:var(--tinta);line-height:1.3}
+.refs{display:flex;flex-direction:column;gap:7px;font-size:12.5px;max-width:74ch}
+.refs b{color:var(--tinta);font-weight:600}
+
+@media (max-width:880px){
+  .bloque{grid-template-columns:1fr;gap:16px}
+  .movimientos{grid-template-columns:1fr}
+  .mov{border-right:1px solid rgba(234,240,238,.24);border-bottom:0}
+  .mov:last-child{border-bottom:1px solid rgba(234,240,238,.24)}
+  .mov::after{content:"↓";right:auto;left:22px;top:auto;bottom:-11px;transform:none}
+  .paneles,.libro{grid-template-columns:1fr}
+  .creditos{grid-template-columns:1fr;gap:16px}
+}
+@media (max-width:620px){
+  :root{--rail:34px}
+  .banda-inner{padding:44px 18px 52px}
+  .riel span{display:none}
+  .riel::before{left:8px}
+  .riel::after{left:15px}
+  .cuerpo{padding-left:6px}
+}
+@media print{
+  body{background:#fff}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .banda{break-inside:avoid}
+  .banda-inner{padding:34px 20px 38px;max-width:none}
+  .sup,.bloque,.mov,.asiento,.nucleo{break-inside:avoid}
+  @page{size:A4;margin:10mm}
+}
+@media (prefers-reduced-motion:no-preference){
+  .banda-inner>*{animation:sube .5s ease-out both}
+  @keyframes sube{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ PORTADA ============ -->
+<section class="banda portada">
+  <div class="banda-inner">
+    <div class="riel"><span>Superficie</span></div>
+    <div class="cuerpo">
+      <div class="sello mono">
+        <span><b>UCU</b> Centro Regional Rosario</span>
+        <span>Profesorado de Educación Superior</span>
+        <span>Módulo 2 · Trabajo integrador</span>
+        <span><b>2026</b></span>
+      </div>
+      <span class="pregunta-rotulo mono">El problema</span>
+      <h1>¿Qué transformaciones necesita realizar un docente para construir prácticas de enseñanza creativas, éticas, reflexivas y potenciadas por la IA <em>sin renunciar a la autoría profesional?</em></h1>
+      <p class="bajada">La práctica docente está hecha de capas. Arriba, lo que se ve: la clase, el programa, las consignas. Debajo, lo que la sostiene sin decirse. Este trabajo excava tres niveles — hacer visible, problematizar, diseñar — y sigue una veta que atraviesa todos: la inteligencia artificial.</p>
+      <div class="leyenda mono">
+        <span><i></i>Veta de IA: dónde la inteligencia artificial tensiona cada capa</span>
+        <span>Lectura: de la superficie al lecho</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CAPA 1 ============ -->
+<section class="banda capa1">
+  <div class="banda-inner">
+    <div class="riel"><span>Capa 01</span></div>
+    <div class="cuerpo">
+      <div class="rotulo mono"><span>Primera capa</span><span>—</span><span>Cinco supuestos en actividad</span></div>
+      <h2>Hacer visible lo invisible</h2>
+      <p class="intro">Lo que hacemos porque «siempre se hizo así». No son errores a corregir: son estructuras que organizan la enseñanza cotidiana de manera casi inconsciente y que conviene traer a la superficie antes de tocar nada.</p>
+
+      <div class="supuestos">
+        <article class="sup">
+          <span class="num">S1</span>
+          <h3>El docente es quien arranca a hablar</h3>
+          <p>La clase empieza cuando él toma la palabra. Los estudiantes esperan esa apertura. Parece natural: es una naturalidad construida por miles de horas de escolarización.</p>
+        </article>
+        <article class="sup elegido">
+          <span class="num">S2 · seleccionado</span>
+          <h3>El docente es el que sabe</h3>
+          <p>Distribución tácita del conocimiento: él lo tiene, ellos lo reciben. Define quién valida, quién corrige, quién puede improvisar.</p>
+        </article>
+        <article class="sup elegido">
+          <span class="num">S3 · seleccionado</span>
+          <h3>El docente decide qué se da en clase</h3>
+          <p>Contenidos, secuencia, tiempos y criterios se viven como decisión técnica o curricular, casi nunca como decisión política.</p>
+        </article>
+        <article class="sup">
+          <span class="num">S4</span>
+          <h3>Los estudiantes no saben nada</h3>
+          <p>Se empieza «desde cero», como si no trajeran experiencias ni teorías propias. Convive con la queja de que no aprenden lo que se les enseña.</p>
+        </article>
+        <article class="sup elegido">
+          <span class="num">S5 · seleccionado</span>
+          <h3>Hay estudiantes vagos que no quieren aprender</h3>
+          <p>Cuando algo no funciona, la causa se localiza en el estudiante. La explicación cierra el caso y exime al docente de seguir mirando.</p>
+        </article>
+      </div>
+
+      <p class="nota-capa"><b>Dónde entra la IA:</b> cada supuesto se tensiona cuando aparece una herramienta que responde, selecciona y produce. Los tres supuestos marcados son los que se excavan en la capa siguiente.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CAPA 2 ============ -->
+<section class="banda capa2">
+  <div class="banda-inner">
+    <div class="riel"><span>Capa 02</span></div>
+    <div class="cuerpo">
+      <div class="rotulo mono"><span>Segunda capa</span><span>—</span><span>Tres supuestos en diálogo con el seminario</span></div>
+      <h2>Problematizar</h2>
+      <p class="intro">No responder preguntas aisladas, sino construir una interpretación fundamentada: qué sostiene cada supuesto, qué tensión lo atraviesa y qué le hace la IA.</p>
+
+      <div class="analisis">
+
+        <article class="bloque">
+          <div class="col">
+            <h3>S2 · El docente es el que sabe</h3>
+            <div class="chips"><span class="chip">Objetividad / subjetividad</span><span class="chip">Teoría / práctica</span></div>
+          </div>
+          <div class="col">
+            <span class="etiqueta">Qué lo sostiene</span>
+            <p>Araujo localiza el supuesto en el origen de la didáctica: la tradición de Comenio instala un método universal para enseñar todo a todos, con un docente portador del orden y un estudiante destinatario pasivo. La perspectiva instrumental reduce la enseñanza al <i>cómo</i> y deja sin interrogar el <i>para qué</i> y el <i>para quién</i>. Recuperando a Bullough, nadie llega vacío: se aprende qué es enseñar por observación, mucho antes de que alguien lo explique.</p>
+            <p class="autores">Araujo (2013), cap. 1 · Bullough (2000)</p>
+          </div>
+          <div class="col ia">
+            <span class="etiqueta">Qué le hace la IA</span>
+            <p>Si un estudiante obtiene en segundos una respuesta elaborada sobre cualquier tema, la autoridad basada en poseer el conocimiento se erosiona. La IA no reemplaza al docente: lo obliga a decir con más precisión qué hace él que ella no puede hacer — acompañar la construcción de sentido, evaluar críticamente, vincular saber, experiencia y valores.</p>
+          </div>
+        </article>
+
+        <article class="bloque">
+          <div class="col">
+            <h3>S3 · El docente decide qué se da en clase</h3>
+            <div class="chips"><span class="chip">Tradición / innovación</span><span class="chip">IA como mediación</span></div>
+          </div>
+          <div class="col">
+            <span class="etiqueta">Qué lo sostiene</span>
+            <p>Programar la enseñanza no es neutral ni aséptico: descansa en presupuestos teóricos, prácticos y axiológicos. Elegir contenidos, orden, materiales y criterios expresa qué conocimiento vale y qué sujeto se pretende formar. Scolari expande el problema: los estudiantes ya aprenden en ecosistemas transmedia donde el saber circula de manera distribuida y ellos mismos producen contenido.</p>
+            <p class="autores">Araujo (2013), cap. 2 · Scolari (2013)</p>
+          </div>
+          <div class="col ia">
+            <span class="etiqueta">Qué le hace la IA</span>
+            <p>Si el estudiante puede generar contenido y obtener explicaciones personalizadas, la decisión pedagógica no desaparece: se desplaza. Ya no es solo <i>qué enseñar</i>, sino cómo diseñar situaciones donde haya que pensar, evaluar, decidir y crear — con IA o sin ella — y eso tenga sentido formativo real.</p>
+          </div>
+        </article>
+
+        <article class="bloque">
+          <div class="col">
+            <h3>S5 · Hay estudiantes vagos</h3>
+            <div class="chips"><span class="chip">Reflexión individual / colectiva</span><span class="chip">Práctica</span></div>
+          </div>
+          <div class="col">
+            <span class="etiqueta">Qué lo sostiene</span>
+            <p>Funciona como explicación de cierre. Trillo señala a los docentes que enseñan sin preguntarse qué representa aprender y confunden aprender con repetir. Sanjurjo aporta el margen de indeterminación del aula: siempre intervienen factores impredecibles. Nombrar a alguien «vago» clausura todas esas posibilidades. Cuando el mismo comportamiento se repite en varios, la explicación individual se vuelve insostenible.</p>
+            <p class="autores">Trillo y Sanjurjo (2012)</p>
+          </div>
+          <div class="col ia">
+            <span class="etiqueta">Qué le hace la IA</span>
+            <p>Usar IA sin comprender puede leerse como vagancia o deshonestidad — o como respuesta racional a una consigna que no da razones para pensar. Si la tarea consiste en reproducir información que una IA genera en segundos, ¿por qué no usarla? La pregunta deja de ser cómo detectar y pasa a ser cómo diseñar situaciones donde el uso irreflexivo no alcance.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CAPA 3 ============ -->
+<section class="banda capa3">
+  <div class="banda-inner">
+    <div class="riel"><span>Capa 03 · Lecho</span></div>
+    <div class="cuerpo">
+      <div class="rotulo mono"><span>Tercera capa</span><span>—</span><span>Dispositivo pedagógico</span></div>
+      <h2>Diseñar</h2>
+      <span class="dispositivo-nombre mono">Protocolo de reflexión sobre la práctica potenciado por IA</span>
+      <p class="intro">Protocolo de trabajo entre colegas — aplicable también en soledad — para revisar críticamente una clase o una secuencia. Periodicidad sugerida: una vez por mes o al cierre de cada unidad. La IA participa como interlocutor crítico, nunca como oráculo.</p>
+
+      <div class="movimientos">
+        <article class="mov">
+          <span class="paso">Movimiento 01</span>
+          <h3>Observar</h3>
+          <p>Se elige una clase reciente y se la describe con la mayor objetividad posible: qué pasó, quién habló y cuánto, qué actividades se hicieron, qué quedó afuera, cómo reaccionaron los estudiantes. No se evalúa: se registra. Sirve una grabación, notas de clase o el recuerdo inmediato.</p>
+          <p class="rol-ia"><b>IA:</b> describirle la clase y pedirle patrones o preguntas que uno no se está haciendo.</p>
+        </article>
+        <article class="mov">
+          <span class="paso">Movimiento 02</span>
+          <h3>Problematizar</h3>
+          <p>Sobre ese registro se identifican los supuestos en actividad. ¿Quién decidió qué? ¿Qué lugar tuvieron los estudiantes? ¿Qué conocimientos previos se ignoraron o se aprovecharon? ¿Qué tensiones aparecieron entre lo planificado y lo ocurrido?</p>
+          <p class="rol-ia"><b>IA:</b> generadora de contraargumentos e interpretaciones alternativas.</p>
+        </article>
+        <article class="mov">
+          <span class="paso">Movimiento 03</span>
+          <h3>Rediseñar</h3>
+          <p>Se propone al menos una modificación concreta para la próxima clase, fundamentada en el análisis. No un rediseño total: una intervención puntual y testeable, que vuelve a entrar al protocolo en el ciclo siguiente.</p>
+          <p class="rol-ia"><b>IA:</b> sugiere alternativas. <b>La decisión final es del docente.</b></p>
+        </article>
+      </div>
+      <p class="cierre-ciclo">↺ El rediseño se convierte en la próxima clase a observar — el protocolo es un ciclo, no una lista</p>
+
+      <div class="paneles">
+        <div class="panel">
+          <h3>Qué dimensiones hace visible</h3>
+          <ul>
+            <li>La distribución del protagonismo y de la palabra en el aula</li>
+            <li>La relación entre lo planificado y lo imprevisto</li>
+            <li>El lugar que ocupan los conocimientos previos de los estudiantes</li>
+            <li>Con qué criterios y con qué fundamentación se toman las decisiones pedagógicas</li>
+            <li>En qué momentos la IA aporta y en cuáles la decisión es irreductiblemente docente</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Por qué favorecería la mejora</h3>
+          <ul>
+            <li>Enseñar supone actuar, pero también pararse a ver y a pensar sobre la propia actuación (Trillo)</li>
+            <li>La mejora no viene de aplicar recetas externas sino de leer críticamente lo que uno hace</li>
+            <li>La reflexión no puede ser solo individual: necesita contraste con otros y con marcos teóricos (Araujo)</li>
+            <li>Cada ciclo deja una decisión fundamentada y verificable, no una impresión</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="nucleo">
+        <p>Usar la IA para pensar mejor, no para pensar menos. Explicitar en qué momentos aporta y en cuáles la decisión es del docente: esa distinción es el núcleo de la autoría profesional.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BALANCE IA ============ -->
+<section class="banda balance">
+  <div class="banda-inner">
+    <div class="riel"><span>Autoría</span></div>
+    <div class="cuerpo">
+      <div class="rotulo mono"><span>Valor agregado</span><span>—</span><span>Tres consultas significativas</span></div>
+      <h2>Lo que la IA nos permitió pensar y lo que decidimos no aceptar</h2>
+
+      <div class="libro">
+        <article class="asiento des">
+          <span class="marca">Consulta 01 · Descartado</span>
+          <h3>Identificar supuestos docentes habituales</h3>
+          <p>Las respuestas fueron genéricas y académicamente correctas, pero no ancladas en la experiencia propia. Se descartaron: se partió de supuestos concretos surgidos de la práctica, más honestos y más productivos para el análisis.</p>
+        </article>
+        <article class="asiento rec">
+          <span class="marca">Consulta 02 · Recuperado</span>
+          <h3>Contraargumentos a «el docente es el que sabe»</h3>
+          <p>Señaló que la autoridad docente no desaparece con la IA sino que se desplaza hacia la capacidad de acompañar procesos de construcción de sentido. El aporte resultó pertinente y enriqueció el análisis de la segunda capa.</p>
+        </article>
+        <article class="asiento ref">
+          <span class="marca">Consulta 03 · Reformulado</span>
+          <h3>Alternativas de diseño del dispositivo</h3>
+          <p>Ofreció bitácora, rúbrica de autoevaluación y protocolo entre pares. Se tomó la estructura de protocolo pero se reformuló su lógica interna: los tres movimientos emergieron del trabajo con los textos del seminario, no de la propuesta de la IA.</p>
+        </article>
+      </div>
+
+      <p class="firma">Lo que decidimos no aceptar: la IA tendía a presentar las tensiones como problemas con solución. El seminario nos enseñó que ciertas tensiones — teoría y práctica, tradición e innovación, objetividad y subjetividad — no se resuelven: se habitan.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PIE ============ -->
+<footer class="banda pie">
+  <div class="banda-inner">
+    <div class="riel"></div>
+    <div class="cuerpo">
+      <div class="creditos">
+        <div class="credito">
+          <span class="etiqueta-pie">Docente a cargo</span>
+          <p class="nombres">Norma Placci</p>
+        </div>
+        <div class="credito">
+          <span class="etiqueta-pie">Estudiantes</span>
+          <p class="nombres">Silvina Grumelli · Pablo Pedernera · Dante Roselli</p>
+        </div>
+        <div class="credito">
+          <span class="etiqueta-pie">A&ntilde;o</span>
+          <p class="nombres">2026</p>
+        </div>
+      </div>
+
+      <div class="rotulo mono"><span>Referencias bibliográficas</span></div>
+      <div class="refs">
+        <p><b>Araujo, S.</b> (2013). <i>Docencia y enseñanza: una introducción a la didáctica</i>, caps. 1 y 2. Bernal: Editorial de la Universidad Nacional de Quilmes.</p>
+        <p><b>Scolari, C. A.</b> (2013). <i>Narrativas transmedia. Cuando todos los medios cuentan</i>. Barcelona: Deusto.</p>
+        <p><b>Trillo Alonso, F. y Sanjurjo, L.</b> (2012). <i>Didáctica para profesores de a pie. Propuestas para comprender y mejorar la práctica</i> (2.ª parte). Rosario: Homo Sapiens.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
