@@ -54,12 +54,12 @@ const RECURSOS = [
         fecha: "2026-08-13"
     },
     {
-        titulo: "Dimensionamiento de Servidores — Clase 1",
+        titulo: "Dimensionamiento de Servidores",
         categoria: "redes",
         carpeta: "dimensionamiento-servidores",
         icono: "📶",
-        descripcion: "Página completa vs. JSON: datos reales de tamaño y su impacto al escalar de 10 a 10.000 usuarios.",
-        fecha: "2026-08-07"
+        descripcion: "Serie de 3 clases: de HTML vs. JSON con datos reales, a dimensionar un servidor para EIDAS, a medirlo vos mismo en Killercoda.",
+        fecha: "2026-08-21"
     },
     {
         titulo: "Sistema EIDAS — Modelo de trabajo",
