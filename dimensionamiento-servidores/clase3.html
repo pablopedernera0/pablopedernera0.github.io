@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dimensionamiento de Servidores - Clase 3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px;
+            height: 100vh;
+            overflow-y: auto;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255,255,255,0.3);
+        }
+
+        h2 {
+            font-size: 2.3em;
+            margin-bottom: 25px;
+            color: #87ceeb;
+            border-bottom: 3px solid #87ceeb;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.7em;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .content {
+            font-size: 1.25em;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 30px 0;
+        }
+
+        .comparison-table {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th {
+            background: rgba(135,206,235,0.3);
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.3);
+            font-size: 1.1em;
+            text-align: left;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            font-size: 1em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,165,0,0.2));
+            border-left: 5px solid #ffd700;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .code-block {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 18px 22px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 18px 0;
+            font-size: 0.95em;
+            color: #7ee787;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .source-note {
+            font-size: 0.85em;
+            opacity: 0.7;
+            font-style: italic;
+            margin-top: 8px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.05em;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1.05em;
+            backdrop-filter: blur(10px);
+        }
+
+        .class-indicator {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 78px;
+            left: 30px;
+            display: flex;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .series-nav a, .series-nav span {
+            text-decoration: none;
+            padding: 5px 12px;
+            border-radius: 14px;
+            font-size: 0.8em;
+            background: rgba(0,0,0,0.3);
+            color: #b8c7e0;
+        }
+
+        .series-nav a:hover {
+            color: #ffd700;
+        }
+
+        .series-nav span.current {
+            background: rgba(255,215,0,0.25);
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin: 14px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        li::before {
+            content: "▶";
+            color: #ffd700;
+            position: absolute;
+            left: 0;
+            font-size: 1.1em;
+        }
+
+        .break-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-align: center;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .break-slide.active {
+            display: flex !important;
+        }
+
+        .break-slide h1 {
+            font-size: 3.2em;
+            margin-bottom: 25px;
+        }
+
+        .break-slide p {
+            font-size: 1.5em;
+            opacity: 0.9;
+            max-width: 900px;
+        }
+
+        .resource-link {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 10px;
+            border: 2px solid #ffd700;
+            transition: all 0.3s ease;
+        }
+
+        .resource-link:hover {
+            background: #ffd700;
+            color: #333;
+        }
+
+        .further-reading {
+            margin-top: 25px;
+        }
+
+        .further-reading .label {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.7;
+            margin-bottom: 8px;
+        }
+
+        .further-reading a {
+            display: inline-block;
+            font-size: 0.85em;
+            background: rgba(255,255,255,0.08);
+            color: #87ceeb;
+            text-decoration: none;
+            padding: 7px 16px;
+            border-radius: 18px;
+            margin: 4px 6px 4px 0;
+            border: 1px solid rgba(135,206,235,0.4);
+            transition: all 0.3s ease;
+        }
+
+        .further-reading a:hover {
+            background: rgba(135,206,235,0.2);
+            color: #fff;
+        }
+
+        .killercoda-btn {
+            display: block;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ffd700, #ffb347);
+            color: #1e3c72;
+            text-decoration: none;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin: 30px auto;
+            max-width: 500px;
+            transition: all 0.3s ease;
+        }
+
+        .killercoda-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255,215,0,0.4);
+        }
+
+        @media (max-width: 900px) {
+            h1 { font-size: 2.1em; }
+            h2 { font-size: 1.7em; }
+            .two-columns { grid-template-columns: 1fr; }
+        }
+
+        .prev:disabled, .next:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">8</span>
+        </div>
+
+        <div class="class-indicator" id="classIndicator">CLASE 3</div>
+        <div class="series-nav">
+            <a href="index.html">Clase 1</a>
+            <a href="clase2.html">Clase 2</a>
+            <span class="current">Clase 3</span>
+        </div>
+
+        <!-- Slide 1: Portada -->
+        <div class="slide active">
+            <div class="content">
+                <h1>Dimensionamiento de Servidores</h1>
+                <div style="text-align: center; margin-top: 50px;">
+                    <h3>Clase 3 — Ahora medís vos</h3>
+                    <p style="font-size: 1.3em; margin-top: 30px; opacity: 0.9;">
+                        La misma comparación de las clases anteriores,<br>
+                        pero con datos que generás con tu propia terminal
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Agenda -->
+        <div class="slide">
+            <div class="content">
+                <h2>Agenda — Clase 3</h2>
+                <ul style="font-size: 1.1em;">
+                    <li>Repaso relámpago de las Clases 1 y 2</li>
+                    <li>Qué es el TTFB y por qué importa</li>
+                    <li>HTML completo vs. JSON, y qué hace la compresión gzip</li>
+                    <li>Cómo leer la salida de <code>curl -w</code></li>
+                    <li>La práctica: escenario individual en Killercoda</li>
+                </ul>
+                <div class="highlight-box" style="margin-top:25px;">
+                    <p>Esta clase es corta a propósito: la mayor parte del tiempo la van a pasar midiendo ustedes mismos, no escuchando.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Repaso -->
+        <div class="slide">
+            <div class="content">
+                <h2>Repaso relámpago</h2>
+                <ul>
+                    <li><strong>Clase 1:</strong> una página HTML completa puede pesar ~65 veces más que un JSON equivalente</li>
+                    <li><strong>Clase 2:</strong> ese peso, multiplicado por usuarios concurrentes, define cuánta CPU/RAM/ancho de banda necesita un servidor — y ahí entra la decisión nube vs. on-premise</li>
+                </ul>
+                <div class="highlight-box">
+                    <p>Hoy generás vos esos números, contra sitios públicos reales, para tu propia tabla comparativa.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: TTFB -->
+        <div class="slide">
+            <div class="content">
+                <h2>¿Qué es el TTFB?</h2>
+                <p><strong>Time To First Byte</strong>: el tiempo que pasa desde que se pide una página hasta que llega el primer byte de la respuesta.</p>
+                <ul>
+                    <li>Incluye la conexión de red, pero sobre todo el tiempo que el <strong>servidor</strong> tarda en procesar el pedido</li>
+                    <li>Un TTFB alto suele señalar un servidor lento (consultas pesadas a la base, poco CPU) — no un problema de la red del usuario</li>
+                    <li>Es una de las métricas que un Analista Funcional usa para justificar si hace falta más CPU, o una base de datos mejor dimensionada</li>
+                </ul>
+                <div class="further-reading">
+                    <div class="label">Para leer más</div>
+                    <a href="https://es.wikipedia.org/wiki/Time_to_first_byte" target="_blank" rel="noopener">Wikipedia — Time to First Byte</a>
+                    <a href="https://developer.mozilla.org/es/docs/Web/API/PerformanceNavigationTiming" target="_blank" rel="noopener">MDN — Performance Navigation Timing</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: HTML vs JSON + gzip -->
+        <div class="slide">
+            <div class="content">
+                <h2>HTML completo vs. JSON, y la compresión</h2>
+                <div class="two-columns">
+                    <div class="comparison-table">
+                        <h3 style="text-align:center;">Página HTML completa</h3>
+                        <p style="font-size:0.95em;">El servidor arma toda la estructura visual en cada pedido. Pesa mucho, pero comprime muy bien con gzip.</p>
+                    </div>
+                    <div class="comparison-table">
+                        <h3 style="text-align:center;">Backend JSON</h3>
+                        <p style="font-size:0.95em;">Solo viajan datos. Ya pesa poco de entrada — la compresión casi no cambia el número.</p>
+                    </div>
+                </div>
+                <div class="further-reading">
+                    <div class="label">Para leer más</div>
+                    <a href="https://www.redhat.com/es/topics/api/what-is-a-rest-api" target="_blank" rel="noopener">Red Hat — Qué es una API REST</a>
+                    <a href="https://developer.mozilla.org/es/docs/Web/HTTP/Headers/Content-Encoding" target="_blank" rel="noopener">MDN — Content-Encoding (compresión)</a>
+                    <a href="https://es.wikipedia.org/wiki/Compresi%C3%B3n_HTTP" target="_blank" rel="noopener">Wikipedia — Compresión HTTP</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Como leer curl -w -->
+        <div class="slide">
+            <div class="content">
+                <h2>Cómo leer la salida de <code>curl -w</code></h2>
+                <div class="comparison-table">
+                    <table>
+                        <tr><th>Métrica</th><th>Qué mide</th></tr>
+                        <tr><td>Código HTTP</td><td>Si el pedido se resolvió bien (200) o no</td></tr>
+                        <tr><td>Tamaño descargado</td><td>Bytes que viajaron en la respuesta</td></tr>
+                        <tr><td>Tiempo de conexión</td><td>Establecer la conexión, antes de pedir nada</td></tr>
+                        <tr><td>Tiempo primer byte</td><td>TTFB — lo que tarda el servidor en empezar a responder</td></tr>
+                        <tr><td>Tiempo total</td><td>Todo el intercambio, de punta a punta</td></tr>
+                    </table>
+                </div>
+                <div class="further-reading">
+                    <div class="label">Para leer más</div>
+                    <a href="https://curl.se/docs/manpage.html#-w" target="_blank" rel="noopener">curl.se — Documentación oficial de -w</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: El escenario -->
+        <div class="slide">
+            <div class="content">
+                <h2>La práctica: Killercoda</h2>
+                <p>Individual. Sin instalar nada: dos comandos.</p>
+                <div class="code-block">bash /root/setup.sh
+obtener-metricas.sh &lt;url&gt;</div>
+                <ul style="font-size:1em;">
+                    <li>Lo corren contra un sitio con HTML completo</li>
+                    <li>Lo corren contra un backend que devuelve JSON</li>
+                    <li>Arman su tabla comparativa y documentan con capturas</li>
+                </ul>
+                <a class="killercoda-btn" href="https://killercoda.com/pablop22/scenario/medicion-http-servidores" target="_blank" rel="noopener">Abrir el escenario en Killercoda →</a>
+            </div>
+        </div>
+
+        <!-- Slide 8: Cierre -->
+        <div class="slide break-slide">
+            <h1>Manos a la obra</h1>
+            <p>30 minutos. Al final entregan: tabla comparativa, dos capturas de pantalla, y 3-4 líneas de conclusión.</p>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn prev" onclick="previousSlide()">← Anterior</button>
+        <button class="nav-btn next" onclick="nextSlide()">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            if (n < 0 || n >= totalSlides) return;
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.querySelector('.prev').disabled = currentSlide === 0;
+            document.querySelector('.next').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+    </script>
+</body>
+</html>
