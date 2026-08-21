@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dimensionamiento de Servidores - Clase 2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px;
+            height: 100vh;
+            overflow-y: auto;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255,255,255,0.3);
+        }
+
+        h2 {
+            font-size: 2.3em;
+            margin-bottom: 25px;
+            color: #87ceeb;
+            border-bottom: 3px solid #87ceeb;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.7em;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .content {
+            font-size: 1.25em;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 30px 0;
+        }
+
+        .comparison-table {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th {
+            background: rgba(135,206,235,0.3);
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.3);
+            font-size: 1.1em;
+            text-align: left;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            font-size: 1em;
+        }
+
+        .comparison-table td.win {
+            background: rgba(126,231,135,0.12);
+            color: #7ee787;
+            font-weight: bold;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,165,0,0.2));
+            border-left: 5px solid #ffd700;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .code-block {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 18px 22px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 18px 0;
+            font-size: 0.95em;
+            color: #7ee787;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .source-note {
+            font-size: 0.85em;
+            opacity: 0.7;
+            font-style: italic;
+            margin-top: 8px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.05em;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1.05em;
+            backdrop-filter: blur(10px);
+        }
+
+        .class-indicator {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 78px;
+            left: 30px;
+            display: flex;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .series-nav a, .series-nav span {
+            text-decoration: none;
+            padding: 5px 12px;
+            border-radius: 14px;
+            font-size: 0.8em;
+            background: rgba(0,0,0,0.3);
+            color: #b8c7e0;
+        }
+
+        .series-nav a:hover {
+            color: #ffd700;
+        }
+
+        .series-nav span.current {
+            background: rgba(255,215,0,0.25);
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin: 14px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        li::before {
+            content: "▶";
+            color: #ffd700;
+            position: absolute;
+            left: 0;
+            font-size: 1.1em;
+        }
+
+        .break-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-align: center;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .break-slide.active {
+            display: flex !important;
+        }
+
+        .break-slide h1 {
+            font-size: 3.2em;
+            margin-bottom: 25px;
+        }
+
+        .break-slide p {
+            font-size: 1.5em;
+            opacity: 0.9;
+            max-width: 900px;
+        }
+
+        .resource-link {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 10px;
+            border: 2px solid #ffd700;
+            transition: all 0.3s ease;
+        }
+
+        .resource-link:hover {
+            background: #ffd700;
+            color: #333;
+        }
+
+        .big-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ffd700;
+            text-align: center;
+        }
+
+        .big-number small {
+            display: block;
+            font-size: 0.35em;
+            color: white;
+            opacity: 0.85;
+            font-weight: normal;
+            margin-top: 8px;
+        }
+
+        .vs-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .vs-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            padding: 25px 35px;
+            border: 2px solid rgba(255,255,255,0.2);
+            min-width: 220px;
+            text-align: center;
+        }
+
+        .vs-card.api {
+            border-color: #7ee787;
+        }
+
+        .vs-label {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        .spec-card {
+            background: rgba(255,255,255,0.08);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            margin-top: 15px;
+        }
+
+        .spec-item {
+            background: rgba(0,0,0,0.25);
+            border-radius: 10px;
+            padding: 15px 20px;
+        }
+
+        .spec-item .label {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            opacity: 0.75;
+            letter-spacing: 0.04em;
+        }
+
+        .spec-item .value {
+            font-size: 1.4em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .step-badge {
+            display: inline-block;
+            background: #87ceeb;
+            color: #1e3c72;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            line-height: 34px;
+            text-align: center;
+            margin-right: 12px;
+        }
+
+        @media (max-width: 900px) {
+            h1 { font-size: 2.1em; }
+            h2 { font-size: 1.7em; }
+            .two-columns { grid-template-columns: 1fr; }
+            .spec-grid { grid-template-columns: 1fr; }
+        }
+
+        .prev:disabled, .next:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">18</span>
+        </div>
+
+        <div class="class-indicator" id="classIndicator">CLASE 2</div>
+        <div class="series-nav">
+            <a href="index.html">Clase 1</a>
+            <span class="current">Clase 2</span>
+        </div>
+
+        <!-- Slide 1: Portada -->
+        <div class="slide active">
+            <div class="content">
+                <h1>Dimensionamiento de Servidores</h1>
+                <div style="text-align: center; margin-top: 50px;">
+                    <h3>De los requisitos de EIDAS al servidor que los sostiene</h3>
+                    <p style="font-size: 1.3em; margin-top: 30px; opacity: 0.9;">
+                        Cómo un Analista Funcional traduce Stakeholders y Requisitos<br>
+                        en vCPUs, RAM, storage y una decisión: ¿nube o servidor propio?
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Agenda -->
+        <div class="slide">
+            <div class="content">
+                <h2>Agenda — Clase 2</h2>
+                <ul style="font-size: 1.1em;">
+                    <li>Repaso relámpago de la Clase 1</li>
+                    <li>De los Requisitos de EIDAS a una infraestructura concreta</li>
+                    <li>El menú de decisiones: servidor físico, virtual, contenedor, nube</li>
+                    <li>Nube vs. servidor propio: tabla comparativa</li>
+                    <li>El método de cálculo: usuarios concurrentes, CPU/RAM, storage</li>
+                    <li>Caso resuelto en vivo: dimensionamos un Sistema de Turnos</li>
+                    <li>Ahora ustedes: lo mismo, pero con su propio proyecto EIDAS</li>
+                </ul>
+                <div class="highlight-box" style="margin-top:25px;">
+                    <p>Esto es, literalmente, el <strong>Trabajo Práctico N°8</strong> del programa: una propuesta de infraestructura para un sistema real, justificada como lo haría un Analista Funcional. Hoy lo practicamos con un caso de ejemplo; después lo hacen con el suyo.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Repaso Clase 1 -->
+        <div class="slide">
+            <div class="content">
+                <h2>Repaso relámpago — Clase 1</h2>
+                <ul>
+                    <li>Una página completa (HTML+CSS+JS) puede pesar <strong>~65 veces más</strong> que un JSON equivalente</li>
+                    <li>Ese peso, multiplicado por la cantidad de usuarios, define <strong>ancho de banda y CPU</strong></li>
+                    <li>Hay que dimensionar para el <strong>pico</strong>, no para el promedio</li>
+                    <li>Usuarios registrados ≠ usuarios concurrentes: importa <strong>cuántos entran al mismo tiempo</strong></li>
+                </ul>
+                <div class="highlight-box">
+                    <p>Hoy estas ideas dejan de ser teoría suelta: las convertimos en una <strong>fórmula</strong> que arranca de los Requisitos que ya escribieron para su proyecto EIDAS.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Puente EIDAS -->
+        <div class="slide">
+            <div class="content">
+                <h2>De Stakeholders y Requisitos a Infraestructura</h2>
+                <p>En Desarrollo de Sistemas Web ya escribieron, para su propio proyecto:</p>
+                <ul>
+                    <li><strong>Stakeholders</strong>: quiénes usan el sistema y con qué frecuencia</li>
+                    <li><strong>Requisitos funcionales</strong>: qué hace el sistema</li>
+                    <li><strong>Requisitos no funcionales</strong> (si ya llegaron): qué tan rápido, qué tan disponible, cuánta gente al mismo tiempo</li>
+                </ul>
+                <div class="highlight-box">
+                    <p>Todo eso son <strong>datos de entrada</strong> para dimensionar un servidor. Un Analista Funcional no adivina la infraestructura: la deriva de lo que ya relevó.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Menu de decisiones -->
+        <div class="slide">
+            <div class="content">
+                <h2>El menú de decisiones (Unidad 8)</h2>
+                <div class="two-columns">
+                    <div class="comparison-table">
+                        <h3 style="text-align:center;">¿Dónde vive el servidor?</h3>
+                        <ul style="font-size:0.95em;">
+                            <li>Servidor físico propio (on-premise)</li>
+                            <li>Servidor virtual (VM)</li>
+                            <li>Contenedor</li>
+                            <li>Cloud: IaaS / PaaS / SaaS</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-table">
+                        <h3 style="text-align:center;">¿Con qué garantías?</h3>
+                        <ul style="font-size:0.95em;">
+                            <li>Alta disponibilidad y redundancia</li>
+                            <li>Backup y recuperación ante desastres</li>
+                            <li>Nivel de uptime prometido (SLA)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight-box">
+                    <p>Estas decisiones no son técnicas puras: dependen de <strong>qué tan crítico</strong> es el sistema y de <strong>cuánto presupuesto</strong> hay. Eso también sale de los Stakeholders.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Nube vs On-Premise - Ventajas y Desventajas -->
+        <div class="slide">
+            <div class="content">
+                <h2>Nube vs. Servidor Propio — Ventajas y Desventajas</h2>
+                <div class="two-columns">
+                    <div class="comparison-table">
+                        <h3 style="text-align:center;">☁️ Cloud (IaaS/PaaS)</h3>
+                        <p style="font-weight:bold; color:#7ee787; margin-bottom:6px;">Ventajas</p>
+                        <ul style="font-size:0.9em;">
+                            <li>Costo inicial bajo — pagás por uso</li>
+                            <li>Se implementa en minutos, no semanas</li>
+                            <li>Escala automáticamente ante picos</li>
+                            <li>El proveedor hace el mantenimiento</li>
+                            <li>Disponible en múltiples regiones</li>
+                        </ul>
+                        <p style="font-weight:bold; color:#ff8a8a; margin:14px 0 6px;">Desventajas</p>
+                        <ul style="font-size:0.9em;">
+                            <li>Costo recurrente que puede crecer sin control</li>
+                            <li>Menos control físico sobre los datos</li>
+                            <li>Depende de la conectividad a internet</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-table">
+                        <h3 style="text-align:center;">🏢 On-Premise</h3>
+                        <p style="font-weight:bold; color:#7ee787; margin-bottom:6px;">Ventajas</p>
+                        <ul style="font-size:0.9em;">
+                            <li>Costo fijo, se amortiza con el tiempo</li>
+                            <li>Control total y físico de los datos</li>
+                            <li>Más simple de auditar para normativas estrictas</li>
+                            <li>No depende de un proveedor externo</li>
+                        </ul>
+                        <p style="font-weight:bold; color:#ff8a8a; margin:14px 0 6px;">Desventajas</p>
+                        <ul style="font-size:0.9em;">
+                            <li>Costo inicial alto — hay que comprar el hardware</li>
+                            <li>Semanas de implementación (compra + instalación)</li>
+                            <li>Escalar significa comprar más equipo</li>
+                            <li>Necesita un equipo propio de IT para mantenerlo</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6b: Guía de decisión -->
+        <div class="slide">
+            <div class="content">
+                <h2>¿Cuál conviene, según tus requisitos?</h2>
+                <div class="comparison-table">
+                    <table>
+                        <tr><th>Si tu sistema tiene este requisito...</th><th>...conviene</th></tr>
+                        <tr><td>Presupuesto inicial muy ajustado</td><td class="win">☁️ Cloud</td></tr>
+                        <tr><td>No sabés cuántos usuarios vas a tener, puede crecer rápido</td><td class="win">☁️ Cloud</td></tr>
+                        <tr><td>No hay equipo de IT propio para mantener hardware</td><td class="win">☁️ Cloud</td></tr>
+                        <tr><td>Datos extremadamente sensibles con normativa muy estricta</td><td class="win">🏢 On-Premise</td></tr>
+                        <tr><td>Uso estable y predecible durante años, presupuesto para comprar equipo</td><td class="win">🏢 On-Premise</td></tr>
+                        <tr><td>Ya existe infraestructura y personal de IT en la organización</td><td class="win">🏢 On-Premise</td></tr>
+                    </table>
+                </div>
+                <div class="highlight-box">
+                    <p>No hay una respuesta correcta universal: se decide <strong>cruzando cada requisito no funcional con estas ventajas y desventajas</strong>, no de memoria. Eso es lo que vamos a hacer ahora con un caso concreto.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Formula CCU -->
+        <div class="slide">
+            <div class="content">
+                <h2>Paso 1: ¿Cuántos usuarios al mismo tiempo?</h2>
+                <p>La fórmula de Usuarios Concurrentes (CCU):</p>
+                <div class="code-block">CCU = (Usuarios totales × % activos diarios × % concurrentes) × Factor de pico</div>
+                <div class="comparison-table">
+                    <table>
+                        <tr><th>Tipo de sistema</th><th>Factor de pico</th></tr>
+                        <tr><td>Sistema médico / turnos</td><td>1.2 – 1.5</td></tr>
+                        <tr><td>E-commerce</td><td>2.0 – 4.0</td></tr>
+                        <tr><td>Educación (exámenes, inscripciones)</td><td>3.0 – 5.0</td></tr>
+                        <tr><td>Gobierno / trámites</td><td>1.3 – 1.8</td></tr>
+                    </table>
+                </div>
+                <p class="source-note">Fuente: Guía de Estimación de Infraestructura en la Nube (recurso de la materia).</p>
+            </div>
+        </div>
+
+        <!-- Slide 8: CPU/RAM -->
+        <div class="slide">
+            <div class="content">
+                <h2>Paso 2: De usuarios concurrentes a CPU y RAM</h2>
+                <div class="comparison-table">
+                    <table>
+                        <tr><th>Tipo de aplicación</th><th>Recursos por bloque de usuarios concurrentes</th></tr>
+                        <tr><td>Sitio web estático</td><td>1 vCPU, 1 GB RAM cada 100 usuarios</td></tr>
+                        <tr><td>Aplicación web dinámica</td><td>2 vCPU, 4 GB RAM cada 50 usuarios</td></tr>
+                        <tr><td>Sistema transaccional</td><td>4 vCPU, 8 GB RAM cada 25 usuarios</td></tr>
+                        <tr><td>Sistema en tiempo real</td><td>8 vCPU, 16 GB RAM cada 10 usuarios</td></tr>
+                    </table>
+                </div>
+                <div class="highlight-box">
+                    <p>La mayoría de los proyectos EIDAS son <strong>aplicaciones web dinámicas</strong> o <strong>sistemas transaccionales</strong> (dan de alta, modifican y consultan datos). Ahí es donde va a caer casi todo el curso.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Storage -->
+        <div class="slide">
+            <div class="content">
+                <h2>Paso 3: ¿Cuánto storage necesita?</h2>
+                <div class="code-block">Usuario básico ......... 1-5 KB
+Transacción ............ 0.5-2 KB
+Imagen pequeña ......... 100-500 KB
+Documento .............. 1-10 MB
+
++ Backup automático ..... 100% adicional
++ Logs del sistema ...... 10-20% del storage total
++ Factor de crecimiento . 2-3x anual</div>
+                <div class="highlight-box">
+                    <p>Regla práctica: calculá el storage del primer año y después <strong>duplicalo o triplicalo</strong> para no quedarte corto a mitad del segundo.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Break - caso resuelto -->
+        <div class="slide break-slide">
+            <h1>🧮 Caso resuelto en vivo</h1>
+            <p>Ejemplo: <strong>Sistema de Turnos</strong> — un consultorio con varios profesionales que gestiona reservas online.</p>
+            <p style="margin-top:20px; font-size:1.1em; opacity:0.85;">Los números son de ejemplo, para mostrar el método. Después lo repiten con los datos reales de su propio proyecto.</p>
+        </div>
+
+        <!-- Slide 11: Contexto del caso -->
+        <div class="slide">
+            <div class="content">
+                <h2>El caso: Sistema de Turnos</h2>
+                <div class="two-columns">
+                    <div class="comparison-table">
+                        <h3 style="text-align:center;">Contexto</h3>
+                        <ul style="font-size:0.95em;">
+                            <li>1 consultorio, 8 profesionales</li>
+                            <li>1.200 pacientes registrados</li>
+                            <li>Reservan turnos y ven su historial</li>
+                            <li>Uso normal + picos los lunes a la mañana</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-table">
+                        <h3 style="text-align:center;">Requisitos no funcionales</h3>
+                        <ul style="font-size:0.95em;">
+                            <li>RNF1: Disponibilidad 99.5% en horario de atención</li>
+                            <li>RNF2: Respuesta de reserva en menos de 2 segundos</li>
+                            <li>RNF3: Backup diario de la base de datos</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Aplicar formula CCU -->
+        <div class="slide">
+            <div class="content">
+                <h2><span class="step-badge">1</span>Calculamos usuarios concurrentes</h2>
+                <div class="code-block">1.200 usuarios registrados
+×    20% activos diarios      = 240
+×    15% concurrentes         =  36
+×   1.4  factor de pico (turnos, similar a médico) = ~50 CCU</div>
+                <div class="highlight-box">
+                    <p><strong>CCU estimado: ~50 usuarios concurrentes</strong> en el pico del lunes a la mañana.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Aplicar tabla CPU/RAM y storage -->
+        <div class="slide">
+            <div class="content">
+                <h2><span class="step-badge">2</span>Elegimos CPU, RAM y storage</h2>
+                <p>Es una aplicación web dinámica con lógica de negocio (turnos, disponibilidad, historial) → <strong>sistema transaccional</strong>: 4 vCPU / 8 GB RAM cada 25 CCU.</p>
+                <div class="code-block">50 CCU ÷ 25 CCU por bloque = 2 bloques
+2 × (4 vCPU, 8 GB RAM) = 8 vCPU, 16 GB RAM</div>
+                <div class="highlight-box">
+                    <p>Storage: 1.200 usuarios + historial de turnos (transacciones chicas) ronda un par de GB el primer año. Con backup diario (+100%) y margen de crecimiento, <strong>50 GB SSD</strong> es un punto de partida cómodo.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Decision nube vs on-premise para el caso -->
+        <div class="slide">
+            <div class="content">
+                <h2><span class="step-badge">3</span>¿Nube o servidor propio?</h2>
+                <p>Cruzamos el contexto del consultorio contra la guía de decisión:</p>
+                <ul>
+                    <li>Sin equipo de IT propio → pesa a favor de <strong>Cloud</strong> (ventaja: mantenimiento lo hace el proveedor)</li>
+                    <li>Presupuesto ajustado, sin margen para comprar hardware → <strong>Cloud</strong> (ventaja: costo inicial bajo)</li>
+                    <li>RNF1 pide 99.5% de disponibilidad → <strong>Cloud</strong> lo ofrece de fábrica; on-premise lo tendría que construir</li>
+                    <li>Datos de salud → hay que revisar certificaciones del proveedor (la desventaja de Cloud a vigilar), pero no exige on-premise por sí solo</li>
+                </ul>
+                <div class="highlight-box">
+                    <p>Tres de cuatro requisitos empujan a <strong>Cloud (VPS o IaaS)</strong>, y el cuarto es manejable con un buen proveedor. Esa es la justificación — no "porque sí es más moderno".</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Resultado final -->
+        <div class="slide">
+            <div class="content">
+                <h2>Resultado: la propuesta de infraestructura</h2>
+                <div class="spec-card">
+                    <h3 style="text-align:center; margin-bottom:5px;">Sistema de Turnos — Propuesta</h3>
+                    <div class="spec-grid">
+                        <div class="spec-item"><div class="label">Tipo</div><div class="value">Cloud — VPS / IaaS</div></div>
+                        <div class="spec-item"><div class="label">vCPU</div><div class="value">8</div></div>
+                        <div class="spec-item"><div class="label">RAM</div><div class="value">16 GB</div></div>
+                        <div class="spec-item"><div class="label">Storage</div><div class="value">50 GB SSD</div></div>
+                        <div class="spec-item"><div class="label">Uptime objetivo</div><div class="value">99.5%</div></div>
+                        <div class="spec-item"><div class="label">Backup</div><div class="value">Diario</div></div>
+                    </div>
+                </div>
+                <p class="source-note">Esta tabla es exactamente lo que pide el Trabajo Práctico N°8: recursos calculados + nivel de servicio, con la justificación de cada decisión.</p>
+            </div>
+        </div>
+
+        <!-- Slide 16: Ahora ustedes -->
+        <div class="slide">
+            <div class="content">
+                <h2>Ahora ustedes, con su propio proyecto</h2>
+                <p>En sus grupos, repitan estos 3 pasos con <strong>su</strong> sistema de EIDAS:</p>
+                <ul>
+                    <li>Calculen su CCU con los datos (reales o estimados) de sus Stakeholders</li>
+                    <li>Elijan CPU/RAM/storage según el tipo de aplicación que diseñaron</li>
+                    <li>Decidan Cloud vs. On-Premise y justifíquenlo con la tabla comparativa</li>
+                </ul>
+                <div class="highlight-box">
+                    <p>Usen la <strong>Calculadora de Infraestructura</strong> como apoyo para el cálculo, no como respuesta automática — la justificación importa tanto como el número.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: Próximos pasos -->
+        <div class="slide break-slide">
+            <h1>📄 Próximo paso: TP N°8</h1>
+            <p>Lo que arrancaron hoy en grupo es la base del <strong>Trabajo Práctico N°8</strong>: la propuesta de infraestructura formal para su propio proyecto EIDAS, con recursos calculados, nivel de servicio y justificación de cada decisión.</p>
+        </div>
+
+        <!-- Slide 18: Cierre -->
+        <div class="slide">
+            <div class="content">
+                <h2>Recursos para seguir trabajando</h2>
+                <a class="resource-link" href="https://pablopedernera0.github.io/calculadora-infraestructura/" target="_blank">Calculadora de Infraestructura</a>
+                <a class="resource-link" href="https://pablopedernera0.github.io/calculadora-infraestructura/cloud_infrastructure_guide.md" target="_blank">Guía de Estimación (metodología completa)</a>
+                <a class="resource-link" href="index.html">Volver a Clase 1</a>
+                <p style="margin-top: 30px; font-style: italic; opacity: 0.85; text-align:center;">
+                    Traigan a la próxima clase los 3 números de su propio proyecto: CCU, vCPU/RAM, y su decisión de nube vs. servidor propio.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn prev" onclick="previousSlide()">← Anterior</button>
+        <button class="nav-btn next" onclick="nextSlide()">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            if (n < 0 || n >= totalSlides) return;
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.querySelector('.prev').disabled = currentSlide === 0;
+            document.querySelector('.next').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+    </script>
+</body>
+</html>

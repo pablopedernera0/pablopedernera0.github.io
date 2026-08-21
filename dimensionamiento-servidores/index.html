@@ -186,6 +186,34 @@
             font-size: 1.05em;
         }
 
+        .series-nav {
+            position: fixed;
+            top: 78px;
+            left: 30px;
+            display: flex;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .series-nav a, .series-nav span {
+            text-decoration: none;
+            padding: 5px 12px;
+            border-radius: 14px;
+            font-size: 0.8em;
+            background: rgba(0,0,0,0.3);
+            color: #b8c7e0;
+        }
+
+        .series-nav a:hover {
+            color: #ffd700;
+        }
+
+        .series-nav span.current {
+            background: rgba(255,215,0,0.25);
+            color: #ffd700;
+            font-weight: bold;
+        }
+
         ul {
             list-style: none;
             padding-left: 0;
@@ -311,6 +339,10 @@
         </div>
 
         <div class="class-indicator" id="classIndicator">CLASE 1</div>
+        <div class="series-nav">
+            <span class="current">Clase 1</span>
+            <a href="clase2.html">Clase 2</a>
+        </div>
 
         <!-- Slide 1: Portada -->
         <div class="slide active">
@@ -539,9 +571,9 @@
 
         <!-- Slide 14: Break - próximas clases -->
         <div class="slide break-slide">
-            <h1>🧪 Próximas clases</h1>
-            <p><strong>Clase 2:</strong> práctica guiada en Killercoda (escenarios de <code>la-cajonera</code>) — medir y comparar en vivo.</p>
-            <p style="margin-top:20px;"><strong>Clase 3:</strong> rediseñamos entre todos la Calculadora de Infraestructura para que use datos reales como los de hoy.</p>
+            <h1>🧪 Próxima clase</h1>
+            <p><strong>Clase 2:</strong> de los Requisitos de EIDAS a un servidor concreto — usuarios concurrentes, CPU/RAM, storage, y nube vs. servidor propio.</p>
+            <p style="margin-top:20px; font-size:1.1em; opacity:0.85;"><a href="clase2.html" style="color:#ffd700;">Ver Clase 2 →</a></p>
         </div>
 
         <!-- Slide 15: Cierre -->
