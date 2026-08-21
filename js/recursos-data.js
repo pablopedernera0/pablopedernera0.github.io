@@ -70,6 +70,14 @@ const RECURSOS = [
         fecha: "2026-08-07"
     },
     {
+        titulo: "Repaso EIDAS",
+        categoria: "desarrollo",
+        carpeta: "eidas-repaso",
+        icono: "▸",
+        descripcion: "Una presentación de apoyo por cada sección de la rúbrica (Stakeholders, Requisitos, HU, Casos de Uso, Modelo ER, Diseño UI), todas con el mismo caso de ejemplo.",
+        fecha: "2026-08-18"
+    },
+    {
         titulo: "S3 + IAM en profundidad",
         categoria: "infraestructura",
         carpeta: "s3-iam-avanzado",
