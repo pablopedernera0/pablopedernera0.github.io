@@ -259,6 +259,69 @@
             color: #fff;
         }
 
+        /* --- Tooltips de concepto (slide de repaso) --- */
+        .term-tooltip {
+            position: relative;
+            display: inline-block;
+            border-bottom: 2px dotted #ffd700;
+            color: #ffd700;
+            font-weight: 600;
+            cursor: help;
+        }
+
+        .term-tooltip .tooltip-popup {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(320px, 80vw);
+            background: #16233f;
+            border: 1px solid rgba(135,206,235,0.4);
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 0.72em;
+            font-weight: normal;
+            color: #e6edf7;
+            line-height: 1.5;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.45);
+            transition: opacity 0.15s ease;
+            z-index: 50;
+            text-align: left;
+            pointer-events: none;
+        }
+
+        .term-tooltip .tooltip-popup::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 7px solid transparent;
+            border-top-color: #16233f;
+        }
+
+        .term-tooltip .tooltip-popup a {
+            display: inline-block;
+            margin-top: 10px;
+            color: #87ceeb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .term-tooltip .tooltip-popup a:hover {
+            text-decoration: underline;
+        }
+
+        .term-tooltip:hover .tooltip-popup,
+        .term-tooltip:focus .tooltip-popup,
+        .term-tooltip.show .tooltip-popup {
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         /* --- Diagramas de flujo (paso a paso) --- */
         .flow {
             display: flex;
@@ -432,12 +495,19 @@
             <div class="content">
                 <h2>Repaso relámpago</h2>
                 <ul>
-                    <li><strong>Etapa 1</strong> — midieron throughput, latencia, concurrencia y tasa de error contra la app, y compararon el servidor de desarrollo de Flask contra Gunicorn</li>
+                    <li><strong>Etapa 1</strong> — midieron
+                        <span class="term-tooltip" tabindex="0">throughput<span class="tooltip-popup">Cantidad de peticiones completadas por unidad de tiempo (req/s). Responde: ¿cuánto tráfico aguanta esta infraestructura, tal como está configurada hoy?<br><a href="../hilo-conductor-redes/documentacion/crud-stress-test-guia-estudiantes.html#throughput" target="_blank" rel="noopener">Ver la lección completa →</a></span></span>,
+                        <span class="term-tooltip" tabindex="0">latencia<span class="tooltip-popup">El tiempo entre que se envía una petición y se recibe la respuesta completa. A diferencia del throughput (medida agregada), es <strong>por petición individual</strong>.<br><a href="../hilo-conductor-redes/documentacion/crud-stress-test-guia-estudiantes.html#latencia" target="_blank" rel="noopener">Ver la lección completa →</a></span></span>,
+                        <span class="term-tooltip" tabindex="0">concurrencia<span class="tooltip-popup">Cantidad de peticiones en curso al mismo tiempo, no el total enviado. Subir la concurrencia sin más capacidad de proceso no sube el throughput — solo sube la latencia.<br><a href="../hilo-conductor-redes/documentacion/crud-stress-test-guia-estudiantes.html#concurrencia" target="_blank" rel="noopener">Ver la lección completa →</a></span></span>
+                        y
+                        <span class="term-tooltip" tabindex="0">tasa de error<span class="tooltip-popup">Proporción de peticiones que no se completaron con éxito: timeouts, conexiones rechazadas o respuestas con código de error. Es la señal más clara de que un sistema llegó a su límite.<br><a href="../hilo-conductor-redes/documentacion/crud-stress-test-guia-estudiantes.html#tasa-de-error" target="_blank" rel="noopener">Ver la lección completa →</a></span></span>
+                        contra la app, y compararon el servidor de desarrollo de Flask contra Gunicorn</li>
                     <li><strong>Etapa 2</strong> — agregaron una pantalla de login: sin sesión, cualquier ruta redirige a <code>/login</code></li>
                 </ul>
                 <div class="highlight-box">
                     <p>Las dos etapas comparten algo que no se ve a simple vista: en ambas, algo "recuerda" o "reparte" trabajo entre pedidos — una sesión en un caso, un pool de procesos en el otro. Eso es lo que vemos en detalle hoy.</p>
                 </div>
+                <p style="font-size:0.78em; opacity:0.65; margin-top:10px;">Pasá el cursor (o tocá) sobre un concepto subrayado para ver el resumen y el link a la lección completa.</p>
             </div>
         </div>
 
@@ -705,7 +775,22 @@ def requerir_login():
                 nextSlide();
             } else if (e.key === 'ArrowLeft') {
                 previousSlide();
+            } else if (e.key === 'Escape') {
+                document.querySelectorAll('.term-tooltip.show').forEach(t => t.classList.remove('show'));
             }
+        });
+
+        document.querySelectorAll('.term-tooltip').forEach((term) => {
+            term.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const wasOpen = term.classList.contains('show');
+                document.querySelectorAll('.term-tooltip.show').forEach(t => t.classList.remove('show'));
+                if (!wasOpen) term.classList.add('show');
+            });
+        });
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.term-tooltip.show').forEach(t => t.classList.remove('show'));
         });
     </script>
 </body>

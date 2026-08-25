@@ -494,7 +494,7 @@
     </div>
 
     <!-- Slide 4: Throughput -->
-    <div class="slide">
+    <div class="slide" id="throughput">
         <h2>1. Throughput (rendimiento)</h2>
         <p>La cantidad de peticiones que el sistema logra completar por unidad de tiempo, normalmente en <strong>requests por segundo (req/s)</strong>. Responde: "¿cuánto tráfico aguanta esta infraestructura, tal como está configurada hoy?"</p>
         <pre><code>throughput = peticiones completadas / tiempo total del test</code></pre>
@@ -505,7 +505,7 @@
     </div>
 
     <!-- Slide 5: Latencia -->
-    <div class="slide">
+    <div class="slide" id="latencia">
         <h2>2. Latencia</h2>
         <p>El tiempo entre que se envía una petición y se recibe la respuesta completa. A diferencia del throughput (medida agregada), la latencia es <strong>por petición individual</strong>.</p>
         <div class="pair-grid">
@@ -538,7 +538,7 @@
     </div>
 
     <!-- Slide 7: Concurrencia -->
-    <div class="slide">
+    <div class="slide" id="concurrencia">
         <h2>3. Concurrencia</h2>
         <p>La cantidad de peticiones que están <strong>en curso al mismo tiempo</strong>, no la cantidad total enviada. Se controla con el flag <code>-c</code> de <code>ab</code>: <code>-n 500 -c 20</code> significa "500 peticiones en total, nunca más de 20 al mismo tiempo".</p>
         <div class="quote-box">
@@ -548,7 +548,7 @@
     </div>
 
     <!-- Slide 8: Tasa de error -->
-    <div class="slide">
+    <div class="slide" id="tasa-de-error">
         <h2>4. Tasa de error</h2>
         <p>La proporción de peticiones que <strong>no</strong> se completaron con éxito: timeouts, conexiones rechazadas, o respuestas con código de error. <code>ab</code> las reporta en <code>Failed requests</code>.</p>
         <div class="warning-box">
@@ -787,6 +787,17 @@
 
     function previousSlide() {
         showSlide(currentSlide - 1);
+    }
+
+    if (location.hash) {
+        const target = document.querySelector(location.hash);
+        const idx = target ? Array.from(slides).indexOf(target) : -1;
+        if (idx >= 0) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = idx;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
     }
 
     updateControls();
