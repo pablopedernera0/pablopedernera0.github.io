@@ -660,7 +660,7 @@
     </div>
 
     <!-- Slide 14: Proceso vs Hilo -->
-    <div class="slide">
+    <div class="slide" id="procesos-e-hilos">
         <h2>3. Procesos e hilos</h2>
         <p>La base para entender por qué Werkzeug se traba y por qué Gunicorn no.</p>
         <div class="pair-grid">
@@ -677,7 +677,7 @@
     </div>
 
     <!-- Slide 15: GIL -->
-    <div class="slide">
+    <div class="slide" id="gil">
         <h2>El intérprete de Python y el GIL</h2>
         <p>CPython tiene el <strong>GIL</strong> (<em>Global Interpreter Lock</em>): un lock global que permite que <strong>un solo hilo ejecute bytecode Python a la vez</strong>, incluso con varios núcleos.</p>
         <div class="warning-box">
@@ -687,7 +687,7 @@
     </div>
 
     <!-- Slide 16: WSGI y Werkzeug -->
-    <div class="slide">
+    <div class="slide" id="wsgi">
         <h2>4. Cómo maneja Flask las peticiones</h2>
         <p><strong>WSGI</strong> es la interfaz común entre un servidor HTTP y una app Python — permite que la misma app corra sin cambios detrás de servidores distintos. Es lo que comprobás en el Paso 5: el mismo <code>app.py</code> corre con el servidor de desarrollo y después con Gunicorn.</p>
         <div class="card-grid">
@@ -712,7 +712,7 @@
     </div>
 
     <!-- Slide 18: Gunicorn -->
-    <div class="slide">
+    <div class="slide" id="gunicorn">
         <h2>5. Gunicorn</h2>
         <p><strong>Gunicorn</strong> ("Green Unicorn") es un servidor WSGI pensado para producción. Un proceso <em>master</em> administra varios procesos <em>worker</em> independientes, cada uno con su propia copia de la app en memoria.</p>
         <div class="warning-box">

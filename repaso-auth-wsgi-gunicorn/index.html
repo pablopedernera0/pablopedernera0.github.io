@@ -501,8 +501,14 @@
                         <span class="term-tooltip" tabindex="0">concurrencia<span class="tooltip-popup">Cantidad de peticiones en curso al mismo tiempo, no el total enviado. Subir la concurrencia sin más capacidad de proceso no sube el throughput — solo sube la latencia.<br><a href="../hilo-conductor-redes/documentacion/crud-stress-test-guia-estudiantes.html#concurrencia" target="_blank" rel="noopener">Ver la lección completa →</a></span></span>
                         y
                         <span class="term-tooltip" tabindex="0">tasa de error<span class="tooltip-popup">Proporción de peticiones que no se completaron con éxito: timeouts, conexiones rechazadas o respuestas con código de error. Es la señal más clara de que un sistema llegó a su límite.<br><a href="../hilo-conductor-redes/documentacion/crud-stress-test-guia-estudiantes.html#tasa-de-error" target="_blank" rel="noopener">Ver la lección completa →</a></span></span>
-                        contra la app, y compararon el servidor de desarrollo de Flask contra Gunicorn</li>
-                    <li><strong>Etapa 2</strong> — agregaron una pantalla de login: sin sesión, cualquier ruta redirige a <code>/login</code></li>
+                        contra la app, y compararon
+                        <span class="term-tooltip" tabindex="0">el servidor de desarrollo de Flask<span class="tooltip-popup">Werkzeug: el servidor que arranca <code>app.run(...)</code>. Pensado solo para desarrollo local — por defecto atiende <strong>una sola petición a la vez</strong>.<br><a href="../hilo-conductor-redes/documentacion/crud-stress-test-guia-estudiantes.html#wsgi" target="_blank" rel="noopener">Ver la lección completa →</a></span></span>
+                        contra
+                        <span class="term-tooltip" tabindex="0">Gunicorn<span class="tooltip-popup">Servidor WSGI para producción: un proceso <em>master</em> administra varios <em>workers</em> independientes, cada uno con su propia copia de la app, para atender pedidos en paralelo de verdad.<br><a href="../hilo-conductor-redes/documentacion/crud-stress-test-guia-estudiantes.html#gunicorn" target="_blank" rel="noopener">Ver la lección completa →</a></span></span>
+                    </li>
+                    <li><strong>Etapa 2</strong> — agregaron una pantalla de login: sin
+                        <span class="term-tooltip" tabindex="0">sesión<span class="tooltip-popup">El servidor guarda un identificador y se lo entrega al navegador en una cookie; el navegador la reenvía sola en cada petición siguiente. Así "recuerda" que ya te logueaste.<br><a href="javascript:void(0)" onclick="showSlide(4); return false;">Ver el diagrama →</a></span></span>,
+                        cualquier ruta redirige a <code>/login</code></li>
                 </ul>
                 <div class="highlight-box">
                     <p>Las dos etapas comparten algo que no se ve a simple vista: en ambas, algo "recuerda" o "reparte" trabajo entre pedidos — una sesión en un caso, un pool de procesos en el otro. Eso es lo que vemos en detalle hoy.</p>
@@ -622,7 +628,7 @@ def requerir_login():
                 <p><strong>WSGI</strong> (Web Server Gateway Interface) es una interfaz común entre un servidor HTTP y una app Python — permite que la misma app corra sin cambios detrás de servidores distintos.</p>
                 <div class="flow" style="margin-top:20px;">
                     <div class="flow-row">
-                        <div class="flow-box server"><div class="who">Servidor HTTP</div>Werkzeug <em>o</em> Gunicorn</div>
+                        <div class="flow-box server"><div class="who">Servidor HTTP</div><span class="term-tooltip" tabindex="0">Werkzeug<span class="tooltip-popup">El servidor de desarrollo de Flask. Por defecto atiende una sola petición a la vez — no pensado para producción.<br><a href="../hilo-conductor-redes/documentacion/crud-stress-test-guia-estudiantes.html#wsgi" target="_blank" rel="noopener">Ver la lección completa →</a></span></span> <em>o</em> <span class="term-tooltip" tabindex="0">Gunicorn<span class="tooltip-popup">Servidor WSGI para producción: proceso master + varios workers en paralelo. Lo vas a ver en detalle en un par de slides.<br><a href="javascript:void(0)" onclick="showSlide(10); return false;">Ver el diagrama de workers →</a></span></span></div>
                         <div class="flow-box decision"><div class="who">Interfaz</div>WSGI</div>
                         <div class="flow-box client"><div class="who">App</div><code>app.py</code>, sin cambios</div>
                     </div>
@@ -660,6 +666,7 @@ def requerir_login():
                     <div class="label">Para leer más</div>
                     <a href="https://es.wikipedia.org/wiki/Bloqueo_del_int%C3%A9rprete_global" target="_blank" rel="noopener">Wikipedia — Global Interpreter Lock</a>
                     <a href="https://docs.python.org/es/3/glossary.html#term-global-interpreter-lock" target="_blank" rel="noopener">Python docs — glosario del GIL</a>
+                    <a href="../hilo-conductor-redes/documentacion/crud-stress-test-guia-estudiantes.html#procesos-e-hilos" target="_blank" rel="noopener">Guía de estudiantes — Procesos e hilos</a>
                 </div>
             </div>
         </div>
@@ -693,6 +700,7 @@ def requerir_login():
                 <div class="further-reading">
                     <div class="label">Para leer más</div>
                     <a href="https://docs.gunicorn.org/en/stable/design.html" target="_blank" rel="noopener">Gunicorn — documentación oficial del modelo de diseño</a>
+                    <a href="../hilo-conductor-redes/documentacion/crud-stress-test-guia-estudiantes.html#gunicorn" target="_blank" rel="noopener">Guía de estudiantes — Gunicorn</a>
                 </div>
             </div>
         </div>
