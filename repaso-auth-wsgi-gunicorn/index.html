@@ -406,8 +406,8 @@
                 <div style="text-align: center; margin-top: 50px;">
                     <h3>Repaso presencial — hilo conductor de redes</h3>
                     <p style="font-size: 1.3em; margin-top: 30px; opacity: 0.9;">
-                        Sin computadora: hoy dibujamos en el pizarrón lo que la Etapa 1<br>
-                        y la Etapa 2 dejaron corriendo detrás de escena.
+                        Apoyo para la clase presencial: la mecánica interna de lo que la<br>
+                        Etapa 1 y la Etapa 2 dejaron funcionando, explicada paso a paso.
                     </p>
                 </div>
             </div>
@@ -418,12 +418,11 @@
             <div class="content">
                 <h2>Agenda</h2>
                 <ul style="font-size: 1.1em;">
-                    <li><strong>Día 1 (25/ago):</strong> autenticación, sesión y el "portero" (<code>before_request</code>) — de la Etapa 2</li>
-                    <li><strong>Día 2 (27/ago):</strong> WSGI, procesos vs. hilos, y el modelo de workers de Gunicorn — de la Etapa 1</li>
-                    <li>Todo con pizarrón/proyector: nadie corre un comando hoy</li>
+                    <li><strong>Día 1:</strong> autenticación, sesión y el "portero" (<code>before_request</code>) — de la Etapa 2</li>
+                    <li><strong>Día 2:</strong> WSGI, procesos vs. hilos, y el modelo de workers de Gunicorn — de la Etapa 1</li>
                 </ul>
                 <div class="highlight-box" style="margin-top:25px;">
-                    <p>El objetivo no es contenido nuevo — es que quede clara la mecánica interna de lo que ya usaron con las manos. La Etapa 3 (Semana Virtual 2) da por sentado que esto quedó firme.</p>
+                    <p>No es contenido nuevo: es la mecánica interna de lo que ya usaste con las manos en las Etapas 1 y 2. Tenerlo claro importa porque la Etapa 3 (Semana Virtual 2) da por sentado que esto ya quedó firme.</p>
                 </div>
             </div>
         </div>
@@ -437,7 +436,7 @@
                     <li><strong>Etapa 2</strong> — agregaron una pantalla de login: sin sesión, cualquier ruta redirige a <code>/login</code></li>
                 </ul>
                 <div class="highlight-box">
-                    <p>Las dos etapas comparten algo que no se vio a simple vista: en ambas, algo "recuerda" o "reparte" trabajo entre pedidos — una sesión en un caso, un pool de procesos en el otro. Eso es lo que dibujamos hoy.</p>
+                    <p>Las dos etapas comparten algo que no se ve a simple vista: en ambas, algo "recuerda" o "reparte" trabajo entre pedidos — una sesión en un caso, un pool de procesos en el otro. Eso es lo que vemos en detalle hoy.</p>
                 </div>
             </div>
         </div>
@@ -449,13 +448,14 @@
                 <h2>El problema: HTTP no tiene memoria</h2>
                 <p>HTTP es un protocolo <strong>sin estado</strong>: cada petición viaja sola, el servidor no sabe por sí solo si es la misma persona que ya se logueó dos peticiones antes.</p>
                 <div class="highlight-box" style="margin-top:20px;">
-                    <p><strong>Para el pizarrón:</strong> dibujar dos peticiones GET separadas llegando al servidor, sin ninguna línea que las conecte entre sí. Preguntar: "¿cómo hace el servidor para saber que sos la misma persona que se logueó recién?"</p>
+                    <p>Pensalo así: dos pedidos <code>GET</code> separados llegando al servidor, sin ninguna línea que los conecte entre sí. ¿Cómo hace el servidor para saber que sos la misma persona que se logueó recién?</p>
                 </div>
                 <p style="margin-top:20px;">La respuesta: la <strong>sesión</strong>. El servidor guarda un identificador y se lo entrega al navegador en una <strong>cookie</strong>; el navegador la reenvía sola en cada petición siguiente.</p>
                 <div class="further-reading">
                     <div class="label">Para leer más</div>
                     <a href="https://developer.mozilla.org/es/docs/Web/HTTP/Cookies" target="_blank" rel="noopener">MDN — Cookies HTTP</a>
                     <a href="https://es.wikipedia.org/wiki/Sesi%C3%B3n_(inform%C3%A1tica)" target="_blank" rel="noopener">Wikipedia — Sesión (informática)</a>
+                    <a href="https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP — Session Management Cheat Sheet</a>
                 </div>
             </div>
         </div>
@@ -483,7 +483,7 @@
                     </div>
                 </div>
                 <div class="highlight-box" style="margin-top:10px;">
-                    <p><strong>Para el pizarrón:</strong> completar el diagrama con una segunda petición (<code>GET /alumnos</code>) que ya lleva la cookie — ese es el gancho para la próxima slide.</p>
+                    <p>Con esa cookie ya guardada, cualquier pedido siguiente — por ejemplo <code>GET /alumnos</code> — viaja identificado sin que vuelvas a escribir tu contraseña. Cómo usa esa identificación el servidor es el tema de la próxima slide.</p>
                 </div>
             </div>
         </div>
@@ -529,6 +529,11 @@ def requerir_login():
                 <div class="highlight-box">
                     <p>Se confunden seguido porque en apps chicas suelen ir juntas — pero son decisiones distintas del sistema, en momentos distintos.</p>
                 </div>
+                <div class="further-reading">
+                    <div class="label">Para leer más</div>
+                    <a href="https://es.wikipedia.org/wiki/Autenticaci%C3%B3n" target="_blank" rel="noopener">Wikipedia — Autenticación</a>
+                    <a href="https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP — Authorization Cheat Sheet</a>
+                </div>
             </div>
         </div>
 
@@ -553,11 +558,12 @@ def requerir_login():
                     </div>
                 </div>
                 <div class="highlight-box">
-                    <p><strong>Para el pizarrón:</strong> es exactamente el Paso 5 de la Etapa 1 — el mismo <code>app.py</code> corrió primero con Werkzeug y después con Gunicorn.</p>
+                    <p>Es exactamente lo que probaste en el Paso 5 de la Etapa 1: el mismo <code>app.py</code>, sin cambiar una línea, corrió primero con Werkzeug y después con Gunicorn — eso es lo que WSGI hace posible.</p>
                 </div>
                 <div class="further-reading">
                     <div class="label">Para leer más</div>
                     <a href="https://es.wikipedia.org/wiki/Interfaz_de_pasarela_de_servidor_web" target="_blank" rel="noopener">Wikipedia — WSGI</a>
+                    <a href="https://peps.python.org/pep-3333/" target="_blank" rel="noopener">PEP 3333 — especificación oficial de WSGI</a>
                 </div>
             </div>
         </div>
@@ -579,6 +585,11 @@ def requerir_login():
                 </div>
                 <div class="highlight-box">
                     <p><strong>El GIL de Python:</strong> CPython deja que un solo hilo ejecute bytecode a la vez, aunque haya varios núcleos. Agregar hilos no da paralelismo real para cálculo — Gunicorn por eso usa <strong>procesos</strong>, no hilos, para atender en paralelo de verdad.</p>
+                </div>
+                <div class="further-reading">
+                    <div class="label">Para leer más</div>
+                    <a href="https://es.wikipedia.org/wiki/Bloqueo_del_int%C3%A9rprete_global" target="_blank" rel="noopener">Wikipedia — Global Interpreter Lock</a>
+                    <a href="https://docs.python.org/es/3/glossary.html#term-global-interpreter-lock" target="_blank" rel="noopener">Python docs — glosario del GIL</a>
                 </div>
             </div>
         </div>
@@ -609,6 +620,10 @@ def requerir_login():
                 <div class="highlight-box">
                     <p><strong>Costo:</strong> cada worker carga su propia copia completa de la app en memoria — más aislamiento y paralelismo real, a cambio de más RAM.</p>
                 </div>
+                <div class="further-reading">
+                    <div class="label">Para leer más</div>
+                    <a href="https://docs.gunicorn.org/en/stable/design.html" target="_blank" rel="noopener">Gunicorn — documentación oficial del modelo de diseño</a>
+                </div>
             </div>
         </div>
 
@@ -631,17 +646,18 @@ def requerir_login():
             </div>
         </div>
 
-        <!-- Slide 13: Ejercicio de pizarrón -->
+        <!-- Slide 13: Autoevaluación -->
         <div class="slide">
             <div class="content">
-                <h2>Para el pizarrón — ejercicio en vivo</h2>
-                <ul style="font-size:1.05em;">
-                    <li>Elegir a un alumno para dibujar de nuevo, sin mirar la slide, el flujo completo: <code>POST /login</code> → cookie → <code>GET /alumnos</code> con cookie → <code>before_request</code> → respuesta</li>
-                    <li>Elegir a otro para dibujar Werkzeug (1 caja) vs. Gunicorn (master + 4 cajas) recibiendo 4 peticiones al mismo tiempo</li>
-                    <li>Preguntar: "¿por qué Gunicorn usa procesos y no hilos acá?" — la respuesta correcta menciona el GIL</li>
+                <h2>Para repasar por tu cuenta</h2>
+                <p>Si podés responder estas tres preguntas sin volver a mirar las slides anteriores, el repaso cumplió su objetivo:</p>
+                <ul style="font-size:1.05em; margin-top:15px;">
+                    <li>Sin mirar la slide, ¿podés dibujar de memoria el flujo completo: <code>POST /login</code> → cookie → <code>GET /alumnos</code> con cookie → <code>before_request</code> → respuesta?</li>
+                    <li>¿Podés dibujar la diferencia entre Werkzeug (1 caja) y Gunicorn (master + 4 cajas) recibiendo 4 peticiones al mismo tiempo?</li>
+                    <li>¿Por qué Gunicorn usa procesos y no hilos para atender en paralelo? (la respuesta menciona el GIL)</li>
                 </ul>
                 <div class="highlight-box" style="margin-top:20px;">
-                    <p>Si algún alumno pregunta "¿esto no es inseguro, guardar la contraseña así?" — la respuesta corta es "vamos a verlo pronto". No spoilear la Etapa 3/4 todavía.</p>
+                    <p>Si alguna te costó, es el momento de volver a esa slide o preguntar en clase — la Etapa 3 da por sentado que estos tres puntos ya quedaron claros.</p>
                 </div>
             </div>
         </div>

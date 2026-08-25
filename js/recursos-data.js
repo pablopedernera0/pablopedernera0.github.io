@@ -10,7 +10,7 @@ const RECURSOS = [
         categoria: "redes",
         carpeta: "repaso-auth-wsgi-gunicorn",
         icono: "▸",
-        descripcion: "Repaso presencial del hilo conductor de redes (Etapas 1 y 2): sesión/cookie, el \"portero\" before_request, WSGI y el modelo de workers de Gunicorn, con diagramas para pizarrón.",
+        descripcion: "Repaso presencial del hilo conductor de redes (Etapas 1 y 2): sesión/cookie, el \"portero\" before_request, WSGI y el modelo de workers de Gunicorn, con diagramas y links a fuentes externas.",
         fecha: "2026-08-25"
     },
     {
