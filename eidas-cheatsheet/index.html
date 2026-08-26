@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema EIDAS - Cheat Sheet del docente</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b24;
+    --bg3: #1e2533;
+    --border: rgba(255,255,255,0.08);
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --faint: #30363d;
+
+    --d-color: #58a6ff;
+    --d-bg: rgba(88,166,255,0.1);
+    --o-color: #3fb950;
+    --o-bg: rgba(63,185,80,0.1);
+    --r-color: #f0883e;
+    --r-bg: rgba(240,136,62,0.1);
+    --a-color: #ff7b72;
+    --a-bg: rgba(255,123,114,0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.55;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(255,255,255,0.08);
+    color: var(--r-color);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+
+  header {
+    width: 100%;
+    max-width: 900px;
+    padding: 2.5rem 2rem 1rem;
+  }
+
+  header h1 {
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  header h1 span { color: var(--d-color); }
+
+  header p.tagline {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  main {
+    width: 100%;
+    max-width: 900px;
+    padding: 0 2rem 4rem;
+  }
+
+  section { margin-top: 2.4rem; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.9rem;
+  }
+
+  /* ---- Pipeline ---- */
+
+  .steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--o-color);
+    border-radius: 8px;
+    padding: 0.9rem 1.2rem;
+  }
+
+  .step-item .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--o-color);
+    font-size: 1.05rem;
+    min-width: 1.4rem;
+  }
+
+  .step-item h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    display: inline;
+  }
+
+  .step-item .opt {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .step-cmd {
+    display: block;
+    margin: 0.5rem 0;
+    overflow-x: auto;
+  }
+
+  .step-cmd code {
+    display: inline-block;
+    white-space: pre;
+  }
+
+  .step-item p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .step-item p strong { color: var(--text); font-weight: 600; }
+
+  /* ---- Rules grid ---- */
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 0.9rem;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--o-bg);
+    border-left: 3px solid var(--o-color);
+    border-radius: 10px;
+    padding: 0.95rem 1.15rem;
+  }
+
+  .card.warn {
+    border-color: var(--r-bg);
+    border-left-color: var(--r-color);
+  }
+
+  .card .lede {
+    display: block;
+    font-weight: 700;
+    font-size: 0.88rem;
+    margin-bottom: 0.25rem;
+    color: var(--o-color);
+  }
+
+  .card.warn .lede { color: var(--r-color); }
+
+  .card p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  /* ---- Ledger footer ---- */
+
+  .ledger {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.6rem;
+  }
+
+  .tree {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1.3rem;
+  }
+
+  .tree h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.7rem;
+    color: var(--text);
+  }
+
+  table.score {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  table.score td {
+    padding: 0.3rem 0;
+    border-bottom: 1px dashed var(--faint);
+  }
+  table.score td.num {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    width: 3em;
+  }
+  table.score tr.total td { border-bottom: none; font-weight: 700; padding-top: 0.5rem; }
+  table.score tr.total td.num { color: var(--d-color); }
+
+  .approval {
+    margin-top: 0.6rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .approval strong { color: var(--o-color); }
+
+  dl.filemap { font-size: 0.82rem; }
+  dl.filemap dt {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--d-color);
+    margin-top: 0.6rem;
+    font-size: 0.76rem;
+    word-break: break-word;
+  }
+  dl.filemap dt:first-child { margin-top: 0; }
+  dl.filemap dd { margin: 0.15rem 0 0; color: var(--muted); }
+
+  footer {
+    width: 100%;
+    max-width: 900px;
+    padding: 0 2rem 3rem;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--faint);
+  }
+
+  a { color: var(--d-color); }
+
+  @media (max-width: 640px) {
+    .card-grid, .ledger { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Sistema <span>EIDAS</span> — Cheat Sheet del docente</h1>
+  <p class="tagline">Diseño de Sistemas Web · Comisiones 31 y 32 · 2.° Cuatrimestre 2026 · Terciario Urquiza</p>
+</header>
+
+<main>
+  <section>
+    <p class="section-label">Por cada grupo, en este orden</p>
+    <div class="steps-list">
+      <div class="step-item">
+        <span class="num">1</span>
+        <div>
+          <h3>Traer los repos</h3>
+          <span class="step-cmd"><code>python3 scripts/grupos.py sync &lt;materia&gt;</code></span>
+          <p>Clona los grupos nuevos de <code>grupos.json</code> y hace <code>git pull</code> de los que ya estaban. Terminal, no Claude Code.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="num">2</span>
+        <div>
+          <h3>Chequear si conviene evaluar</h3>
+          <span class="step-cmd"><code>/chequear-grupo &lt;materia&gt; &lt;grupo-id&gt;</code></span>
+          <p>Solo lee, no escribe nada. Da un veredicto — <strong>LISTO PARA EVALUAR</strong> / <strong>ESPERAR</strong> / <strong>PEDIR ACTUALIZACIÓN</strong> — mirando solo lo que ya corresponde según el cronograma.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="num">3</span>
+        <div>
+          <h3>Ver el proceso <span class="opt">(opcional)</span></h3>
+          <span class="step-cmd"><code>/resumen-commits &lt;materia&gt; &lt;grupo-id&gt;</code></span>
+          <p>Cómo trabajaron en el tiempo, no cuánto. Informativo — no entra en la devolución ni pesa en la nota.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="num">4</span>
+        <div>
+          <h3>Generar el borrador</h3>
+          <span class="step-cmd"><code>/evaluar-grupo &lt;materia&gt; &lt;grupo-id&gt;</code></span>
+          <p>Commitea la devolución en la branch local <code>feedback</code> — nunca la pushea. Si todavía no se dio todo en clase, sale una devolución <strong>parcial</strong>.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="num">5</span>
+        <div>
+          <h3>Revisar — obligatorio</h3>
+          <span class="step-cmd"><code>git -C materias/&lt;materia&gt;/grupos/&lt;grupo-id&gt; diff main..feedback</code></span>
+          <p>Ajustá puntajes y texto a mano, sumá lo que Claude no puede ver. <strong>Publicar no te muestra este diff solo</strong> — asume que ya lo viste.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="num">6</span>
+        <div>
+          <h3>Publicar y notificar</h3>
+          <span class="step-cmd"><code>python3 scripts/grupos.py publicar &lt;materia&gt; &lt;grupo-id&gt;</code></span>
+          <p>Un solo comando: merge a <code>main</code>, push, y dispara N8N solo. Recién acá lo ve el grupo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">Reglas que cuestan olvidar</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="lede">Dos familias de comandos</span>
+        <p><code>python3 scripts/grupos.py …</code> es terminal. <code>/comando</code> es Claude Code — necesita una sesión abierta dentro de <code>sistema-eidas/</code>.</p>
+      </div>
+      <div class="card warn">
+        <span class="lede">No hay flag --dry-run</span>
+        <p>El chequeo de solo lectura es <code>/chequear-grupo</code>, comando aparte — no algo que se le pasa a <code>grupos.py</code>.</p>
+      </div>
+      <div class="card">
+        <span class="lede">El cronograma manda</span>
+        <p>Si la materia tiene <code>cronograma-2c-2026.md</code>, lo que no se dio en clase todavía no cuenta como "Ausente".</p>
+      </div>
+      <div class="card warn">
+        <span class="lede">Proceso, solo al final</span>
+        <p>Los 5 pts de "evolución sobre la entrega intermedia" nunca se puntúan en una devolución parcial.</p>
+      </div>
+      <div class="card">
+        <span class="lede">Colaborador con permiso de escritura</span>
+        <p>Si el grupo no te agregó en Settings → Collaborators, el <code>push</code> de publicar va a fallar.</p>
+      </div>
+      <div class="card">
+        <span class="lede">N8N tiene que estar corriendo</span>
+        <p><code>docker compose up -d</code> en <code>infra/n8n/</code> — si no, el push se hace igual pero la notificación no sale sola.</p>
+      </div>
+      <div class="card warn">
+        <span class="lede">Commiteó ≠ hizo el trabajo</span>
+        <p>El desglose por autor de <code>/resumen-commits</code> es solo informativo — no lo uses para juzgar aporte individual.</p>
+      </div>
+      <div class="card">
+        <span class="lede">La branch feedback es local</span>
+        <p>No se pushea hasta publicar — el grupo no puede verla antes de tiempo, ni por accidente.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="ledger">
+    <div class="tree">
+      <h3>Rúbrica en números</h3>
+      <table class="score">
+        <tr><td>Repo grupal <span style="color:var(--muted); font-size:0.85em;">(incluye Proceso, 5)</span></td><td class="num">70</td></tr>
+        <tr><td>Cuestionario individual</td><td class="num">30</td></tr>
+        <tr class="total"><td>Total</td><td class="num">100</td></tr>
+      </table>
+      <p class="approval">Aprobación <strong>≥60</strong> · Recuperatorio <strong>40–59</strong> · Insuficiente <strong>&lt;40</strong></p>
+    </div>
+    <div class="tree">
+      <h3>Dónde vive cada cosa</h3>
+      <dl class="filemap">
+        <dt>materias/&lt;materia&gt;/rubrica.md</dt>
+        <dd>Criterios y puntajes de esa materia</dd>
+        <dt>materias/&lt;materia&gt;/cronograma-2c-2026.md</dt>
+        <dd>Fechas → secciones (si existe)</dd>
+        <dt>materias/&lt;materia&gt;/grupos.json</dt>
+        <dd>Repo + email de cada grupo</dd>
+        <dt>…/grupos/&lt;id&gt;/feedback/</dt>
+        <dd>Devoluciones, branch <code style="color:var(--d-color); background:none; padding:0;">feedback</code> local</dd>
+      </dl>
+    </div>
+  </section>
+</main>
+
+<footer>sistema-eidas · guia-de-uso.md tiene el detalle completo</footer>
+
+</body>
+</html>
