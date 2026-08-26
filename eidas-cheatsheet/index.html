@@ -272,8 +272,8 @@
         <span class="num">1</span>
         <div>
           <h3>Traer los repos</h3>
-          <span class="step-cmd"><code>python3 scripts/grupos.py sync &lt;materia&gt;</code></span>
-          <p>Clona los grupos nuevos de <code>grupos.json</code> y hace <code>git pull</code> de los que ya estaban. Terminal, no Claude Code.</p>
+          <span class="step-cmd"><code>python3 scripts/grupos.py sync &lt;materia&gt;</code> <span class="opt">o /sync &lt;materia&gt;</span></span>
+          <p>Clona los grupos nuevos de <code>grupos.json</code> y hace <code>git pull</code> de los que ya estaban. Mismo comando desde terminal o Claude Code.</p>
         </div>
       </div>
       <div class="step-item">
@@ -324,7 +324,11 @@
     <div class="card-grid">
       <div class="card">
         <span class="lede">Dos familias de comandos</span>
-        <p><code>python3 scripts/grupos.py …</code> es terminal. <code>/comando</code> es Claude Code — necesita una sesión abierta dentro de <code>sistema-eidas/</code>.</p>
+        <p><code>python3 scripts/grupos.py …</code> es terminal. <code>/comando</code> es Claude Code — necesita una sesión abierta dentro de <code>sistema-eidas/</code>. <code>sync</code> tiene las dos formas; el resto no.</p>
+      </div>
+      <div class="card warn">
+        <span class="lede">Publicar y notificar no tienen atajo</span>
+        <p>A propósito: <code>publicar</code> pide confirmación antes de un push irreversible que dispara un mail. Siempre por terminal, nunca <code>--yes</code> automático.</p>
       </div>
       <div class="card warn">
         <span class="lede">No hay flag --dry-run</span>
