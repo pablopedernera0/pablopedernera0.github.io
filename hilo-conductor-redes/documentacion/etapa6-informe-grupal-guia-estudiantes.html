@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etapa 6 — informe grupal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.6rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.1rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul, .slide ol {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+        }
+
+        .card h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            font-size: 0.96rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .quote-box {
+            background: rgba(88, 166, 255, 0.08);
+            border-left: 4px solid #58a6ff;
+            border-radius: 0 10px 10px 0;
+            padding: 1.1rem 1.5rem;
+            max-width: 850px;
+            margin: 1rem 0;
+            font-style: italic;
+            font-size: 1.15rem;
+        }
+
+        .quote-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        a {
+            color: #58a6ff;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.05rem;
+            min-width: 2.2rem;
+        }
+
+        .step-item p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+        }
+
+        .series-nav a:hover {
+            color: #58a6ff;
+        }
+
+        .series-nav span.current {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        .btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+            background: #3fb950;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.6rem; }
+            .series-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="series-nav">
+    <a href="../index.html">← Hilo conductor</a>
+    <span class="current">Informe grupal</span>
+    <a href="etapa6-informe-grupal-guia-docente.html">Ver guía docente</a>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Infraestructura de Redes · Etapa 6 · cierre</div>
+        <h1>Informe grupal</h1>
+        <p class="subtitle">Redespliegan el stack que ya armaron y explican el <code>docker-compose.yml</code> real, en equipo — cada integrante a cargo de una parte.</p>
+    </div>
+
+    <!-- Slide 2: Que cambia -->
+    <div class="slide">
+        <h2>Qué cambia</h2>
+        <p>Redesplegar el stack de la Etapa 6 y explicar el <code>docker-compose.yml</code> real que ya usaron deja de ser un informe individual y pasa a resolverse en equipo, con una parte de la explicación a cargo de cada integrante.</p>
+        <p>El objetivo pedagógico no cambia: Git, Markdown, sintaxis YAML. Cambia que ahora el reparto del trabajo — y que quede evidenciado en el historial de commits — es parte de lo que se evalúa.</p>
+    </div>
+
+    <!-- Slide 3: Como se reparte -->
+    <div class="slide">
+        <h2>Cómo se reparte (grupo de 3)</h2>
+        <p>El reparto de quién hace cada parte lo decide cada grupo, no el docente. Cada parte incluye explicar qué hace cada servicio <strong>y</strong> la sintaxis YAML que aparece en esa sección — entre las tres queda cubierto todo el archivo.</p>
+        <div class="card-grid">
+            <div class="card">
+                <h4>Parte 1 — Persistencia de datos</h4>
+                <p><code>mysql</code> y <code>dbexporter</code>: por qué la contraseña va por variable de entorno, para qué se monta <code>my.cnf</code> de solo lectura, y la relación de dependencia entre ambos.</p>
+            </div>
+            <div class="card">
+                <h4>Parte 2 — Recolección de métricas</h4>
+                <p><code>cadvisor</code> y <code>prometheus</code>: por qué cadvisor monta rutas del host en solo lectura, qué puerto se publica y por qué, y qué resuelve <code>extra_hosts</code> con <code>host.docker.internal</code>.</p>
+            </div>
+            <div class="card">
+                <h4>Parte 3 — Visualización y topología</h4>
+                <p><code>grafana</code> y la red <code>mynetwork</code>: por qué Grafana depende de Prometheus, y cómo la red común permite resolver por nombre entre los cinco servicios.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Otros tamaños -->
+    <div class="slide">
+        <h2>Grupos de otro tamaño</h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">2</span>
+                <p>Fusionar la Parte 1 con la Parte 2.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">4</span>
+                <p>Separar <code>prometheus.yml</code> (el archivo de configuración de scraping, no el <code>docker-compose.yml</code>) como una cuarta parte, a cargo de quien haga la introducción general.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Compartido -->
+    <div class="slide">
+        <h2>Qué queda compartido, no repartido</h2>
+        <p>Alguien tiene que escribir la introducción del informe y la conclusión que une las tres partes. No hace falta que sea siempre la misma persona a lo largo del cuatrimestre — para este informe puede rotar, o resolverse como texto conjunto en una sola sesión.</p>
+    </div>
+
+    <!-- Slide 6: Evidencia en git -->
+    <div class="slide">
+        <h2>Evidencia en Git</h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <p>Cada integrante commitea su propia parte, en commits separados de las de sus compañeros.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <p>Mensaje de commit que diga qué se explicó y por qué se lo entendió así — no "agrego parte 2 del informe".</p>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <p>El commit de introducción/conclusión conjunta queda aparte, para que se note en el historial que es un aporte del equipo.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Entrega -->
+    <div class="slide">
+        <h2>Entrega</h2>
+        <div class="quote-box">
+            <p>Un único <code>README.md</code> con una sección por parte — no archivos separados por integrante.</p>
+        </div>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">7</span>
+</div>
+
+<div class="controls">
+    <button class="btn prev" onclick="previousSlide()">← Anterior</button>
+    <button class="btn next" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const prevBtn = document.querySelector('.btn.prev');
+    const nextBtn = document.querySelector('.btn.next');
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function updateControls() {
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide === totalSlides - 1;
+        nextBtn.textContent = currentSlide === totalSlides - 1 ? 'Fin de la guía' : 'Siguiente →';
+    }
+
+    function showSlide(n) {
+        const target = Math.max(0, Math.min(n, totalSlides - 1));
+        if (target === currentSlide) return;
+        slides[currentSlide].classList.remove('active');
+        currentSlide = target;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+        updateControls();
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    if (location.hash) {
+        const target = document.querySelector(location.hash);
+        const idx = target ? Array.from(slides).indexOf(target) : -1;
+        if (idx >= 0) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = idx;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+    }
+
+    updateControls();
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>

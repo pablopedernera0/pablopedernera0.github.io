@@ -428,6 +428,7 @@
     <a class="navlink" href="#etapa-4">Etapa 4</a>
     <a class="navlink" href="#etapa-5">Etapa 5</a>
     <a class="navlink" href="#etapa-6">Etapa 6</a>
+    <a class="navlink" href="#trabajo-7">Trabajo n°7</a>
     <a class="navlink" href="#notas">Notas técnicas</a>
   </div>
 </nav>
@@ -777,6 +778,38 @@ general_log: <span class="dim">usuario = '' OR '1'='1' -- ' AND password = 'x'</
       <h3>Nota de infraestructura</h3>
       <p style="font-size:0.9rem; color:var(--text-muted); max-width:70ch;">Esta etapa dropea PhpMyAdmin y Nginx (no aportan al monitoreo) y usa la branch <code>monitoring</code> de <code>crud-python</code> (sin login, basada en <code>main</code>), para poder generarle carga directo al endpoint <code>/</code> con <code>curl</code>+<code>xargs</code>, igual que la versión liviana de la etapa 1 (Killercoda no permite <code>ab</code> en ninguna etapa, no solo en la 1). La app sigue corriendo en el host, no dockerizada; Prometheus la alcanza vía <code>host.docker.internal:8888</code>.</p>
     </div>
+    <p style="margin-top:0.4rem; font-size:0.88rem;">📄 <a href="documentacion/etapa6-informe-grupal-guia-docente.html">Guía docente</a> · <a href="documentacion/etapa6-informe-grupal-guia-estudiantes.html">Guía para estudiantes</a> — el cierre de esta etapa se resuelve como informe grupal, repartido entre el equipo</p>
+  </div>
+
+  <!-- TRABAJO N7 -->
+  <div class="etapa" id="trabajo-7" style="scroll-margin-top:4rem;">
+    <div class="etapa-head">
+      <span class="etapa-chip">Trabajo n°7</span>
+      <span class="etapa-slug">instructivo de despliegue</span>
+    </div>
+    <div class="etapa-grid">
+      <div class="etapa-block">
+        <h3>Objetivos de aprendizaje</h3>
+        <ul>
+          <li>Diseñar un <code>docker-compose.yml</code> desde un instructivo de requisitos, sin partir de un YAML ya armado</li>
+          <li>Justificar decisiones de infraestructura (red, volúmenes, variables de entorno) por escrito</li>
+          <li>Coordinar un equipo sobre un repositorio compartido (cada integrante en su propia sesión de Killercoda)</li>
+        </ul>
+      </div>
+      <div class="etapa-block">
+        <h3>Qué debería mostrar el equipo</h3>
+        <ul>
+          <li>La app accesible desde el host, conectada a la base por nombre de servicio</li>
+          <li>Los datos sobreviviendo a un reinicio del contenedor de la base</li>
+          <li>Un <code>README.md</code> que justifique cada decisión, no solo la describa</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:1.3rem;">
+      <h3>Nota de infraestructura</h3>
+      <p style="font-size:0.9rem; color:var(--text-muted); max-width:70ch;">El equipo recibe la app con el <code>Dockerfile</code> ya armado (rama <code>trabajo7-deploy</code> de <code>crud-python</code>, derivada de <code>feature-login</code> con <code>DB_CONFIG</code> parametrizado por variables de entorno) y un <code>init.sql</code> con el esquema. No reciben ningún <code>docker-compose.yml</code> de partida — ese es el trabajo.</p>
+    </div>
+    <p style="margin-top:0.4rem; font-size:0.88rem;">📄 <a href="documentacion/trabajo7-guia-docente.html">Guía docente</a> · <a href="documentacion/trabajo7-guia-estudiantes.html">Guía para estudiantes</a> — el instructivo completo, en el rol de administrador de red que recibe una app para desplegar</p>
   </div>
 
   <section id="notas" style="margin-top:3rem;">
