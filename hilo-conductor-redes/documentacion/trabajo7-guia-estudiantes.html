@@ -394,7 +394,7 @@
         <h2>El escenario</h2>
         <p>Un equipo de desarrollo les entrega una aplicación ya construida y les pide que la pongan en funcionamiento. No escriben una línea de código de la app — reciben el <code>Dockerfile</code> ya armado — y son responsables de todo lo que hace falta alrededor: red, persistencia de datos, configuración, y la documentación de por qué tomaron cada decisión.</p>
         <div class="warning-box">
-            <p>Trabajan en equipo. Cada integrante corre su propia sesión en Killercoda — no hay una terminal compartida entre compañeros — así que la coordinación pasa por el repositorio de GitHub: cada uno prueba en su sesión, y sincronizan por <code>push</code>/<code>pull</code>.</p>
+            <p>Trabajan en equipo, cada integrante en su propia sesión de <strong>GitHub Codespaces</strong> — no hace falta PC propia, corre en el navegador — así que la coordinación pasa por el repositorio de GitHub: cada uno prueba en su sesión, y sincronizan por <code>push</code>/<code>pull</code>.</p>
         </div>
     </div>
 
@@ -413,6 +413,29 @@
             <div class="card">
                 <h4>Este instructivo</h4>
                 <p>Nada más. No hay un <code>docker-compose.yml</code> de partida — ese es el trabajo.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3b: Como arrancar -->
+    <div class="slide">
+        <h2>Cómo arrancar</h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <p>Un integrante hace <strong>fork</strong> de <code>crud-python</code> (rama <code>trabajo7-deploy</code>, no <code>main</code>) a la cuenta de GitHub del equipo. Ese fork es el repositorio de entrega.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <p>El resto del equipo clona ese fork (no el original), para tener permiso de <code>push</code>.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <p>Cada integrante abre su propia Codespace sobre el fork: <strong>Code → Codespaces → Create codespace</strong>. No hace falta instalar nada, ni Docker.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">4</span>
+                <p>Diseñan y prueban el <code>docker-compose.yml</code> ahí, sincronizando por <code>git push</code>/<code>git pull</code> como con cualquier repo.</p>
             </div>
         </div>
     </div>
@@ -531,7 +554,7 @@ volumes:
 </div>
 
 <div class="slide-counter">
-    <span id="current-slide">1</span> / <span id="total-slides">12</span>
+    <span id="current-slide">1</span> / <span id="total-slides">13</span>
 </div>
 
 <div class="controls">

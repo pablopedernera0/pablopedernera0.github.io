@@ -354,7 +354,7 @@
     <div class="slide active">
         <div class="eyebrow">Infraestructura de Redes · Trabajo n°7</div>
         <h1>Instructivo de despliegue</h1>
-        <p class="subtitle">Desarrollo de contenidos para el docente: por qué se rediseñó el Trabajo n°7, de dónde sale cada requisito, y la logística de correrlo en equipo sobre Killercoda. Para leer antes de dar la clase, no para repartir tal cual.</p>
+        <p class="subtitle">Desarrollo de contenidos para el docente: por qué se rediseñó el Trabajo n°7, de dónde sale cada requisito, y la logística de correrlo en equipo sobre GitHub Codespaces. Para leer antes de dar la clase, no para repartir tal cual.</p>
     </div>
 
     <!-- Slide 2: Que reemplaza -->
@@ -409,12 +409,22 @@
         <p>No hace falta blindar la consigna contra eso. El Parcial ya incluye una instancia de defensa oral sobre este trabajo — preguntas puntuales sobre decisiones tomadas, para confirmar autoría y comprensión. Esa verificación ya existente es la que filtra a quien no entendió lo que entregó, no una topología artificialmente distinta de la que ya vieron en la Etapa 6.</p>
     </div>
 
-    <!-- Slide 7: Logistica grupal + Killercoda -->
+    <!-- Slide 7: Logistica grupal + Codespaces -->
     <div class="slide">
-        <h2>Logística: grupal, en Killercoda</h2>
-        <p>Se eligió Killercoda (no PC propia) para no dejar espacio a la excusa de "no tenía dónde ejecutarlo" — mismo criterio que ya se aplicó al mover las Etapas 3 y 4 fuera de Killercoda en su momento, ahora en sentido inverso.</p>
+        <h2>Logística: grupal, en GitHub Codespaces</h2>
+        <p>Se descartó Killercoda para este trabajo puntual — no porque esté prohibido (no usa ninguna herramienta de las categorías que Killercoda banea, solo <code>docker compose</code> y <code>git</code>), sino porque Codespaces resuelve el mismo problema ("no tenía dónde ejecutarlo") de forma más natural para un trabajo que ya es, en esencia, un flujo de Git: el entregable es un repositorio, así que el entorno de desarrollo es directamente el de ese repositorio.</p>
+        <p>Se consideró ofrecer las dos alternativas (Killercoda y Codespaces) pero se descartó: las dos resuelven exactamente el mismo problema de la misma forma (una VM en la nube con Docker), así que mantener las dos solo duplicaría el instructivo y el soporte en consulta sin que el estudiante gane nada por elegir una u otra.</p>
         <div class="warning-box">
-            <p>Cada sesión de Killercoda es individual y efímera — no hay terminal compartida entre compañeros de grupo. La coordinación real pasa por <code>push</code>/<code>pull</code> al repositorio de GitHub. Vale la pena decirlo explícito en clase para que nadie pierda tiempo buscando cómo compartir una sesión.</p>
+            <p>Validado en vivo el 2026-08-28 con una cuenta de GitHub sin verificar como estudiante (no pidió método de pago): el mismo patrón se probó primero contra el entorno de las Etapas 3/4 (<code>hilo-conductor-redes-ataques</code>), corriendo <code>nmap</code>, <code>hydra</code> y <code>sqlmap</code> sin ningún corte de la plataforma — mucho más exigente que lo que este trabajo necesita.</p>
+        </div>
+    </div>
+
+    <!-- Slide 7b: Por que fork -->
+    <div class="slide">
+        <h2>Por qué fork, no solo clone</h2>
+        <p>El equipo necesita un repositorio propio para el <code>docker-compose.yml</code> que diseña — no alcanza con clonar <code>crud-python</code>, porque ahí no tienen permiso de <code>push</code>. La secuencia: un integrante hace fork de la rama <code>trabajo7-deploy</code> (no <code>main</code>) a la cuenta del equipo, el resto clona ese fork, y cada uno abre su propia Codespace sobre él.</p>
+        <div class="warning-box">
+            <p>Cada sesión de Codespaces es individual — no hay terminal compartida entre compañeros de grupo. La coordinación real pasa por <code>push</code>/<code>pull</code> al fork. Vale la pena decirlo explícito en clase para que nadie pierda tiempo buscando cómo compartir una sesión.</p>
         </div>
     </div>
 
@@ -459,7 +469,7 @@
 </div>
 
 <div class="slide-counter">
-    <span id="current-slide">1</span> / <span id="total-slides">9</span>
+    <span id="current-slide">1</span> / <span id="total-slides">10</span>
 </div>
 
 <div class="controls">

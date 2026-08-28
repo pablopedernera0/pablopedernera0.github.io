@@ -793,7 +793,7 @@ general_log: <span class="dim">usuario = '' OR '1'='1' -- ' AND password = 'x'</
         <ul>
           <li>Diseñar un <code>docker-compose.yml</code> desde un instructivo de requisitos, sin partir de un YAML ya armado</li>
           <li>Justificar decisiones de infraestructura (red, volúmenes, variables de entorno) por escrito</li>
-          <li>Coordinar un equipo sobre un repositorio compartido (cada integrante en su propia sesión de Killercoda)</li>
+          <li>Coordinar un equipo sobre un repositorio compartido (cada integrante en su propia sesión de GitHub Codespaces)</li>
         </ul>
       </div>
       <div class="etapa-block">
@@ -807,7 +807,7 @@ general_log: <span class="dim">usuario = '' OR '1'='1' -- ' AND password = 'x'</
     </div>
     <div style="margin-top:1.3rem;">
       <h3>Nota de infraestructura</h3>
-      <p style="font-size:0.9rem; color:var(--text-muted); max-width:70ch;">El equipo recibe la app con el <code>Dockerfile</code> ya armado (rama <code>trabajo7-deploy</code> de <code>crud-python</code>, derivada de <code>feature-login</code> con <code>DB_CONFIG</code> parametrizado por variables de entorno) y un <code>init.sql</code> con el esquema. No reciben ningún <code>docker-compose.yml</code> de partida — ese es el trabajo.</p>
+      <p style="font-size:0.9rem; color:var(--text-muted); max-width:70ch;">El equipo recibe la app con el <code>Dockerfile</code> ya armado (rama <code>trabajo7-deploy</code> de <code>crud-python</code>, derivada de <code>feature-login</code> con <code>DB_CONFIG</code> parametrizado por variables de entorno) y un <code>init.sql</code> con el esquema. No reciben ningún <code>docker-compose.yml</code> de partida — ese es el trabajo. Corre en GitHub Codespaces sobre un fork propio del equipo, no en Killercoda: no usa ninguna herramienta de las que Killercoda restringe, y el entregable ya es un repositorio de GitHub.</p>
     </div>
     <p style="margin-top:0.4rem; font-size:0.88rem;">📄 <a href="documentacion/trabajo7-guia-docente.html">Guía docente</a> · <a href="documentacion/trabajo7-guia-estudiantes.html">Guía para estudiantes</a> — el instructivo completo, en el rol de administrador de red que recibe una app para desplegar</p>
   </div>
