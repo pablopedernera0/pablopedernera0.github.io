@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de LinkedIn — Analista Funcional Junior</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b24;
+    --bg3: #1e2533;
+    --border: rgba(255,255,255,0.08);
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --faint: #30363d;
+
+    --d-color: #58a6ff;
+    --d-bg: rgba(88,166,255,0.1);
+    --o-color: #3fb950;
+    --o-bg: rgba(63,185,80,0.1);
+    --r-color: #f0883e;
+    --r-bg: rgba(240,136,62,0.1);
+    --a-color: #ff7b72;
+    --a-bg: rgba(255,123,114,0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.6;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(255,255,255,0.08);
+    color: var(--r-color);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+
+  header {
+    width: 100%;
+    max-width: 820px;
+    padding: 2.5rem 2rem 1rem;
+  }
+
+  header .back {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-decoration: none;
+    margin-bottom: 1rem;
+  }
+  header .back:hover { color: var(--d-color); }
+
+  header h1 {
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  header h1 span { color: var(--d-color); }
+
+  header p.tagline {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 0.6rem;
+    max-width: 640px;
+  }
+
+  main {
+    width: 100%;
+    max-width: 820px;
+    padding: 0 2rem 4rem;
+  }
+
+  section { margin-top: 2.6rem; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.9rem;
+  }
+
+  section h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+  }
+
+  section > p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+
+  section > p:last-child { margin-bottom: 0; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 0.9rem;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--o-bg);
+    border-left: 3px solid var(--o-color);
+    border-radius: 10px;
+    padding: 0.95rem 1.15rem;
+  }
+
+  .card.warn {
+    border-color: var(--r-bg);
+    border-left-color: var(--r-color);
+  }
+
+  .card .lede {
+    display: block;
+    font-weight: 700;
+    font-size: 0.88rem;
+    margin-bottom: 0.3rem;
+    color: var(--o-color);
+  }
+
+  .card.warn .lede { color: var(--r-color); }
+
+  .card p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .example {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.3rem;
+    margin: 1rem 0;
+    font-size: 0.88rem;
+  }
+
+  .example .field {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+  }
+
+  .example .bad {
+    color: var(--a-color);
+    text-decoration: line-through;
+    opacity: 0.75;
+    margin-bottom: 0.5rem;
+  }
+
+  .example .good {
+    color: var(--text);
+  }
+  .example .good::before {
+    content: "→ ";
+    color: var(--o-color);
+  }
+
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+
+  .pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    background: var(--d-bg);
+    color: var(--d-color);
+    border: 1px solid rgba(88,166,255,0.3);
+    padding: 0.3rem 0.7rem;
+    border-radius: 20px;
+  }
+
+  .steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--d-color);
+    border-radius: 8px;
+    padding: 0.9rem 1.2rem;
+  }
+
+  .step-item .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--d-color);
+    font-size: 1.05rem;
+    min-width: 1.4rem;
+  }
+
+  .step-item h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .step-item p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .step-item p strong { color: var(--text); font-weight: 600; }
+
+  footer {
+    width: 100%;
+    max-width: 820px;
+    padding: 0 2rem 3rem;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--faint);
+  }
+
+  a { color: var(--d-color); }
+
+  @media (max-width: 640px) {
+    .card-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back" href="index.html">← Qué pide el mercado</a>
+  <h1>Guía de <span>LinkedIn</span> para tu primer perfil</h1>
+  <p class="tagline">No tenés experiencia laboral formal en el rubro todavía — y no la necesitás para tener un perfil que un reclutador se detenga a leer. Tenés algo mejor que un cargo anterior: un proyecto real, documentado, con repo público.</p>
+</header>
+
+<main>
+
+  <section>
+    <p class="section-label">Antes de nada</p>
+    <h2>Tu proyecto de EIDAS ya es tu primera experiencia</h2>
+    <p>El trabajo grupal que hiciste para esta materia — relevamiento de stakeholders, requisitos, historias de usuario, casos de uso, modelo de datos, diseño de interfaces, todo versionado en Git — es exactamente el tipo de evidencia que un analista funcional junior necesita mostrar. No lo escondas como "trabajo de la facultad": es un proyecto real, con entregables reales, que podés explicar en una entrevista.</p>
+    <p>Todo lo que sigue en esta guía asume que vas a usar ese proyecto como pieza central del perfil.</p>
+  </section>
+
+  <section>
+    <p class="section-label">1. Título profesional</p>
+    <h2>El encabezado, debajo de tu nombre</h2>
+    <p>Es lo primero que se lee, en toda la plataforma (buscador, comentarios, mensajes) — no solo en tu perfil. No pongas únicamente "Estudiante" — decí a qué te dedicás y qué buscás.</p>
+    <div class="example">
+      <div class="field">Encabezado</div>
+      <div class="bad">Estudiante</div>
+      <div class="good">Analista Funcional de Sistemas (en formación) · Terciario Urquiza · Requisitos, HU, Casos de Uso</div>
+    </div>
+    <p>Si ya tenés un rumbo más específico (dato, procesos, UX), sumalo — pero sin inventar experiencia que todavía no tenés.</p>
+  </section>
+
+  <section>
+    <p class="section-label">2. Extracto (About)</p>
+    <h2>Tres párrafos, no un CV en prosa</h2>
+    <div class="steps-list">
+      <div class="step-item">
+        <span class="num">1</span>
+        <div>
+          <h3>Quién sos y qué estás estudiando</h3>
+          <p>Una o dos líneas. Carrera, institución, en qué etapa estás.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="num">2</span>
+        <div>
+          <h3>Qué sabés hacer, con un ejemplo concreto</h3>
+          <p>Nombrá el proyecto de EIDAS acá: relevaste stakeholders, escribiste requisitos e historias de usuario, modelaste casos de uso — con el link al repo si es público.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="num">3</span>
+        <div>
+          <h3>Qué buscás</h3>
+          <p>Un párrafo corto, directo: qué tipo de rol o equipo te interesa. Ayuda a que un reclutador sepa si te tiene que escribir.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">3. Experiencia y proyectos</p>
+    <h2>Cómo cargar el proyecto de EIDAS</h2>
+    <p>LinkedIn tiene una sección "Proyectos" separada de "Experiencia" — usala. No hace falta que sea un empleo para que cuente.</p>
+    <div class="example">
+      <div class="field">Proyecto</div>
+      <div class="good"><strong>[Nombre del sistema del grupo]</strong> — Análisis funcional de un sistema de gestión, de punta a punta: relevamiento de stakeholders, requisitos funcionales y no funcionales, historias de usuario, diagramas de casos de uso, modelo entidad-relación y wireframes. Trabajo en equipo con control de versiones en GitHub.</div>
+    </div>
+    <p>Sumá el link al repo. Si es privado, evaluá con tu grupo si conviene hacerlo público una vez entregado — y antes de hacerlo, revisen (y si hace falta, saquen) información sensible como números de documento. Un repo real, con historial de commits, vale más que cualquier descripción.</p>
+  </section>
+
+  <section>
+    <p class="section-label">4. Aptitudes (Skills)</p>
+    <h2>Las palabras que un reclutador busca</h2>
+    <p>LinkedIn te deja elegir hasta 50 aptitudes, y son buscables. Cargá las que realmente practicaste este cuatrimestre — no hace falta inflar la lista, la vas a poder respaldar en una entrevista:</p>
+    <div class="pill-row">
+      <span class="pill">Análisis funcional</span>
+      <span class="pill">Relevamiento de requisitos</span>
+      <span class="pill">Historias de usuario</span>
+      <span class="pill">Casos de uso (UML)</span>
+      <span class="pill">Modelado de datos</span>
+      <span class="pill">Diseño de interfaces</span>
+      <span class="pill">Git / GitHub</span>
+      <span class="pill">Trabajo en equipo</span>
+      <span class="pill">Documentación técnica</span>
+    </div>
+    <p>Si además viste algo de Redes y Comunicaciones (dimensionamiento de servidores, métricas), sumalo — le da un perfil más completo al análisis funcional puro.</p>
+  </section>
+
+  <section>
+    <p class="section-label">5. Recomendaciones</p>
+    <h2>Pedí una, no esperes a que te la ofrezcan</h2>
+    <p>Una recomendación de un profesor que te vio trabajar en un proyecto real pesa más que un certificado de curso. Pedila con un mensaje corto y específico — no "recomendame", sino qué te gustaría que mencione (por ejemplo, el trabajo con requisitos o casos de uso).</p>
+    <p>También sirve pedirle una recomendación a un compañero de grupo sobre cómo trabajaste en equipo — y devolvérsela vos.</p>
+  </section>
+
+  <section>
+    <p class="section-label">6. Errores que sacan puntos</p>
+    <h2>Lo que un reclutador descarta rápido</h2>
+    <div class="card-grid">
+      <div class="card warn">
+        <span class="lede">Perfil incompleto</span>
+        <p>Sin foto, sin extracto, sin ubicación — LinkedIn te muestra menos en las búsquedas si el perfil no está completo.</p>
+      </div>
+      <div class="card warn">
+        <span class="lede">Copiar y pegar la descripción de la materia</span>
+        <p>"Cursé Diseño de Sistemas Web" no dice nada. Contá qué hiciste vos, con tus palabras.</p>
+      </div>
+      <div class="card warn">
+        <span class="lede">Inventar experiencia</span>
+        <p>No pongas un cargo que no tuviste. El proyecto de EIDAS ya es suficiente si lo contás bien — no hace falta inflarlo.</p>
+      </div>
+      <div class="card warn">
+        <span class="lede">Perfil privado para reclutadores</span>
+        <p>Revisá la configuración de visibilidad — un perfil que no aparece en las búsquedas no sirve para buscar trabajo.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">7. Red y actividad</p>
+    <h2>El perfil no alcanza solo</h2>
+    <div class="steps-list">
+      <div class="step-item">
+        <span class="num">1</span>
+        <div>
+          <h3>Conectá con gente real del rubro</h3>
+          <p>Profesores, compañeros, egresados de la carrera, analistas funcionales que veas en avisos como los que revisamos en clase.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="num">2</span>
+        <div>
+          <h3>Seguí empresas que te interesan</h3>
+          <p>Te aparecen en el feed cuando publican vacantes, no solo cuando las buscás vos.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="num">3</span>
+        <div>
+          <h3>Publicá algo del proyecto</h3>
+          <p>Un posteo corto contando qué hiciste en EIDAS, con una captura del repo o un diagrama, te da visibilidad real — no hace falta que sea perfecto.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>Guía de LinkedIn · Taller "Qué pide el mercado" · Diseño de Sistemas Web · Terciario Urquiza</footer>
+
+</body>
+</html>
