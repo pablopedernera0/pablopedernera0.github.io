@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El Portero de HTTP — planificación de clase</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --ink:#182430;
+    --muted:#55697a;
+    --paper:#f2f5f7;
+    --surface:#ffffff;
+    --surface-2:#eaeff2;
+    --line:#d6dee3;
+    --thread:#b1601f;
+    --thread-strong:#8f4c17;
+    --thread-soft:#f1e2cd;
+    --thread-ink:#4a3218;
+    --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --sans: 'Public Sans', -apple-system, 'Segoe UI', sans-serif;
+    --mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#e7edf1;
+      --muted:#93a4b3;
+      --paper:#0f161d;
+      --surface:#161f28;
+      --surface-2:#1c2733;
+      --line:#2b3944;
+      --thread:#dc9354;
+      --thread-strong:#eaad76;
+      --thread-soft:#3a2c1c;
+      --thread-ink:#f0d3ab;
+    }
+  }
+
+  *{box-sizing:border-box;}
+  html,body{ margin:0; }
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:var(--serif);
+    font-weight:700;
+    text-wrap:balance;
+    color:var(--ink);
+    margin:0;
+  }
+  a{ color:var(--thread-strong); text-decoration-color: color-mix(in srgb, var(--thread-strong) 45%, transparent); text-underline-offset:3px; }
+  a:hover{ color:var(--thread); }
+  code{
+    font-family:var(--mono);
+    font-size:0.88em;
+    background:var(--surface-2);
+    padding:0.12em 0.4em;
+    border-radius:4px;
+    color:var(--ink);
+  }
+
+  .page{ max-width:760px; margin:0 auto; padding:56px 24px 80px; }
+
+  /* ---------- header ---------- */
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--thread-strong);
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:14px;
+  }
+  .eyebrow::before{ content:''; width:22px; height:1.5px; background:var(--thread); display:inline-block; }
+  header h1{ font-size:clamp(2rem, 5vw, 2.7rem); line-height:1.12; }
+  .subtitle{ font-size:1.05rem; color:var(--muted); margin-top:12px; max-width:56ch; }
+  .byline{ margin-top:18px; font-family:var(--mono); font-size:12.5px; color:var(--muted); }
+
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:26px; }
+  .chip{
+    display:inline-flex; align-items:center; gap:7px;
+    font-family:var(--mono); font-size:12.5px;
+    padding:7px 12px; border-radius:99px;
+    border:1px solid var(--line); background:var(--surface);
+    color:var(--ink); text-decoration:none;
+  }
+  .chip:hover{ border-color:var(--thread); color:var(--thread-strong); }
+  .chip .tag{ color:var(--thread-strong); font-weight:600; }
+
+  /* ---------- sections ---------- */
+  section{ margin-top:64px; }
+  .section-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:20px; }
+  .section-num{ font-family:var(--mono); font-size:12.5px; color:var(--thread-strong); }
+  .section-head h2{ font-size:1.5rem; }
+  p{ margin:0 0 14px; }
+  p:last-child{ margin-bottom:0; }
+  .lede{ font-size:1.02rem; }
+
+  /* ---------- stage thread ---------- */
+  .thread-intro{ margin-bottom:26px; }
+  .thread{
+    position:relative;
+    margin-left:6px;
+    padding-left:26px;
+    border-left:2px solid var(--line);
+    display:flex; flex-direction:column; gap:20px;
+  }
+  .stage{ position:relative; }
+  .stage .dot{
+    position:absolute; left:-33px; top:5px;
+    width:12px; height:12px; border-radius:50%;
+    background:var(--surface); border:2px solid var(--line);
+  }
+  .stage--active .dot{ border-color:var(--thread); background:var(--thread); }
+  .stage--paused .dot{ border:2px dashed var(--muted); background:transparent; }
+  .stage-row{ display:flex; flex-wrap:wrap; align-items:baseline; gap:10px; }
+  .stage-order{ font-family:var(--mono); font-size:12px; color:var(--muted); }
+  .stage-name{ font-family:var(--mono); font-weight:600; font-size:14.5px; }
+  .stage--active .stage-name{ color:var(--thread-strong); }
+  .stage-desc{ color:var(--muted); font-size:14.5px; margin-top:4px; max-width:58ch; }
+  .stage-link{ font-family:var(--mono); font-size:12.5px; margin-top:4px; display:inline-block; }
+  .stage-flag{
+    font-family:var(--mono); font-size:11px; letter-spacing:.04em; text-transform:uppercase;
+    color:var(--muted); border:1px solid var(--line); border-radius:4px; padding:1px 6px;
+  }
+
+  /* ---------- frame / encuadre ---------- */
+  .encuadre-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:18px; }
+  .encuadre-card{ background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:18px 20px; }
+  .encuadre-card h3{ font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--thread-strong); font-weight:600; margin-bottom:8px; }
+  .encuadre-card p{ font-size:14.5px; color:var(--ink); }
+  .encuadre-card p:not(:first-of-type){ color:var(--muted); }
+
+  /* ---------- day plan ---------- */
+  .day{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:28px 28px 26px;
+    margin-bottom:22px;
+  }
+  .day-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:6px; }
+  .day-head h3{ font-size:1.18rem; }
+  .day-date{ font-family:var(--mono); font-size:12.5px; color:var(--thread-strong); background:var(--thread-soft); padding:3px 9px; border-radius:99px; white-space:nowrap; }
+  .day-objetivo{ color:var(--muted); font-size:14.5px; margin-bottom:18px; max-width:62ch; }
+
+  .vars-row{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:22px; }
+  .var-tag{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:.03em;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:6px;
+    padding:5px 10px; color:var(--muted);
+  }
+  .var-tag b{ color:var(--ink); font-weight:600; }
+
+  .momentos{ display:flex; flex-direction:column; gap:0; }
+  .momento{
+    display:grid; grid-template-columns:118px 1fr;
+    gap:18px; padding:16px 0;
+    border-top:1px solid var(--line);
+  }
+  .momento:first-child{ border-top:none; padding-top:0; }
+  .momento-label{ font-family:var(--mono); font-size:12px; letter-spacing:.05em; text-transform:uppercase; color:var(--thread-strong); padding-top:2px; }
+  .momento-min{ display:block; font-size:11px; color:var(--muted); margin-top:3px; text-transform:none; letter-spacing:0; }
+  .momento-body p{ font-size:14.5px; margin-bottom:8px; }
+  .momento-body ul{ margin:0 0 8px; padding-left:18px; font-size:14.5px; }
+  .momento-body li{ margin-bottom:5px; }
+  .ejercicio{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:13px; color:var(--thread-ink);
+    background:var(--thread-soft); border-radius:7px; padding:6px 10px; margin-top:6px;
+  }
+  .ejercicio b{ font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.04em; }
+
+  /* ---------- recurso ---------- */
+  .recurso{
+    display:grid; grid-template-columns:1fr; gap:22px;
+    background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:26px 28px;
+  }
+  .recurso-link{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--mono); font-size:13.5px; font-weight:500;
+    color:var(--thread-strong); border:1px solid var(--thread); border-radius:8px;
+    padding:9px 14px; text-decoration:none; width:fit-content;
+  }
+  .recurso-link:hover{ background:var(--thread-soft); }
+  .deck-outline{ display:flex; flex-wrap:wrap; gap:7px; margin-top:4px; }
+  .deck-slide{
+    font-family:var(--mono); font-size:11.5px; color:var(--muted);
+    border:1px solid var(--line); border-radius:6px; padding:5px 9px;
+  }
+  .deck-slide.split{ border-color:var(--thread); color:var(--thread-strong); }
+
+  /* ---------- marco teorico ---------- */
+  .biblio{ display:flex; flex-direction:column; gap:16px; }
+  .ref-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    padding:20px 22px; display:grid; grid-template-columns:1fr; gap:10px;
+  }
+  .ref-cite{ font-family:var(--serif); font-style:italic; font-size:15px; color:var(--ink); }
+  .ref-cite a{ font-style:normal; }
+  .ref-connect{ font-size:14px; color:var(--muted); border-left:2px solid var(--thread); padding-left:12px; }
+  .ref-connect b{ color:var(--ink); font-weight:600; }
+
+  /* ---------- footer ---------- */
+  footer{ margin-top:70px; padding-top:24px; border-top:1px solid var(--line); }
+  footer .chips{ margin-top:0; margin-bottom:16px; }
+  footer p{ font-family:var(--mono); font-size:12px; color:var(--muted); }
+
+  @media (max-width:520px){
+    .momento{ grid-template-columns:1fr; }
+    .momento-label{ padding-top:0; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="eyebrow">Co-diseñar una clase — planificación</div>
+    <h1>El portero de HTTP</h1>
+    <p class="subtitle">Clase presencial de repaso — autenticación, sesión y workers de Gunicorn.
+      Se dicta dentro de <strong>Infraestructura de Redes</strong>, materia anual de 2° año de la
+      carrera Técnico Superior en Infraestructura de Tecnología de la Información (Terciario
+      Urquiza), como parte del <strong>hilo conductor de redes</strong> del 2° cuatrimestre 2026.</p>
+    <p class="byline">Prof. Pablo Pedernera · Comisión 2°1° · Días 25 y 27 de agosto de 2026</p>
+    <div class="chips">
+      <a class="chip" href="https://github.com/pablopedernera0/la-cajonera" target="_blank" rel="noopener"><span class="tag">repo</span> la-cajonera</a>
+      <a class="chip" href="https://github.com/pablopedernera0/la-cajonera/blob/main/hilo-conductor-redes/GUIA-DOCENTE-HILO-REDES.md" target="_blank" rel="noopener"><span class="tag">guión</span> completo</a>
+      <a class="chip" href="https://killercoda.com/pablop22/scenario/crud-stress-test" target="_blank" rel="noopener"><span class="tag">killercoda</span> etapa 1</a>
+      <a class="chip" href="https://killercoda.com/pablop22/scenario/crud-auth-login" target="_blank" rel="noopener"><span class="tag">killercoda</span> etapa 2</a>
+      <a class="chip" href="https://pablopedernera0.github.io/repaso-auth-wsgi-gunicorn/" target="_blank" rel="noopener"><span class="tag">github.io</span> slide deck</a>
+    </div>
+  </header>
+
+  <section>
+    <div class="section-head"><span class="section-num">00</span><h2>Presentación</h2></div>
+    <p class="lede">"El portero de HTTP" no es una pieza aislada: es la clase presencial donde se
+      cierra, con pizarrón y proyector, un contenido que el programa oficial de la materia ya pide
+      enseñar — y que el <a href="#hilo-conductor">hilo conductor</a> viene construyendo en código
+      desde varias semanas antes.</p>
+
+    <div class="encuadre-grid">
+      <div class="encuadre-card">
+        <h3>Materia</h3>
+        <p><strong>Infraestructura de Redes</strong> — anual, Formación específica.</p>
+        <p>Carrera Técnico Superior en Infraestructura de Tecnología de la Información (ITI),
+          Terciario Urquiza. Comisión 2°1°.</p>
+      </div>
+      <div class="encuadre-card">
+        <h3>2° año</h3>
+        <p>Dictado bimodal (presencial + a distancia), 4 hs. cátedra semanales.</p>
+        <p>Correlativa previa: Infraestructura de Redes I aprobada.</p>
+      </div>
+      <div class="encuadre-card">
+        <h3>Unidad del programa</h3>
+        <p><strong>Unidad 4 — Visualización (Arquitectura Cliente-Servidor):</strong> modelo
+          cliente-servidor, protocolos de aplicación (HTTP, FTP, SMTP, SSH), servidores web y de
+          aplicaciones, balanceo de carga, alta disponibilidad.</p>
+      </div>
+      <div class="encuadre-card">
+        <h3>Trabajo práctico asociado</h3>
+        <p><strong>TP N°4</strong> — Despliegue y análisis de servidor web con protocolo HTTP:
+          pide diferenciar servidor web de servidor de aplicaciones y explicar balanceo de carga
+          y alta disponibilidad.</p>
+      </div>
+    </div>
+
+    <div class="ref-card" style="margin-top:18px;">
+      <p class="ref-cite">"Las clases son dinámicas, donde se aplica lo conceptual a problemas
+        concretos que se deben resolver." — Planificación de la Unidad Curricular, Infraestructura
+        de Redes, 2026.</p>
+      <p class="ref-connect"><b>Es literalmente el formato de esta clase:</b> el pizarrón no
+        reemplaza el código de las Etapas 1 y 2 — lo explica después de que ya se usó, con la
+        pregunta que el programa oficial pide poder responder: <em>"¿cuál es la diferencia entre
+        un servidor web y un servidor de aplicaciones?"</em> (TP N°4), que acá se responde en vivo
+        comparando Werkzeug, Gunicorn y sus workers.</p>
+    </div>
+
+    <div class="chips" style="margin-top:22px;">
+      <a class="chip" href="docs/ITI_Programa_2026_2_1_InfraestructuraRedes.docx" target="_blank" rel="noopener"><span class="tag">programa</span> Infraestructura de Redes</a>
+      <a class="chip" href="docs/ITI_Planificaci%C3%B3n_2026_2_1_InfraestructuraRedes.docx" target="_blank" rel="noopener"><span class="tag">planificación</span> Infraestructura de Redes</a>
+    </div>
+  </section>
+
+  <section id="hilo-conductor">
+    <div class="section-head"><span class="section-num">01</span><h2>El hilo conductor</h2></div>
+    <p class="lede">Un conductor eléctrico deja pasar la corriente con poca resistencia — el cobre
+      del par trenzado que va adentro de cualquier cable UTP que se cablea en esta materia. Este
+      curso tiene su propio hilo conductor, en el otro sentido de la palabra: <strong>una misma
+      infraestructura</strong> — una app CRUD Flask con su base de datos MySQL — acompaña a la
+      materia de punta a punta, de la misma forma que un par de cobre lleva la señal de un extremo
+      del cable al otro sin perderla en el camino. Deploy → medición → login → ataque →
+      investigación → monitoreo: si en algún punto se corta el hilo, se corta la señal — por eso
+      cada etapa da por sentado que ya se vio la anterior.</p>
+    <p>Todas las etapas viven como escenarios de <a href="https://killercoda.com/pablop22" target="_blank" rel="noopener">Killercoda</a>,
+      publicados desde el repo <code>la-cajonera</code> (cada <code>push</code> a <code>main</code>
+      actualiza la plataforma automáticamente). Las etapas 3 y 4 usan herramientas que Killercoda
+      prohíbe sin excepción (<code>nmap</code>, <code>hydra</code>, <code>sqlmap</code>) y se
+      migraron a un repo aparte con <code>docker-compose</code> propio.</p>
+
+    <div class="thread" style="margin-top:26px;">
+      <div class="stage">
+        <span class="dot"></span>
+        <div class="stage-row"><span class="stage-order">0</span><span class="stage-name">docker-mysql</span></div>
+        <div class="stage-desc">Deploy manual de Nginx + MySQL + PhpMyAdmin + la app CRUD.</div>
+        <a class="stage-link" href="https://killercoda.com/pablop22/scenario/docker-mysql" target="_blank" rel="noopener">killercoda.com/pablop22/scenario/docker-mysql</a>
+      </div>
+      <div class="stage stage--active">
+        <span class="dot"></span>
+        <div class="stage-row"><span class="stage-order">1</span><span class="stage-name">crud-stress-test</span><span class="stage-flag">de acá sale la clase</span></div>
+        <div class="stage-desc">Mide la infraestructura con <code>curl</code>, compara el servidor de desarrollo de Flask contra Gunicorn.</div>
+        <a class="stage-link" href="https://killercoda.com/pablop22/scenario/crud-stress-test" target="_blank" rel="noopener">killercoda.com/pablop22/scenario/crud-stress-test</a>
+      </div>
+      <div class="stage stage--active">
+        <span class="dot"></span>
+        <div class="stage-row"><span class="stage-order">2</span><span class="stage-name">crud-auth-login</span><span class="stage-flag">de acá sale la clase</span></div>
+        <div class="stage-desc">Agrega pantalla de login y sesiones — deja la vulnerabilidad de las etapas 3/4 instalada sin explotarla.</div>
+        <a class="stage-link" href="https://killercoda.com/pablop22/scenario/crud-auth-login" target="_blank" rel="noopener">killercoda.com/pablop22/scenario/crud-auth-login</a>
+      </div>
+      <div class="stage stage--paused">
+        <span class="dot"></span>
+        <div class="stage-row"><span class="stage-order">3–4</span><span class="stage-name">ataques-red / sqli</span><span class="stage-flag">fuera de Killercoda</span></div>
+        <div class="stage-desc">Reconocimiento, fuerza bruta y SQLi — migradas a un repo con <code>docker-compose</code> propio por restricción de la plataforma.</div>
+        <a class="stage-link" href="https://github.com/pablopedernera0/hilo-conductor-redes-ataques" target="_blank" rel="noopener">github.com/pablopedernera0/hilo-conductor-redes-ataques</a>
+      </div>
+      <div class="stage">
+        <span class="dot"></span>
+        <div class="stage-row"><span class="stage-order">5</span><span class="stage-name">crud-logs-analisis-cli</span></div>
+        <div class="stage-desc">Forense con <code>grep</code>/<code>awk</code> sobre logs de la app y el <code>general_log</code> de MySQL.</div>
+        <a class="stage-link" href="https://killercoda.com/pablop22/scenario/crud-logs-analisis-cli" target="_blank" rel="noopener">killercoda.com/pablop22/scenario/crud-logs-analisis-cli</a>
+      </div>
+      <div class="stage">
+        <span class="dot"></span>
+        <div class="stage-row"><span class="stage-order">6</span><span class="stage-name">crud-monitoreo-prometheus-grafana</span></div>
+        <div class="stage-desc">Prometheus + Grafana + cAdvisor + mysqld-exporter, en vivo.</div>
+        <a class="stage-link" href="https://killercoda.com/pablop22/scenario/crud-monitoreo-prometheus-grafana" target="_blank" rel="noopener">killercoda.com/pablop22/scenario/crud-monitoreo-prometheus-grafana</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">02</span><h2>Destinatarios y encuadre</h2></div>
+    <div class="encuadre-grid">
+      <div class="encuadre-card">
+        <h3>Destinatarios</h3>
+        <p>2° año, Infraestructura de Redes, ITI comisión 2°1°.</p>
+        <p>Ya completaron individualmente las Etapas 1 y 2 en Killercoda, en la semana virtual anterior.</p>
+      </div>
+      <div class="encuadre-card">
+        <h3>Ubicación en el cronograma</h3>
+        <p>Entre la Semana Virtual 1 (Etapas 1–2) y la Semana Virtual 2 (Etapas 3–4).</p>
+        <p>Repaso presencial de cierre conceptual, no una etapa nueva del hilo.</p>
+      </div>
+      <div class="encuadre-card">
+        <h3>Escenario pedagógico</h3>
+        <p>Presencial, con pizarrón y proyector.</p>
+        <p>Deliberadamente sin computadoras — contraste con las etapas virtuales, que sí las usan.</p>
+      </div>
+      <div class="encuadre-card">
+        <h3>Punto de partida</h3>
+        <p>Lo que la Etapa 1 y la Etapa 2 dejaron <em>funcionando</em> pero no explicaron a fondo: por qué hace falta una sesión, y por qué la misma app corre igual con dos servidores distintos.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">03</span><h2>Planificación de la clase</h2></div>
+    <p class="lede" style="margin-bottom:28px;">Dos encuentros de un mismo repaso, cada uno con su propia
+      apertura, desarrollo y cierre. La distribución de tiempo es la propuesta de esta
+      planificación — el guión docente no la cronometra minuto a minuto, a diferencia de las
+      etapas virtuales.</p>
+
+    <div class="day">
+      <div class="day-head">
+        <h3>Día 1 — Autenticación, sesión y el "portero"</h3>
+        <span class="day-date">25 de agosto</span>
+      </div>
+      <p class="day-objetivo">Diferenciar autenticación de autorización, explicar por qué HTTP
+        (protocolo sin estado) necesita una sesión, y leer un <code>@app.before_request</code>
+        entendiendo cómo protege todo el CRUD sin tocar ruta por ruta.</p>
+
+      <div class="vars-row">
+        <span class="var-tag"><b>Tiempo</b> — 40 min (10 + 20 + 10)</span>
+        <span class="var-tag"><b>Espacio</b> — aula, pizarrón + proyector</span>
+        <span class="var-tag"><b>Agrupamiento</b> — grupo total, con pasaje individual al cierre</span>
+      </div>
+
+      <div class="momentos">
+        <div class="momento">
+          <div class="momento-label">Apertura<span class="momento-min">~10 min</span></div>
+          <div class="momento-body">
+            <p>Se dibujan dos peticiones <code>GET</code> sueltas, sin ninguna línea que las una, y se
+              pregunta al grupo: <em>"¿cómo sabe el servidor que sos el mismo que se logueó
+              recién?"</em> — gancho que expone que HTTP no tiene memoria.</p>
+          </div>
+        </div>
+        <div class="momento">
+          <div class="momento-label">Desarrollo<span class="momento-min">~20 min</span></div>
+          <div class="momento-body">
+            <ul>
+              <li>Se completa el dibujo con el flujo real: <code>POST /login</code> → el servidor
+                valida contra <code>usuarios</code> → <code>session["logged_in"] = True</code> +
+                <code>Set-Cookie</code> → el navegador la reenvía sola en cada pedido siguiente.</li>
+              <li>Se proyecta el código real de <code>requerir_login</code>
+                (<code>@app.before_request</code>) y se remarca que corre antes de cualquier
+                ruta — protege todo el CRUD sin tocarlo ruta por ruta.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="momento">
+          <div class="momento-label">Cierre<span class="momento-min">~10 min</span></div>
+          <div class="momento-body">
+            <p>Se cierra con autenticación vs. autorización: la Etapa 2 solo implementa la
+              primera (un único usuario, con acceso a todo).</p>
+            <div class="ejercicio"><b>Ejercicio en vivo</b> un estudiante redibuja el flujo completo en el pizarrón, sin mirar la proyección.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-head">
+        <h3>Día 2 — WSGI y el modelo de workers de Gunicorn</h3>
+        <span class="day-date">27 de agosto</span>
+      </div>
+      <p class="day-objetivo">Explicar WSGI como el puente entre la app y el servidor,
+        diferenciar proceso de hilo, y entender el trade-off de agregar workers en Gunicorn.</p>
+
+      <div class="vars-row">
+        <span class="var-tag"><b>Tiempo</b> — 40 min (8 + 24 + 8)</span>
+        <span class="var-tag"><b>Espacio</b> — aula, pizarrón + proyector</span>
+        <span class="var-tag"><b>Agrupamiento</b> — grupo total, con pasaje individual al cierre</span>
+      </div>
+
+      <div class="momentos">
+        <div class="momento">
+          <div class="momento-label">Apertura<span class="momento-min">~8 min</span></div>
+          <div class="momento-body">
+            <p>Se retoma el Paso 5 de la Etapa 1: el mismo <code>app.py</code>, sin cambiar una
+              línea, corrió primero con el servidor de Werkzeug y después con Gunicorn. Pregunta
+              disparadora: <em>"¿cómo puede ser que la misma app funcione con dos servidores
+              distintos?"</em> → WSGI.</p>
+          </div>
+        </div>
+        <div class="momento">
+          <div class="momento-label">Desarrollo<span class="momento-min">~24 min</span></div>
+          <div class="momento-body">
+            <ul>
+              <li>Se diferencia proceso (memoria propia, aislado) de hilo (comparte memoria, más
+                liviano).</li>
+              <li>Se explica el GIL en una frase: CPython deja correr un solo hilo de bytecode a
+                la vez, aunque haya varios núcleos — por eso Gunicorn usa procesos, no hilos, para
+                paralelismo real.</li>
+              <li>Se dibuja el contraste: Werkzeug (1 proceso, 1 hilo, cola cuando se satura) vs.
+                Gunicorn <code>-w 4</code> (proceso master + 4 workers, cada uno con su copia de
+                la app y su propio GIL).</li>
+            </ul>
+          </div>
+        </div>
+        <div class="momento">
+          <div class="momento-label">Cierre<span class="momento-min">~8 min</span></div>
+          <div class="momento-body">
+            <p>Se cierra con el trade-off: más workers es más paralelismo real, a costa de más
+              RAM — y que Gunicorn no resuelve un cuello de botella que esté en MySQL, solo lo
+              empuja más lejos.</p>
+            <div class="ejercicio"><b>Ejercicio en vivo</b> otro estudiante dibuja Werkzeug vs. Gunicorn recibiendo 4 peticiones al mismo tiempo.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">04</span><h2>Recurso didáctico</h2></div>
+    <div class="recurso">
+      <div>
+        <p>Un slide deck propio, <strong>confeccionado</strong> para esta clase y pensado como
+          doble uso: proyectado, es lo que ven los estudiantes; para el docente, es el guión de
+          qué dibujar en cada momento — los diagramas ya están armados en el orden exacto del
+          repaso, no se improvisan en el pizarrón desde cero.</p>
+        <p>No es una reversión de un recurso externo genérico: la secuencia de láminas espeja
+          uno a uno los momentos de la planificación de arriba, incluida la lámina de quiebre
+          entre el Día 1 y el Día 2, y cierra con un puente explícito hacia la Semana Virtual 2
+          — la intencionalidad pedagógica está en esa continuidad, no solo en el contenido de
+          cada lámina suelta.</p>
+        <a class="recurso-link" href="https://pablopedernera0.github.io/repaso-auth-wsgi-gunicorn/" target="_blank" rel="noopener">↗ repaso-auth-wsgi-gunicorn</a>
+      </div>
+      <div>
+        <div class="deck-outline">
+          <span class="deck-slide">Portada</span>
+          <span class="deck-slide">Agenda</span>
+          <span class="deck-slide">Repaso relámpago</span>
+          <span class="deck-slide">HTTP no tiene memoria</span>
+          <span class="deck-slide">Diagrama: login y sesión</span>
+          <span class="deck-slide">El "portero"</span>
+          <span class="deck-slide">Auth vs. autorización</span>
+          <span class="deck-slide split">¿Qué pasa detrás de app.run()?</span>
+          <span class="deck-slide">WSGI en una línea</span>
+          <span class="deck-slide">Procesos vs. hilos</span>
+          <span class="deck-slide">Werkzeug vs. Gunicorn</span>
+          <span class="deck-slide">Números de la Etapa 1</span>
+          <span class="deck-slide">Para repasar por tu cuenta</span>
+          <span class="deck-slide split">Semana Virtual 2</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">05</span><h2>Marco teórico</h2></div>
+    <p class="lede" style="margin-bottom:24px;">Tres puntos de apoyo del material de lectura
+      de la materia, elegidos porque cada uno responde a una parte distinta de la consigna de
+      co-diseño.</p>
+    <div class="biblio">
+      <div class="ref-card">
+        <p class="ref-cite">Steiman, J. (2010). <em>Más didáctica (en la educación
+          superior)</em>, Cap. 1 y 2. Miño y Dávila.
+          — <a href="https://elibro.net/es/ereader/ucuelibro/60344?page=1" target="_blank" rel="noopener">eLibro</a></p>
+        <p class="ref-connect"><b>De ahí sale el esqueleto de esta planificación:</b> destinatarios,
+          componentes, momentos de la clase y las variables de tiempo, espacio y agrupamiento son
+          exactamente los ejes que organizan las dos tarjetas de "Día 1" y "Día 2" de arriba, no
+          una estructura elegida al margen del marco.</p>
+      </div>
+      <div class="ref-card">
+        <p class="ref-cite">Litwin, E. (2004). <em>Prácticas con tecnologías</em>. EdUNLPam
+          — <a href="https://elibro.net/es/ereader/ucuelibro/10075?page=9" target="_blank" rel="noopener">eLibro</a></p>
+        <p class="ref-connect"><b>Justifica una decisión que podría parecer contraintuitiva:</b>
+          esta clase, dentro de un hilo conductor que corre casi entero sobre una terminal, elige
+          quedarse sin computadoras. La tecnología entra donde aporta — el slide deck reversionado
+          como guión propio — y se retira donde el pizarrón compartido rinde más para fijar un
+          concepto que ya se usó en la práctica pero no se explicó.</p>
+      </div>
+      <div class="ref-card">
+        <p class="ref-cite">Maggio, M. (2018). <em>Reinventar la clase universitaria</em>. Paidós.
+          — <a href="https://revistacseducacion.unr.edu.ar/index.php/educacion/article/view/555" target="_blank" rel="noopener">artículo</a>
+          · <a href="https://view.genially.com/66acca25cc88dc4b8746b7f5" target="_blank" rel="noopener">genially</a></p>
+        <p class="ref-connect"><b>Es la idea detrás del hilo conductor entero, no solo de esta
+          clase:</b> una infraestructura real que persiste de práctica en práctica, con
+          continuidad narrativa explícita ("si se corta el hilo, se corta la señal"), en vez de
+          seis prácticas sueltas con el mismo tema de fondo. Esta clase presencial es el punto
+          donde esa continuidad se vuelve explícita y se pone en palabras frente al grupo.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="chips">
+      <a class="chip" href="https://github.com/pablopedernera0/la-cajonera" target="_blank" rel="noopener"><span class="tag">repo</span> la-cajonera</a>
+      <a class="chip" href="https://killercoda.com/pablop22/scenario/crud-stress-test" target="_blank" rel="noopener"><span class="tag">killercoda</span> etapa 1</a>
+      <a class="chip" href="https://killercoda.com/pablop22/scenario/crud-auth-login" target="_blank" rel="noopener"><span class="tag">killercoda</span> etapa 2</a>
+      <a class="chip" href="https://pablopedernera0.github.io/repaso-auth-wsgi-gunicorn/" target="_blank" rel="noopener"><span class="tag">github.io</span> slide deck</a>
+    </div>
+    <p>Infraestructura de Redes · ITI 2°1° · Terciario Urquiza — hilo conductor de redes, 2° cuatrimestre 2026</p>
+  </footer>
+
+</div>
+</body>
+</html>
