@@ -63,6 +63,21 @@
     border-radius:4px;
   }
   img{ display:block; max-width:100%; border-radius:8px; border:1px solid var(--line); }
+  img.zoomable{ cursor:zoom-in; transition:opacity .15s ease; }
+  img.zoomable:hover{ opacity:.88; }
+
+  .lightbox{
+    display:none; position:fixed; inset:0; z-index:100; background:rgba(10,10,11,.86);
+    padding:5vh 5vw; cursor:zoom-out; align-items:center; justify-content:center;
+  }
+  .lightbox.open{ display:flex; }
+  .lightbox img{ max-width:100%; max-height:90vh; border-radius:8px; border:1px solid rgba(255,255,255,.15); cursor:default; }
+  .lightbox-close{
+    position:fixed; top:22px; right:26px; font-family:var(--mono); font-size:13px; color:#eae8e5;
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.25); border-radius:99px;
+    padding:6px 14px; cursor:pointer;
+  }
+  .lightbox-close:hover{ background:rgba(255,255,255,.16); }
 
   .page{ max-width:800px; margin:0 auto; padding:44px 24px 90px; }
 
@@ -210,8 +225,8 @@
     <p class="lede">"Cosmeticos SA" es una empresa de venta de cosmética que necesita un
       back-office interno para que su equipo administrativo gestione ventas, catálogo,
       clientes, proveedores y usuarios del sistema. Estos son los requisitos mínimos que le
-      dan sustento a las decisiones de diseño de las secciones siguientes — no son un análisis
-      completo, solo lo necesario para justificar los patrones elegidos.</p>
+      dan sustento a las decisiones de diseño de las secciones siguientes — del análisis
+      completo, tomamos solo lo necesario para justificar los patrones elegidos.</p>
 
     <div class="req-grid">
       <div class="req-block">
@@ -262,7 +277,7 @@
   <section>
     <div class="section-head"><span class="section-num">01</span><h2>El molde</h2></div>
     <p class="lede">"Cosmeticos SA" no se diseñó desde cero: es el mismo template de dashboard
-      administrativo que tenés en tu propia galería (<a href="https://www.prosis360.com/template/dashboard.html" target="_blank" rel="noopener">prosis360 → 47Admin</a>),
+      administrativo que existe en la galería (<a href="https://www.prosis360.com/template/dashboard.html" target="_blank" rel="noopener">prosis360 → 47Admin</a>),
       clonado y re-etiquetado. El escenario <a href="https://killercoda.com/pablop22/scenario/docker-interfaces" target="_blank" rel="noopener"><code>docker-interfaces</code></a>
       de Killercoda muestra cómo se levanta técnicamente (Docker Compose + volumen + <code>git clone</code>
       del repo <a href="https://github.com/pablopedernera0/interfaces" target="_blank" rel="noopener"><code>interfaces</code></a>)
@@ -270,11 +285,11 @@
 
     <div class="shot-grid">
       <figure>
-        <img src="img/molde-ventas.png" alt="Pantalla de Ventas del template, con navbar superior y sidebar lateral">
+        <img class="zoomable" src="img/molde-ventas.png" alt="Pantalla de Ventas del template, con navbar superior y sidebar lateral">
         <figcaption><b>Ventas</b> — navbar + sidebar + tabla</figcaption>
       </figure>
       <figure>
-        <img src="img/molde-productos.png" alt="Pantalla de Productos del template, con el mismo navbar y sidebar que Ventas">
+        <img class="zoomable" src="img/molde-productos.png" alt="Pantalla de Productos del template, con el mismo navbar y sidebar que Ventas">
         <figcaption><b>Productos</b> — mismo navbar + sidebar</figcaption>
       </figure>
     </div>
@@ -287,8 +302,8 @@
     </div>
 
     <figure style="margin-top:22px;">
-      <img src="img/molde-prosis360.png" alt="El template original 47Admin en la galería de prosis360, con la misma estructura de navbar y sidebar">
-      <figcaption><b>El molde original</b> — tu galería en prosis360, antes de convertirse en "Cosmeticos SA"</figcaption>
+      <img class="zoomable" src="img/molde-prosis360.png" alt="El template original 47Admin en la galería de prosis360, con la misma estructura de navbar y sidebar">
+      <figcaption><b>El molde original</b> — el template modelo de prosis360, antes de convertirse en "Cosmeticos SA"</figcaption>
     </figure>
 
     <div class="callout">
@@ -335,7 +350,7 @@
           usuario sigue exactamente donde estaba, sin perder el contexto de búsqueda o
           paginación que ya tenía armado.</p>
         <figure style="margin-top:14px;">
-          <img src="img/molde-productos-modal.png" alt="Modal de Nuevo Producto abierto sobre el listado de productos, con el fondo atenuado">
+          <img class="zoomable" src="img/molde-productos-modal.png" alt="Modal de Nuevo Producto abierto sobre el listado de productos, con el fondo atenuado">
           <figcaption>El modal de alta, sobre el listado de Productos</figcaption>
         </figure>
       </div>
@@ -379,7 +394,7 @@
         <span class="path-label">Camino rápido</span>
         <h3>Capturas anotadas</h3>
         <ul>
-          <li>Sacar captura de un template real (este, el de tu propia galería, o cualquier otro que uses de referencia).</li>
+          <li>Sacar captura de un template real (este, el template modelo de prosis360, o cualquier otro que uses de referencia).</li>
           <li>Marcarla con flechas o cajas señalando cada patrón — alcanza con Figma (pegar la imagen + formas), Excalidraw, o incluso Google Slides / PowerPoint.</li>
           <li>Reemplazar cada etiqueta genérica por la de tu propio caso: no "Nuevo Producto" de Cosmeticos SA, sino la entidad y el flujo de tu sistema.</li>
         </ul>
@@ -416,5 +431,31 @@
   </footer>
 
 </div>
+
+<div class="lightbox" id="lightbox">
+  <span class="lightbox-close">✕ cerrar</span>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script>
+  (function(){
+    var lb = document.getElementById('lightbox');
+    var lbImg = document.getElementById('lightbox-img');
+
+    document.querySelectorAll('img.zoomable').forEach(function(img){
+      img.addEventListener('click', function(){
+        lbImg.src = img.src;
+        lbImg.alt = img.alt;
+        lb.classList.add('open');
+      });
+    });
+
+    function closeLightbox(){ lb.classList.remove('open'); lbImg.src=''; }
+    lb.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') closeLightbox();
+    });
+  })();
+</script>
 </body>
 </html>
