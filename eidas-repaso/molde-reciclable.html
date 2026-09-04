@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El Molde Reciclable</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@600;700&display=swap');
+
+  :root{
+    --ink:#1c1c1e;
+    --muted:#6b6864;
+    --paper:#f5f4f2;
+    --surface:#ffffff;
+    --surface-2:#ebe9e5;
+    --line:#d3d0ca;
+    --marker:#d42a63;
+    --marker-strong:#b01e51;
+    --marker-soft:#fbe4ec;
+    --marker-ink:#7a1638;
+    --display:'Archivo', 'Helvetica Neue', Arial, sans-serif;
+    --sans:'Work Sans', -apple-system, 'Segoe UI', sans-serif;
+    --mono:'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+    --hand:'Caveat', cursive;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#eae8e5;
+      --muted:#a6a29c;
+      --paper:#17171a;
+      --surface:#1e1e22;
+      --surface-2:#252529;
+      --line:#38383d;
+      --marker:#ff6a95;
+      --marker-strong:#ff8bab;
+      --marker-soft:#3a1c28;
+      --marker-ink:#ffc2d5;
+    }
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:var(--display);
+    text-wrap:balance;
+    color:var(--ink);
+    margin:0;
+  }
+  a{ color:var(--marker-strong); text-decoration-color: color-mix(in srgb, var(--marker-strong) 40%, transparent); text-underline-offset:3px; }
+  a:hover{ color:var(--marker); }
+  code{
+    font-family:var(--mono);
+    font-size:0.87em;
+    background:var(--surface-2);
+    padding:0.12em 0.4em;
+    border-radius:4px;
+  }
+  img{ display:block; max-width:100%; border-radius:8px; border:1px solid var(--line); }
+
+  .page{ max-width:800px; margin:0 auto; padding:44px 24px 90px; }
+
+  /* breadcrumb */
+  .crumbs{ display:flex; gap:14px; font-family:var(--mono); font-size:12.5px; color:var(--muted); margin-bottom:34px; flex-wrap:wrap; }
+  .crumbs a{ color:var(--muted); }
+  .crumbs a:hover{ color:var(--marker-strong); }
+
+  /* header */
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--marker-strong); display:flex; align-items:center; gap:10px; margin-bottom:14px;
+  }
+  .eyebrow::before{ content:''; width:22px; height:1.5px; background:var(--marker); display:inline-block; }
+  header h1{ font-size:clamp(2rem, 5vw, 2.6rem); font-weight:800; line-height:1.1; }
+  .subtitle{ font-size:1.05rem; color:var(--muted); margin-top:14px; max-width:58ch; }
+
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:26px; }
+  .chip{
+    display:inline-flex; align-items:center; gap:7px; font-family:var(--mono); font-size:12.5px;
+    padding:7px 12px; border-radius:99px; border:1px solid var(--line); background:var(--surface);
+    color:var(--ink); text-decoration:none;
+  }
+  .chip:hover{ border-color:var(--marker); color:var(--marker-strong); }
+  .chip .tag{ color:var(--marker-strong); font-weight:600; }
+
+  /* sections */
+  section{ margin-top:60px; }
+  .section-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:20px; }
+  .section-num{ font-family:var(--mono); font-size:12.5px; color:var(--marker-strong); }
+  .section-head h2{ font-size:1.5rem; font-weight:700; }
+  p{ margin:0 0 14px; }
+  p:last-child{ margin-bottom:0; }
+  .lede{ font-size:1.02rem; }
+
+  /* fictional-case badge */
+  .fict-badge{
+    display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:11.5px;
+    letter-spacing:.04em; text-transform:uppercase; color:var(--marker-ink); background:var(--marker-soft);
+    border:1px solid var(--marker); border-radius:6px; padding:5px 10px; margin-bottom:18px;
+  }
+
+  /* RF/RNF lists */
+  .req-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; margin-top:18px; }
+  .req-block h3{
+    font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--muted); font-weight:600; margin-bottom:10px;
+  }
+  .req-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .req-list li{
+    display:flex; gap:10px; font-size:14.5px; background:var(--surface); border:1px solid var(--line);
+    border-radius:8px; padding:10px 12px;
+  }
+  .req-list .req-id{ font-family:var(--mono); font-size:12px; color:var(--marker-strong); font-weight:600; flex-shrink:0; }
+
+  /* HU cards */
+  .hu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px; margin-top:22px; }
+  .hu-card{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:20px 22px; }
+  .hu-card .hu-id{ font-family:var(--mono); font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; display:block; }
+  .hu-card p.hu-text{ font-size:15px; margin-bottom:12px; }
+  .hu-card ul{ margin:0 0 12px; padding-left:18px; font-size:13.5px; color:var(--muted); }
+  .hu-card ul li{ margin-bottom:4px; }
+  .hu-arrow{ font-family:var(--mono); font-size:12px; color:var(--marker-strong); }
+
+  /* screenshots / figures */
+  .shot-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px; margin-top:22px; }
+  figure{ margin:0; }
+  figcaption{ font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:8px; text-align:center; }
+  figcaption b{ color:var(--ink); }
+
+  .callout{
+    margin-top:22px; border:1px solid var(--line); background:var(--surface); border-radius:10px;
+    padding:16px 18px; font-size:14px; color:var(--muted);
+  }
+  .callout b{ color:var(--ink); }
+
+  .warning{
+    margin-top:22px; border:1px solid var(--marker); background:var(--marker-soft); border-radius:10px;
+    padding:16px 18px; font-size:14.5px; color:var(--marker-ink);
+  }
+  .warning .warning-label{
+    font-family:var(--mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase;
+    font-weight:600; display:block; margin-bottom:6px;
+  }
+
+  .annotation{
+    font-family:var(--hand); font-size:1.35rem; color:var(--marker-strong); line-height:1.3;
+    margin-top:6px;
+  }
+
+  /* pattern cards */
+  .pattern-grid{ display:flex; flex-direction:column; gap:16px; margin-top:22px; }
+  .pattern-card{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:20px 22px; }
+  .pattern-head{ display:flex; align-items:center; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+  .pattern-name{ font-family:var(--mono); font-weight:600; font-size:14.5px; background:var(--surface-2); border-radius:6px; padding:4px 10px; }
+  .pattern-just{ font-family:var(--mono); font-size:11.5px; color:var(--marker-strong); border:1px solid var(--marker); border-radius:99px; padding:3px 10px; }
+  .pattern-card p{ font-size:14.5px; }
+
+  /* mapping table */
+  .table-wrap{ overflow-x:auto; margin-top:22px; border:1px solid var(--line); border-radius:10px; }
+  table{ width:100%; border-collapse:collapse; font-size:14px; }
+  th, td{ text-align:left; padding:10px 14px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  th{ font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); background:var(--surface-2); }
+  tr:last-child td{ border-bottom:none; }
+  td.yes{ color:var(--marker-strong); font-weight:600; }
+
+  /* path cards */
+  .path-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px; margin-top:22px; }
+  .path-card{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:22px; }
+  .path-card .path-label{ font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--marker-strong); margin-bottom:8px; display:block; }
+  .path-card h3{ font-size:1.1rem; margin-bottom:10px; }
+  .path-card ul{ margin:0; padding-left:18px; font-size:14px; }
+  .path-card ul li{ margin-bottom:6px; }
+
+  footer{ margin-top:70px; padding-top:24px; border-top:1px solid var(--line); }
+  footer .chips{ margin-top:0; margin-bottom:16px; }
+  footer p{ font-family:var(--mono); font-size:12px; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="crumbs">
+    <a href="index.html">📚 Repaso EIDAS</a>
+    <span>·</span>
+    <a href="diseno-ui.html">🎨 Diseño UI (repaso de la rúbrica)</a>
+  </div>
+
+  <header>
+    <div class="eyebrow">Apunte EIDAS · complementa Diseño UI</div>
+    <h1>El molde reciclable</h1>
+    <p class="subtitle">Cómo un solo layout resuelve el 80% de una app de gestión — y cómo pasar
+      de ahí al wireframe que pide la rúbrica.</p>
+    <div class="chips">
+      <a class="chip" href="diseno-ui.html"><span class="tag">rúbrica</span> Diseño UI</a>
+      <a class="chip" href="https://killercoda.com/pablop22/scenario/docker-interfaces" target="_blank" rel="noopener"><span class="tag">killercoda</span> docker-interfaces</a>
+      <a class="chip" href="https://github.com/pablopedernera0/interfaces" target="_blank" rel="noopener"><span class="tag">repo</span> interfaces</a>
+      <a class="chip" href="https://www.prosis360.com/template/dashboard.html" target="_blank" rel="noopener"><span class="tag">galería</span> prosis360</a>
+    </div>
+  </header>
+
+  <section>
+    <div class="section-head"><span class="section-num">00</span><h2>El caso</h2></div>
+    <div class="fict-badge">⚠ Caso ficticio — armado para este apunte, no es un cliente real</div>
+    <p class="lede">"Cosmeticos SA" es una empresa de venta de cosmética que necesita un
+      back-office interno para que su equipo administrativo gestione ventas, catálogo,
+      clientes, proveedores y usuarios del sistema. Estos son los requisitos mínimos que le
+      dan sustento a las decisiones de diseño de las secciones siguientes — no son un análisis
+      completo, solo lo necesario para justificar los patrones elegidos.</p>
+
+    <div class="req-grid">
+      <div class="req-block">
+        <h3>Requisitos funcionales</h3>
+        <ul class="req-list">
+          <li><span class="req-id">RF1</span> Gestionar clientes: alta, baja, modificación y listado.</li>
+          <li><span class="req-id">RF2</span> Gestionar el catálogo de productos.</li>
+          <li><span class="req-id">RF3</span> Registrar ventas y consultar reportes de ventas globales.</li>
+          <li><span class="req-id">RF4</span> Administrar usuarios internos con roles y permisos.</li>
+        </ul>
+      </div>
+      <div class="req-block">
+        <h3>Requisitos no funcionales</h3>
+        <ul class="req-list">
+          <li><span class="req-id">RNF1</span> La navegación debe ser consistente entre módulos, para minimizar la curva de aprendizaje del personal administrativo.</li>
+          <li><span class="req-id">RNF2</span> Los listados deben soportar búsqueda y orden sobre volumen alto de registros.</li>
+          <li><span class="req-id">RNF3</span> El alta de un registro debe resolverse en pocos pasos, sin perder de vista el listado de origen.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="hu-grid">
+      <div class="hu-card">
+        <span class="hu-id">HU — Listado de clientes</span>
+        <p class="hu-text">Como administrativo de ventas, quiero un listado buscable y paginado
+          de clientes, para encontrar un registro puntual sin recorrer toda la base.</p>
+        <ul>
+          <li>La tabla permite buscar por cualquier columna.</li>
+          <li>Los resultados están paginados (10/25/50 por página).</li>
+          <li>Cada columna se puede ordenar.</li>
+        </ul>
+        <span class="hu-arrow">→ justifica el patrón <strong>Tabla con paginación</strong> (sección 02)</span>
+      </div>
+      <div class="hu-card">
+        <span class="hu-id">HU — Alta rápida de producto</span>
+        <p class="hu-text">Como encargado de depósito, quiero cargar un producto nuevo sin salir
+          del listado que estoy mirando, para no perder el contexto de lo que ya cargué hoy.</p>
+        <ul>
+          <li>El alta se abre sobre la misma pantalla (no navega a otra URL).</li>
+          <li>Pide solo los campos imprescindibles: proveedor, nombre, código, descripción, cantidad.</li>
+          <li>Al guardar o cancelar, vuelve exactamente al mismo listado.</li>
+        </ul>
+        <span class="hu-arrow">→ justifica el patrón <strong>Modal con formulario corto</strong> (sección 02)</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">01</span><h2>El molde</h2></div>
+    <p class="lede">"Cosmeticos SA" no se diseñó desde cero: es el mismo template de dashboard
+      administrativo que tenés en tu propia galería (<a href="https://www.prosis360.com/template/dashboard.html" target="_blank" rel="noopener">prosis360 → 47Admin</a>),
+      clonado y re-etiquetado. El escenario <a href="https://killercoda.com/pablop22/scenario/docker-interfaces" target="_blank" rel="noopener"><code>docker-interfaces</code></a>
+      de Killercoda muestra cómo se levanta técnicamente (Docker Compose + volumen + <code>git clone</code>
+      del repo <a href="https://github.com/pablopedernera0/interfaces" target="_blank" rel="noopener"><code>interfaces</code></a>)
+      — acá el foco es otro: qué gana el diseño visual al reciclarlo.</p>
+
+    <div class="shot-grid">
+      <figure>
+        <img src="img/molde-ventas.png" alt="Pantalla de Ventas del template, con navbar superior y sidebar lateral">
+        <figcaption><b>Ventas</b> — navbar + sidebar + tabla</figcaption>
+      </figure>
+      <figure>
+        <img src="img/molde-productos.png" alt="Pantalla de Productos del template, con el mismo navbar y sidebar que Ventas">
+        <figcaption><b>Productos</b> — mismo navbar + sidebar</figcaption>
+      </figure>
+    </div>
+    <p class="annotation">↳ compará el margen izquierdo de las dos capturas: es literalmente el mismo HTML.</p>
+
+    <div class="callout">
+      <b>Lo que cambia entre una pantalla y la otra</b> es únicamente lo que hay dentro del área
+      de contenido — el título, las columnas de la tabla y los campos del modal de alta. El
+      navbar y el sidebar no se vuelven a diseñar por módulo: se heredan.
+    </div>
+
+    <figure style="margin-top:22px;">
+      <img src="img/molde-prosis360.png" alt="El template original 47Admin en la galería de prosis360, con la misma estructura de navbar y sidebar">
+      <figcaption><b>El molde original</b> — tu galería en prosis360, antes de convertirse en "Cosmeticos SA"</figcaption>
+    </figure>
+
+    <div class="callout">
+      <b>Aparte:</b> el propio repo trae un recordatorio involuntario de por qué esto hay que
+      hacerlo con cuidado — <code>clientes.html</code> y <code>roles.html</code> quedaron con el
+      título "Proveedores" pegado sin actualizar, de una copia apurada. Reciclar el layout no es
+      copiar el archivo entero sin revisar cada texto.
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">02</span><h2>Patrones, con nombre y por qué</h2></div>
+    <p class="lede">Nombrar el patrón no alcanza — la rúbrica de EIDAS baja a "insuficiente" los
+      patrones genéricos, sin relación con el caso analizado. Por eso cada uno de estos tres
+      está atado a un requisito o una HU concreta del caso, no solo a "quedaba prolijo".</p>
+
+    <div class="pattern-grid">
+      <div class="pattern-card">
+        <div class="pattern-head">
+          <span class="pattern-name">Shell fijo — navbar + sidebar</span>
+          <span class="pattern-just">justificado por RNF1</span>
+        </div>
+        <p>Se repite sin cambios en las cinco pantallas del caso (Ventas, Productos, Clientes,
+          Proveedores, Usuarios/Roles). El usuario aprende dónde está cada cosa una sola vez —
+          es exactamente lo que pide la consistencia de navegación entre módulos.</p>
+      </div>
+      <div class="pattern-card">
+        <div class="pattern-head">
+          <span class="pattern-name">Tabla con paginación</span>
+          <span class="pattern-just">justificado por RNF2 + HU-Clientes</span>
+        </div>
+        <p>Todos los listados (clientes, productos, ventas, proveedores) usan una tabla
+          buscable y paginada en vez de tarjetas — con volumen alto de registros, una tabla deja
+          escanear muchas filas a la vez; una grilla de Cards obligaría a scrollear mucho más
+          para la misma cantidad de información.</p>
+      </div>
+      <div class="pattern-card">
+        <div class="pattern-head">
+          <span class="pattern-name">Modal con formulario corto</span>
+          <span class="pattern-just">justificado por RNF3 + HU-Alta rápida</span>
+        </div>
+        <p>El alta ("Nuevo Producto", "Nueva Venta"...) no navega a una pantalla nueva: abre un
+          modal de pocos campos sobre el mismo listado. Al cerrarlo — con o sin guardar — el
+          usuario sigue exactamente donde estaba, sin perder el contexto de búsqueda o
+          paginación que ya tenía armado.</p>
+        <figure style="margin-top:14px;">
+          <img src="img/molde-productos-modal.png" alt="Modal de Nuevo Producto abierto sobre el listado de productos, con el fondo atenuado">
+          <figcaption>El modal de alta, sobre el listado de Productos</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">03</span><h2>El 80%</h2></div>
+    <p class="lede">Con esos tres patrones ya resueltos, cada módulo nuevo del caso es una
+      combinación de los mismos tres — solo cambian los campos y las columnas.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Módulo</th><th>Shell</th><th>Tabla</th><th>Modal de alta</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Ventas</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓ Nueva Venta</td></tr>
+          <tr><td>Productos</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓ Nuevo Producto</td></tr>
+          <tr><td>Clientes</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓ Nuevo Cliente</td></tr>
+          <tr><td>Proveedores</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓ Nuevo Proveedor</td></tr>
+          <tr><td>Usuarios / Roles</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓ Nuevo Usuario</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:16px;">Los cinco módulos del caso se resuelven combinando tres
+      patrones. El trabajo de diseño visual "grande" — cómo se navega, cómo se lista, cómo se
+      da de alta — ya está resuelto antes de dibujar la primera pantalla nueva; lo que queda por
+      diseñar en cada módulo es acotado: qué columnas muestra esa tabla y qué campos pide ese
+      modal.</p>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">04</span><h2>De acá a tu wireframe</h2></div>
+    <p class="lede">La rúbrica pide un wireframe por pantalla o módulo relevante. Ninguno de los
+      dos caminos siguientes reemplaza la justificación — solo cambia cómo se produce la
+      imagen.</p>
+
+    <div class="path-grid">
+      <div class="path-card">
+        <span class="path-label">Camino rápido</span>
+        <h3>Capturas anotadas</h3>
+        <ul>
+          <li>Sacar captura de un template real (este, el de tu propia galería, o cualquier otro que uses de referencia).</li>
+          <li>Marcarla con flechas o cajas señalando cada patrón — alcanza con Figma (pegar la imagen + formas), Excalidraw, o incluso Google Slides / PowerPoint.</li>
+          <li>Reemplazar cada etiqueta genérica por la de tu propio caso: no "Nuevo Producto" de Cosmeticos SA, sino la entidad y el flujo de tu sistema.</li>
+        </ul>
+      </div>
+      <div class="path-card">
+        <span class="path-label">Camino prolijo</span>
+        <h3>Reconstruir en baja fidelidad</h3>
+        <ul>
+          <li>Rehacer el mismo esqueleto (shell + tabla + modal) en una herramienta de wireframing: Excalidraw, Balsamiq, o un kit de wireframe de Figma Community.</li>
+          <li>Todo en cajas y etiquetas, sin color final — fuerza a pensar la estructura antes que la estética.</li>
+          <li>Más trabajo que la captura, pero deja más claro que el wireframe es tuyo, no el template ajeno.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="warning">
+      <span class="warning-label">⚠ Lo que hunde el puntaje</span>
+      La rúbrica marca como insuficiente los patrones "genéricos, sin relación con el sistema
+      analizado". Una captura de Cosmeticos SA sin adaptar — sin re-etiquetar con tus propias
+      entidades, usuarios y flujos — no sirve como wireframe de tu caso, la uses como captura o
+      como base para redibujar. El molde se recicla; la justificación, no.
+    </div>
+  </section>
+
+  <footer>
+    <div class="chips">
+      <a class="chip" href="diseno-ui.html"><span class="tag">rúbrica</span> Diseño UI</a>
+      <a class="chip" href="https://killercoda.com/pablop22/scenario/docker-interfaces" target="_blank" rel="noopener"><span class="tag">killercoda</span> docker-interfaces</a>
+      <a class="chip" href="https://github.com/pablopedernera0/interfaces" target="_blank" rel="noopener"><span class="tag">repo</span> interfaces</a>
+      <a class="chip" href="https://www.prosis360.com/template/dashboard.html" target="_blank" rel="noopener"><span class="tag">galería</span> prosis360</a>
+      <a class="chip" href="index.html"><span class="tag">←</span> Repaso EIDAS</a>
+    </div>
+    <p>Repaso EIDAS · Diseño de Sistemas Web — apunte de apoyo, Prof. Pablo Pedernera</p>
+  </footer>
+
+</div>
+</body>
+</html>
