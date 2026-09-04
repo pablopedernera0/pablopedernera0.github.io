@@ -180,6 +180,33 @@
   .path-card ul{ margin:0; padding-left:18px; font-size:14px; }
   .path-card ul li{ margin-bottom:6px; }
 
+  /* file frame — deliverable preview */
+  .file-frame{ margin-top:22px; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--surface); }
+  .file-frame-bar{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    background:var(--surface-2); padding:10px 18px; border-bottom:1px solid var(--line);
+  }
+  .file-frame-bar .path{ font-family:var(--mono); font-size:12.5px; color:var(--muted); }
+  .file-frame-bar .path b{ color:var(--ink); }
+  .file-frame-bar a{ font-family:var(--mono); font-size:12px; }
+  .file-frame-body{ padding:24px 26px; }
+  .deliverable-mod{ padding-bottom:22px; margin-bottom:22px; border-bottom:1px dashed var(--line); }
+  .deliverable-mod:last-child{ border-bottom:none; margin-bottom:0; padding-bottom:0; }
+  .deliverable-mod h4{ font-size:1.05rem; margin-bottom:12px; }
+  .field-label{
+    font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.05em;
+    color:var(--marker-strong); display:block; margin-bottom:4px; margin-top:14px;
+  }
+  .field-label:first-of-type{ margin-top:0; }
+  .deliverable-mod p{ font-size:14.5px; margin-bottom:0; }
+  .deliverable-mod ul{ margin:0; padding-left:18px; font-size:14px; }
+  .deliverable-mod ul li{ margin-bottom:4px; }
+  .deliverable-note{
+    font-size:13.5px; color:var(--muted); background:var(--surface-2); border-radius:8px;
+    padding:12px 14px; margin-top:6px;
+  }
+  .deliverable-note b{ color:var(--ink); }
+
   footer{ margin-top:70px; padding-top:24px; border-top:1px solid var(--line); }
   footer .chips{ margin-top:0; margin-bottom:16px; }
   footer p{ font-family:var(--mono); font-size:12px; color:var(--muted); }
@@ -407,6 +434,103 @@
       analizado". Una captura de Cosmeticos SA sin adaptar — sin re-etiquetar con tus propias
       entidades, usuarios y flujos — no sirve como wireframe de tu caso, la uses como captura o
       como base para redibujar. El molde se recicla; la justificación, no.
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">05</span><h2>Así queda el entregable</h2></div>
+    <p class="lede">Ningún grupo completó todavía su <code>docs/diseño-ui.md</code> — así que
+      esto sirve como primer ejemplo resuelto. Misma estructura exacta que el template real de
+      <code>eidas-template</code>, con el caso Cosmeticos SA ya adentro.</p>
+
+    <div class="file-frame">
+      <div class="file-frame-bar">
+        <span class="path"><b>docs/diseño-ui.md</b> · ejemplo resuelto, Cosmeticos SA</span>
+        <a href="docs/diseño-ui.md" target="_blank" rel="noopener">ver / copiar el archivo →</a>
+      </div>
+      <div class="file-frame-body">
+
+        <div class="deliverable-mod">
+          <h4>Pantalla / Módulo 1 — Productos</h4>
+          <span class="field-label">Wireframe</span>
+          <p>Capturas de la sección 01 y 02 de este apunte (listado y modal de alta).</p>
+          <span class="field-label">Patrones de diseño utilizados</span>
+          <p>Tabla con paginación, Modal con formulario corto.</p>
+          <span class="field-label">Justificación</span>
+          <p>El encargado de depósito necesita revisar el catálogo completo y agregar productos
+            nuevos sin perder de vista lo que ya cargó (RNF3). Una tabla con búsqueda y
+            paginación permite escanear el volumen alto de productos que maneja Cosmeticos SA
+            (RNF2) — una grilla de Cards obligaría a scrollear mucho más para la misma cantidad
+            de información y no aporta nada extra para este usuario, que necesita comparar
+            códigos y cantidades, no imágenes de producto. El alta se resuelve en un modal en
+            vez de navegar a una pantalla nueva: al cerrarlo, el encargado sigue exactamente en
+            el mismo listado, con el mismo filtro y la misma página que tenía abiertos.</p>
+          <span class="field-label">Formulario</span>
+          <ul>
+            <li>Cantidad de campos: 6 (fecha, proveedor, nombre, código de barras, descripción, cantidad).</li>
+            <li>Flujo: todo en una sola pantalla — no amerita dividirlo en pasos.</li>
+            <li>Validaciones relevantes: código de barras único; nombre y cantidad obligatorios.</li>
+          </ul>
+        </div>
+
+        <div class="deliverable-mod">
+          <h4>Pantalla / Módulo 2 — Clientes</h4>
+          <span class="field-label">Wireframe</span>
+          <p>Mismo layout de listado que Ventas (sección 01), aplicado a la entidad Cliente.</p>
+          <span class="field-label">Patrones de diseño utilizados</span>
+          <p>Tabla con paginación, Modal con formulario corto.</p>
+          <span class="field-label">Justificación</span>
+          <p>El administrativo de ventas necesita encontrar un cliente puntual sin recorrer toda
+            la base (HU — Listado de clientes). La tabla permite buscar por cualquier columna y
+            ordenar, lo que resuelve el caso de uso real ("¿este cliente ya está cargado?")
+            mejor que un listado en Cards. El patrón de alta se mantiene igual al de Productos a
+            propósito — es el mismo molde (RNF1): el administrativo ya sabe cómo se carga un
+            registro nuevo antes de tocar esta pantalla por primera vez.</p>
+          <span class="field-label">Formulario</span>
+          <ul>
+            <li>Cantidad de campos: 4 (nombre, teléfono, dirección, email).</li>
+            <li>Flujo: todo en una sola pantalla.</li>
+            <li>Validaciones relevantes: email con formato válido; teléfono obligatorio (es el dato que usa ventas para confirmar pedidos).</li>
+          </ul>
+        </div>
+
+        <div class="deliverable-mod">
+          <h4>Pantalla / Módulo 3 — Ventas, Proveedores y Usuarios/Roles</h4>
+          <p>Los tres módulos restantes repiten exactamente la misma combinación de patrones que
+            Productos y Clientes — shell fijo, tabla con paginación, modal de alta — así que no
+            hace falta repetir la justificación completa. Es la prueba en la práctica de la
+            sección "El 80%": una vez justificado el patrón, cada módulo nuevo solo aporta lo
+            que cambia.</p>
+          <div class="table-wrap" style="margin-top:14px;">
+            <table>
+              <thead><tr><th>Módulo</th><th>Patrones</th><th>Qué cambia respecto a Productos/Clientes</th></tr></thead>
+              <tbody>
+                <tr><td>Ventas</td><td>Tabla + Modal</td><td>El modal de alta suma un selector de cliente y una lista de ítems con cantidad (stepper).</td></tr>
+                <tr><td>Proveedores</td><td>Tabla + Modal</td><td>Igual que Clientes, con campos propios (razón social, CUIT, rubro).</td></tr>
+                <tr><td>Usuarios / Roles</td><td>Tabla + Modal</td><td>El modal reemplaza los inputs de texto por checkboxes de permisos por módulo.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="deliverable-note">
+            <b>Esto no reemplaza el wireframe de cada módulo</b> — se omite acá para no alargar
+            el ejemplo, pero en una entrega real la rúbrica pide una imagen por módulo, sin
+            excepción. Lo que sí se puede acortar cuando el patrón ya quedó justificado en
+            detalle antes es el texto de justificación, no la imagen.
+          </div>
+        </div>
+
+        <div class="deliverable-mod">
+          <h4>Consideraciones de accesibilidad</h4>
+          <p>El personal de depósito de Cosmeticos SA a veces carga productos con las manos
+            ocupadas o con guantes, parado frente a la estantería — no sentado cómodamente
+            frente a un monitor. Por eso los botones del modal (Guardar / Cancelar) tienen un
+            tap target mínimo de 44×44px y alto contraste, y cada campo del formulario tiene una
+            etiqueta asociada de forma explícita, no solo un placeholder — así un lector de
+            pantalla identifica el campo aunque el placeholder desaparezca al empezar a
+            escribir.</p>
+        </div>
+
+      </div>
     </div>
   </section>
 
