@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dimensionamiento de Servidores — HTML vs. JSON, otra mirada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#10151b;
+    --panel:#1a222b;
+    --panel-border:#2a343f;
+    --text:#e7ecf0;
+    --muted:#8496a6;
+    --html:#db7f3b;
+    --html-soft:rgba(219,127,59,.18);
+    --json:#45b8a8;
+    --json-soft:rgba(69,184,168,.18);
+    --wire:#3a4652;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  html, body{ overflow-x:hidden; max-width:100%; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    line-height:1.55;
+  }
+  code, .mono{
+    font-family:'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+  }
+  a{ color:inherit; }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px 16px;
+    padding:14px 20px;
+    background:rgba(16,21,27,.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--panel-border);
+  }
+  .topbar .brand{
+    font-size:.92rem; color:var(--muted);
+  }
+  .topbar nav{ display:flex; flex-wrap:wrap; gap:4px; }
+  .topbar nav a, .topbar nav span{
+    font-size:.85rem;
+    padding:6px 12px;
+    border-radius:999px;
+    text-decoration:none;
+    color:var(--muted);
+    border:1px solid transparent;
+  }
+  .topbar nav a:hover{ color:var(--text); border-color:var(--panel-border); }
+  .topbar nav span.current{
+    color:var(--json);
+    border-bottom:2px solid var(--json);
+    border-radius:0;
+    padding-bottom:4px;
+  }
+
+  section{
+    max-width:760px;
+    margin:0 auto;
+    padding:64px 28px;
+  }
+  section.wide{ max-width:920px; }
+
+  h1{
+    font-size:2.35rem;
+    font-weight:600;
+    line-height:1.25;
+    margin:0 0 18px;
+    max-width:16ch;
+  }
+  h2{
+    font-size:1.55rem;
+    font-weight:600;
+    margin:0 0 10px;
+  }
+  .lede{
+    color:var(--muted);
+    font-size:1.05rem;
+    max-width:56ch;
+    margin:0 0 8px;
+  }
+  p{ max-width:66ch; }
+  .section-kicker{
+    font-size:.85rem;
+    color:var(--muted);
+    margin:0 0 6px;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{ padding-top:56px; padding-bottom:40px; }
+  .hero-note{
+    margin-top:36px;
+    padding-top:20px;
+    border-top:1px solid var(--panel-border);
+    color:var(--muted);
+    font-size:.9rem;
+    max-width:56ch;
+  }
+
+  /* ---------- waterfall component ---------- */
+  .waterfall{ margin:22px 0; }
+  .wf-head{
+    display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline;
+    gap:4px 12px; margin-bottom:8px;
+  }
+  .wf-name{ font-weight:600; min-width:0; }
+  .wf-total{ font-size:.85rem; color:var(--muted); white-space:nowrap; }
+  .wf-track{
+    display:flex;
+    height:14px;
+    border-radius:3px;
+    overflow:hidden;
+    background:var(--wire);
+  }
+  .wf-track .seg{
+    height:100%;
+    width:0;
+    transition:width 1s cubic-bezier(.2,.7,.2,1);
+  }
+  .wf-track .seg-connect{ background:var(--muted); opacity:.55; }
+  .waterfall.html .seg-ttfb{ background:var(--html); }
+  .waterfall.html .seg-download{ background:var(--html); opacity:.45; }
+  .waterfall.json .seg-ttfb{ background:var(--json); }
+  .waterfall.json .seg-download{ background:var(--json); opacity:.45; }
+  .waterfall.in-view .seg-connect{ width:var(--w-connect); }
+  .waterfall.in-view .seg-ttfb{ width:var(--w-ttfb); }
+  .waterfall.in-view .seg-download{ width:var(--w-download); }
+  .wf-legend{
+    display:flex; gap:16px; margin-top:6px;
+    font-size:.78rem; color:var(--muted);
+  }
+  .wf-legend i{ font-style:normal; }
+  .wf-legend .dot{
+    display:inline-block; width:8px; height:8px; border-radius:50%;
+    margin-right:5px; vertical-align:middle;
+  }
+  .waterfall.html .wf-legend .dot.ttfb{ background:var(--html); }
+  .waterfall.json .wf-legend .dot.ttfb{ background:var(--json); }
+  .waterfall.html .wf-legend .dot.download{ background:var(--html); opacity:.45; }
+  .waterfall.json .wf-legend .dot.download{ background:var(--json); opacity:.45; }
+  .wf-legend .dot.connect{ background:var(--muted); opacity:.55; }
+
+  /* ---------- comparison panels ---------- */
+  .panels{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    margin-top:28px;
+  }
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-left:3px solid var(--wire);
+    border-radius:6px;
+    padding:22px 22px 18px;
+  }
+  .panel.html{ border-left-color:var(--html); }
+  .panel.json{ border-left-color:var(--json); }
+  .panel h3{
+    margin:0 0 4px;
+    font-size:1.05rem;
+    display:flex; align-items:center; gap:8px;
+  }
+  .panel .payload{
+    font-size:.85rem; color:var(--muted); margin-bottom:14px;
+  }
+  .takeaway{
+    margin-top:26px;
+    padding:16px 18px;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:6px;
+    color:var(--muted);
+    font-size:.95rem;
+  }
+  .takeaway strong{ color:var(--text); }
+
+  /* ---------- timeline (narrated case) ---------- */
+  .case-app{
+    display:inline-block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.85rem;
+    color:var(--json);
+    background:var(--json-soft);
+    padding:3px 9px;
+    border-radius:4px;
+    margin-bottom:18px;
+  }
+  .timeline{ margin-top:10px; }
+  .tl-step{
+    display:grid;
+    grid-template-columns:96px 1fr;
+    gap:20px;
+    position:relative;
+    padding-bottom:34px;
+  }
+  .tl-step:last-child{ padding-bottom:0; }
+  .tl-step::before{
+    content:"";
+    position:absolute;
+    left:106px; top:22px; bottom:0;
+    width:1px;
+    background:var(--panel-border);
+  }
+  .tl-step:last-child::before{ display:none; }
+  .tl-time{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.8rem;
+    color:var(--muted);
+    padding-top:3px;
+    text-align:right;
+  }
+  .tl-marker{
+    position:absolute;
+    left:96px; top:2px;
+    width:22px; height:22px;
+    border-radius:50%;
+    background:var(--bg);
+    border:1px solid var(--panel-border);
+    display:flex; align-items:center; justify-content:center;
+    font-size:.72rem;
+    color:var(--muted);
+    transform:translateX(-50%);
+  }
+  .tl-body h4{
+    margin:0 0 6px;
+    font-size:1rem;
+    font-weight:600;
+  }
+  .tl-body p{
+    margin:0 0 12px;
+    font-size:.92rem;
+    color:var(--muted);
+  }
+  .tl-body .waterfall{ margin:10px 0 0; max-width:420px; }
+  .tl-body .waterfall .wf-track{ height:10px; }
+
+  /* ---------- interactive demo ---------- */
+  .demo-box{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:6px;
+    padding:26px 26px 22px;
+    margin-top:24px;
+  }
+  .demo-actions{
+    display:flex; gap:12px; flex-wrap:wrap;
+    margin-bottom:22px;
+  }
+  .demo-btn{
+    font-family:inherit;
+    font-size:.92rem;
+    font-weight:600;
+    padding:11px 18px;
+    border-radius:5px;
+    border:1px solid var(--panel-border);
+    background:transparent;
+    color:var(--text);
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+  }
+  .demo-btn.html{ border-color:var(--html); color:var(--html); }
+  .demo-btn.html:hover{ background:var(--html-soft); }
+  .demo-btn.json{ border-color:var(--json); color:var(--json); }
+  .demo-btn.json:hover{ background:var(--json-soft); }
+  .demo-btn:disabled{ opacity:.4; cursor:default; }
+  .demo-btn:focus-visible, .cta a:focus-visible, .topbar a:focus-visible{
+    outline:2px solid var(--json);
+    outline-offset:2px;
+  }
+  .demo-result{ min-height:96px; }
+  .demo-placeholder{
+    color:var(--muted);
+    font-size:.9rem;
+    padding:14px 0;
+  }
+  .demo-caveat{
+    margin-top:18px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid var(--panel-border);
+    padding-top:14px;
+  }
+
+  /* ---------- close ---------- */
+  .cta{
+    display:flex; gap:14px; flex-wrap:wrap;
+    margin-top:26px;
+  }
+  .cta a{
+    display:inline-block;
+    text-decoration:none;
+    font-size:.92rem;
+    font-weight:600;
+    padding:12px 20px;
+    border-radius:5px;
+  }
+  .cta a.primary{
+    background:var(--json);
+    color:#0a1512;
+  }
+  .cta a.secondary{
+    border:1px solid var(--panel-border);
+    color:var(--text);
+  }
+  .back-link{
+    display:inline-block;
+    margin-top:48px;
+    font-size:.85rem;
+    color:var(--muted);
+    text-decoration:none;
+  }
+  .back-link:hover{ color:var(--text); }
+
+  @media (max-width:680px){
+    h1{ font-size:1.9rem; max-width:none; }
+    .panels{ grid-template-columns:1fr; }
+    .tl-step{ grid-template-columns:1fr; }
+    .tl-time{ text-align:left; }
+    .tl-marker{ display:none; }
+    .tl-step::before{ display:none; }
+    .topbar{ padding:12px 16px; }
+    .topbar .brand{ font-size:.8rem; }
+    .topbar nav a, .topbar nav span{ font-size:.78rem; padding:5px 9px; }
+    section{ padding:48px 20px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    .wf-track .seg{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="brand">Dimensionamiento de Servidores</span>
+  <nav>
+    <a href="index.html">Clase 1</a>
+    <a href="clase2.html">Clase 2</a>
+    <a href="clase3.html">Clase 3</a>
+    <span class="current">Otra mirada</span>
+  </nav>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="section-kicker">Mismo contenido de la Clase 3, sin diapositivas</p>
+  <h1>Un servidor que arma toda la página tarda distinto de uno que solo te tira datos</h1>
+  <p class="lede">Esto ya lo viste en la Clase 3. Acá está de nuevo, con otro ejemplo y en 5 minutos de scroll — para que quede grabado de otra forma antes de medirlo vos con <code>curl</code>.</p>
+
+  <div class="waterfall html" id="hero-wf-html" data-connect="7" data-ttfb="37" data-download="56" data-connect-ms="40" data-ttfb-ms="220" data-download-ms="340" data-total="600" data-size="480 KB">
+    <div class="wf-head">
+      <span class="wf-name">Página HTML completa</span>
+      <span class="wf-total mono"></span>
+    </div>
+    <div class="wf-track">
+      <span class="seg seg-connect"></span>
+      <span class="seg seg-ttfb"></span>
+      <span class="seg seg-download"></span>
+    </div>
+  </div>
+
+  <div class="waterfall json" id="hero-wf-json" data-connect="28" data-ttfb="62" data-download="10" data-connect-ms="40" data-ttfb-ms="90" data-download-ms="15" data-total="145" data-size="2.1 KB">
+    <div class="wf-head">
+      <span class="wf-name">Respuesta JSON</span>
+      <span class="wf-total mono"></span>
+    </div>
+    <div class="wf-track">
+      <span class="seg seg-connect"></span>
+      <span class="seg seg-ttfb"></span>
+      <span class="seg seg-download"></span>
+    </div>
+  </div>
+
+  <p class="hero-note">Valores de referencia, ilustrativos — pensados para que se note la diferencia de un vistazo. Los reales los generás vos en el escenario de Killercoda.</p>
+</section>
+
+<!-- INFOGRAFÍA -->
+<section class="wide" id="infografia">
+  <p class="section-kicker">La misma información, empaquetada distinto</p>
+  <h2>Dos pedidos, un mismo servidor</h2>
+  <p class="lede">El navegador pide dos cosas muy distintas: una página lista para pintar, o solo los datos crudos. El servidor hace mucho más trabajo en el primer caso — y eso se nota antes de que llegue el primer byte.</p>
+
+  <div class="panels">
+    <div class="panel html">
+      <h3>📄 Página HTML completa</h3>
+      <p class="payload">El servidor arma la plantilla, junta los datos y genera el documento entero.</p>
+      <div class="waterfall html" data-connect="7" data-ttfb="37" data-download="56" data-connect-ms="40" data-ttfb-ms="220" data-download-ms="340" data-total="600" data-size="480 KB">
+        <div class="wf-head"><span></span><span class="wf-total mono"></span></div>
+        <div class="wf-track">
+          <span class="seg seg-connect"></span>
+          <span class="seg seg-ttfb"></span>
+          <span class="seg seg-download"></span>
+        </div>
+        <div class="wf-legend">
+          <i><span class="dot connect"></span>Conectar</i>
+          <i><span class="dot ttfb"></span>Esperar (TTFB)</i>
+          <i><span class="dot download"></span>Descargar</i>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel json">
+      <h3>🧾 Respuesta JSON</h3>
+      <p class="payload">El dato ya está calculado en el backend; solo hay que empaquetarlo y mandarlo.</p>
+      <div class="waterfall json" data-connect="28" data-ttfb="62" data-download="10" data-connect-ms="40" data-ttfb-ms="90" data-download-ms="15" data-total="145" data-size="2.1 KB">
+        <div class="wf-head"><span></span><span class="wf-total mono"></span></div>
+        <div class="wf-track">
+          <span class="seg seg-connect"></span>
+          <span class="seg seg-ttfb"></span>
+          <span class="seg seg-download"></span>
+        </div>
+        <div class="wf-legend">
+          <i><span class="dot connect"></span>Conectar</i>
+          <i><span class="dot ttfb"></span>Esperar (TTFB)</i>
+          <i><span class="dot download"></span>Descargar</i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <strong>El TTFB es la parte que más cambia entre los dos casos:</strong> ahí es donde el servidor de HTML procesa la plantilla y arma el documento. El de JSON casi no tiene nada que "pensar" — el dato ya estaba listo.
+  </div>
+</section>
+
+<!-- CASO NARRADO -->
+<section id="caso">
+  <p class="section-kicker">El mismo concepto, en un caso concreto</p>
+  <h2>Un pedido de comida, domingo a la noche</h2>
+  <span class="case-app">ServiExpress</span>
+  <p class="lede">Sofía pide algo de comer desde el navegador de su celular. En 5 minutos hace tres pedidos al servidor — y solo el primero es pesado.</p>
+
+  <div class="timeline">
+    <div class="tl-step">
+      <div class="tl-time">21:47</div>
+      <div class="tl-marker">1</div>
+      <div class="tl-body">
+        <h4>Abre <span class="mono">servi-express.com</span></h4>
+        <p>El servidor arma la página entera de cero: menú, imágenes, header, footer y los estilos — todo junto, en un solo documento HTML.</p>
+        <div class="waterfall html" data-connect="7" data-ttfb="37" data-download="56" data-connect-ms="35" data-ttfb-ms="210" data-download-ms="310" data-total="555" data-size="410 KB">
+          <div class="wf-head"><span class="wf-name">Página completa</span><span class="wf-total mono"></span></div>
+          <div class="wf-track"><span class="seg seg-connect"></span><span class="seg seg-ttfb"></span><span class="seg seg-download"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-step">
+      <div class="tl-time">21:49</div>
+      <div class="tl-marker">2</div>
+      <div class="tl-body">
+        <h4>Toca "Agregar al carrito" en una hamburguesa</h4>
+        <p>La página ya está abierta. Este click no recarga nada — solo dispara un pedido a una API interna que devuelve el precio y la cantidad en JSON.</p>
+        <div class="waterfall json" data-connect="28" data-ttfb="55" data-download="8" data-connect-ms="30" data-ttfb-ms="75" data-download-ms="10" data-total="115" data-size="0.4 KB">
+          <div class="wf-head"><span class="wf-name">Agregar producto</span><span class="wf-total mono"></span></div>
+          <div class="wf-track"><span class="seg seg-connect"></span><span class="seg seg-ttfb"></span><span class="seg seg-download"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-step">
+      <div class="tl-time">21:52</div>
+      <div class="tl-marker">3</div>
+      <div class="tl-body">
+        <h4>Confirma el pedido</h4>
+        <p>Otro pedido liviano: el servidor guarda la orden y devuelve un número de confirmación, también en JSON.</p>
+        <div class="waterfall json" data-connect="28" data-ttfb="58" data-download="6" data-connect-ms="30" data-ttfb-ms="80" data-download-ms="8" data-total="118" data-size="0.3 KB">
+          <div class="wf-head"><span class="wf-name">Confirmar pedido</span><span class="wf-total mono"></span></div>
+          <div class="wf-track"><span class="seg seg-connect"></span><span class="seg seg-ttfb"></span><span class="seg seg-download"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="takeaway">
+    La carga pesada pasa <strong>una sola vez</strong>, al abrir la app. Después, mientras Sofía interactúa, todo lo que viaja es JSON liviano — por eso una app se siente "rápida" una vez que ya cargó.
+  </div>
+</section>
+
+<!-- DEMO INTERACTIVA -->
+<section id="demo">
+  <p class="section-kicker">Probalo vos</p>
+  <h2>Disparar los dos pedidos</h2>
+  <p class="lede">Tocá cada botón y mirá cómo se arma la barra — cada click simula el pedido correspondiente de ServiExpress.</p>
+
+  <div class="demo-box">
+    <div class="demo-actions">
+      <button class="demo-btn html" id="btn-html" type="button">🌐 Abrir ServiExpress</button>
+      <button class="demo-btn json" id="btn-json" type="button">🛒 Agregar al carrito</button>
+    </div>
+    <div class="demo-result" id="demo-result">
+      <p class="demo-placeholder">Elegí uno de los dos pedidos para ver su barra de tiempos.</p>
+    </div>
+    <p class="demo-caveat">Estos números son simulados y varían un poco en cada click, a propósito — para que se sienta parecido a medir de verdad. Los reales los vas a obtener en el escenario de Killercoda, contra sitios públicos.</p>
+  </div>
+</section>
+
+<!-- CIERRE -->
+<section>
+  <p class="section-kicker">Con esto ya podés medirlo vos</p>
+  <h2>Ahora contra sitios reales</h2>
+  <p class="lede">La práctica de Killercoda te pide exactamente esta comparación — pero con tus propios números, contra sitios públicos de verdad.</p>
+  <div class="cta">
+    <a class="primary" href="https://killercoda.com/pablop22/scenario/medicion-http-servidores" target="_blank" rel="noopener">Abrir el escenario en Killercoda →</a>
+    <a class="secondary" href="clase3.html">Ver la Clase 3 en diapositivas</a>
+  </div>
+  <a class="back-link" href="index.html">← Volver a Dimensionamiento de Servidores</a>
+</section>
+
+<script>
+(function(){
+  function paintWaterfall(el){
+    var connect = el.dataset.connect, ttfb = el.dataset.ttfb, download = el.dataset.download;
+    el.style.setProperty('--w-connect', connect + '%');
+    el.style.setProperty('--w-ttfb', ttfb + '%');
+    el.style.setProperty('--w-download', download + '%');
+    var totalEl = el.querySelector('.wf-total');
+    if (totalEl && el.dataset.total) {
+      totalEl.textContent = el.dataset.total + ' ms · ' + el.dataset.size;
+    }
+  }
+
+  var allWaterfalls = document.querySelectorAll('.waterfall');
+  allWaterfalls.forEach(paintWaterfall);
+
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Hero: reveal on load, single orchestrated moment
+  var heroWfs = [document.getElementById('hero-wf-html'), document.getElementById('hero-wf-json')];
+  window.requestAnimationFrame(function(){
+    setTimeout(function(){ heroWfs[0].classList.add('in-view'); }, reduceMotion ? 0 : 200);
+    setTimeout(function(){ heroWfs[1].classList.add('in-view'); }, reduceMotion ? 0 : 550);
+  });
+
+  // Scroll-triggered reveal for the rest
+  var observed = document.querySelectorAll('.waterfall:not(#hero-wf-html):not(#hero-wf-json)');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    observed.forEach(function(el){ io.observe(el); });
+  } else {
+    observed.forEach(function(el){ el.classList.add('in-view'); });
+  }
+
+  // Interactive demo
+  var baselines = {
+    html: { connect: 35, ttfb: 210, download: 310, size: 410 },
+    json_open:  { connect: 30, ttfb: 75, download: 10, size: 0.4 },
+    json_confirm: { connect: 30, ttfb: 80, download: 8, size: 0.3 }
+  };
+  var demoResult = document.getElementById('demo-result');
+  var btnHtml = document.getElementById('btn-html');
+  var btnJson = document.getElementById('btn-json');
+  var jsonToggle = false;
+
+  function jitter(n){ return Math.round(n * (0.9 + Math.random() * 0.2)); }
+
+  function runDemo(kind, base, label, sizeUnit){
+    btnHtml.disabled = true;
+    btnJson.disabled = true;
+    var connect = jitter(base.connect);
+    var ttfb = jitter(base.ttfb);
+    var download = jitter(base.download);
+    var total = connect + ttfb + download;
+    var size = (Math.round(base.size * (0.9 + Math.random() * 0.2) * 10) / 10) + sizeUnit;
+    var pConnect = Math.round(connect / total * 100);
+    var pTtfb = Math.round(ttfb / total * 100);
+    var pDownload = 100 - pConnect - pTtfb;
+
+    demoResult.innerHTML =
+      '<div class="waterfall ' + kind + '" id="live-wf">' +
+        '<div class="wf-head"><span class="wf-name">' + label + '</span><span class="wf-total mono">' + total + ' ms · ' + size + '</span></div>' +
+        '<div class="wf-track">' +
+          '<span class="seg seg-connect"></span>' +
+          '<span class="seg seg-ttfb"></span>' +
+          '<span class="seg seg-download"></span>' +
+        '</div>' +
+        '<div class="wf-legend">' +
+          '<i><span class="dot connect"></span>Conectar ' + connect + ' ms</i>' +
+          '<i><span class="dot ttfb"></span>Esperar (TTFB) ' + ttfb + ' ms</i>' +
+          '<i><span class="dot download"></span>Descargar ' + download + ' ms</i>' +
+        '</div>' +
+      '</div>';
+
+    var liveWf = document.getElementById('live-wf');
+    liveWf.style.setProperty('--w-connect', pConnect + '%');
+    liveWf.style.setProperty('--w-ttfb', pTtfb + '%');
+    liveWf.style.setProperty('--w-download', pDownload + '%');
+    window.requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ liveWf.classList.add('in-view'); });
+    });
+
+    setTimeout(function(){
+      btnHtml.disabled = false;
+      btnJson.disabled = false;
+    }, reduceMotion ? 50 : 1100);
+  }
+
+  btnHtml.addEventListener('click', function(){
+    runDemo('html', baselines.html, 'Abrir ServiExpress', ' KB');
+  });
+  btnJson.addEventListener('click', function(){
+    jsonToggle = !jsonToggle;
+    var base = jsonToggle ? baselines.json_confirm : baselines.json_open;
+    var label = jsonToggle ? 'Confirmar pedido' : 'Agregar al carrito';
+    runDemo('json', base, label, ' KB');
+  });
+})();
+</script>
+
+</body>
+</html>
