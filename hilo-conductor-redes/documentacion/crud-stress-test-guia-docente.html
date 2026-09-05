@@ -478,7 +478,7 @@
     <div class="slide active">
         <div class="eyebrow">Infraestructura de Redes · Etapa 1 · crud-stress-test</div>
         <h1>Stress Testing</h1>
-        <p class="subtitle">Desarrollo de contenidos para el docente: los cuatro conceptos que mide un stress test, las herramientas de cada versión, por qué Werkzeug no aguanta carga y qué resuelve Gunicorn. Para leer antes de dar la clase, no para repartir tal cual.</p>
+        <p class="subtitle">Desarrollo de contenidos para el docente: los cuatro conceptos que mide un stress test, las herramientas de cada versión, por qué Werkzeug no aguanta carga, qué resuelve Gunicorn, y casos reales de dimensionamiento. Para leer antes de dar la clase, no para repartir tal cual.</p>
     </div>
 
     <!-- Slide 2: Por qué dos versiones -->
@@ -514,6 +514,14 @@
             <div class="step-item">
                 <span class="num">5</span>
                 <p><strong>Gunicorn</strong> — qué resuelve y qué no.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">6</span>
+                <p><strong>Casos reales de dimensionamiento</strong> — healthcare.gov, Pokémon GO, Shopify, Ticketmaster.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">7</span>
+                <p><strong>El cálculo</strong> — cuántos workers hacen falta para un pico dado.</p>
             </div>
         </div>
     </div>
@@ -788,6 +796,119 @@
         <div class="teacher-note">
             <span class="label">Disparador para la clase</span>
             <p>Buen momento para que el grupo discuta que "escalar" nunca es una sola pieza, sino la cadena completa — es la pregunta con la que cierra también la guía de estudiantes.</p>
+        </div>
+    </div>
+
+    <!-- Slide 21: Casos reales - intro -->
+    <div class="slide">
+        <div class="eyebrow">Agregado 2026-09-05 · solo versión Killercoda</div>
+        <h2>6. Casos reales de dimensionamiento</h2>
+        <p>Los Pasos 6 y 7 cierran la etapa con algo que las secciones anteriores no cubren: qué pasa cuando el cálculo de capacidad se hace mal, o no se hace. Cuatro casos reales, con fuente pública — no una ficción armada por el docente.</p>
+    </div>
+
+    <!-- Slide 22: healthcare.gov -->
+    <div class="slide">
+        <h3 style="color:#58a6ff;">6.1 — healthcare.gov (2013)</h3>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <span class="stat-number">2.000</span>
+                <p>usuarios concurrentes probados antes del lanzamiento</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">250.000</span>
+                <p>usuarios reales el día del lanzamiento (1° oct 2013)</p>
+            </div>
+        </div>
+        <p style="font-size:0.85rem; color:#8b949e;">Fuente: <a href="https://www.npr.org/sections/alltechconsidered/2013/10/02/228220325/tech-problems-plague-first-day-of-health-exchange-rollout" target="_blank">NPR — Tech Problems Plague First Day Of Health Exchange Rollout</a></p>
+        <div class="teacher-note">
+            <span class="label">Nota docente</span>
+            <p>Conecta directo con el Paso 3: con 50 peticiones sueltas, el ruido de la medición pesa tanto como la diferencia real entre leer y escribir. healthcare.gov cometió el error inverso — confió en una muestra (2.000) como representativa de la escala real (250.000). Es el mismo problema visto desde dos lados.</p>
+        </div>
+    </div>
+
+    <!-- Slide 23: Pokémon GO -->
+    <div class="slide">
+        <h3 style="color:#58a6ff;">6.2 — Pokémon GO (2016)</h3>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <span class="stat-number">1x</span>
+                <p>tráfico esperado por Niantic</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">5x</span>
+                <p>peor escenario previsto</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">50x</span>
+                <p>tráfico real el día del lanzamiento</p>
+            </div>
+        </div>
+        <p style="font-size:0.85rem; color:#8b949e;">Fuente: <a href="https://highscalability.com/blog/2018/8/8/case-study-pokemon-go-on-google-cloud-load-balancing.html" target="_blank">High Scalability — Case Study: Pokémon GO on Google Cloud Load Balancing</a></p>
+        <div class="teacher-note">
+            <span class="label">Nota docente</span>
+            <p>Gancho natural para el margen de seguridad del Paso 7 (30%, mucho más conservador de lo que le hubiese hecho falta a Niantic). Preguntar a la clase por qué un margen "generoso" cuesta plata todo el tiempo, aunque el pico llegue una sola vez — es una discusión de costo-beneficio, no solo técnica.</p>
+        </div>
+    </div>
+
+    <!-- Slide 24: Shopify vs Ticketmaster -->
+    <div class="slide">
+        <h3 style="color:#58a6ff;">6.3 y 6.4 — un contraste y un caso abierto</h3>
+        <div class="card-grid">
+            <div class="card">
+                <span class="tag ok">Lo hizo bien</span>
+                <h4>Shopify (Black Friday)</h4>
+                <p>Meses de anticipación: modela tráfico con datos históricos, valida con pruebas de carga reales antes del pico ("Oktoberfest scale-up").</p>
+            </div>
+            <div class="card bad">
+                <span class="tag no">Caso abierto</span>
+                <h4>Ticketmaster / Taylor Swift (2022)</h4>
+                <p>3.500 millones de peticiones en un día, colas de 8 horas. Nunca publicó un postmortem técnico — no hay respuesta oficial.</p>
+            </div>
+        </div>
+        <p style="font-size:0.85rem; color:#8b949e;">Fuentes: <a href="https://shopify.engineering/capacity-planning-shopify" target="_blank">Shopify Engineering</a> · <a href="https://www.axios.com/2022/11/15/taylor-swift-tour-presale-tickets-ticketmaster-outage-error" target="_blank">Axios</a></p>
+        <div class="teacher-note">
+            <span class="label">Nota docente</span>
+            <p>Es intencional que Ticketmaster quede sin resolver: la consigna (Paso 6.4) es armar una hipótesis con los conceptos ya vistos, sin buscar la respuesta en internet — razonamiento, no investigación.</p>
+        </div>
+    </div>
+
+    <!-- Slide 25: La fórmula -->
+    <div class="slide">
+        <h2>7. Dimensionamiento: la fórmula</h2>
+        <pre><code>workers_necesarios = techo( objetivo_con_margen / capacidad_por_worker )</code></pre>
+        <p>La misma fórmula, con nombres distintos, que usa cualquier equipo de infraestructura. La sección 5 ya la insinuó con <code>(2×N)+1</code> para Gunicorn en función de núcleos — acá se generaliza a "cuántas unidades de capacidad hacen falta para un objetivo dado".</p>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">·</span>
+                <p><code>T_normal</code> — throughput medido en el Paso 2.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">·</span>
+                <p><code>objetivo_con_margen</code> — <code>T_normal × 4 × 1.3</code> (pico de inscripción + 30% de margen).</p>
+            </div>
+            <div class="step-item">
+                <span class="num">·</span>
+                <p><code>capacidad_por_worker</code> — medida en 7.3, empujando un solo worker con más concurrencia.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 26: Por qué se autocalibra -->
+    <div class="slide">
+        <h2>Por qué el ejercicio se autocalibra</h2>
+        <p>Ningún número está fijo en el enunciado — todos salen de lo que el propio alumno mide. Los únicos datos "dados" son el multiplicador (4x) y el margen (30%).</p>
+        <div class="warning-box">
+            <p>Es deliberado: los contenedores de Killercoda varían en CPU disponible. Un objetivo fijo en req/s absolutos podría ser trivial para un alumno y desmedido para otro. Definiendo el objetivo como múltiplo de lo que el propio alumno midió, el cálculo tiene sentido sin importar qué tan rápido o lento sea su contenedor ese día.</p>
+        </div>
+    </div>
+
+    <!-- Slide 27: Cierre - la misma honestidad -->
+    <div class="slide">
+        <h2>La misma honestidad que el resto de la práctica</h2>
+        <p>El Paso 7.6 (verificar que la infraestructura dimensionada responde) es explícito en que <strong>no</strong> prueba que el sistema aguante el <code>objetivo_con_margen</code> real — sería, otra vez, una prueba de carga real que esta plataforma no permite.</p>
+        <div class="teacher-note">
+            <span class="label">Disparador para la clase</span>
+            <p>La prueba real de que el dimensionamiento es correcto es el cálculo, no el <code>curl</code> de verificación — vale la pena remarcarlo para que no quede la idea de que "correr el comando y ver 200" es lo mismo que "haber probado la capacidad".</p>
         </div>
     </div>
 

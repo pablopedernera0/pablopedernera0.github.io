@@ -1,6 +1,8 @@
 # Etapa 1 — crud-stress-test: desarrollo de contenidos
 
-Material de apoyo para el docente. Desarrolla en profundidad cada punto de los "Objetivos de aprendizaje" de la etapa 1 (`crud-stress-test`) del hilo conductor de redes: los cuatro conceptos que mide un stress test, las herramientas usadas en cada versión de la práctica, por qué el servidor de desarrollo de Flask no aguanta carga, y qué resuelve Gunicorn. Pensado para leer antes de dar la clase, no para repartir tal cual a los alumnos.
+Material de apoyo para el docente. Desarrolla en profundidad cada punto de los "Objetivos de aprendizaje" de la etapa 1 (`crud-stress-test`) del hilo conductor de redes: los cuatro conceptos que mide un stress test, las herramientas usadas en cada versión de la práctica, por qué el servidor de desarrollo de Flask no aguanta carga, qué resuelve Gunicorn, y (desde el 2026-09-05) casos reales de dimensionamiento y el cálculo de cuántos workers hacen falta. Pensado para leer antes de dar la clase, no para repartir tal cual a los alumnos.
+
+> **Las secciones 6 y 7 solo existen en la versión liviana de Killercoda** — no tienen equivalente en la versión realista con `ab` del repo aparte.
 
 > **Por qué hay dos versiones.** Killercoda bloqueó la cuenta docente el 2026-08-10 corriendo `ab` en esta etapa, y al desbloquearla confirmó por escrito que prohíbe "network stress tools" como categoría, sin importar la intensidad de la carga. Por eso la práctica en Killercoda mide con un loop de `curl` + `xargs` (liviano, sin invocar una herramienta nombrada por categoría), y la versión con `ab` y carga real que rompe la app se movió a [`hilo-conductor-redes-ataques`](https://github.com/pablopedernera0/hilo-conductor-redes-ataques) para correr en la máquina del alumno (o para mostrar en vivo desde la tuya, si el alumno no tiene PC propia). Los objetivos de aprendizaje son los mismos en las dos versiones — cambia la herramienta y, en la liviana, no se llega a romper la app realmente, se explica leyendo código y procesos en el Paso 4.
 
@@ -145,3 +147,61 @@ El costo de este enfoque es memoria: cada worker carga su propia copia completa 
 **Un criterio orientativo (no absoluto):** una regla de referencia habitual para aplicaciones con workers síncronos (el modo por defecto de Gunicorn, el que se usa en esta práctica) es `(2 × núcleos de CPU) + 1`. No hace falta que el alumno la aplique en la práctica — alcanza con que entienda que el número de workers es un recurso finito y configurable, no algo que "Gunicorn resuelve solo".
 
 **Lo que Gunicorn no cambia:** el código de la aplicación sigue siendo el mismo, con las mismas consultas a MySQL. Si el cuello de botella real estuviera en la base de datos (por ejemplo, un límite bajo de conexiones concurrentes en MySQL), agregar workers de Gunicorn ayudaría hasta cierto punto y después trasladaría el problema a la base — un buen disparador para que la clase discuta que "escalar" nunca es una sola pieza, sino la cadena completa.
+
+---
+
+## 6. Casos reales de dimensionamiento (agregado 2026-09-05)
+
+Los Pasos 6 y 7, agregados a la práctica el 2026-09-05, cierran la etapa con algo que las secciones anteriores no cubren: qué pasa cuando el cálculo de capacidad —cuántos workers, cuánta infraestructura— se hace mal, o no se hace. Es la extensión "transmedia" de la etapa: en vez de una ficción armada por el docente, cuatro casos reales y verificables, con fuentes públicas.
+
+### 6.1 — healthcare.gov (2013): el paralelo más directo con esta práctica
+
+El equipo probó el sistema con ~2.000 usuarios concurrentes; el día del lanzamiento (1° de octubre de 2013) llegaron 250.000, y el sitio cayó a las dos horas.
+
+> Fuente: [NPR — Tech Problems Plague First Day Of Health Exchange Rollout](https://www.npr.org/sections/alltechconsidered/2013/10/02/228220325/tech-problems-plague-first-day-of-health-exchange-rollout)
+
+**Nota docente:** este caso conecta directo con el Paso 3 de la práctica liviana — con 50 peticiones sueltas, el ruido de la medición pesa tanto como la diferencia real entre leer y escribir. healthcare.gov cometió el error inverso: confió en una prueba (2.000 usuarios) como si fuera representativa de la escala real (250.000). Vale la pena que la clase note que ambos son el mismo problema —una muestra que no representa la escala real— visto desde dos lados distintos.
+
+### 6.2 — Pokémon GO (2016): el margen que faltó
+
+Niantic calculó un tráfico esperado (1x) y un peor escenario de 5x. El tráfico real fue 50x — diez veces peor que el peor escenario previsto. Para el lanzamiento en Japón, con aprovisionamiento generoso hecho a partir de lo aprendido, el juego salió sin caerse.
+
+> Fuente: [High Scalability — Case Study: Pokémon GO on Google Cloud Load Balancing](https://highscalability.com/blog/2018/8/8/case-study-pokemon-go-on-google-cloud-load-balancing.html)
+
+**Nota docente:** es el gancho natural para introducir el margen de seguridad del Paso 7 (30%, mucho más conservador que lo que le hubiese hecho falta a Niantic). Vale la pena preguntarle a la clase por qué un margen "generoso" cuesta plata todo el tiempo (infraestructura ociosa la mayor parte del año) aunque el pico solo llegue una vez — es una discusión de costo-beneficio, no solo técnica.
+
+### 6.3 — Shopify: el mismo cálculo, con meses de anticipación
+
+Shopify prepara su infraestructura para el Black Friday con meses de anticipación: modela tráfico esperado a partir de datos históricos, arma estimaciones, y las valida con pruebas de carga reales antes del pico (su prueba interna se llama "Oktoberfest scale-up").
+
+> Fuente: [Shopify Engineering — Capacity Planning at Scale](https://shopify.engineering/capacity-planning-shopify)
+
+**Nota docente:** es el contraste positivo — mismo ejercicio que le faltó a healthcare.gov, hecho con tiempo. Sirve para que la clase entienda que dimensionar no es una habilidad exótica, es un proceso repetible que cualquier equipo de infraestructura hace de rutina.
+
+### 6.4 — Ticketmaster / Taylor Swift (2022): el caso sin respuesta oficial
+
+3.500 millones de peticiones en un día (4x el pico anterior), colas de hasta ocho horas, venta general cancelada. A diferencia de los otros tres casos, Ticketmaster nunca publicó un postmortem técnico.
+
+> Fuente: [Axios — 'Unprecedented' demand for Taylor Swift tour crashes Ticketmaster website](https://www.axios.com/2022/11/15/taylor-swift-tour-presale-tickets-ticketmaster-outage-error)
+
+**Nota docente:** es intencional que este caso quede abierto. La consigna para el alumno (Paso 6.4) es armar una hipótesis con los conceptos ya vistos (throughput, concurrencia, servidor de desarrollo vs. producción) sin buscar la respuesta en internet — es un ejercicio de razonamiento, no de investigación. Si algún alumno trae una fuente que sí explica qué pasó técnicamente, vale la pena revisarla en clase (puede haber cambiado desde que se escribió esta guía), pero no es parte de la consigna.
+
+---
+
+## 7. Dimensionamiento: la fórmula y el método
+
+### La fórmula genérica de capacity planning
+
+```
+workers_necesarios = techo( objetivo_con_margen / capacidad_por_worker )
+```
+
+Es la misma fórmula (con nombres distintos) que usa cualquier equipo de infraestructura — la sección 5 ya la insinuó con la regla `(2×N)+1` para el número de workers de Gunicorn en función de núcleos de CPU; acá se generaliza a "cuántas unidades de capacidad hacen falta para un objetivo dado", que es el mismo razonamiento aplicado a un dato externo (tráfico esperado) en vez de a un dato interno (núcleos disponibles).
+
+### Por qué el ejercicio está diseñado para autocalibrarse
+
+Ningún número del Paso 7 está fijo en el enunciado — todos salen de lo que el propio alumno mide (`T_normal` del Paso 2, `capacidad_por_worker` medido en 7.3). Los únicos datos "dados" son el multiplicador narrativo (4x el tráfico normal) y el margen de seguridad (30%). Esto es deliberado: los contenedores de Killercoda varían en cuánto CPU tienen disponible en un momento dado, así que un objetivo fijo en req/s absolutos (por ejemplo "necesitás sostener 30 req/s") podría ser trivial para un alumno y desmedido para otro. Al definir el objetivo como múltiplo de lo que el propio alumno midió, el cálculo tiene sentido sin importar qué tan rápido o lento sea su contenedor ese día.
+
+### La misma honestidad que el resto de la práctica
+
+El Paso 7.6 (verificar que la infraestructura dimensionada responde) es deliberadamente explícito en que **no** prueba que el sistema aguante el `objetivo_con_margen` real — sería, otra vez, una prueba de carga real, la misma categoría de herramienta que esta plataforma no permite. Es la misma limitación de toda la práctica (Paso 1, Paso 3, Paso 4), aplicada consistentemente al cierre. La prueba real de que el dimensionamiento es correcto es el cálculo de la sección anterior, no el `curl` de verificación — vale la pena remarcarlo en clase para que no quede la idea de que "correr el comando y ver 200" es lo mismo que "haber probado la capacidad".

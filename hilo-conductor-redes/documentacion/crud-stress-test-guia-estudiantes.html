@@ -453,7 +453,7 @@
     <div class="slide active">
         <div class="eyebrow">Infraestructura de Redes · Etapa 1 · crud-stress-test</div>
         <h1>Stress Testing</h1>
-        <p class="subtitle">Los cuatro números que mide un test de carga, cómo atiende peticiones el servidor de Flask, y por qué Gunicorn lo resuelve. Guía de repaso para acompañar la práctica.</p>
+        <p class="subtitle">Los cuatro números que mide un test de carga, cómo atiende peticiones el servidor de Flask, por qué Gunicorn lo resuelve, y casos reales de dimensionamiento. Guía de repaso para acompañar la práctica.</p>
     </div>
 
     <!-- Slide 2: Dos versiones -->
@@ -489,6 +489,14 @@
             <div class="step-item">
                 <span class="num">5</span>
                 <p><strong>Gunicorn</strong> — por qué resuelve lo que Werkzeug no puede.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">6</span>
+                <p><strong>Casos reales de dimensionamiento</strong> — healthcare.gov, Pokémon GO, Shopify, Ticketmaster.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">7</span>
+                <p><strong>El cálculo</strong> — cuántos workers hacen falta para un pico dado.</p>
             </div>
         </div>
     </div>
@@ -743,6 +751,102 @@
         <div class="quote-box">
             <p>El código de la aplicación sigue siendo el mismo con Gunicorn, con las mismas consultas a MySQL. Si el cuello de botella real estuviera en la base de datos —por ejemplo, un límite bajo de conexiones concurrentes— ¿hasta qué punto ayudaría agregar más workers? ¿Qué pasaría después de ese punto?</p>
         </div>
+    </div>
+
+    <!-- Slide 21: Casos reales - intro -->
+    <div class="slide">
+        <div class="eyebrow">Agregado 2026-09-05 · solo versión Killercoda</div>
+        <h2>6. Casos reales de dimensionamiento</h2>
+        <p>Los Pasos 6 y 7 cierran la etapa con algo que no vimos hasta acá: qué pasa cuando el cálculo de capacidad —cuántos workers, cuánta infraestructura— se hace mal, o no se hace. Cuatro casos reales, con fuente.</p>
+    </div>
+
+    <!-- Slide 22: healthcare.gov -->
+    <div class="slide">
+        <h3 style="color:#58a6ff;">healthcare.gov (2013)</h3>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <span class="stat-number">2.000</span>
+                <p>usuarios concurrentes probados antes del lanzamiento</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">250.000</span>
+                <p>usuarios reales el día del lanzamiento</p>
+            </div>
+        </div>
+        <p>Probaron con 2.000 usuarios concurrentes. El día del lanzamiento (1° de octubre de 2013) llegaron 250.000. El sitio se cayó a las dos horas.</p>
+        <p style="font-size:0.85rem; color:#8b949e;">Fuente: <a href="https://www.npr.org/sections/alltechconsidered/2013/10/02/228220325/tech-problems-plague-first-day-of-health-exchange-rollout" target="_blank">NPR — Tech Problems Plague First Day Of Health Exchange Rollout</a></p>
+    </div>
+
+    <!-- Slide 23: Pokémon GO -->
+    <div class="slide">
+        <h3 style="color:#58a6ff;">Pokémon GO (2016)</h3>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <span class="stat-number">1x</span>
+                <p>tráfico esperado</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">5x</span>
+                <p>peor escenario previsto</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">50x</span>
+                <p>tráfico real</p>
+            </div>
+        </div>
+        <p>Niantic calculó un tráfico esperado (1x) y un peor escenario de 5x. El tráfico real fue 50x. Para el lanzamiento en Japón, con más capacidad reservada de antemano, salió sin caerse.</p>
+        <p style="font-size:0.85rem; color:#8b949e;">Fuente: <a href="https://highscalability.com/blog/2018/8/8/case-study-pokemon-go-on-google-cloud-load-balancing.html" target="_blank">High Scalability — Case Study: Pokémon GO on Google Cloud Load Balancing</a></p>
+    </div>
+
+    <!-- Slide 24: Shopify vs Ticketmaster -->
+    <div class="slide">
+        <h3 style="color:#58a6ff;">Shopify: el mismo cálculo, con anticipación</h3>
+        <div class="card-grid">
+            <div class="card">
+                <span class="tag ok">Lo hizo bien</span>
+                <h4>Shopify (Black Friday)</h4>
+                <p>Meses de anticipación: modela el tráfico esperado con datos históricos y lo valida con pruebas de carga reales antes de que llegue el pico.</p>
+            </div>
+            <div class="card bad">
+                <span class="tag no">Caso abierto</span>
+                <h4>Ticketmaster / Taylor Swift (2022)</h4>
+                <p>3.500 millones de peticiones en un día, colas de hasta 8 horas, venta general cancelada. Nunca publicó un postmortem técnico.</p>
+            </div>
+        </div>
+        <p style="font-size:0.85rem; color:#8b949e;">Fuentes: <a href="https://shopify.engineering/capacity-planning-shopify" target="_blank">Shopify Engineering</a> · <a href="https://www.axios.com/2022/11/15/taylor-swift-tour-presale-tickets-ticketmaster-outage-error" target="_blank">Axios</a></p>
+        <div class="quote-box">
+            <p><strong>Para pensar (sin respuesta correcta):</strong> con lo que sabés de throughput, concurrencia y servidor de desarrollo vs. producción, ¿qué hipótesis armarías sobre qué componente se saturó primero en Ticketmaster? No hay postmortem oficial para verificarla.</p>
+        </div>
+    </div>
+
+    <!-- Slide 25: La fórmula -->
+    <div class="slide">
+        <h2>7. Dimensionamiento: la fórmula</h2>
+        <pre><code>workers_necesarios = techo( objetivo_con_margen / capacidad_por_worker )</code></pre>
+        <p>Todos los números salen de tu propia sesión — no hay una respuesta fija, porque depende de cuánto rinde el contenedor donde estás corriendo esto:</p>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">·</span>
+                <p><code>T_normal</code> — el throughput que mediste en el Paso 2.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">·</span>
+                <p><code>objetivo_con_margen</code> — <code>T_normal × 4</code> (el pico que pide la secretaría) <code>× 1.3</code> (margen de seguridad del 30%, la misma idea que le faltó a Niantic).</p>
+            </div>
+            <div class="step-item">
+                <span class="num">·</span>
+                <p><code>capacidad_por_worker</code> — lo que mide un solo worker de Gunicorn en tu contenedor, empujado con más concurrencia que en los pasos anteriores.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 26: Cierre - la verificación no prueba el pico -->
+    <div class="slide">
+        <h2>Una aclaración importante</h2>
+        <div class="warning-box">
+            <p>El chequeo final del Paso 7 (que la infraestructura dimensionada responda) <strong>no</strong> prueba que aguante literalmente el <code>objetivo_con_margen</code> — esta plataforma no te deja generar esa carga real, la misma limitación de toda la práctica.</p>
+        </div>
+        <p>La prueba real de que dimensionaste bien es el cálculo, no el <code>curl</code> de verificación.</p>
     </div>
 
 </div>

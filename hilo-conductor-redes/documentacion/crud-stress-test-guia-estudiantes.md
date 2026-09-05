@@ -1,6 +1,8 @@
 # Etapa 1 — crud-stress-test: guía de estudio
 
-Material de repaso para acompañar la práctica `crud-stress-test`. Desarrolla los conceptos que vas a necesitar para interpretar lo que hagas en cada paso: los cuatro números que mide un stress test, cómo funciona el servidor de una app Flask y qué es Gunicorn.
+Material de repaso para acompañar la práctica `crud-stress-test`. Desarrolla los conceptos que vas a necesitar para interpretar lo que hagas en cada paso: los cuatro números que mide un stress test, cómo funciona el servidor de una app Flask, qué es Gunicorn, y (desde el 2026-09-05) casos reales de dimensionamiento y cómo calcular cuántos workers hacen falta.
+
+> **Las secciones 6 y 7 solo existen en la versión liviana de Killercoda** — no tienen equivalente en la versión realista con `ab` del repo aparte.
 
 > **Dos versiones de esta práctica.** En Killercoda vas a medir con un loop de `curl` + `xargs` (versión liviana) — esta plataforma no permite correr herramientas de stress testing reales, sin importar qué tan liviana sea la carga. Si tenés PC propia, existe además una versión con carga real usando **Apache Bench (`ab`)**, que tu docente puede mostrarte en vivo o pasarte para correr en tu máquina. Los conceptos de las secciones 1, 3, 4 y 5 valen para las dos versiones; la sección 2 documenta ambas herramientas.
 
@@ -149,3 +151,53 @@ El costo de este enfoque es memoria: cada worker carga su propia copia completa 
 **Un criterio orientativo (no absoluto):** una regla de referencia habitual para aplicaciones con workers síncronos (el modo por defecto de Gunicorn) es `(2 × núcleos de CPU) + 1`. El número de workers es un recurso finito y configurable, no algo que Gunicorn resuelve solo.
 
 **Para pensar:** el código de la aplicación sigue siendo el mismo con Gunicorn, con las mismas consultas a MySQL. Si el cuello de botella real estuviera en la base de datos (por ejemplo, un límite bajo de conexiones concurrentes en MySQL), ¿hasta qué punto ayudaría agregar más workers? ¿Qué pasaría después de ese punto?
+
+---
+
+## 6. Casos reales de dimensionamiento
+
+Los Pasos 6 y 7 de la práctica (agregados el 2026-09-05) cierran la etapa con algo que no vimos hasta acá: qué pasa cuando el cálculo de capacidad —cuántos workers, cuánta infraestructura— se hace mal, o no se hace. Cuatro casos reales, con fuente:
+
+### healthcare.gov (2013)
+
+Probaron con ~2.000 usuarios concurrentes. El día del lanzamiento llegaron 250.000. El sitio se cayó a las dos horas.
+
+> Fuente: [NPR — Tech Problems Plague First Day Of Health Exchange Rollout](https://www.npr.org/sections/alltechconsidered/2013/10/02/228220325/tech-problems-plague-first-day-of-health-exchange-rollout)
+
+### Pokémon GO (2016)
+
+Niantic calculó un tráfico esperado (1x) y un peor escenario de 5x. El tráfico real fue 50x. Para el lanzamiento en Japón, con más capacidad reservada de antemano, salió sin caerse.
+
+> Fuente: [High Scalability — Case Study: Pokémon GO on Google Cloud Load Balancing](https://highscalability.com/blog/2018/8/8/case-study-pokemon-go-on-google-cloud-load-balancing.html)
+
+### Shopify: el mismo cálculo, con meses de anticipación
+
+Shopify prepara su infraestructura para el Black Friday con meses de anticipación: modela el tráfico esperado con datos históricos y lo valida con pruebas de carga reales antes de que llegue el pico.
+
+> Fuente: [Shopify Engineering — Capacity Planning at Scale](https://shopify.engineering/capacity-planning-shopify)
+
+### Ticketmaster / Taylor Swift (2022): el caso abierto
+
+3.500 millones de peticiones en un día, colas de hasta ocho horas, venta general cancelada. A diferencia de los otros tres, Ticketmaster nunca publicó un postmortem técnico.
+
+> Fuente: [Axios — 'Unprecedented' demand for Taylor Swift tour crashes Ticketmaster website](https://www.axios.com/2022/11/15/taylor-swift-tour-presale-tickets-ticketmaster-outage-error)
+
+**Para pensar (sin respuesta correcta):** con lo que sabés de throughput, concurrencia y servidor de desarrollo vs. producción, ¿qué hipótesis armarías sobre qué componente se saturó primero en Ticketmaster? No hay postmortem oficial para verificarla — es un ejercicio de razonar con lo que ya sabés, no de buscar la respuesta.
+
+---
+
+## 7. Dimensionamiento: la fórmula
+
+En el Paso 7 vas a calcular cuántos workers de Gunicorn necesita tu propia infraestructura, con la misma lógica que usa cualquier equipo de infraestructura real:
+
+```
+workers_necesarios = techo( objetivo_con_margen / capacidad_por_worker )
+```
+
+Todos los números salen de tu propia sesión — no hay una respuesta fija, porque depende de cuánto rinde el contenedor donde estás corriendo esto:
+
+- `T_normal` — el throughput que mediste en el Paso 2 (tu "tráfico normal").
+- `objetivo_con_margen` — `T_normal × 4` (el pico que te pide la secretaría) `× 1.3` (margen de seguridad del 30%, la misma idea que le faltó a Niantic con Pokémon GO).
+- `capacidad_por_worker` — lo que mide un solo worker de Gunicorn en tu contenedor, empujándolo con más concurrencia que en los pasos anteriores.
+
+**Importante:** el chequeo final del Paso 7 (que la infraestructura dimensionada responda) no prueba que aguante literalmente ese `objetivo_con_margen` — esta plataforma no te deja generar esa carga real, la misma limitación de toda la práctica. La prueba real de que dimensionaste bien es el cálculo, no el `curl` de verificación.
