@@ -1,10 +1,18 @@
-// Índice de recursos del sitio. Última actualización: 2026-08-25 ART.
+// Índice de recursos del sitio. Última actualización: 2026-09-08 ART.
 // Cada entrada agrega una carpeta al índice de la home (ver render-recursos.js).
 // Para publicar un recurso nuevo: agregar un objeto acá, no tocar index.html.
 //
 // categoria: debe coincidir con el id de la course-card en index.html
 //   'infraestructura' | 'desarrollo' | 'redes'
 const RECURSOS = [
+    {
+        titulo: "Reconocimiento, fuerza bruta y SQLi",
+        categoria: "infraestructura",
+        carpeta: "repaso-red-ataques",
+        icono: "▸",
+        descripcion: "Repaso presencial del hilo conductor de redes (Etapas 3 y 4): anatomía de una URL y regex de ruteo, host vs. red interna de Docker, fingerprinting con nmap, fuerza bruta con hydra, y la consulta SQL vulnerable vs. la parametrizada. Incluye cheat sheet complementario.",
+        fecha: "2026-09-08"
+    },
     {
         titulo: "Autenticación, WSGI y Workers",
         categoria: "redes",

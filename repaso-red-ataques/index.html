@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repaso presencial - Red, nmap, hydra y SQLi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.3rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.05rem;
+            margin-bottom: 0.5rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.02rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .day-tag {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.12);
+            color: #d4a72c;
+            border: 1px solid #d4a72c;
+            border-radius: 14px;
+            padding: 0.2rem 0.9rem;
+            font-size: 0.78rem;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .quote-box {
+            background: rgba(88, 166, 255, 0.08);
+            border-left: 4px solid #58a6ff;
+            border-radius: 0 10px 10px 0;
+            padding: 1.1rem 1.5rem;
+            max-width: 850px;
+            margin: 1rem 0;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+
+        .quote-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong { color: #3fb950; }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+            font-size: 0.92em;
+        }
+
+        .code-block {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 1rem 1.3rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+            color: #7ee787;
+            max-width: 850px;
+            width: 100%;
+            overflow-x: auto;
+            white-space: pre;
+            text-align: left;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.02rem;
+            min-width: 4.4rem;
+        }
+
+        .step-item p {
+            font-size: 0.96rem;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .mirror-table {
+            width: 100%;
+            max-width: 950px;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .mirror-table th, .mirror-table td {
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.65rem 0.9rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .mirror-table th:first-child {
+            background: rgba(248, 81, 73, 0.12);
+            color: #f85149;
+        }
+
+        .mirror-table th:last-child {
+            background: rgba(63, 185, 80, 0.12);
+            color: #3fb950;
+        }
+
+        /* --- Diagramas de red / flujo --- */
+        .flow {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .flow-row {
+            display: flex;
+            align-items: stretch;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .flow-box {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.25);
+            border-radius: 10px;
+            padding: 0.7rem 1.1rem;
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 190px;
+            text-align: left;
+        }
+
+        .flow-box .who {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.75;
+            margin-bottom: 0.3rem;
+        }
+
+        .flow-box.host { border-color: #58a6ff; }
+        .flow-box.host .who { color: #58a6ff; }
+        .flow-box.internal { border-color: #3fb950; }
+        .flow-box.internal .who { color: #3fb950; }
+        .flow-box.blocked { border-color: #f85149; border-style: dashed; }
+        .flow-box.blocked .who { color: #f85149; }
+        .flow-box.attacker { border-color: #f0883e; }
+        .flow-box.attacker .who { color: #f0883e; }
+
+        .flow-arrow {
+            text-align: center;
+            font-size: 1.3rem;
+            color: #8b949e;
+            line-height: 1;
+        }
+
+        /* --- Topología de red: host vs. red interna --- */
+        .net-diagram {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 950px;
+        }
+
+        .net-col {
+            flex: 1;
+            min-width: 280px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 14px;
+            padding: 1.1rem;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .net-col.outside { border-color: rgba(88,166,255,0.4); }
+        .net-col.inside { border-color: rgba(63,185,80,0.4); }
+
+        .port-box {
+            background: rgba(88,166,255,0.14);
+            border: 1px solid #58a6ff;
+            border-radius: 8px;
+            padding: 0.4rem 0.7rem;
+            margin: 0.4rem auto;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .port-box.closed {
+            background: rgba(248,81,73,0.12);
+            border-color: #f85149;
+            color: #f85149;
+        }
+
+        .port-box.open-internal {
+            background: rgba(63,185,80,0.14);
+            border-color: #3fb950;
+            color: #3fb950;
+        }
+
+        .further-reading {
+            margin-top: 1rem;
+            width: 100%;
+            max-width: 850px;
+        }
+
+        .further-reading .label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.7;
+            margin-bottom: 0.5rem;
+        }
+
+        .further-reading a {
+            display: inline-block;
+            font-size: 0.82rem;
+            background: rgba(255,255,255,0.06);
+            color: #58a6ff;
+            text-decoration: none;
+            padding: 0.4rem 1rem;
+            border-radius: 18px;
+            margin: 0.25rem 0.4rem 0.25rem 0;
+            border: 1px solid rgba(88,166,255,0.4);
+            transition: all 0.2s ease;
+        }
+
+        .further-reading a:hover {
+            background: rgba(88,166,255,0.15);
+            color: #fff;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+        }
+
+        .series-nav a:hover { color: #58a6ff; }
+
+        .series-nav span.current {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        .btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+            background: #3fb950;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.6rem; }
+            .net-diagram { flex-direction: column; }
+            .series-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="series-nav">
+    <span class="current">Repaso · Red y ataques</span>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Infraestructura de Redes · Repaso presencial (Etapas 3 y 4)</div>
+        <h1>Reconocimiento, fuerza bruta y SQLi</h1>
+        <p class="subtitle">Apoyo para la clase presencial: la mecánica interna de lo que la Etapa 3 y la Etapa 4 dejaron funcionando en tu propia máquina, explicada paso a paso con pizarrón.</p>
+    </div>
+
+    <!-- Slide 2: Agenda -->
+    <div class="slide">
+        <h2>Agenda</h2>
+        <ul style="font-size:1.05rem;">
+            <li><strong>Día 1 (08/sep):</strong> la red desde afuera y desde adentro — superficie de ataque, <code>nmap</code> a nivel conceptual</li>
+            <li><strong>Día 2 (10/sep):</strong> fuerza bruta con <code>hydra</code> a nivel conceptual, y la consulta SQL vulnerable vs. la parametrizada</li>
+        </ul>
+        <div class="warning-box">
+            <p>No corremos nada hoy — es pizarrón/proyector. La idea es que la mecánica de lo que ya ejecutaste con las manos (en tu propia máquina, con el <code>docker-compose</code> del repo aparte) te quede clara sin la pantalla de por medio.</p>
+        </div>
+    </div>
+
+    <!-- Slide 3: Repaso relámpago -->
+    <div class="slide">
+        <h2>Repaso relámpago</h2>
+        <ul>
+            <li><strong>Etapa 3</strong> — escaneaste la infraestructura con <code>nmap</code>, encontraste credenciales hardcodeadas en <code>app.py</code>, y probaste fuerza bruta contra el login con <code>hydra</code>.</li>
+            <li><strong>Etapa 4</strong> — hiciste un bypass manual de login por inyección SQL, y después usaste <code>sqlmap</code> para automatizar la detección y volcar una tabla completa.</li>
+        </ul>
+        <div class="warning-box">
+            <p>Recordatorio de por qué esto ya no vive en Killercoda: son herramientas de ataque real. Se corren contra un entorno descartable, propio, armado para practicar — nunca contra un sistema que no es tuyo o sin autorización explícita.</p>
+        </div>
+    </div>
+
+    <!-- Slide 4: DÍA 1 - anatomía de una URL -->
+    <div class="slide">
+        <span class="day-tag">DÍA 1</span>
+        <h2>Antes de escanear: qué es lo que viaja</h2>
+        <p>Todo lo de hoy arranca en una URL. Antes de hablar de puertos, conviene tener clara su anatomía — es la información que <code>nmap</code>, <code>hydra</code> y el bypass SQL usan, cada uno a su manera.</p>
+        <div class="code-block">http://app<span style="color:#58a6ff">.midominio.com</span>:8888/alumnos/42?activo=true
+      \__/   \_______________/ \__/ \____________/ \_________/
+     esquema  dominio (+ sub-  puerto     path         query
+              dominio "app")</div>
+        <div class="mirror-table" style="width:100%; max-width:850px;">
+            <table style="width:100%;">
+                <tr><th style="background:rgba(88,166,255,0.12); color:#58a6ff;">Dominio</th><th style="background:rgba(63,185,80,0.12); color:#3fb950;">Subdominio</th></tr>
+                <tr>
+                    <td><code>midominio.com</code> — lo que se registra y se paga; identifica a la organización.</td>
+                    <td><code>app.</code> — un espacio con nombre <em>dentro</em> del mismo dominio (<code>api.midominio.com</code>, <code>admin.midominio.com</code>) — no hace falta registrar nada nuevo, es una entrada de DNS más.</td>
+                </tr>
+            </table>
+        </div>
+        <div class="warning-box">
+            <p>El dominio (con su subdominio, si tiene) es lo que DNS resuelve a una IP. A partir de ahí entra en juego todo lo de la próxima slide: a esa IP, en ese puerto, ¿quién está escuchando?</p>
+        </div>
+    </div>
+
+    <!-- Slide 5: DÍA 1 - regex de ruteo -->
+    <div class="slide">
+        <span class="day-tag">DÍA 1</span>
+        <h2>Ya adentro: ¿quién atiende ese <code>path</code>?</h2>
+        <p>El dominio y el puerto te llevan hasta el proceso correcto (Flask, en este stack). Pero adentro de esa única app conviven muchas rutas — <code>/login</code>, <code>/alumnos</code>, <code>/alumnos/42</code>. Decidir cuál función atiende cada <code>path</code> es <strong>ruteo</strong>, y por debajo se resuelve con expresiones regulares.</p>
+        <div class="code-block">@app.route("/alumnos/&lt;int:id&gt;")
+def ver_alumno(id):
+    ...</div>
+        <p>Werkzeug (el motor de ruteo de Flask) traduce ese <code>&lt;int:id&gt;</code> a una regex internamente, aproximadamente:</p>
+        <div class="code-block">^/alumnos/(?P&lt;id&gt;[0-9]+)$</div>
+        <p>El grupo capturado <code>(?P&lt;id&gt;...)</code> es exactamente lo que le llega a la función como el parámetro <code>id</code>.</p>
+        <div class="quote-box">
+            <p>nginx hace lo mismo a otro nivel, con <code>location</code>: <code>location ~ ^/api/(\d+)$ { ... }</code> decide a qué <em>upstream</em> reenviar la petición según el path, antes incluso de que llegue a Flask.</p>
+        </div>
+        <div class="warning-box">
+            <p>Por qué importa hoy: la Etapa 4 mandó <code>usuario=admin' -- </code> por <code>POST /login</code>. Esa ruta ya está "atendida" — el ruteo hizo bien su trabajo, llegó a la función correcta. El problema de la inyección pasa <em>después</em>, dentro de esa función, no en el ruteo.</p>
+        </div>
+        <div class="further-reading">
+            <div class="label">Para leer más</div>
+            <a href="https://werkzeug.palletsprojects.com/en/stable/routing/" target="_blank" rel="noopener">Werkzeug — Routing</a>
+            <a href="https://es.wikipedia.org/wiki/Expresi%C3%B3n_regular" target="_blank" rel="noopener">Wikipedia — Expresión regular</a>
+        </div>
+    </div>
+
+    <!-- Slide 6: DÍA 1 - la red desde afuera -->
+    <div class="slide">
+        <span class="day-tag">DÍA 1</span>
+        <h2>La misma red, dos vistas distintas</h2>
+        <p>Todo el stack corre en contenedores Docker. Pero "estar en la red" significa algo distinto según desde dónde mirás.</p>
+        <div class="net-diagram">
+            <div class="net-col outside">
+                <h4>Desde el host (localhost)</h4>
+                <div class="port-box">80 → nginx</div>
+                <div class="port-box">8080 → nginx (PhpMyAdmin)</div>
+                <div class="port-box">8888 → Flask/Werkzeug</div>
+                <div class="port-box closed">3306 → cerrado / sin respuesta</div>
+            </div>
+            <div class="net-col inside">
+                <h4>Desde adentro de la red Docker</h4>
+                <p style="font-size:0.85rem; text-align:center;">Cada contenedor tiene su propia IP interna (ej. <code>172.x.x.x</code>), invisible desde el host.</p>
+                <div class="port-box open-internal">3306 → abierto (contenedor MySQL)</div>
+            </div>
+        </div>
+        <div class="warning-box">
+            <p><strong>Superficie de ataque externa</strong> es lo que <code>docker-compose.yml</code> publica con <code>ports:</code>. <strong>Superficie interna</strong> es todo lo que solo es visible dentro de la red que Docker crea para el stack. Un puerto puede estar cerrado para el mundo y abierto de par en par para cualquier otro contenedor de esa misma red.</p>
+        </div>
+        <div class="quote-box">
+            <p><strong><code>host.docker.internal</code>:</strong> el camino inverso — un nombre especial que, resuelto <em>desde adentro de un contenedor</em>, apunta a la máquina host (no a otro contenedor). Sirve para que un contenedor llegue a algo que corre en tu propia PC, fuera de Docker. No resuelve nada si lo escribís en el navegador del host: solo tiene sentido resuelto desde dentro de un contenedor.</p>
+        </div>
+    </div>
+
+    <!-- Slide 7: nmap conceptual -->
+    <div class="slide">
+        <span class="day-tag">DÍA 1</span>
+        <h2><code>nmap</code>, en una idea</h2>
+        <p><strong>Port scanning:</strong> mandar paquetes a un rango de puertos y ver quién contesta. Un puerto puede estar <em>abierto</em> (algo escuchando), <em>cerrado</em> (nadie escucha, pero el host responde) o <em>filtrado</em> (no hay respuesta — firewall de por medio).</p>
+        <div class="code-block">nmap -sV -p 80,8080,8888 localhost</div>
+        <p><code>-sV</code> agrega <strong>detección de servicio y versión</strong>: no solo dice "está abierto", intenta identificar qué software real está corriendo detrás — nginx, Werkzeug, etc.</p>
+        <div class="quote-box">
+            <p><strong>Fingerprinting de servidores:</strong> la técnica de identificar el software, el sistema operativo, los servicios y la configuración de un servidor remoto analizando cómo responde a distintas peticiones de red — sin necesidad de acceso directo. <code>-sV</code> es <code>nmap</code> haciendo fingerprinting de servicio: compara la respuesta contra una base de firmas conocidas.</p>
+        </div>
+        <div class="warning-box">
+            <p>Es la misma lógica de fondo que usaste en la Etapa 1 al pensar en "¿qué está escuchando en qué puerto?" — <code>nmap</code> lo automatiza y lo hace desde afuera, como lo vería un atacante.</p>
+        </div>
+        <div class="further-reading">
+            <div class="label">Para leer más</div>
+            <a href="https://nmap.org/book/man-port-scanning-basics.html" target="_blank" rel="noopener">nmap.org — Port scanning basics</a>
+            <a href="https://nmap.org/book/man-version-detection.html" target="_blank" rel="noopener">nmap.org — Service and version detection</a>
+            <a href="https://es.wikipedia.org/wiki/Nmap" target="_blank" rel="noopener">Wikipedia — Nmap</a>
+        </div>
+    </div>
+
+    <!-- Slide 8: Resultado etapa 3 - reconocimiento -->
+    <div class="slide">
+        <span class="day-tag">DÍA 1</span>
+        <h2>Lo que encontraste en la Etapa 3 (parte 1)</h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">Puertos</span>
+                <p><code>80</code>, <code>8080</code> y <code>8888</code> publicados y respondiendo; <code>3306</code> cerrado desde <code>localhost</code>, pero abierto al escanear la IP interna del contenedor de MySQL.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">Credenciales</span>
+                <p><code>root</code> / <code>mysecretpassword</code>, hardcodeadas directamente en <code>app.py</code> — visibles con solo leer el código fuente, sin ninguna herramienta de ataque.</p>
+            </div>
+        </div>
+        <div class="warning-box">
+            <p>El hallazgo más importante no es técnico: una credencial hardcodeada en el código es un riesgo aunque el puerto esté "cerrado" — el día que alguien tenga acceso al repo, o a un contenedor vecino en esa red interna, ese secreto ya está expuesto.</p>
+        </div>
+    </div>
+
+    <!-- Slide 9: Transición a día 2 -->
+    <div class="slide" style="align-items:center; text-align:center;">
+        <span class="day-tag" style="align-self:center;">DÍA 2</span>
+        <h1>De mirar la puerta a probar abrirla</h1>
+        <p>El reconocimiento de la Etapa 3 encontró superficie y credenciales. Hoy vemos cómo esa información se convierte en acceso — primero por fuerza bruta, después por una falla en el código.</p>
+    </div>
+
+    <!-- Slide 10: hydra conceptual -->
+    <div class="slide">
+        <span class="day-tag">DÍA 2</span>
+        <h2><code>hydra</code>, en una idea</h2>
+        <p><strong>Ataque de fuerza bruta:</strong> probar sistemáticamente combinaciones de usuario/contraseña contra un formulario de login, hasta que una funcione.</p>
+        <div class="flow">
+            <div class="flow-row">
+                <div class="flow-box attacker"><div class="who">Atacante</div>Wordlist: lista de contraseñas candidatas (ej. 7 entradas de ejemplo)</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-row">
+                <div class="flow-box attacker"><div class="who">hydra</div>Prueba cada combinación contra <code>POST /login</code> (<code>http-post-form</code>)</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-row">
+                <div class="flow-box host"><div class="who">Servidor</div>Responde distinto según si la combinación es válida o no</div>
+            </div>
+        </div>
+        <div class="warning-box">
+            <p>Por qué funciona acá: no hay límite de intentos ni bloqueo temporal después de varios fallos. Esa ausencia — no <code>hydra</code> en sí — es la vulnerabilidad real.</p>
+        </div>
+        <div class="further-reading">
+            <div class="label">Para leer más</div>
+            <a href="https://owasp.org/www-community/attacks/Brute_force_attack" target="_blank" rel="noopener">OWASP — Brute Force Attack</a>
+        </div>
+    </div>
+
+    <!-- Slide 11: Resultado etapa 3 - hydra -->
+    <div class="slide">
+        <span class="day-tag">DÍA 2</span>
+        <h2>Lo que encontró <code>hydra</code></h2>
+        <div class="code-block">[80][http-post-form] host: localhost   login: admin   password: admin123</div>
+        <p>La wordlist de ejemplo tenía solo 7 entradas, y <code>admin123</code> estaba entre ellas — a propósito, para que el ataque termine rápido en la práctica.</p>
+        <div class="warning-box">
+            <p>En un ataque real la wordlist tiene millones de entradas (filtraciones conocidas, patrones comunes) — la defensa no es "una contraseña más larga", es limitar intentos, o no exponer el formulario sin capa adicional (captcha, 2FA, bloqueo por IP).</p>
+        </div>
+    </div>
+
+    <!-- Slide 12: Query vulnerable vs parametrizada -->
+    <div class="slide">
+        <span class="day-tag">DÍA 2</span>
+        <h2>La consulta vulnerable vs. la parametrizada</h2>
+        <div style="width:100%; max-width:950px; overflow-x:auto;">
+        <table class="mirror-table">
+            <tr><th>Vulnerable (concatenación / f-string)</th><th>Parametrizada</th></tr>
+            <tr>
+                <td><code>f"SELECT * FROM usuarios WHERE usuario='{u}' AND password='{p}'"</code></td>
+                <td><code>"SELECT * FROM usuarios WHERE usuario=%s AND password=%s", (u, p)</code></td>
+            </tr>
+            <tr>
+                <td>El texto que escribe el usuario se pega directo dentro del SQL. Si <code>u</code> contiene comillas o palabras clave SQL, cambia la estructura de la consulta.</td>
+                <td>El motor recibe la consulta y los valores por separado. Lo que llega en <code>u</code> o <code>p</code> siempre se trata como <strong>dato</strong>, nunca como código SQL.</td>
+            </tr>
+        </table>
+        </div>
+        <div class="warning-box">
+            <p>Es la misma distinción de fondo que hydra vs. límite de intentos: el problema no es la herramienta de ataque, es una decisión de diseño del código que la habilita.</p>
+        </div>
+    </div>
+
+    <!-- Slide 13: Diagrama del bypass -->
+    <div class="slide">
+        <span class="day-tag">DÍA 2</span>
+        <h2>Cómo se rompe: el bypass manual</h2>
+        <p>Con <code>usuario = admin' -- </code>, la consulta vulnerable queda así:</p>
+        <div class="code-block">SELECT * FROM usuarios WHERE usuario='admin' -- ' AND password='cualquiera'</div>
+        <p><code>--</code> es un comentario en SQL: todo lo que sigue en esa línea se ignora. La verificación de password nunca ocurre.</p>
+        <div class="flow">
+            <div class="flow-row">
+                <div class="flow-box attacker"><div class="who">curl</div><code>usuario=admin' -- </code></div>
+                <div class="flow-box host"><div class="who">Respuesta</div><code>302</code> (login exitoso)</div>
+            </div>
+            <div class="flow-row">
+                <div class="flow-box host"><div class="who">Con password real cualquiera</div><code>200</code> (login rechazado, control)</div>
+            </div>
+        </div>
+        <p style="margin-top:0.5rem;">La variante <code>' OR '1'='1' -- </code> funciona igual, sin necesidad de conocer el nombre <code>admin</code> — la condición <code>'1'='1'</code> es siempre verdadera.</p>
+    </div>
+
+    <!-- Slide 14: sqlmap y el dump -->
+    <div class="slide">
+        <span class="day-tag">DÍA 2</span>
+        <h2>De manual a automático: <code>sqlmap</code></h2>
+        <p><code>sqlmap</code> hace lo mismo que el bypass manual, pero sistemáticamente: prueba decenas de variantes de inyección sobre un parámetro, confirma cuál funciona, y automatiza la extracción de datos.</p>
+        <div class="code-block">Database: alumnos
+Table: usuarios
++----+---------+----------+
+| id | usuario | password |
++----+---------+----------+
+| 1  | admin   | admin123 |
+| 2  | soporte | sopor23! |
++----+---------+----------+</div>
+        <div class="warning-box">
+            <p><strong>Nota de timing:</strong> en la corrida real, <code>sqlmap</code> detectó la inyección por <em>time-based blind</em> — cada carácter extraído implica varias peticiones con <code>SLEEP</code>. El <code>--dump</code> completo tardó 3-4 minutos: es esperable que "tarde en volver".</p>
+        </div>
+    </div>
+
+    <!-- Slide 15: El fix -->
+    <div class="slide">
+        <span class="day-tag">DÍA 2</span>
+        <h2>Así se arregla</h2>
+        <p>El fix real es una línea: reemplazar la concatenación por una consulta parametrizada. Nada más cambia — ni la lógica, ni las rutas, ni el resto del código.</p>
+        <div class="warning-box">
+            <p>Esto no queda roto para siempre. La misma clase que mostró el bypass y el <code>sqlmap --dump</code> termina mostrando la línea exacta que lo cierra — la idea es salir con "así se ataca <em>y</em> así se defiende", no solo con la mitad.</p>
+        </div>
+        <div class="further-reading">
+            <div class="label">Para leer más</div>
+            <a href="https://owasp.org/www-community/attacks/SQL_Injection" target="_blank" rel="noopener">OWASP — SQL Injection</a>
+            <a href="https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP — SQL Injection Prevention Cheat Sheet</a>
+        </div>
+    </div>
+
+    <!-- Slide 16: Autoevaluación -->
+    <div class="slide">
+        <h2>Para repasar por tu cuenta</h2>
+        <p>Si podés responder esto sin volver a mirar las slides anteriores, el repaso cumplió su objetivo:</p>
+        <ul style="font-size:1.02rem; margin-top:0.5rem;">
+            <li>¿Podés dibujar de memoria el diagrama de puertos: qué está publicado al host, y qué solo es visible dentro de la red de Docker?</li>
+            <li>¿Por qué <code>hydra</code> encontró la contraseña, y qué tendría que cambiar en el servidor para que no funcionara?</li>
+            <li>¿Podés escribir de memoria una consulta vulnerable y su versión parametrizada, para el mismo caso?</li>
+        </ul>
+        <div class="warning-box">
+            <p>Si alguna te costó, es el momento de volver a esa slide o preguntar en clase — la Etapa 5 da por sentado que ya sabés leer estos ataques en un log.</p>
+        </div>
+    </div>
+
+    <!-- Slide 17: Cierre -->
+    <div class="slide" style="align-items:center; text-align:center;">
+        <h1>Semana Virtual 3</h1>
+        <p>Martes: Etapa 5 (<code>crud-logs-analisis-cli</code>) — vas a encontrar en los logs el rastro exacto de todo lo que hiciste hoy con la cabeza: el escaneo, la fuerza bruta, la inyección.<br>Jueves: Etapa 6, parte 1 — deploy de Prometheus.</p>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">15</span>
+</div>
+
+<div class="controls">
+    <button class="btn prev" onclick="previousSlide()">← Anterior</button>
+    <button class="btn next" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const prevBtn = document.querySelector('.btn.prev');
+    const nextBtn = document.querySelector('.btn.next');
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function updateControls() {
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide === totalSlides - 1;
+        nextBtn.textContent = currentSlide === totalSlides - 1 ? 'Fin de la presentación' : 'Siguiente →';
+    }
+
+    function showSlide(n) {
+        const target = Math.max(0, Math.min(n, totalSlides - 1));
+        if (target === currentSlide) return;
+        slides[currentSlide].classList.remove('active');
+        currentSlide = target;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+        updateControls();
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    updateControls();
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>

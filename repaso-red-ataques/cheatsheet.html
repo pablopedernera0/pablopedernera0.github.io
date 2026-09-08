@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red, nmap, hydra y SQLi - Cheat sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b24;
+    --border: rgba(255,255,255,0.08);
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --faint: #30363d;
+
+    --d-color: #58a6ff;
+    --d-bg: rgba(88,166,255,0.1);
+    --o-color: #3fb950;
+    --o-bg: rgba(63,185,80,0.1);
+    --r-color: #f0883e;
+    --r-bg: rgba(240,136,62,0.1);
+    --a-color: #f85149;
+    --a-bg: rgba(248,81,73,0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.55;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(255,255,255,0.08);
+    color: var(--r-color);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+
+  header {
+    width: 100%;
+    max-width: 920px;
+    padding: 2.5rem 2rem 1rem;
+  }
+
+  .series-nav {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+    font-size: 0.82rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .series-nav a, .series-nav span.current {
+    text-decoration: none;
+    padding: 0.25rem 0.7rem;
+    border-radius: 12px;
+    color: var(--muted);
+  }
+
+  .series-nav a { border: 1px solid var(--border); }
+  .series-nav a:hover { color: var(--d-color); border-color: var(--d-color); }
+
+  .series-nav span.current {
+    background: var(--d-bg);
+    color: var(--d-color);
+    border: 1px solid var(--d-color);
+    font-weight: 600;
+  }
+
+  header h1 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  header h1 span { color: var(--d-color); }
+
+  header p.tagline {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  main {
+    width: 100%;
+    max-width: 920px;
+    padding: 0 2rem 4rem;
+  }
+
+  section { margin-top: 2.2rem; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.9rem;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 0.9rem;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--o-bg);
+    border-left: 3px solid var(--o-color);
+    border-radius: 10px;
+    padding: 0.95rem 1.15rem;
+  }
+
+  .card.warn { border-color: var(--r-bg); border-left-color: var(--r-color); }
+  .card.attack { border-color: var(--a-bg); border-left-color: var(--a-color); }
+
+  .card .lede {
+    display: block;
+    font-weight: 700;
+    font-size: 0.88rem;
+    margin-bottom: 0.3rem;
+    color: var(--o-color);
+  }
+
+  .card.warn .lede { color: var(--r-color); }
+  .card.attack .lede { color: var(--a-color); }
+
+  .card p { margin: 0.2rem 0 0; font-size: 0.85rem; color: var(--muted); }
+  .card code { display: block; margin-top: 0.4rem; white-space: pre-wrap; word-break: break-word; }
+
+  .mirror {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+  .mirror th, .mirror td {
+    border: 1px solid var(--border);
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .mirror th:first-child { background: var(--a-bg); color: var(--a-color); }
+  .mirror th:last-child { background: var(--o-bg); color: var(--o-color); }
+  .mirror td code { display: inline; white-space: normal; }
+
+  .flow-mini {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin-top: 0.6rem;
+    color: var(--muted);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .flow-mini .ok { color: var(--o-color); }
+  .flow-mini .bad { color: var(--a-color); }
+
+  footer {
+    width: 100%;
+    max-width: 920px;
+    padding: 0 2rem 3rem;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--faint);
+  }
+
+  a { color: var(--d-color); }
+
+  @media (max-width: 640px) {
+    .card-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="series-nav">
+    <a href="index.html">Slides</a>
+    <span class="current">Cheat sheet</span>
+  </div>
+  <h1>Reconocimiento, fuerza bruta y <span>SQLi</span> — Cheat sheet</h1>
+  <p class="tagline">Infraestructura de Redes · ITI 2°1° · Repaso presencial Etapas 3 y 4 · Terciario Urquiza</p>
+</header>
+
+<main>
+
+  <section>
+    <p class="section-label">Anatomía de una URL</p>
+    <div class="flow-mini">http://app.midominio.com:8888/alumnos/42?activo=true
+      \__/ \_______________/ \__/ \____________/ \_________/
+    esquema   dominio+sub    puerto     path         query</div>
+    <div class="card-grid" style="margin-top:0.8rem;">
+      <div class="card">
+        <span class="lede">Dominio</span>
+        <p><code>midominio.com</code> — lo que se registra y se paga; identifica a la organización.</p>
+      </div>
+      <div class="card">
+        <span class="lede">Subdominio</span>
+        <p><code>app.</code> — un espacio con nombre dentro del mismo dominio (<code>api.</code>, <code>admin.</code>). No hace falta registrar nada nuevo, es una entrada de DNS más.</p>
+      </div>
+      <div class="card warn">
+        <span class="lede">Qué resuelve DNS</span>
+        <p>DNS resuelve dominio (+ subdominio) a una IP. A partir de ahí entra en juego el puerto y quién escucha en él.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">Regex de ruteo — cómo las apps capturan la URL</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="lede">Flask / Werkzeug</span>
+        <code>@app.route("/alumnos/&lt;int:id&gt;")</code>
+        <p>Se compila internamente a una regex aproximada: <code>^/alumnos/(?P&lt;id&gt;[0-9]+)$</code>. El grupo capturado llega como parámetro <code>id</code> a la función.</p>
+      </div>
+      <div class="card">
+        <span class="lede">nginx</span>
+        <code>location ~ ^/api/(\d+)$ { ... }</code>
+        <p>Decide a qué <em>upstream</em> reenviar la petición según el path, antes de que llegue a la app.</p>
+      </div>
+      <div class="card warn">
+        <span class="lede">Por qué importa hoy</span>
+        <p>El ruteo hace bien su trabajo con <code>POST /login</code> aunque el body traiga <code>usuario=admin' -- </code> — la petición llega a la función correcta. La inyección ocurre <em>después</em>, dentro de esa función, no en el ruteo.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">La red: qué se ve desde dónde</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="lede">Superficie externa (host)</span>
+        <p>Lo que <code>docker-compose.yml</code> publica con <code>ports:</code>. En este stack: <code>80</code>, <code>8080</code>, <code>8888</code>.</p>
+      </div>
+      <div class="card warn">
+        <span class="lede">Superficie interna (red Docker)</span>
+        <p><code>3306</code> (MySQL) cerrado desde <code>localhost</code>, abierto al escanear la IP interna del contenedor. Visible solo entre contenedores de la misma red.</p>
+      </div>
+      <div class="card">
+        <span class="lede">Por qué importa</span>
+        <p>"Cerrado desde afuera" no es "seguro" — es seguro <em>desde ese punto de vista</em>. Un contenedor comprometido en la misma red ve la superficie interna completa.</p>
+      </div>
+      <div class="card">
+        <span class="lede"><code>host.docker.internal</code></span>
+        <p>El camino inverso: nombre especial que, resuelto <em>desde dentro de un contenedor</em>, apunta a la máquina host (no a otro contenedor). Solo tiene sentido resuelto desde adentro — no funciona escrito en el navegador del host.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label"><code>nmap</code> — conceptos (no ejecutar en Killercoda)</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="lede">Port scan básico</span>
+        <code>nmap -p 80,8080,8888,3306 localhost</code>
+        <p>Un puerto es abierto (algo escucha), cerrado (responde, nadie escucha) o filtrado (sin respuesta — firewall).</p>
+      </div>
+      <div class="card">
+        <span class="lede"><code>-sV</code>: fingerprinting de servicio</span>
+        <code>nmap -sV -p 80,8080,8888 localhost</code>
+        <p>Intenta identificar el software real detrás del puerto (nginx, Werkzeug, versión) — no solo si está abierto.</p>
+      </div>
+      <div class="card warn">
+        <span class="lede">Fingerprinting de servidores</span>
+        <p>Identificar software, sistema operativo, servicios y configuración de un servidor remoto analizando cómo responde a distintas peticiones de red — sin acceso directo. <code>-sV</code> compara la respuesta contra una base de firmas conocidas.</p>
+      </div>
+      <div class="card attack">
+        <span class="lede">Escaneo desde la red interna</span>
+        <code>nmap -p 3306 &lt;ip-interna-contenedor&gt;</code>
+        <p>Mismo comando, misma herramienta — cambia solo el punto de vista, y con eso, el resultado.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label"><code>hydra</code> — conceptos (no ejecutar en Killercoda)</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="lede">Fuerza bruta contra un form</span>
+        <code>hydra -l admin -P wordlist.txt localhost http-post-form "/login:usuario=^USER^&password=^PASS^:F=incorrecta"</code>
+        <p><code>http-post-form</code> le dice a hydra qué campos llenar y qué texto de respuesta marca un intento fallido (<code>F=</code>).</p>
+      </div>
+      <div class="card warn">
+        <span class="lede">Por qué funciona</span>
+        <p>No hay límite de intentos ni bloqueo temporal. La ausencia de esa defensa — no la herramienta — es la vulnerabilidad real.</p>
+      </div>
+      <div class="card">
+        <span class="lede">Resultado esperado</span>
+        <div class="flow-mini">[80][http-post-form] host: localhost
+  login: admin   password: <span class="ok">admin123</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">SQL: vulnerable vs. parametrizada</p>
+    <table class="mirror">
+      <tr><th>Vulnerable (concatenación / f-string)</th><th>Parametrizada</th></tr>
+      <tr>
+        <td><code>f"SELECT * FROM usuarios WHERE usuario='{u}' AND password='{p}'"</code></td>
+        <td><code>"SELECT * FROM usuarios WHERE usuario=%s AND password=%s", (u, p)</code></td>
+      </tr>
+      <tr>
+        <td>El input se pega directo en el SQL — puede cambiar la estructura de la consulta.</td>
+        <td>El motor recibe consulta y valores por separado — el input siempre es dato, nunca código.</td>
+      </tr>
+    </table>
+  </section>
+
+  <section>
+    <p class="section-label">El bypass manual — payloads</p>
+    <div class="card-grid">
+      <div class="card attack">
+        <span class="lede">Con el usuario conocido</span>
+        <code>usuario=admin' -- </code>
+        <p><code>--</code> comenta el resto de la línea SQL. La verificación de password nunca ocurre.</p>
+      </div>
+      <div class="card attack">
+        <span class="lede">Sin conocer el usuario</span>
+        <code>usuario=' OR '1'='1' -- </code>
+        <p><code>'1'='1'</code> siempre es verdadero — la condición completa del <code>WHERE</code> se vuelve verdadera.</p>
+      </div>
+      <div class="card">
+        <span class="lede">Cómo distinguir éxito</span>
+        <div class="flow-mini">Payload de bypass    → <span class="ok">302</span> (login exitoso)
+Password inventada  → <span class="bad">200</span> (login rechazado, control)</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label"><code>sqlmap</code> — conceptos (no ejecutar en Killercoda)</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="lede">Detectar el parámetro inyectable</span>
+        <code>sqlmap -u "http://localhost/login" --data "usuario=x&password=x" -p usuario --batch</code>
+      </div>
+      <div class="card">
+        <span class="lede">Volcar una tabla</span>
+        <code>sqlmap ... --dump -D alumnos -T usuarios</code>
+      </div>
+      <div class="card warn">
+        <span class="lede">Nota de timing</span>
+        <p>Si detecta por <em>time-based blind</em>, cada carácter implica peticiones con <code>SLEEP</code> — el <code>--dump</code> completo puede tardar 3-4 minutos. Es esperable, no está colgado.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">El fix</p>
+    <div class="card">
+      <span class="lede">Una línea, no un rediseño</span>
+      <p>Reemplazar la f-string/concatenación por la consulta parametrizada de la tabla de arriba. Nada más del código cambia.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>hilo-conductor-redes · la-cajonera · repaso presencial 08/sep y 10/sep 2026</footer>
+
+</body>
+</html>
