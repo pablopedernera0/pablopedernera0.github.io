@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repaso EIDAS: Trazabilidad RF/RNF → HU → CU</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide.slide-tall {
+            justify-content: flex-start;
+            padding-top: 4.5rem;
+            padding-bottom: 6rem;
+        }
+
+        .slide h1 {
+            font-size: 2.6rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2rem;
+            margin-bottom: 1.1rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.9rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.05rem;
+            margin-bottom: 0.5rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.02rem;
+            line-height: 1.55;
+            margin-bottom: 0.65rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.4rem;
+            max-width: 800px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.2rem;
+            text-align: center;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.1rem;
+            text-align: left;
+        }
+
+        .card h4 {
+            margin-bottom: 0.3rem;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .card .tag-line {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: bold;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 0.15rem 0.55rem;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+        }
+
+        .tag-line.rf { background: rgba(88,166,255,0.15); color: #58a6ff; }
+        .tag-line.rnf { background: rgba(240,136,62,0.15); color: #f0883e; }
+        .tag-line.hu { background: rgba(63,185,80,0.15); color: #3fb950; }
+        .tag-line.cu { background: rgba(188,140,255,0.15); color: #bc8cff; }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 900px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .compare-card {
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            text-align: left;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .compare-card .compare-label {
+            display: inline-block;
+            font-size: 0.78rem;
+            font-weight: bold;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            margin-bottom: 0.6rem;
+            background: rgba(88,166,255,0.15);
+            color: #58a6ff;
+        }
+
+        .compare-card.alt .compare-label {
+            background: rgba(240,136,62,0.15);
+            color: #f0883e;
+        }
+
+        .compare-card p {
+            font-size: 0.9rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .hu-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.1rem 1.3rem;
+            text-align: left;
+            width: 100%;
+            max-width: 850px;
+            margin: 0.8rem 0;
+        }
+
+        .hu-card .hu-title {
+            color: #3fb950;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hu-card .hu-statement {
+            font-size: 0.98rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .cu-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(188, 140, 255, 0.4);
+            border-radius: 12px;
+            padding: 1.1rem 1.3rem;
+            text-align: left;
+            width: 100%;
+            max-width: 950px;
+            margin: 0.7rem 0;
+        }
+
+        .cu-card .cu-title {
+            color: #bc8cff;
+            font-weight: bold;
+            font-size: 1.02rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .cu-card p {
+            font-size: 0.9rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .cu-table {
+            width: 100%;
+            max-width: 950px;
+            border-collapse: collapse;
+            margin: 0.5rem 0 0.9rem;
+            font-size: 0.85rem;
+        }
+
+        .cu-table th, .cu-table td {
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.45rem 0.65rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .cu-table th {
+            background: rgba(188, 140, 255, 0.12);
+            color: #bc8cff;
+        }
+
+        .cu-table.excepciones th {
+            background: rgba(248, 81, 73, 0.12);
+            color: #f85149;
+        }
+
+        .origin-tag {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: bold;
+            letter-spacing: 0.02em;
+            padding: 0.1rem 0.45rem;
+            border-radius: 8px;
+            margin-left: 0.4rem;
+            white-space: nowrap;
+        }
+
+        .origin-tag.rf { background: rgba(88,166,255,0.18); color: #58a6ff; }
+        .origin-tag.rnf { background: rgba(240,136,62,0.18); color: #f0883e; }
+
+        .trace-diagram {
+            width: 100%;
+            max-width: 1050px;
+            margin: 0.5rem 0;
+        }
+
+        .trace-diagram svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .trace-legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.2rem;
+            margin-top: 0.6rem;
+            font-size: 0.82rem;
+            color: #8b949e;
+        }
+
+        .trace-legend .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.35rem;
+            vertical-align: middle;
+        }
+
+        .rubric-levels {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 950px;
+            margin: 1rem 0;
+        }
+
+        .rubric-level {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            border-left: 4px solid #8b949e;
+        }
+
+        .rubric-level.muy-bueno { border-left-color: #3fb950; }
+        .rubric-level.bueno { border-left-color: #58a6ff; }
+        .rubric-level.regular { border-left-color: #f0883e; }
+        .rubric-level.insuficiente { border-left-color: #f85149; }
+
+        .rubric-level .tag {
+            min-width: 110px;
+            font-weight: bold;
+            font-size: 0.86rem;
+        }
+
+        .rubric-level.muy-bueno .tag { color: #3fb950; }
+        .rubric-level.bueno .tag { color: #58a6ff; }
+        .rubric-level.regular .tag { color: #f0883e; }
+        .rubric-level.insuficiente .tag { color: #f85149; }
+
+        .rubric-level p {
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        .checklist-simple {
+            width: 100%;
+            max-width: 750px;
+            text-align: left;
+            margin: 1rem 0;
+        }
+
+        .checklist-simple li {
+            list-style: none;
+            margin-bottom: 0.6rem;
+            font-size: 0.98rem;
+        }
+
+        .checklist-simple li::before {
+            content: "\2610  ";
+            color: #3fb950;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+            flex-wrap: wrap;
+            max-width: 60vw;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+            white-space: nowrap;
+        }
+
+        .series-nav a:hover {
+            color: #58a6ff;
+        }
+
+        .series-nav span.current {
+            background: rgba(188, 140, 255, 0.18);
+            color: #bc8cff;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 1.9rem; }
+            .slide h2 { font-size: 1.4rem; }
+            .series-nav { display: none; }
+        }
+
+        .prev:disabled, .next:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<div class="series-nav">
+    <a href="index.html">Repaso</a>
+    <a href="requisitos.html">Requisitos</a>
+    <a href="historias-usuario.html">HU</a>
+    <a href="casos-de-uso.html">Casos de Uso</a>
+    <span class="current">Trazabilidad</span>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Repaso EIDAS · Requisitos + Historias de Usuario + Casos de Uso</div>
+        <h1>De los Requisitos a los Casos de Uso</h1>
+        <p class="subtitle">Repaso completo para la clase de hoy: expandir el diagrama general de Casos de Uso y arrancar los CU desarrollados — sin perder el hilo con lo que ya definieron en Requisitos e Historias de Usuario.</p>
+        <p class="center" style="opacity:0.75; font-style:italic;">Mismo caso de la materia que el resto del repaso: el <strong>Sistema de Pedidos a Domicilio</strong>.</p>
+    </div>
+
+    <!-- Slide 2: Por qué repasar junto -->
+    <div class="slide">
+        <h2>Por qué repasar esto junto</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="tag-line rf">Abril - Mayo</span>
+                <h4>Requisitos (RF / RNF)</h4>
+                <p>Dados en el primer cuatrimestre.</p>
+            </div>
+            <div class="card">
+                <span class="tag-line hu">1 - 2 sept.</span>
+                <h4>Historias de Usuario</h4>
+                <p>Repasadas la semana pasada.</p>
+            </div>
+            <div class="card">
+                <span class="tag-line cu">Hoy</span>
+                <h4>Casos de Uso</h4>
+                <p>Diagrama general completo + arranque de CU desarrollados.</p>
+            </div>
+        </div>
+        <div class="warning-box">
+            <p>La rúbrica evalúa <strong>coherencia</strong> en cada sección — y coherencia significa poder seguir el hilo entre las tres. Si un Caso de Uso no se puede rastrear hasta un Requisito, es una señal de que se inventó suelto, sin anclar al caso de estudio.</p>
+        </div>
+    </div>
+
+    <!-- Slide 3: Recap RF/RNF -->
+    <div class="slide">
+        <h2>Repaso relámpago: RF vs. RNF</h2>
+        <div class="compare-grid">
+            <div class="compare-card">
+                <span class="compare-label">RF — Funcional</span>
+                <p><strong>Comportamiento observable.</strong> Qué hace el sistema. Ej: <code>RF01</code> Gestión de Pedidos — crear, modificar, cancelar; seguimiento en tiempo real.</p>
+            </div>
+            <div class="compare-card alt">
+                <span class="compare-label">RNF — No funcional</span>
+                <p><strong>Calidad medible.</strong> Qué tan bien lo hace. Ej: <code>RNF01</code> Performance — respuesta &lt; 2s. No genera una funcionalidad nueva, exige una condición sobre las que ya existen.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Recap HU -->
+    <div class="slide">
+        <h2>Repaso relámpago: Historias de Usuario</h2>
+        <div class="hu-card">
+            <div class="hu-title">HU-01 — Seguimiento del pedido en tiempo real</div>
+            <div class="hu-statement">Como <strong>cliente</strong>, quiero <strong>ver el estado de mi pedido actualizado en tiempo real</strong>, para <strong>saber cuándo va a llegar sin tener que llamar al local</strong>.</div>
+            <p><strong>Requisitos relacionados:</strong> RF01 <span class="origin-tag rf">RF</span>, RNF01 <span class="origin-tag rnf">RNF</span></p>
+        </div>
+        <p class="center">La HU traduce el requisito a la perspectiva del usuario. El criterio de aceptación "responde en menos de 2 segundos" no aparece de la nada: es RNF01 bajado a un lenguaje verificable.</p>
+    </div>
+
+    <!-- Slide 5: Recap CU -->
+    <div class="slide">
+        <h2>Repaso relámpago: Casos de Uso</h2>
+        <p class="center">Un CU desarrolla <strong>técnicamente</strong> cómo se logra lo que la HU pide: actores, secuencia paso a paso, precondiciones, postcondiciones y — sobre todo — qué pasa cuando algo falla.</p>
+        <div class="card-grid">
+            <div class="card"><h4>Actores</h4><p>Principal (quien inicia) y secundario (sistemas o personas que participan).</p></div>
+            <div class="card"><h4>Pre / postcondiciones</h4><p>Qué tiene que ser cierto antes, y qué queda cierto después — en éxito y en fallo.</p></div>
+            <div class="card"><h4>Secuencia normal</h4><p>Tabla de pasos: acción del actor, reacción del sistema.</p></div>
+            <div class="card"><h4>Excepciones</h4><p>Qué pasa cuando algo falla — la parte que más pesa en la rúbrica.</p></div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Diagrama 1 - cadena completa -->
+    <div class="slide slide-tall">
+        <h2>La cadena completa: de un RF a un CU desarrollado</h2>
+        <div class="trace-diagram">
+            <svg viewBox="0 0 1010 450" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <marker id="arrow-blue" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L8,3 z" fill="#58a6ff"/>
+                    </marker>
+                    <marker id="arrow-orange" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L8,3 z" fill="#f0883e"/>
+                    </marker>
+                    <marker id="arrow-green" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L8,3 z" fill="#3fb950"/>
+                    </marker>
+                </defs>
+
+                <!-- Arrows: RF/RNF row -> HU row -->
+                <line x1="120" y1="90" x2="150" y2="185" stroke="#f0883e" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#arrow-orange)"/>
+                <line x1="500" y1="90" x2="450" y2="185" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                <line x1="500" y1="90" x2="560" y2="185" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                <line x1="710" y1="90" x2="710" y2="185" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                <line x1="900" y1="90" x2="860" y2="185" stroke="#f0883e" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#arrow-orange)"/>
+
+                <!-- Arrows: HU row -> CU row -->
+                <line x1="255" y1="270" x2="255" y2="345" stroke="#3fb950" stroke-width="2" marker-end="url(#arrow-green)"/>
+                <line x1="755" y1="270" x2="755" y2="345" stroke="#3fb950" stroke-width="2" marker-end="url(#arrow-green)"/>
+
+                <!-- Row 1: RF / RNF -->
+                <rect x="20" y="20" width="200" height="70" rx="10" fill="rgba(240,136,62,0.08)" stroke="#f0883e" stroke-width="1.5"/>
+                <text x="120" y="45" text-anchor="middle" font-size="14" font-weight="bold" fill="#f0883e">RNF01</text>
+                <text x="120" y="63" text-anchor="middle" font-size="12" fill="#c9d1d9">Performance</text>
+                <text x="120" y="78" text-anchor="middle" font-size="12" fill="#c9d1d9">&lt; 2s de respuesta</text>
+
+                <rect x="410" y="20" width="180" height="70" rx="10" fill="rgba(88,166,255,0.08)" stroke="#58a6ff" stroke-width="1.5"/>
+                <text x="500" y="45" text-anchor="middle" font-size="14" font-weight="bold" fill="#58a6ff">RF01</text>
+                <text x="500" y="63" text-anchor="middle" font-size="12" fill="#c9d1d9">Gestión de</text>
+                <text x="500" y="78" text-anchor="middle" font-size="12" fill="#c9d1d9">Pedidos</text>
+
+                <rect x="620" y="20" width="180" height="70" rx="10" fill="rgba(88,166,255,0.08)" stroke="#58a6ff" stroke-width="1.5"/>
+                <text x="710" y="45" text-anchor="middle" font-size="14" font-weight="bold" fill="#58a6ff">RF05</text>
+                <text x="710" y="63" text-anchor="middle" font-size="12" fill="#c9d1d9">Gestión de</text>
+                <text x="710" y="78" text-anchor="middle" font-size="12" fill="#c9d1d9">Pagos</text>
+
+                <rect x="810" y="20" width="180" height="70" rx="10" fill="rgba(240,136,62,0.08)" stroke="#f0883e" stroke-width="1.5"/>
+                <text x="900" y="45" text-anchor="middle" font-size="14" font-weight="bold" fill="#f0883e">RNF03</text>
+                <text x="900" y="63" text-anchor="middle" font-size="12" fill="#c9d1d9">Seguridad</text>
+                <text x="900" y="78" text-anchor="middle" font-size="12" fill="#c9d1d9">PCI DSS</text>
+
+                <!-- Row 2: HU -->
+                <rect x="20" y="190" width="470" height="80" rx="10" fill="rgba(63,185,80,0.08)" stroke="#3fb950" stroke-width="1.5"/>
+                <text x="255" y="218" text-anchor="middle" font-size="14" font-weight="bold" fill="#3fb950">HU-01</text>
+                <text x="255" y="238" text-anchor="middle" font-size="12" fill="#c9d1d9">Seguimiento del pedido</text>
+                <text x="255" y="255" text-anchor="middle" font-size="12" fill="#c9d1d9">en tiempo real</text>
+
+                <rect x="520" y="190" width="470" height="80" rx="10" fill="rgba(63,185,80,0.08)" stroke="#3fb950" stroke-width="1.5"/>
+                <text x="755" y="218" text-anchor="middle" font-size="14" font-weight="bold" fill="#3fb950">HU-02</text>
+                <text x="755" y="238" text-anchor="middle" font-size="12" fill="#c9d1d9">Realizar un pedido</text>
+                <text x="755" y="255" text-anchor="middle" font-size="12" fill="#c9d1d9">y pagarlo</text>
+
+                <!-- Row 3: CU -->
+                <rect x="20" y="350" width="470" height="80" rx="10" fill="rgba(188,140,255,0.08)" stroke="#bc8cff" stroke-width="1.5"/>
+                <text x="255" y="378" text-anchor="middle" font-size="14" font-weight="bold" fill="#bc8cff">CU-02</text>
+                <text x="255" y="398" text-anchor="middle" font-size="12" fill="#c9d1d9">Consultar Estado del Pedido</text>
+                <text x="255" y="415" text-anchor="middle" font-size="11" fill="#8b949e">(candidato — desarrollarlo hoy)</text>
+
+                <rect x="520" y="350" width="470" height="80" rx="10" fill="rgba(188,140,255,0.08)" stroke="#bc8cff" stroke-width="1.5"/>
+                <text x="755" y="378" text-anchor="middle" font-size="14" font-weight="bold" fill="#bc8cff">CU-01</text>
+                <text x="755" y="398" text-anchor="middle" font-size="12" fill="#c9d1d9">Realizar Pedido</text>
+                <text x="755" y="415" text-anchor="middle" font-size="11" fill="#8b949e">«include» Procesar Pago</text>
+            </svg>
+        </div>
+        <div class="trace-legend">
+            <span><span class="dot" style="background:#58a6ff;"></span>RF — genera una caja nueva</span>
+            <span><span class="dot" style="background:#f0883e;"></span>RNF — ajusta un campo (línea punteada)</span>
+            <span><span class="dot" style="background:#3fb950;"></span>HU</span>
+            <span><span class="dot" style="background:#bc8cff;"></span>CU</span>
+        </div>
+    </div>
+
+    <!-- Slide 7: Cómo leer la cadena -->
+    <div class="slide">
+        <h2>Cómo leer la cadena</h2>
+        <div class="compare-grid">
+            <div class="compare-card">
+                <span class="compare-label">Un RF genera cajas nuevas</span>
+                <p>RF01 (Gestión de Pedidos) alimenta <strong>dos</strong> HU distintas — el seguimiento y la creación del pedido. Un mismo requisito casi siempre se reparte en más de una historia o caso de uso.</p>
+            </div>
+            <div class="compare-card alt">
+                <span class="compare-label">Un RNF ajusta campos existentes</span>
+                <p>RNF01 y RNF03 no crean una HU o un CU propio: se filtran <strong>adentro</strong> de los que ya existen — un criterio de aceptación, una excepción, un valor de rendimiento.</p>
+            </div>
+        </div>
+        <div class="warning-box">
+            <p>Si te encontrás escribiendo un Caso de Uso nuevo "porque hay que cumplir con el RNF de seguridad", frená: seguramente el RNF va como excepción o precondición <strong>dentro</strong> de un CU que ya tenías, no como uno nuevo.</p>
+        </div>
+    </div>
+
+    <!-- Slide 8: Diagrama general de CU -->
+    <div class="slide">
+        <h2>El diagrama general: include / extend</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="tag-line cu">include</span>
+                <h4>Siempre ocurre</h4>
+                <p>Realizar un pedido <strong>siempre</strong> necesita procesar un pago — no existe uno sin el otro. Por eso <code>CU-01</code> incluye <code>Procesar Pago</code>: es la traza directa de <code>RF05</code>.</p>
+            </div>
+            <div class="card">
+                <span class="tag-line cu">extend</span>
+                <h4>Ocurre bajo condición</h4>
+                <p>Aplicar un cupón de descuento es opcional — extiende el CU principal solo si el cliente lo usa. No tiene un RF propio: es una variante del flujo.</p>
+            </div>
+        </div>
+        <p class="center">Cada flecha del diagrama general debería poder explicarse con un requisito o una decisión de negocio concreta — no agregar relaciones "porque quedan bien".</p>
+    </div>
+
+    <!-- Slide 9: CU-01 desarrollado, trazado -->
+    <div class="slide slide-tall">
+        <h2>CU-01 desarrollado, con cada campo trazado a su origen</h2>
+        <div class="cu-card">
+            <div class="cu-title">CU-01 — Realizar Pedido</div>
+            <p><strong>Actores:</strong> Principal: Cliente / Secundario: Sistema de Pagos <span class="origin-tag rf">RF05</span></p>
+            <p><strong>Precondición:</strong> Cliente registrado y autenticado</p>
+            <p><strong>Postcondición:</strong> Éxito: pedido creado y notificado a sucursal <span class="origin-tag rf">RF01</span> / Fallo: pedido no se crea, carrito se conserva <span class="origin-tag rnf">RNF03</span></p>
+            <p><strong>Rendimiento:</strong> cada paso responde en menos de 2 segundos <span class="origin-tag rnf">RNF01</span></p>
+        </div>
+        <table class="cu-table">
+            <tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr>
+            <tr><td>3</td><td>Selecciona método de pago y confirma</td><td>Procesa el pago, genera la orden y notifica a la sucursal <span class="origin-tag rf">RF05</span></td></tr>
+        </table>
+        <table class="cu-table excepciones">
+            <tr><th>#</th><th>Situación</th><th>Respuesta del sistema</th></tr>
+            <tr><td>E1</td><td>Pago rechazado por el procesador</td><td>Conserva el carrito, informa el motivo, permite reintentar <span class="origin-tag rnf">RNF03</span></td></tr>
+            <tr><td>E2</td><td>Producto sin stock al confirmar</td><td>Lo quita del carrito y recalcula el total antes de reintentar <span class="origin-tag rf">RF01</span></td></tr>
+        </table>
+        <p class="center" style="max-width:950px;">Ningún campo quedó "porque había que llenarlo": cada uno responde a un RF, un RNF, o una decisión de negocio explícita del caso.</p>
+    </div>
+
+    <!-- Slide 10: Rúbrica -->
+    <div class="slide">
+        <h2>Qué mira la rúbrica hoy — Casos de Uso (12 pts)</h2>
+        <div class="rubric-levels">
+            <div class="rubric-level muy-bueno">
+                <span class="tag">Muy bueno (11-12)</span>
+                <p>Diagrama coherente, actores bien identificados, include/extend justificados. Al menos 3 CU desarrollados con excepciones reales del caso, no genéricas. Rendimiento y frecuencia con valores estimados.</p>
+            </div>
+            <div class="rubric-level bueno">
+                <span class="tag">Bueno (9-10)</span>
+                <p>Diagrama mayormente correcto. CU con todos los campos, pero alguna excepción genérica o falta una situación relevante.</p>
+            </div>
+            <div class="rubric-level regular">
+                <span class="tag">Regular (5-8)</span>
+                <p>Diagrama con errores de relaciones o actores mal identificados. CU incompletos — faltan excepciones o postcondiciones. Solo camino feliz.</p>
+            </div>
+            <div class="rubric-level insuficiente">
+                <span class="tag">Insuficiente (0-4)</span>
+                <p>Falta el diagrama general o los CU desarrollados. Sin coherencia entre el diagrama, los CU y los RF ya definidos.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Checklist -->
+    <div class="slide">
+        <h2>Checklist para el trabajo en grupo de hoy</h2>
+        <ul class="checklist-simple">
+            <li>¿Cada actor de tu diagrama general aparece porque interactúa con un RF concreto, no porque "hacía falta un actor"?</li>
+            <li>¿Cada <code>include</code>/<code>extend</code> se puede explicar con un requisito o una regla de negocio?</li>
+            <li>¿Arrancaste al menos un CU desarrollado hoy, con secuencia normal y al menos una excepción?</li>
+            <li>¿Esa excepción viene de un RNF real de tu proyecto (seguridad, performance, disponibilidad), o es genérica ("error del sistema")?</li>
+            <li>¿Podés señalar, para cada CU, qué HU y qué RF lo originan?</li>
+        </ul>
+    </div>
+
+    <!-- Slide 12: Cierre -->
+    <div class="slide">
+        <h2>Seguimos</h2>
+        <div class="card-grid">
+            <a class="card-link" href="casos-de-uso.html" style="text-decoration:none; color:inherit;">
+                <div class="card">
+                    <h4>Casos de Uso →</h4>
+                    <p>El repaso completo de include/extend, estructura y checklist.</p>
+                </div>
+            </a>
+            <a class="card-link" href="historias-usuario.html" style="text-decoration:none; color:inherit;">
+                <div class="card">
+                    <h4>← Historias de Usuario</h4>
+                    <p>Formato clásico e INVEST.</p>
+                </div>
+            </a>
+            <a class="card-link" href="requisitos.html" style="text-decoration:none; color:inherit;">
+                <div class="card">
+                    <h4>← Requisitos</h4>
+                    <p>RF vs. RNF y verificabilidad.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">12</span>
+</div>
+
+<div class="controls">
+    <button class="btn prev" onclick="previousSlide()">← Anterior</button>
+    <button class="btn next" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function showSlide(n) {
+        if (n < 0 || n >= totalSlides) return;
+        slides[currentSlide].classList.remove('active');
+        currentSlide = n;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+        document.querySelector('.prev').disabled = currentSlide === 0;
+        document.querySelector('.next').disabled = currentSlide === totalSlides - 1;
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>
