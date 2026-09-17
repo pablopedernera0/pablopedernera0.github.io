@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de logs — guía de estudio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.6rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.1rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul, .slide ol {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+        }
+
+        .card.bad {
+            border-color: rgba(248, 81, 73, 0.45);
+        }
+
+        .card h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            font-size: 0.96rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: bold;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 0.6rem;
+        }
+
+        .tag.ok {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .tag.no {
+            background: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+        }
+
+        .pair-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.9rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .idea-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.35);
+            border-radius: 12px;
+            padding: 1.4rem 1.6rem;
+            text-align: center;
+        }
+
+        .idea-card .idea-label {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #58a6ff;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .idea-card p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .quote-box {
+            background: rgba(88, 166, 255, 0.08);
+            border-left: 4px solid #58a6ff;
+            border-radius: 0 10px 10px 0;
+            padding: 1.1rem 1.5rem;
+            max-width: 850px;
+            margin: 1rem 0;
+            font-style: italic;
+            font-size: 1.15rem;
+        }
+
+        .quote-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        pre {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            max-width: 900px;
+            width: 100%;
+            overflow-x: auto;
+            margin: 0.8rem 0;
+            text-align: left;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: #79c0ff;
+            font-size: 0.92rem;
+        }
+
+        a {
+            color: #58a6ff;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.05rem;
+            min-width: 2.2rem;
+        }
+
+        .step-item p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.4rem 1rem;
+            text-align: center;
+        }
+
+        .stat-card .stat-number {
+            display: block;
+            font-size: 1.9rem;
+            font-weight: bold;
+            color: #58a6ff;
+            margin-bottom: 0.4rem;
+        }
+
+        .stat-card p {
+            font-size: 0.92rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+            text-align: center;
+        }
+
+        .mirror-table, .flags-table {
+            width: 100%;
+            max-width: 950px;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+        }
+
+        .mirror-table th, .mirror-table td,
+        .flags-table th, .flags-table td {
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.7rem 1rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .mirror-table th:first-child {
+            background: rgba(240, 136, 62, 0.12);
+            color: #f0883e;
+        }
+
+        .mirror-table th:last-child {
+            background: rgba(63, 185, 80, 0.12);
+            color: #3fb950;
+        }
+
+        .flags-table th {
+            background: rgba(88, 166, 255, 0.12);
+            color: #58a6ff;
+        }
+
+        .flags-table code {
+            white-space: nowrap;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+        }
+
+        .series-nav a:hover {
+            color: #58a6ff;
+        }
+
+        .series-nav span.current {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        .btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+            background: #3fb950;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.6rem; }
+            .series-nav { display: none; }
+            .pair-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="series-nav">
+    <a href="../index.html">← Hilo conductor</a>
+    <span class="current">Guía de estudio</span>
+    <a href="https://killercoda.com/pablop22/scenario/crud-logs-analisis-cli" target="_blank">Ver escenario</a>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Infraestructura de Redes · Etapa 5 · crud-logs-analisis-cli</div>
+        <h1>Análisis de logs</h1>
+        <p class="subtitle">Reconstruir un incidente completo —pico de carga, fuerza bruta e inyección SQL— usando solo <code>grep</code>, <code>awk</code>, <code>sort</code> y <code>uniq</code> sobre dos fuentes de log distintas. Guía de repaso con los comandos explicados pieza por pieza.</p>
+    </div>
+
+    <!-- Slide 2: Contexto -->
+    <div class="slide">
+        <h2>De dónde sale la evidencia</h2>
+        <p>El <code>setup.sh</code> de esta práctica no solo levanta la infraestructura: además genera tráfico real —uso normal, un pico de carga, una fuerza bruta contra <code>/login</code> y varios intentos de inyección SQL— para que investigues algo que ya pasó, no algo que generás vos en el momento.</p>
+        <div class="warning-box">
+            <p>No hace falta haber hecho las prácticas anteriores en esta misma sesión: el tráfico de esta etapa es propio, generado por el mismo <code>setup.sh</code>.</p>
+        </div>
+    </div>
+
+    <!-- Slide 3: Agenda -->
+    <div class="slide">
+        <h2>Qué vemos en esta guía</h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <p><strong>Anatomía de un log</strong> — qué partes tiene casi cualquier línea, y en qué directorio vive cada servicio.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <p><strong>El log de acceso de esta app</strong> — formato Werkzeug, y cómo encontrar un pico de carga agrupando por timestamp.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <p><strong>La fuerza bruta</strong> — la misma técnica, aplicada a <code>/login</code>.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">4</span>
+                <p><strong>El <code>general_log</code> de MySQL</strong> — la única fuente que expone el SQL exacto, incluido el inyectado.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">5</span>
+                <p><strong>Correlación</strong> — cruzar ambas fuentes en una sola línea de tiempo.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">6</span>
+                <p><strong>Chuleta de comandos</strong> — <code>grep</code>/<code>awk</code> de referencia rápida.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3.5: Anatomía de un log -->
+    <div class="slide">
+        <h2>Anatomía de un log</h2>
+        <p>Los formatos varían entre servicios, pero casi cualquier línea de log de acceso o de aplicación comparte la misma anatomía de fondo:</p>
+        <div class="card-grid">
+            <div class="card">
+                <h4>Timestamp</h4>
+                <p>Cuándo pasó. Casi siempre lo primero identificable, a veces entre corchetes o al inicio de la línea.</p>
+            </div>
+            <div class="card">
+                <h4>Origen</h4>
+                <p>Quién lo generó: una IP, un usuario, un proceso, un host.</p>
+            </div>
+            <div class="card">
+                <h4>Acción / mensaje</h4>
+                <p>Qué pasó: una ruta HTTP pedida, una consulta SQL, un evento del sistema.</p>
+            </div>
+            <div class="card">
+                <h4>Resultado / severidad</h4>
+                <p>Cómo terminó: un código de estado HTTP, un nivel (<code>INFO</code>/<code>WARN</code>/<code>ERROR</code>), un código de salida.</p>
+            </div>
+        </div>
+        <div class="quote-box">
+            <p>Una vez que reconocés estas cuatro partes, leer un formato de log nuevo es cuestión de ubicar dónde cae cada una — el resto de esta guía es exactamente eso, aplicado a dos formatos concretos.</p>
+        </div>
+    </div>
+
+    <!-- Slide 3.6: Dónde viven los logs -->
+    <div class="slide">
+        <h2>¿Dónde buscar logs?</h2>
+        <p>En Linux, la convención (no una regla estricta) es <code>/var/log/</code>. Cada servicio suele tener su propio subdirectorio o archivo:</p>
+        <table class="flags-table">
+            <tr><th>Servicio</th><th>Ubicación típica</th></tr>
+            <tr><td>Nginx</td><td><code>/var/log/nginx/access.log</code>, <code>/var/log/nginx/error.log</code></td></tr>
+            <tr><td>Apache</td><td><code>/var/log/apache2/</code> (Debian/Ubuntu) o <code>/var/log/httpd/</code> (RHEL/CentOS) — <code>access_log</code>, <code>error_log</code></td></tr>
+            <tr><td>MySQL</td><td><code>/var/log/mysql/error.log</code>, o junto a los datos en <code>/var/lib/mysql/</code> (así está en este escenario: <code>general.log</code>)</td></tr>
+            <tr><td>Sistema (syslog clásico)</td><td><code>/var/log/syslog</code>, <code>/var/log/auth.log</code>, <code>/var/log/kern.log</code></td></tr>
+            <tr><td>Sistema (systemd)</td><td><code>journalctl</code> — journal binario, no un archivo de texto plano</td></tr>
+            <tr><td>Esta app (Flask/Werkzeug)</td><td><code>/root/crud-python/app.log</code>, redirigido ahí a mano por el <code>setup.sh</code></td></tr>
+        </table>
+        <div class="warning-box">
+            <p>Cuando un servicio corre dentro de un contenedor Docker, sus logs suelen quedar <em>dentro</em> del contenedor en estas mismas rutas — por eso en el Paso 3 usamos <code>docker exec &lt;contenedor&gt; grep ...</code> en vez de buscar el archivo desde el host.</p>
+        </div>
+    </div>
+
+    <!-- Slide 3.7: Otros formatos -->
+    <div class="slide">
+        <h2>Mismos cuatro campos, formatos distintos</h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">Nginx</span>
+                <p><code>203.0.113.5 - - [17/Sep/2026:14:02:11 +0000] "GET /api/items HTTP/1.1" 200 512</code> — combined log format: IP, timestamp, request, estado, bytes.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">Apache</span>
+                <p><code>203.0.113.5 - - [17/Sep/2026:14:02:11 +0000] "POST /login HTTP/1.1" 302 -</code> — prácticamente el mismo formato que Nginx (ambos heredan el <em>common log format</em>).</p>
+            </div>
+            <div class="step-item">
+                <span class="num">MySQL general_log</span>
+                <p><code>2026-09-17T14:02:11.123456Z&#9;12 Query&#9;SELECT * FROM usuarios WHERE usuario='admin'</code> — timestamp, id de conexión + tipo de comando, separados por tabs, y el SQL literal.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">syslog</span>
+                <p><code>Sep 17 14:02:11 miservidor sshd[1234]: Failed password for root from 203.0.113.5</code> — timestamp sin año, host, proceso+PID entre corchetes, mensaje libre.</p>
+            </div>
+        </div>
+        <p style="font-size:0.9rem; color:#8b949e;">Distinto orden, distintos separadores — pero siempre timestamp, origen, acción y resultado, en algún orden.</p>
+    </div>
+
+    <!-- Slide 4: Formato del log -->
+    <div class="slide">
+        <h2>El formato del log de acceso de esta app</h2>
+        <p>Cada línea de <code>app.log</code> (formato Werkzeug, el servidor de desarrollo de Flask) tiene esta forma:</p>
+        <pre><code>127.0.0.1 - - [04/Aug/2026 13:38:49] "GET / HTTP/1.1" 200 -</code></pre>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">·</span>
+                <p><strong>IP de origen</strong> — quién hizo el pedido.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">·</span>
+                <p><strong>Timestamp entre corchetes</strong> <code>[04/Aug/2026 13:38:49]</code> — cuándo.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">·</span>
+                <p><strong>Método y ruta entre comillas</strong> <code>"GET / HTTP/1.1"</code> — qué pidió.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">·</span>
+                <p><strong>Código de estado</strong> <code>200</code> — cómo respondió el servidor.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: grep 101 -->
+    <div class="slide">
+        <h3 style="color:#58a6ff;">grep — filtrar líneas por patrón</h3>
+        <p><code>grep</code> busca un texto (literal o con expresiones regulares) y devuelve solo las líneas que lo contienen. Es siempre el primer filtro de la cadena: reduce miles de líneas de log a las pocas que importan.</p>
+        <table class="flags-table">
+            <tr><th>Uso</th><th>Qué hace</th></tr>
+            <tr><td><code>grep 'patrón' archivo</code></td><td>Imprime las líneas que contienen el patrón</td></tr>
+            <tr><td><code>grep -c 'patrón' archivo</code></td><td>Cuenta cuántas líneas coinciden, sin imprimirlas</td></tr>
+            <tr><td><code>grep -- '-patrón' archivo</code></td><td>El <code>--</code> le dice a <code>grep</code> "lo que sigue es el patrón, no una opción" — imprescindible si el patrón empieza con un guion</td></tr>
+        </table>
+        <div class="warning-box">
+            <p>El patrón entre comillas importa: <code>'"GET / '</code> incluye las comillas y el espacio final a propósito, para no matchear por accidente rutas como <code>/login</code> que también empiezan con <code>/</code>.</p>
+        </div>
+    </div>
+
+    <!-- Slide 6: awk 101 -->
+    <div class="slide">
+        <h3 style="color:#58a6ff;">awk — extraer campos de cada línea</h3>
+        <p><code>awk</code> divide cada línea en <strong>campos</strong> y te deja imprimir el que te interesa. Por defecto separa por espacios en blanco, pero eso se puede cambiar.</p>
+        <table class="flags-table">
+            <tr><th>Uso</th><th>Qué hace</th></tr>
+            <tr><td><code>awk '{print $N}'</code></td><td>Imprime el campo N-ésimo de cada línea (contando desde 1)</td></tr>
+            <tr><td><code>awk -F'X' '{print $N}'</code></td><td>Usa <code>X</code> como separador de campos en vez del espacio</td></tr>
+            <tr><td><code>awk -F'[][]'</code></td><td>Separador con clase de caracteres: <code>[</code> o <code>]</code> — sirve para extraer justo lo que está <em>entre</em> corchetes</td></tr>
+        </table>
+        <div class="quote-box">
+            <p>Si contás los campos de <code>127.0.0.1 - - [04/Aug/2026 13:38:49] "GET / HTTP/1.1" 200 -</code> separados por espacio, el noveno es <code>200</code>: el código de estado. Por eso <code>$9</code> aparece tanto en el pico de carga como en la fuerza bruta.</p>
+        </div>
+    </div>
+
+    <!-- Slide 7: el comando estrella, paso a paso -->
+    <div class="slide">
+        <h2>El comando que arma el conteo por timestamp</h2>
+        <pre><code>grep '"GET / ' app.log | awk -F'[][]' '{print $2}' | sort | uniq -c | sort -rn</code></pre>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <p><code>grep '"GET / '</code> se queda solo con las líneas de pedidos <code>GET</code> a la raíz.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <p><code>awk -F'[][]' '{print $2}'</code> corta cada línea por <code>[</code>/<code>]</code> y se queda con el segundo pedazo: el timestamp, sin corchetes.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <p><code>sort</code> ordena todos los timestamps alfabéticamente — necesario para que <code>uniq</code> pueda agrupar los repetidos.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">4</span>
+                <p><code>uniq -c</code> colapsa las líneas repetidas y antepone cuántas veces apareció cada una.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">5</span>
+                <p><code>sort -rn</code> ordena esos conteos de mayor a menor (<code>-n</code> numérico, <code>-r</code> reversa) — el timestamp más repetido queda arriba.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: resultado pico de carga -->
+    <div class="slide">
+        <h3 style="color:#58a6ff;">Leyendo el resultado</h3>
+        <pre><code>     60 04/Aug/2026 13:39:35
+      1 04/Aug/2026 13:38:49</code></pre>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <span class="stat-number">60</span>
+                <p>peticiones a <code>/</code> en el mismo segundo</p>
+            </div>
+        </div>
+        <p>60 peticiones en un único segundo es imposible de explicar como uso normal — es la firma de un pico de carga generado por una herramienta, no por personas navegando.</p>
+    </div>
+
+    <!-- Slide 9: fuerza bruta -->
+    <div class="slide">
+        <h2>2. La fuerza bruta tiene otra firma</h2>
+        <p>Un pico de carga se ve por <strong>volumen</strong> en un mismo endpoint. La fuerza bruta contra <code>/login</code> se ve por la <strong>relación entre fallos y éxitos</strong>: muchos intentos fallidos seguidos de uno o pocos exitosos.</p>
+        <pre><code>grep '"POST /login' app.log | awk '{print $9}' | sort | uniq -c</code></pre>
+        <p>Acá <code>awk</code> usa el separador por defecto (espacios) — no hace falta <code>-F</code> porque no estamos extrayendo el timestamp entre corchetes, sino el código de estado, que ya cae limpio en el campo <code>$9</code>.</p>
+    </div>
+
+    <!-- Slide 10: resultado fuerza bruta -->
+    <div class="slide">
+        <h3 style="color:#58a6ff;">Leyendo el resultado</h3>
+        <pre><code>     10 200
+      4 302</code></pre>
+        <div class="pair-grid">
+            <div class="idea-card">
+                <span class="idea-label">200 × 10</span>
+                <p>Login que vuelve a mostrar la página con error — intento fallido.</p>
+            </div>
+            <div class="idea-card">
+                <span class="idea-label">302 × 4</span>
+                <p>Redirect a <code>/</code> — login exitoso. Un puñado está bien (uso normal); lo que llama la atención son los diez <code>200</code> seguidos en el mismo segundo.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: limitación del log de acceso -->
+    <div class="slide">
+        <h2>Lo que el log de acceso NO puede mostrar</h2>
+        <div class="warning-box">
+            <p>En ningún momento vimos <strong>qué contraseña</strong> se probó en cada intento. El log de acceso registra método, ruta y resultado — nunca el contenido del formulario que se envió.</p>
+        </div>
+        <p>Para ver el contenido exacto de cada intento —incluida una inyección SQL— hace falta otra fuente: el <strong><code>general_log</code> de MySQL</strong>.</p>
+    </div>
+
+    <!-- Slide 12: general_log -->
+    <div class="slide">
+        <h3 style="color:#58a6ff;">3. El general_log de MySQL</h3>
+        <p>MySQL tiene un modo de log que registra <strong>cada consulta SQL que ejecuta</strong>, tal cual llega al servidor.</p>
+        <pre><code>SET GLOBAL general_log = 'ON';</code></pre>
+        <div class="warning-box">
+            <p>No está prendido por defecto: registrar cada consulta tiene un costo real de performance y de espacio en disco. Con apenas un par de minutos de tráfico de prueba, el archivo ya pesa varios KB. Se activa puntualmente para investigar, como acá.</p>
+        </div>
+    </div>
+
+    <!-- Slide 13: grep -- "-- " -->
+    <div class="slide">
+        <h3 style="color:#58a6ff;">El truco de <code>grep -- "-- "</code></h3>
+        <pre><code>docker exec &lt;mysql&gt; grep -- "-- " /var/lib/mysql/general.log</code></pre>
+        <p>Acá se juntan dos guiones dobles distintos, y es fácil confundirlos:</p>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1º <code>--</code></span>
+                <p>Es de <strong><code>grep</code></strong>: le dice "acá termina la lista de opciones, lo que sigue es el patrón" — necesario porque el patrón que buscamos empieza con un guion, y sin el <code>--</code> grep lo tomaría como una opción inválida.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">2º <code>"-- "</code></span>
+                <p>Es el <strong>patrón que buscamos</strong>: dos guiones seguidos de un espacio, que en SQL es el inicio de un <strong>comentario</strong> — la firma clásica de una inyección que corta la consulta original y comenta el resto.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 14: resultado inyección -->
+    <div class="slide">
+        <h3 style="color:#58a6ff;">Lo que encuentra ese grep</h3>
+        <pre><code>SELECT id, usuario FROM usuarios WHERE usuario = 'admin' -- ' AND password = 'x'
+SELECT id, usuario FROM usuarios WHERE usuario = '' OR '1'='1' -- ' AND password = 'x'</code></pre>
+        <p>El propio texto de <code>usuario</code> reescribe la consulta: cierra la comilla, agrega su propia condición, y comenta con <code>-- </code> todo lo que venía después (incluida la verificación de la contraseña).</p>
+        <div class="quote-box">
+            <p>A diferencia de la fuerza bruta —que prueba contraseñas contra un usuario normal— acá el ataque está en el propio campo <code>usuario</code>. El log de acceso de la app nunca lo hubiera mostrado.</p>
+        </div>
+    </div>
+
+    <!-- Slide 15: correlación -->
+    <div class="slide">
+        <h2>4. Correlación: una sola línea de tiempo</h2>
+        <p>Ningún log por separado cuenta la historia completa. <code>paste</code> permite juntar dos columnas (dos comandos) lado a lado:</p>
+        <pre><code>grep '"POST /login' app.log | awk '{print $9}' \
+  | paste - &lt;(grep '"POST /login' app.log | awk -F'[][]' '{print $2}')</code></pre>
+        <p><code>paste -</code> toma la entrada estándar (los códigos de estado) y la pega columna por columna junto a la salida de otro comando (los timestamps), usando <code>&lt;(...)</code> —sustitución de proceso— para tratar ese segundo comando como si fuera un archivo.</p>
+    </div>
+
+    <!-- Slide 16: tabla de fuentes -->
+    <div class="slide">
+        <h2>Dos fuentes, dos historias parciales</h2>
+        <table class="mirror-table">
+            <tr>
+                <th>Log de acceso de la app</th>
+                <th><code>general_log</code> de MySQL</th>
+            </tr>
+            <tr>
+                <td>Volumen, timing, ruta, código de estado</td>
+                <td>La consulta SQL exacta, incluida la inyectada</td>
+            </tr>
+            <tr>
+                <td>No muestra el contenido del formulario</td>
+                <td>No muestra nada del tráfico HTTP en sí (IP real, headers)</td>
+            </tr>
+        </table>
+        <p>Investigar un incidente real casi siempre implica correlacionar <strong>varias</strong> fuentes de log, no una sola.</p>
+    </div>
+
+    <!-- Slide 17: chuleta -->
+    <div class="slide">
+        <h2>Chuleta de comandos</h2>
+        <table class="flags-table">
+            <tr><th>Comando</th><th>Para qué sirve</th></tr>
+            <tr><td><code>grep -c 'X' f</code></td><td>Contar líneas que matchean, sin imprimirlas</td></tr>
+            <tr><td><code>grep -- '-X' f</code></td><td>Buscar un patrón que empieza con guion</td></tr>
+            <tr><td><code>awk '{print $N}'</code></td><td>Extraer el campo N separado por espacios</td></tr>
+            <tr><td><code>awk -F'[][]' '{print $2}'</code></td><td>Extraer el texto entre corchetes (el timestamp)</td></tr>
+            <tr><td><code>sort \| uniq -c</code></td><td>Contar repeticiones de cada línea</td></tr>
+            <tr><td><code>sort -rn</code></td><td>Ordenar números de mayor a menor</td></tr>
+            <tr><td><code>sort -u</code></td><td>Ordenar y quitar duplicados en un solo paso</td></tr>
+            <tr><td><code>paste - &lt;(cmd)</code></td><td>Pegar dos columnas de origen distinto, lado a lado</td></tr>
+        </table>
+    </div>
+
+    <!-- Slide 18: cierre -->
+    <div class="slide">
+        <h2>Para llevarte</h2>
+        <p>Todo lo que hiciste hoy fue manual: ir a buscar un archivo, filtrarlo, contar líneas. Funciona, pero no escala si hay que revisar esto todos los días o la infraestructura crece a más de un servidor.</p>
+        <div class="quote-box">
+            <p>En la próxima etapa esa parte se automatiza: métricas y logs centralizados en tiempo real, con Prometheus y Grafana, en vez de archivos que hay que ir a buscar a mano.</p>
+        </div>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">18</span>
+</div>
+
+<div class="controls">
+    <button class="btn prev" onclick="previousSlide()">← Anterior</button>
+    <button class="btn next" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const prevBtn = document.querySelector('.btn.prev');
+    const nextBtn = document.querySelector('.btn.next');
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function updateControls() {
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide === totalSlides - 1;
+        nextBtn.textContent = currentSlide === totalSlides - 1 ? 'Fin de la guía' : 'Siguiente →';
+    }
+
+    function showSlide(n) {
+        const target = Math.max(0, Math.min(n, totalSlides - 1));
+        if (target === currentSlide) return;
+        slides[currentSlide].classList.remove('active');
+        currentSlide = target;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+        updateControls();
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    if (location.hash) {
+        const target = document.querySelector(location.hash);
+        const idx = target ? Array.from(slides).indexOf(target) : -1;
+        if (idx >= 0) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = idx;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+    }
+
+    updateControls();
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>
