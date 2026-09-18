@@ -12,6 +12,12 @@
   --ok-soft:rgba(69,184,168,.16);
   --info:#6aa6e8;
   --info-soft:rgba(106,166,232,.16);
+  --bg-deep:#0b0f14;      /* fondo de mapas y simulación */
+  --node:#1a222b;         /* relleno de bloques */
+  --off:#3a4652;          /* líneas sin tráfico */
+  --topbar-bg:rgba(16,21,27,.94);
+  --on-accent:#0b0f14;    /* texto sobre barras de color */
+  --glow:rgba(224,166,62,.8);
 }
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
@@ -30,7 +36,7 @@ a:hover{color:var(--accent);}
   position:sticky;top:0;z-index:50;
   display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
   gap:8px 16px;padding:12px 20px;
-  background:rgba(16,21,27,.94);backdrop-filter:blur(6px);
+  background:var(--topbar-bg);backdrop-filter:blur(6px);
   border-bottom:1px solid var(--panel-border);font-size:.85rem;
 }
 .topbar .brand{color:var(--muted);text-decoration:none;}
@@ -98,8 +104,8 @@ th{color:var(--muted);font-weight:600;font-size:.8rem;text-transform:uppercase;l
 .bars{margin:20px 0;}
 .bar-row{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center;margin:10px 0;}
 .bar-row .lab{font-size:.85rem;color:var(--muted);}
-.bar-track{background:#0b0f14;border:1px solid var(--panel-border);border-radius:6px;height:30px;position:relative;overflow:hidden;}
-.bar-fill{height:100%;display:flex;align-items:center;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:.8rem;font-weight:600;color:#0b0f14;white-space:nowrap;}
+.bar-track{background:var(--bg-deep);border:1px solid var(--panel-border);border-radius:6px;height:30px;position:relative;overflow:hidden;}
+.bar-fill{height:100%;display:flex;align-items:center;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:.8rem;font-weight:600;color:var(--on-accent);white-space:nowrap;}
 .bar-fill.ok{background:var(--ok);} .bar-fill.acc{background:var(--accent);} .bar-fill.bad{background:var(--bad);} .bar-fill.info{background:var(--info);}
 @media (max-width:640px){ .bar-row{grid-template-columns:1fr;gap:4px;} }
 
@@ -140,3 +146,6 @@ button:disabled{cursor:default;opacity:.95;}
 input[type=range]{width:100%;accent-color:var(--accent);height:36px;}
 
 footer{max-width:1000px;margin:0 auto;padding:0 20px 40px;color:var(--muted);font-size:.8rem;}
+
+.topbar .tema{color:var(--muted);text-decoration:none;border:1px solid var(--panel-border);border-radius:999px;padding:2px 12px;font-size:.8rem;}
+.topbar .tema:hover{color:var(--text);border-color:var(--accent);}

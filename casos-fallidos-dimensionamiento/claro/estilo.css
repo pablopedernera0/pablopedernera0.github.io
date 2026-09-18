@@ -1,0 +1,23 @@
+/* Versión clara: reutiliza estilo.css y solo redefine la paleta. Generado por generar.py */
+@import url("../estilo.css");
+:root{
+  --bg:#f6f7f9;
+  --panel:#ffffff;
+  --panel-border:#d3dae3;
+  --text:#1b2530;
+  --muted:#556477;
+  --accent:#a86a00;
+  --accent-soft:rgba(168,106,0,.12);
+  --bad:#c0392b;
+  --bad-soft:rgba(192,57,43,.10);
+  --ok:#0b7f70;
+  --ok-soft:rgba(11,127,112,.10);
+  --info:#1f5fae;
+  --info-soft:rgba(31,95,174,.10);
+  --bg-deep:#eef1f5;
+  --node:#ffffff;
+  --off:#b4bfcc;
+  --topbar-bg:rgba(246,247,249,.94);
+  --on-accent:#ffffff;
+  --glow:rgba(168,106,0,.55);
+}
