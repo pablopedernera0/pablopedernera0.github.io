@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El post-mortem y el informe del analista</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  .q{background:var(--panel);border:1px solid var(--panel-border);border-radius:14px;padding:16px 18px;margin:18px 0;}
+  .q h3{margin-top:0;color:var(--text);font-size:1.05rem;}
+  .q .num{font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:.8rem;}
+  .opts{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));}
+  .opts button{margin:0;text-align:center;}
+  .score{position:sticky;bottom:12px;background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:10px 16px;margin-top:24px;text-align:center;font-family:'IBM Plex Mono',monospace;}
+  .flow{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin:18px 0;}
+  .flow .step{background:var(--panel);border:1px solid var(--panel-border);border-radius:12px;padding:14px 16px;position:relative;}
+  .flow .step .k{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;}
+  .flow .step h3{margin:6px 0 6px;color:var(--text);font-size:1rem;}
+  .flow .step p{margin:0;font-size:.88rem;color:var(--muted);}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../">pablopedernera0.github.io</a>
+  <nav>
+    <a href="index.html">Inicio</a>
+    <a href="healthcare-gov.html">Healthcare.gov</a>
+    <a href="pokemon-go.html">Pokémon Go</a>
+    <a href="prime-day-2018.html">Prime Day 2018</a>
+    <a href="mapa-prime-day.html">Mapa Prime Day</a>
+    <a href="mapa-pokemon-go.html">Mapa Pokémon Go</a>
+    <a href="mapa-healthcare-gov.html">Mapa Healthcare.gov</a>
+    <a href="cuellos-de-botella.html">Cuellos de botella</a>
+    <a href="metricas-y-requisitos.html">Métricas y requisitos</a>
+    <a class="on" href="postmortem.html">Post-mortem</a>
+    <a href="actividad.html">Actividad</a>
+  </nav>
+  <a class="tema" href="claro/postmortem.html">☀ Versión clara</a>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="kicker">Cómo sabemos lo que pasó</span>
+    <h1>El post-mortem y el informe del analista</h1>
+    <p class="lead">Todo lo que leímos sobre estos tres casos sale de <strong>análisis posteriores al incidente</strong>.
+    Para hacerlos hace falta la documentación inicial, pero también los registros del sistema, lo que se anotó durante la crisis
+    y una investigación después. Y al final hay que <strong>escribirlo</strong>: redactar un informe claro es una habilidad
+    central de un analista funcional.</p>
+  </section>
+
+  <h2>¿Qué es un post-mortem?</h2>
+  <p>Es un registro escrito de un incidente: su impacto, lo que se hizo para mitigarlo o resolverlo, las causas raíz y las
+  acciones para que no se repita. Así lo define el libro <em>Site Reliability Engineering</em> de Google (capítulo 15,
+  <a href="https://sre.google/sre-book/postmortem-culture/" target="_blank" rel="noopener">"Postmortem Culture: Learning from Failure"</a>, de John Lunney y Sue Lueder).</p>
+  <div class="grid">
+    <div class="card"><h3>Sin culpables (blameless)</h3><p>Se investigan causas del sistema y del proceso, no personas, y se parte de suponer buenas intenciones. Si buscar un culpable es lo que se premia, nadie cuenta los problemas y no se aprende.</p></div>
+    <div class="card"><h3>Cuándo se escribe</h3><p>Según el libro: ante una caída visible para los usuarios, pérdida de datos, intervenciones de emergencia, una resolución demasiado lenta, o cuando el problema se descubre porque falló el monitoreo.</p></div>
+    <div class="card"><h3>Qué lo hace bueno</h3><p>Documentación completa del incidente, evaluación del impacto, análisis de causa raíz, un plan de acción priorizado y difusión a los interesados.</p></div>
+  </div>
+
+  <h2>Las cuatro fuentes de evidencia</h2>
+  <div class="flow">
+    <div class="step"><span class="k">1 · Antes</span><h3>Documentación inicial</h3><p>Requisitos, contratos, planes de prueba, cronogramas, aprobaciones. Sirve para ver qué se pidió y qué se decidió.</p></div>
+    <div class="step"><span class="k">2 · Durante</span><h3>Datos y logs</h3><p>Métricas de respuesta, errores, disponibilidad, alertas y monitoreo externo. Muestran qué pasó realmente, con horas.</p></div>
+    <div class="step"><span class="k">3 · Durante</span><h3>Registro del incidente</h3><p>La cronología que el equipo fue anotando: partes de estado, decisiones tomadas y por quién, comunicaciones.</p></div>
+    <div class="step"><span class="k">4 · Después</span><h3>Análisis posteriores</h3><p>Informes de auditoría, revisiones independientes y el post-mortem publicado. Reúnen y ordenan todo lo anterior.</p></div>
+  </div>
+
+  <h2>Qué evidencia hay de cada caso</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th></th><th>Documentación inicial</th><th>Datos y logs</th><th>Registro del incidente</th><th>Análisis posterior</th></tr></thead>
+    <tbody>
+      <tr><th>Healthcare.gov</th>
+        <td>Los contratos y requisitos originales no son públicos, pero las auditorías (GAO) los analizan y citan qué faltó.</td>
+        <td>Prueba de carga de la víspera (1.100 usuarios) y las series de CMS: respuesta, errores y disponibilidad.</td>
+        <td>Notas internas del "war room" entregadas al Congreso (6 inscripciones el primer día).</td>
+        <td>HHS OIG (2016), GAO (2014 y 2015) y el Servicio Digital de EE.UU. (2016).</td></tr>
+      <tr><th>Pokémon Go</th>
+        <td>No es pública.</td>
+        <td>No son públicos. Solo se conocen las cifras agregadas: 1×, 5× y 50×.</td>
+        <td>No es público.</td>
+        <td>El post-mortem de Google Cloud (29/09/2016), escrito por el proveedor.</td></tr>
+      <tr><th>Prime Day 2018</th>
+        <td>No es pública.</td>
+        <td>No son públicos. Se ve desde afuera: Downdetector mostró fallas desde las 3:04 p.m. ET.</td>
+        <td>Partes de estado internos con horas, revisados por CNBC.</td>
+        <td>No hay post-mortem público de Amazon. Su comunicado habla de récords y no menciona las fallas.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout info">
+    <strong>Lo que sabemos depende de la evidencia disponible</strong>
+    Con Healthcare.gov hay documentos oficiales de sobra. Con Prime Day hay que apoyarse en documentos internos que revisó un medio, y con Pokémon Go en la
+    versión del proveedor. Por eso en todo este material marcamos si una fuente es <em>primaria</em>, <em>prensa</em> o <em>secundaria</em> y si una cifra es
+    un hecho, una inferencia o una estimación.
+  </div>
+
+  <h2>Cómo se estructura: un ejemplo ya escrito</h2>
+  <p>El libro de SRE incluye un <a href="https://sre.google/sre-book/example-postmortem/" target="_blank" rel="noopener">post-mortem de ejemplo</a> con estas secciones: resumen, impacto, causas raíz, disparador,
+  resolución, detección, acciones (con responsable, prioridad y estado), lecciones (qué salió bien, qué salió mal y qué fue suerte),
+  cronología e información de apoyo. Acá va el de <strong>Prime Day 2018</strong> con esa estructura, reconstruido solo con fuentes públicas.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th style="width:150px">Sección</th><th>Contenido</th></tr></thead>
+    <tbody>
+      <tr><th>Resumen</th><td>El 16/07/2018, en el arranque del evento a las 3:00 p.m. ET, el sitio de Amazon empezó a fallar y mostró su página de error. Se recuperó en cuestión de horas.</td></tr>
+      <tr><th>Impacto</th><td>Compradores sin poder comprar durante el arranque. Se cortó temporalmente el tráfico internacional. Se citó una estimación externa de pérdidas de 72–99 millones de dólares (<em>no es cifra de Amazon</em>). Aun así, el evento superó los 100 millones de productos vendidos.</td></tr>
+      <tr><th>Causa raíz</th><td>Según documentos internos revisados por CNBC: no se consiguieron suficientes servidores para el tráfico del arranque y Sable, un sistema interno compartido, recibió más presión de la que podía sostener. Cayeron en cascada los servicios que dependen de él (Prime, autenticación y video).</td></tr>
+      <tr><th>Disparador</th><td>El inicio del evento a una hora exacta: todos los compradores llegaron en el mismo minuto.</td></tr>
+      <tr><th>Detección</th><td>Monitoreo externo (Downdetector, desde las 3:04 p.m. ET). La detección interna de Amazon no está documentada públicamente.</td></tr>
+      <tr><th>Resolución</th><td>Portada reducida de emergencia (12:00 PT), corte del tráfico internacional (12:15 PT), portada normal solo para el 25 % (12:37 PT) y servidores agregados a mano.</td></tr>
+      <tr><th>Acciones</th><td>No son públicas. <em>Propuesta nuestra:</em> RNF-2 (margen de capacidad), RNF-3 (aislamiento de dependencias) y RNF-4 (degradación controlada), cada una con responsable, fecha y criterio de cierre.</td></tr>
+      <tr><th>Lecciones</th><td><strong>Salió bien:</strong> la degradación controlada permitió recuperar el servicio y sostener el evento. <strong>Salió mal:</strong> el autoescalado llegó a "out of capacity" y una dependencia compartida se convirtió en punto único de falla.</td></tr>
+      <tr><th>Cronología</th><td>3:00 p.m. ET inicio · 3:04 p.m. ET primeras fallas · 12:00 PT portada reducida · 12:15 PT corte internacional · ~1 h: "out of capacity for scaling" · 12:37 PT portada normal al 25 %.</td></tr>
+      <tr><th>Información de apoyo</th><td>Documentos internos revisados por CNBC, comunicado de Amazon y notas de prensa (ver la <a href="prime-day-2018.html">página del caso</a>).</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">
+    <strong>Fijate en las horas</strong>
+    Las horas de la resolución están en hora del Pacífico y las del inicio, en hora del Este. En un informe de un incidente, la zona horaria va siempre al lado de la hora. Si no, la cronología no se puede reconstruir.
+  </div>
+
+  <h2>La habilidad de escribir el informe</h2>
+  <p>Un analista funcional escribe todo el tiempo: relevamientos, especificación de requisitos, actas, informes de prueba
+  e informes de incidentes. Lo que distingue un buen informe:</p>
+  <div class="grid">
+    <div class="card"><h3>Escribir para quien lee</h3><p>Primero el resumen ejecutivo (qué pasó, qué impacto, qué se decide) y después el detalle. Un gerente y un desarrollador no leen igual.</p></div>
+    <div class="card"><h3>Separar hecho, inferencia y estimación</h3><p>"Solo 6 personas se inscribieron" es un dato documentado. "El autoescalado no alcanzó" es una inferencia de expertos. "Perdió 99 millones" es una estimación de terceros. Cada uno se escribe distinto.</p></div>
+    <div class="card"><h3>Citar la fuente de cada cifra</h3><p>Número, unidad, fecha y de dónde sale. Una cifra sin origen no se puede verificar ni defender.</p></div>
+    <div class="card"><h3>Cronología con hora y zona</h3><p>Los sucesos en orden, con la hora y la zona horaria, sin mezclar lo que pasó con lo que se interpretó después.</p></div>
+    <div class="card"><h3>Lenguaje sin culpables</h3><p>"Faltó una verificación previa al lanzamiento", no "el equipo X no probó". El informe describe el proceso y las decisiones, no juzga personas.</p></div>
+    <div class="card"><h3>Acciones con dueño y cierre</h3><p>Cada acción tiene responsable, fecha y criterio para darla por cerrada. La GAO, por ejemplo, hace el seguimiento de sus recomendaciones sobre Healthcare.gov hasta que quedan implementadas.</p></div>
+  </div>
+  <div class="callout ok">
+    <strong>Es la misma habilidad que usás en tu proyecto</strong>
+    Escribir un requisito medible, una historia de usuario con criterios de aceptación o el README de tu proyecto exige lo mismo:
+    un lector concreto, afirmaciones que se puedan verificar y un orden que se entienda sin que estés presente para explicarlo.
+  </div>
+
+  <h2>Actividad: ¿hecho, inferencia o estimación?</h2>
+  <p>Clasificá cada frase según la evidencia que la sostiene. Se responde con un toque.</p>
+  <div id="quiz"></div>
+  <div class="score" id="score">Aciertos: 0 de 0</div>
+
+  <h2>Material en español</h2>
+  <p>Para seguir leyendo sin salir del idioma. La mayoría de los informes originales están en inglés, así que estas lecturas sirven para acercarse al tema
+  y para practicar cómo se contrastan fuentes.</p>
+  <ul class="sources">
+    <li><span class="tag prensa">prensa</span><a href="https://dialogoatlantico.com/2013/10/los-fallos-del-healthcare-gov/" target="_blank" rel="noopener">Diálogo Atlántico: "Los fallos del HealthCare.gov" (Julio Cañero, 23/10/2013)</a>
+      <span class="desc">Artículo en español escrito tres semanas después del lanzamiento. Cita al Washington Post, ABC News y comunicados oficiales, y menciona que las pruebas previas ya advertían que el sitio no estaba preparado para 50.000 usuarios simultáneos.</span></li>
+    <li><span class="tag sec">secundaria</span><a href="https://www.atlassian.com/es/incident-management/postmortem/blameless" target="_blank" rel="noopener">Atlassian: Cómo llevar a cabo un análisis retrospectivo sin acusaciones</a>
+      <span class="desc">Guía en español sobre el enfoque sin culpables. (No pudimos revisar el texto completo: leerlo antes de recomendarlo textualmente.)</span></li>
+    <li><span class="tag sec">secundaria</span><a href="https://www.atlassian.com/es/incident-management/postmortem/templates" target="_blank" rel="noopener">Atlassian: Guía para el proceso de análisis retrospectivo de los incidentes</a>
+      <span class="desc">Plantillas y pasos para redactar el informe. (Mismo aviso: solo la revisamos por su título.)</span></li>
+    <li><span class="tag sec">secundaria</span><a href="https://jesuslc.com/2025/04/15/postmortem-no-se-trata-de-culpas-se-trata-de-aprender/" target="_blank" rel="noopener">Jesús L.C.: "Postmortem: no se trata de culpas, se trata de aprender"</a>
+      <span class="desc">Blog en español sobre la cultura sin culpables. (Revisada solo por su título.)</span></li>
+  </ul>
+  <div class="callout">
+    <strong>Ejercicio de contraste de fuentes</strong>
+    El artículo de Diálogo Atlántico da cifras propias del momento (por ejemplo, cuántos intentos de registro provocaron el primer colapso) que no coinciden con las de los informes oficiales de años después.
+    Cuando dos fuentes difieren, un analista no elige la que le gusta: anota cuál es más cercana al hecho, cuál tuvo acceso a más evidencia y cuál se publicó primero.
+  </div>
+
+  <h2>Para pensar</h2>
+  <ol>
+    <li>De los tres casos, ¿cuál se puede analizar con más rigor y por qué? ¿Qué evidencia le falta a los otros?</li>
+    <li>Si Amazon no publica un post-mortem, ¿qué perdemos como industria? ¿Y qué gana la empresa?</li>
+    <li>Escribí, en tres líneas, el resumen ejecutivo del caso de Pokémon Go para alguien que nunca lo leyó.</li>
+  </ol>
+
+  <h2>Fuentes</h2>
+  <ul class="sources">
+    <li><span class="tag prim">primaria</span><a href="https://sre.google/sre-book/postmortem-culture/" target="_blank" rel="noopener">Google, Site Reliability Engineering, cap. 15: Postmortem Culture: Learning from Failure</a><span class="desc">Definición de post-mortem, cuándo escribirlo y qué significa "sin culpables".</span></li>
+    <li><span class="tag prim">primaria</span><a href="https://sre.google/sre-book/example-postmortem/" target="_blank" rel="noopener">Google, Site Reliability Engineering: Example Postmortem</a><span class="desc">La estructura de secciones que usamos para el ejemplo de Prime Day.</span></li>
+    <li><span class="tag prim">primaria</span><a href="https://www.gao.gov/products/gao-14-694" target="_blank" rel="noopener">GAO-14-694</a> · <a href="https://www.gao.gov/products/gao-15-238" target="_blank" rel="noopener">GAO-15-238</a><span class="desc">Ejemplos de análisis posteriores con recomendaciones y seguimiento.</span></li>
+    <li><span class="tag prensa">prensa</span><a href="https://www.cnbc.com/2018/07/19/amazon-internal-documents-what-caused-prime-day-crash-company-scramble.html" target="_blank" rel="noopener">CNBC: documentos internos de Amazon sobre el Prime Day</a><span class="desc">La evidencia del registro del incidente en el caso de Prime Day.</span></li>
+  </ul>
+
+  <div class="pager">
+    <a href="metricas-y-requisitos.html"><small>← Anterior</small>Métricas y requisitos</a>
+    <a href="actividad.html"><small>Siguiente →</small>Actividad</a>
+  </div>
+</main>
+<footer>Material para clases de Diseño de Sistemas Web y Redes y Comunicaciones · Terciario Urquiza.</footer>
+
+<script>
+const OPT = ['Hecho documentado', 'Inferencia', 'Estimación de terceros'];
+const QS = [
+  {t:'"Solo 6 personas completaron la inscripción en Healthcare.gov el primer día."', a:0,
+   e:'Hecho documentado: sale de notas internas del "war room" entregadas al Congreso y publicadas por la prensa.'},
+  {t:'"El autoescalado de Amazon no alcanzó durante el Prime Day 2018."', a:1,
+   e:'Inferencia: el parte interno dice "out of capacity for scaling", y los expertos que revisaron los documentos deducen que el autoescalado no alcanzó.'},
+  {t:'"Amazon perdió entre 72 y 99 millones de dólares por la caída del Prime Day."', a:2,
+   e:'Estimación de terceros: circuló en la prensa, pero no es una cifra que Amazon haya informado.'},
+  {t:'"El tráfico de Pokémon Go llegó a 50 veces el objetivo."', a:0,
+   e:'Hecho documentado, pero con una salvedad que conviene decir: lo declara el proveedor (Google Cloud) en su propio post-mortem.'},
+  {t:'"La verificación de identidad fue el cuello de botella de Healthcare.gov."', a:1,
+   e:'Inferencia nuestra, sin sustento en la fuente: los informes dicen que el sistema completo llegaba a 1.100 usuarios, no en qué componente. Por eso en el mapa la marcamos como ilustrativa.'},
+  {t:'"La GAO concluyó que Healthcare.gov se lanzó sin verificar que cumpliera los requisitos de rendimiento."', a:0,
+   e:'Hecho documentado: está escrito en el informe GAO-14-694 (julio de 2014).'}
+];
+let ok = 0, done = 0;
+const quiz = document.getElementById('quiz');
+QS.forEach((q, i) => {
+  const box = document.createElement('div'); box.className = 'q';
+  box.innerHTML = '<span class="num">FRASE ' + (i+1) + ' de ' + QS.length + '</span><h3></h3><div class="opts"></div>';
+  box.querySelector('h3').textContent = q.t;
+  const opts = box.querySelector('.opts');
+  const exp = document.createElement('div'); exp.className = 'reveal callout ok';
+  const btns = OPT.map((txt, j) => {
+    const b = document.createElement('button'); b.textContent = txt;
+    b.onclick = () => {
+      btns.forEach((x, k) => { x.disabled = true; if (k === q.a) x.classList.add('right'); });
+      if (j !== q.a) b.classList.add('wrong');
+      done++; if (j === q.a) ok++;
+      exp.classList.add('show');
+      document.getElementById('score').textContent = 'Aciertos: ' + ok + ' de ' + done;
+    };
+    opts.appendChild(b); return b;
+  });
+  exp.innerHTML = '<strong>Respuesta</strong>'; exp.appendChild(document.createTextNode(q.e));
+  box.appendChild(exp); quiz.appendChild(box);
+});
+</script>
+</body>
+</html>

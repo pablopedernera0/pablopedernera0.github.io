@@ -22,6 +22,7 @@
     <a href="mapa-healthcare-gov.html">Mapa Healthcare.gov</a>
     <a href="cuellos-de-botella.html">Cuellos de botella</a>
     <a href="metricas-y-requisitos.html">Métricas y requisitos</a>
+    <a href="postmortem.html">Post-mortem</a>
     <a href="actividad.html">Actividad</a>
   </nav>
   <a class="tema" href="claro/healthcare-gov.html">☀ Versión clara</a>
@@ -96,6 +97,67 @@
     <li><strong>Lanzamiento único ("big bang")</strong>: todo el público el mismo día. Sin rampa gradual no hay margen para corregir con poco tráfico.</li>
   </ul>
 
+  <h2>Ampliación: los documentos oficiales sobre los requisitos</h2>
+  <p>El contrato y la especificación de requisitos originales no son públicos. Sí hay informes oficiales que dicen
+  qué pasó con los requisitos y con qué metas de rendimiento se recuperó el sitio.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Documento</th><th>Qué dice sobre los requisitos</th></tr></thead>
+    <tbody>
+      <tr><td><strong>GAO-14-694</strong><br><span class="meta" style="color:var(--muted);font-size:.8rem">julio de 2014</span></td>
+        <td>Los requisitos nuevos y las decisiones cambiantes del organismo "led to delays and wasted contractor efforts". Se emitieron órdenes de trabajo cuando se desconocían requisitos técnicos clave. Se lanzó sin verificar que se cumplieran los requisitos de rendimiento.</td></tr>
+      <tr><td><strong>GAO-15-238</strong><br><span class="meta" style="color:var(--muted);font-size:.8rem">marzo de 2015</span></td>
+        <td>Los requisitos no siempre estaban aprobados ni vinculados a su origen y a los requisitos de nivel inferior. El sistema no se probó por completo antes del lanzamiento y no se planificó capacidad adecuada. Recomendó documentar la aprobación de los requisitos funcionales y de diseño, con la firma del dueño del negocio, la autoridad de aprobación y el contratista.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout info">
+    <strong>Esto es trazabilidad</strong>
+    "Vinculados a su origen y a los requisitos de nivel inferior" es la cadena RF/RNF → historia de usuario → caso de uso que trabajamos en
+    <a href="../eidas-repaso/trazabilidad.html">el repaso de trazabilidad</a>. Un requisito sin origen ni dueño no se puede verificar antes del lanzamiento.
+  </div>
+
+  <h3>Las metas de rendimiento, ya escritas (CMS, 1 de diciembre de 2013)</h3>
+  <p>El informe de progreso de CMS es lo más parecido a un conjunto oficial de <strong>requisitos no funcionales</strong>:
+  cada meta tiene atributo, métrica y umbral.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Atributo</th><th>Meta declarada</th><th>Antes (oct.–nov.)</th><th>Después (fines de nov.)</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Tiempo de respuesta</strong></td><td>Promedio menor a 1 segundo</td><td>~8 s</td><td>menos de 1 s</td></tr>
+      <tr><td><strong>Tasa de error</strong></td><td>Bien por debajo del 1 %</td><td>más del 6 %</td><td>menos del 0,75 %</td></tr>
+      <tr><td><strong>Disponibilidad</strong></td><td>90 % o más</td><td>42,9 %</td><td>95,1 %</td></tr>
+      <tr><td><strong>Capacidad</strong></td><td>50.000 usuarios simultáneos y al menos 800.000 visitas por día</td><td>1.100 (víspera del lanzamiento)</td><td>meta declarada como alcanzada</td></tr>
+      <tr><td><strong>Correcciones</strong></td><td>Lista de pendientes</td><td>-</td><td>más de 400 cerradas</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="bars">
+    <div class="bar-row"><div class="lab">Disponibilidad, inicio de nov.</div><div class="bar-track"><div class="bar-fill bad" style="width:42.9%">42,9 %</div></div></div>
+    <div class="bar-row"><div class="lab">Disponibilidad, fin de nov.</div><div class="bar-track"><div class="bar-fill ok" style="width:95.1%">95,1 %</div></div></div>
+  </div>
+  <p>Cuatro años después, el Servicio Digital de EE.UU. informó otras dos metas de proceso: la verificación de identidad con
+  <strong>99,99 % de disponibilidad</strong> y una conversión del flujo de solicitud que subió del <strong>55 % al 85 %</strong>.</p>
+
+  <h3>RF y RNF de este caso</h3>
+  <div class="grid">
+    <div class="card"><h3 style="color:var(--info)">Requisitos funcionales</h3>
+      <ul><li>Crear una cuenta y verificar la identidad del solicitante</li><li>Comparar planes de seguro</li><li>Calcular la elegibilidad y los subsidios</li><li>Inscribirse en un plan</li></ul></div>
+    <div class="card"><h3 style="color:var(--info)">Requisitos no funcionales</h3>
+      <ul><li><strong>Rendimiento:</strong> respuesta menor a 1 s</li><li><strong>Capacidad:</strong> 50.000 simultáneos</li><li><strong>Disponibilidad:</strong> 90 % o más (99,99 % en identidad, después)</li><li><strong>Fiabilidad:</strong> errores menores al 1 %</li></ul></div>
+  </div>
+  <div class="callout ok">
+    <strong>Qué le sigue faltando a esas metas</strong>
+    Comparadas con la <a href="metricas-y-requisitos.html">plantilla de cuatro partes</a> (carga, umbral, verificación, degradación), las metas de CMS tienen carga y umbral, pero no dicen
+    <em>cuándo se verifica</em> ni <em>quién frena el lanzamiento</em> si no se cumplen, ni <em>qué se degrada</em> si se supera el máximo.
+    Esas dos partes ausentes son las que la GAO señaló.
+  </div>
+
+  <div class="callout info">
+    <strong>¿Cómo sabemos todo esto?</strong>
+    Estos datos salen de análisis posteriores al incidente. En <a href="postmortem.html">El post-mortem y el informe del analista</a> vemos qué evidencia hay de cada caso y cómo se escribe un informe. La definición y la estructura salen del capítulo de Google sobre <a href="https://sre.google/sre-book/postmortem-culture/" target="_blank" rel="noopener">cultura de post-mortem</a>.
+  </div>
+
   <h2>Preguntas para discutir</h2>
   <ol>
     <li>Si la prueba de carga de la víspera dio 1.100 y la meta era 55.000, ¿quién debía tener autoridad para frenar el lanzamiento?</li>
@@ -105,6 +167,11 @@
 
   <h2>Fuentes</h2>
   <ul class="sources">
+    <li><span class="tag prensa">prensa</span><a href="https://dialogoatlantico.com/2013/10/los-fallos-del-healthcare-gov/" target="_blank" rel="noopener">Diálogo Atlántico: "Los fallos del HealthCare.gov" (23/10/2013)</a><span class="desc">En español. Prensa temprana: cifras propias del momento, que difieren de los informes oficiales posteriores.</span></li>
+    <li><span class="tag prim">primaria</span><a href="https://www.gao.gov/products/gao-14-694" target="_blank" rel="noopener">GAO-14-694 (30/07/2014): Ineffective Planning and Oversight Practices Underscore the Need for Improved Contract Management</a><span class="desc">Requisitos cambiantes, revisión de preparación postergada y lanzamiento sin verificar el rendimiento.</span></li>
+    <li><span class="tag prim">primaria</span><a href="https://www.gao.gov/products/gao-15-238" target="_blank" rel="noopener">GAO-15-238 (04/03/2015): CMS Has Taken Steps to Address Problems, but Needs to Further Implement Systems Development Best Practices</a><span class="desc">Gestión de requisitos, pruebas y capacidad.</span></li>
+    <li><span class="tag prim">primaria</span><a href="https://www.cms.gov/newsroom/press-releases/healthcaregov-progress-and-performance-report" target="_blank" rel="noopener">CMS: HealthCare.gov Progress and Performance Report (01/12/2013)</a><span class="desc">Metas de rendimiento y su evolución en cinco semanas.</span></li>
+    <li><span class="tag prim">primaria</span><a href="https://www.usds.gov/report-to-congress/2016/healthcare-dot-gov/" target="_blank" rel="noopener">USDS: Stabilizing and Improving HealthCare.gov (Informe al Congreso, 2016)</a><span class="desc">Identidad con 99,99 % de disponibilidad; conversión del 55 % al 85 %.</span></li>
     <li><span class="tag prim">primaria</span><a href="https://oig.hhs.gov/reports/all/2016/healthcaregov-case-study-of-cms-management-of-the-federal-marketplace/" target="_blank" rel="noopener">HHS Oficina del Inspector General: HealthCare.gov, case study of CMS management of the Federal Marketplace (OEI-06-14-00350, feb. 2016)</a><span class="desc">Causas de gestión: liderazgo, contratistas, tiempos.</span></li>
     <li><span class="tag prim">primaria</span><a href="https://www.hsgac.senate.gov/media/reps/cms-mismanagement-of-healthcaregov-contracts-led-to-millions-wasted-in-failed-healthcaregov-roll-out-new-gao-report-shows/" target="_blank" rel="noopener">Comité de Seguridad Nacional del Senado: resumen del informe de la GAO sobre los contratos de HealthCare.gov</a><span class="desc">Incluye la observación sobre capacidad de hardware del back-end.</span></li>
     <li><span class="tag prensa">prensa</span><a href="https://techcrunch.com/2013/11/07/healthcare-gov-could-only-handle-1100-users-on-the-eve-of-launch" target="_blank" rel="noopener">TechCrunch: Healthcare.gov could only handle 1,100 users on the eve of launch</a><span class="desc">Origen de la cifra de 1.100, a partir del documento de prueba de carga.</span></li>

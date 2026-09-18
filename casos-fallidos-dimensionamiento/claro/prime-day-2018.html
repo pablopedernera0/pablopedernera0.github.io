@@ -22,6 +22,7 @@
     <a href="mapa-healthcare-gov.html">Mapa Healthcare.gov</a>
     <a href="cuellos-de-botella.html">Cuellos de botella</a>
     <a href="metricas-y-requisitos.html">Métricas y requisitos</a>
+    <a href="postmortem.html">Post-mortem</a>
     <a href="actividad.html">Actividad</a>
   </nav>
   <a class="tema" href="../prime-day-2018.html">🌙 Versión oscura</a>
@@ -117,6 +118,58 @@
   y CloudFront superó las 500 millones de peticiones HTTP por minuto. Los posts también describen pruebas de
   resistencia previas con inyección de fallas. <em>(Verificar las cifras exactas en el post original antes de proyectarlas.)</em></p>
 
+  <h2>Ampliación: los requisitos y los documentos de Amazon</h2>
+  <div class="callout">
+    <strong>Amazon no publicó los requisitos de Prime Day</strong>
+    Sí publica documentos oficiales sobre cómo diseña para picos de demanda. No son "los requisitos de Prime Day", pero muestran qué tipo de requisitos
+    ordenan ese diseño. La columna de la derecha es <em>nuestra interpretación</em>.
+  </div>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Documento oficial de Amazon</th><th>Qué dice</th><th>Qué ilumina del caso</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://docs.aws.amazon.com/wellarchitected/latest/framework/rel-chg-mgmt.html" target="_blank" rel="noopener">Well-Architected, Reliability: REL 7</a> "How do you design your workload to adapt to changes in demand?"</td>
+        <td>Una carga escalable agrega o quita recursos automáticamente para acompañar la demanda en cada momento.</td>
+        <td>El autoescalado que llegó a "out of capacity for scaling": elasticidad sin margen.</td></tr>
+      <tr><td><a href="https://docs.aws.amazon.com/wellarchitected/latest/framework/rel-chg-mgmt.html" target="_blank" rel="noopener">REL 6</a> "How do you monitor workload resources?"</td>
+        <td>Registros y métricas para avisar cuando se cruzan umbrales y permitir la recuperación.</td>
+        <td>Detectar la saturación de Sable antes de que llegue a los servicios que dependen de él.</td></tr>
+      <tr><td><a href="https://docs.aws.amazon.com/wellarchitected/latest/framework/rel-workload-arch.html" target="_blank" rel="noopener">REL 4 y REL 5</a>: interacciones en un sistema distribuido para prevenir y soportar fallas</td>
+        <td>Los componentes deben operar sin afectar negativamente a otros componentes ni al conjunto.</td>
+        <td>La cascada: Sable arrastró a Prime, autenticación y video.</td></tr>
+      <tr><td><a href="https://aws.amazon.com/builders-library/using-load-shedding-to-avoid-overload/" target="_blank" rel="noopener">Builders' Library: Using load shedding to avoid overload</a> (David Yanacek)</td>
+        <td>Según resúmenes de terceros: un sistema sobrecargado se degrada rápido al pasar un punto crítico, es impreciso fijar un máximo de conexiones y conviene descartar el trabajo que esperó demasiado en cola.</td>
+        <td>La degradación controlada: portada reducida, corte internacional y portada normal solo al 25 %.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="meta" style="color:var(--muted);font-size:.85rem">Las preguntas REL 4 a 7 están citadas de la guía. Del artículo de load shedding solo pudimos abrir un resumen, así que conviene leerlo completo antes de citarlo textual.</p>
+
+  <h3>Requisitos de una tienda con campañas, ya redactados</h3>
+  <p><strong>Requisitos funcionales:</strong> mostrar la portada de ofertas, autenticar al usuario, buscar y comparar productos, agregar al carrito y pagar.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>#</th><th>Atributo</th><th>Requisito (umbrales de ejemplo)</th><th>Verificación</th></tr></thead>
+    <tbody>
+      <tr><td>RNF-1</td><td>Pico de arranque</td><td>Soportar en los primeros 5 minutos de una campaña anunciada el triple del pico de la campaña anterior.</td><td>Prueba de carga escalonada, con ese perfil, antes de la fecha</td></tr>
+      <tr><td>RNF-2</td><td>Elasticidad con margen</td><td>Escalar automáticamente y mantener siempre reservada al menos un 30 % de capacidad adicional aprovisionada.</td><td>Alerta cuando la capacidad libre baja del 30 %</td></tr>
+      <tr><td>RNF-3</td><td>Aislamiento de dependencias</td><td>La saturación de un servicio interno compartido no debe impedir autenticar ni comprar. Cada dependencia tiene su propio límite de uso.</td><td>Prueba de falla de cada dependencia por separado</td></tr>
+      <tr><td>RNF-4</td><td>Degradación controlada</td><td>Si la carga supera el máximo, servir una portada reducida antes de rechazar compras, y aplicar límites por región o prioridad.</td><td>Ejercicio de sobrecarga con el plan de degradación activado</td></tr>
+      <tr><td>RNF-5</td><td>Monitoreo</td><td>Detectar y alertar en menos de 60 segundos si algún servicio supera el 80 % de su capacidad.</td><td>Alertas probadas en el ensayo general</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout ok">
+    <strong>Cómo se relacionan con lo que pasó</strong>
+    RNF-3 y RNF-4 son los que separan una caída total de una degradación parcial. RNF-2 habría evitado llegar a "out of capacity".
+    Los tres son requisitos <em>de diseño</em>: no se corrigen en el momento del pico, se escriben y se prueban antes.
+  </div>
+
+  <div class="callout info">
+    <strong>¿Cómo sabemos todo esto?</strong>
+    Estos datos salen de análisis posteriores al incidente. En <a href="postmortem.html">El post-mortem y el informe del analista</a> vemos qué evidencia hay de cada caso y cómo se escribe un informe. La definición y la estructura salen del capítulo de Google sobre <a href="https://sre.google/sre-book/postmortem-culture/" target="_blank" rel="noopener">cultura de post-mortem</a>.
+  </div>
+
   <h2>Preguntas para discutir</h2>
   <ol>
     <li>Un evento que empieza a las 15:00 exactas, ¿cómo cambia la estimación frente a un sitio con tráfico repartido durante el día?</li>
@@ -127,6 +180,9 @@
 
   <h2>Fuentes</h2>
   <ul class="sources">
+    <li><span class="tag prim">primaria</span><a href="https://docs.aws.amazon.com/wellarchitected/latest/framework/rel-chg-mgmt.html" target="_blank" rel="noopener">AWS Well-Architected, pilar de fiabilidad: gestión de cambios (REL 6, 7, 8)</a><span class="desc">Adaptarse a cambios de demanda y monitorear recursos.</span></li>
+    <li><span class="tag prim">primaria</span><a href="https://docs.aws.amazon.com/wellarchitected/latest/framework/rel-workload-arch.html" target="_blank" rel="noopener">AWS Well-Architected, pilar de fiabilidad: arquitectura de la carga (REL 3, 4, 5)</a><span class="desc">Interacciones en sistemas distribuidos para prevenir y soportar fallas.</span></li>
+    <li><span class="tag prim">primaria</span><a href="https://aws.amazon.com/builders-library/using-load-shedding-to-avoid-overload/" target="_blank" rel="noopener">Amazon Builders' Library: Using load shedding to avoid overload</a><span class="desc">Solo se pudo revisar un resumen de terceros; leer el artículo completo antes de citarlo.</span></li>
     <li><span class="tag prensa">prensa</span><a href="https://www.cnbc.com/2018/07/19/amazon-internal-documents-what-caused-prime-day-crash-company-scramble.html" target="_blank" rel="noopener">CNBC: Internal documents show how Amazon scrambled to fix Prime Day glitches</a><span class="desc">Fuente de la cronología interna, Sable, "out of capacity for scaling" y las medidas de contención.</span></li>
     <li><span class="tag prim">primaria</span><a href="https://press.aboutamazon.com/2018/7/prime-members-again-enjoyed-the-biggest-global-shopping-event-in-amazon-history-this-prime-day" target="_blank" rel="noopener">Amazon (comunicado): Prime Members again enjoyed the biggest global shopping event in Amazon history</a><span class="desc">Más de 100 millones de productos, récord de ventas. El comunicado no menciona las fallas.</span></li>
     <li><span class="tag prensa">prensa</span><a href="https://money.cnn.com/2018/07/16/technology/amazon-website-down-prime-day/index.html" target="_blank" rel="noopener">CNN Business: Amazon website crashes shortly after deals go live</a></li>

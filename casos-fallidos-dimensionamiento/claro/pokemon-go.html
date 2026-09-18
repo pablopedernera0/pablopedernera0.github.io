@@ -22,6 +22,7 @@
     <a href="mapa-healthcare-gov.html">Mapa Healthcare.gov</a>
     <a href="cuellos-de-botella.html">Cuellos de botella</a>
     <a href="metricas-y-requisitos.html">Métricas y requisitos</a>
+    <a href="postmortem.html">Post-mortem</a>
     <a href="actividad.html">Actividad</a>
   </nav>
   <a class="tema" href="../pokemon-go.html">🌙 Versión oscura</a>
@@ -94,6 +95,45 @@
     <li><strong>Escalado escalonado por región</strong>: lanzar en Japón dos semanas después, con la lección aprendida, es una forma de controlar la rampa de demanda.</li>
     <li><strong>Conexión con la clase 2</strong>: los pasos "usuarios concurrentes → CPU y RAM" cambian por completo si la concurrencia real es 50 veces la que se supuso.</li>
   </ul>
+
+  <h2>Ampliación: los requisitos, reconstruidos</h2>
+  <div class="callout">
+    <strong>No existe un documento público de requisitos de Niantic</strong>
+    Lo único oficial es el post de Google Cloud, y habla solo de infraestructura. Lo que sigue es una <em>reconstrucción nuestra</em>:
+    cada requisito indica el dato del post del que sale. Los requisitos funcionales del juego (moverse por el mapa, capturar, jugar en gimnasios) no aparecen en la fuente.
+  </div>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Dato del post</th><th>Requisito que se deduce</th><th>Tipo</th></tr></thead>
+    <tbody>
+      <tr><td>Tráfico objetivo: 1×</td><td>El sistema debe atender la carga objetivo con un tiempo de respuesta aceptable. <span style="color:var(--muted)">El post no da el valor absoluto de 1×.</span></td><td>RNF de capacidad</td></tr>
+      <tr><td>Peor caso estimado: ~5×</td><td>El sistema debe escalar hasta 5 veces la carga objetivo.</td><td>RNF de elasticidad</td></tr>
+      <tr><td>Tráfico real: 50×</td><td>El requisito de elasticidad debía cubrir 50 veces el objetivo, diez veces el peor caso previsto.</td><td>Requisito revisado</td></tr>
+      <tr><td>Cambio a balanceador HTTP/S</td><td>La entrada debe repartir el tráfico con más control, conexiones más rápidas y mayor rendimiento.</td><td>Restricción de arquitectura</td></tr>
+      <tr><td>GKE con más de mil nodos adicionales</td><td>El clúster debe poder crecer más de mil nodos sin cambiar de plataforma.</td><td>Restricción de escalabilidad</td></tr>
+      <tr><td>Actualización sin interrumpir a los jugadores</td><td>Los cambios de versión de la plataforma no deben cortar el servicio a los jugadores conectados.</td><td>RNF de disponibilidad</td></tr>
+      <tr><td>Japón dos semanas después, con 3× los registros y sin incidentes</td><td>El lanzamiento debe ser escalonado por región, con la capacidad provisionada antes de abrir cada una.</td><td>RNF de despliegue</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>El requisito de capacidad, escrito con la plantilla de cuatro partes</h3>
+  <div class="callout ok">
+    <strong>Ejemplo redactado (los umbrales son de ejemplo; el post no los da)</strong>
+    <ol style="margin:.4em 0 0">
+      <li><strong>Carga:</strong> el sistema debe soportar la carga objetivo (1×), escalar a 5× como caso previsto y contar con un plan de escalado hasta 50×.</li>
+      <li><strong>Umbral:</strong> respuesta menor a 2 segundos en el 95 % de las peticiones en cualquier nivel de carga.</li>
+      <li><strong>Verificación:</strong> prueba de carga a 5× antes de cada lanzamiento regional; si no se cumple, no se abre esa región.</li>
+      <li><strong>Degradación:</strong> por encima del máximo probado, se limita el registro de jugadores nuevos antes que el servicio a los jugadores activos.</li>
+    </ol>
+  </div>
+  <p>Compará con los datos reales: el peor caso previsto (5×) fue diez veces menor que la realidad. Con este requisito, la
+  <em>cuarta parte</em> (qué se degrada primero) es la que habría dado margen de reacción mientras se sumaban nodos.</p>
+
+  <div class="callout info">
+    <strong>¿Cómo sabemos todo esto?</strong>
+    Estos datos salen de análisis posteriores al incidente. En <a href="postmortem.html">El post-mortem y el informe del analista</a> vemos qué evidencia hay de cada caso y cómo se escribe un informe. La definición y la estructura salen del capítulo de Google sobre <a href="https://sre.google/sre-book/postmortem-culture/" target="_blank" rel="noopener">cultura de post-mortem</a>.
+  </div>
 
   <h2>Preguntas para discutir</h2>
   <ol>
