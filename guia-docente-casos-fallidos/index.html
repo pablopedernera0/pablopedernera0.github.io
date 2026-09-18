@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Guía docente: casos fallidos de dimensionamiento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../casos-fallidos-dimensionamiento/estilo.css">
+<style>
+  main{max-width:1060px;}
+  .clock{font-family:'IBM Plex Mono',monospace;font-weight:600;white-space:nowrap;color:var(--accent);}
+  .dur{display:block;font-family:'IBM Plex Mono',monospace;color:var(--muted);font-size:.8rem;white-space:nowrap;}
+  .day{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin:18px 0;}
+  .slot{background:var(--panel);border:1px solid var(--panel-border);border-radius:12px;padding:12px 14px;}
+  .slot .t{font-family:'IBM Plex Mono',monospace;color:var(--accent);font-weight:600;font-size:.95rem;}
+  .slot .n{font-weight:600;margin:2px 0;}
+  .slot .d{color:var(--muted);font-size:.82rem;}
+  .slot.brk{opacity:.75;border-style:dashed;}
+  td .p{display:block;color:var(--muted);font-size:.82rem;margin-top:2px;}
+  .say{border-left:3px solid var(--info);background:var(--info-soft);padding:8px 12px;border-radius:0 8px 8px 0;margin:6px 0;font-size:.9rem;}
+  .todo{list-style:none;padding:0;}
+  .todo li{padding:6px 0 6px 28px;position:relative;border-bottom:1px solid var(--panel-border);}
+  .todo li::before{content:"☐";position:absolute;left:4px;color:var(--accent);}
+  @media print{
+    :root{--bg:#fff;--panel:#fff;--panel-border:#ccc;--text:#111;--muted:#444;--accent:#8a5300;--info:#1f4f95;--info-soft:#eef3fb;--ok:#0b6b5f;--ok-soft:#eef7f5;--bad:#a02a1d;--bad-soft:#fbeeec;--accent-soft:#f6efe2;--topbar-bg:#fff;}
+    .topbar{position:static;}
+    h2{break-after:avoid;} table,.slot,.card{break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../">pablopedernera0.github.io</a>
+  <nav><a class="on" href="index.html">Guía docente</a><a href="../casos-fallidos-dimensionamiento/index.html">Material de los estudiantes</a></nav>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="kicker">Uso docente · no enlazada desde el material de estudiantes</span>
+    <h1>Guía docente: casos fallidos de dimensionamiento</h1>
+    <p class="lead">Guion de tiempos para el viernes 18/09/2026 en la comisión 31: Diseño de Sistemas Web (19:20 a 21:20) y, a continuación,
+    Redes y Comunicaciones (21:30 a 23:00), con los tres casos a media hora cada uno. Incluye qué mostrar en cada momento, qué decir,
+    qué recortar si falta tiempo y qué cifras no conviene afirmar sin aclarar la fuente.</p>
+  </section>
+
+  <h2>El día completo</h2>
+  <div class="day">
+    <div class="slot"><div class="t">19:20 – 21:20</div><div class="n">Diseño de Sistemas Web</div><div class="d">Revisión en vivo de Requisitos + HU + Casos de uso (entrega intermedia).</div></div>
+    <div class="slot brk"><div class="t">21:20 – 21:30</div><div class="n">Descanso</div><div class="d">Preparar la proyección y cargar las páginas.</div></div>
+    <div class="slot"><div class="t">21:30 – 21:58</div><div class="n">Caso 1: Healthcare.gov</div><div class="d">Requisitos y RNF con documentos oficiales.</div></div>
+    <div class="slot brk"><div class="t">21:58 – 22:01</div><div class="n">Pase</div><div class="d">Cambiar de pestaña.</div></div>
+    <div class="slot"><div class="t">22:01 – 22:29</div><div class="n">Caso 2: Pokémon Go</div><div class="d">Estimación de demanda y elasticidad.</div></div>
+    <div class="slot brk"><div class="t">22:29 – 22:32</div><div class="n">Pase</div><div class="d">Cambiar de pestaña.</div></div>
+    <div class="slot"><div class="t">22:32 – 23:00</div><div class="n">Caso 3: Prime Day 2018</div><div class="d">Picos, degradación controlada, post-mortem y cierre.</div></div>
+  </div>
+  <div class="callout">
+    <strong>Qué está fijo y qué es propuesta</strong>
+    Fijo: las dos franjas horarias y que cada caso lleva media hora. <em>Propuesta a ajustar</em>: cómo se reparte la franja de Diseño de Sistemas Web (la única corrección
+    acordada es de unos 30 minutos "a toda furia"). Como hoy se mezclan las dos materias, esa franja reutiliza la página de requisitos del material.
+  </div>
+
+  <h2>Antes de empezar (10 minutos, durante el descanso)</h2>
+  <ul class="todo">
+    <li>Abrir en pestañas, en este orden: <a href="../casos-fallidos-dimensionamiento/healthcare-gov.html">Healthcare.gov</a>, <a href="../casos-fallidos-dimensionamiento/mapa-healthcare-gov.html">su mapa</a>, <a href="../casos-fallidos-dimensionamiento/pokemon-go.html">Pokémon Go</a>, <a href="../casos-fallidos-dimensionamiento/mapa-pokemon-go.html">su mapa</a>, <a href="../casos-fallidos-dimensionamiento/prime-day-2018.html">Prime Day</a>, <a href="../casos-fallidos-dimensionamiento/mapa-prime-day.html">su mapa</a> y <a href="../casos-fallidos-dimensionamiento/postmortem.html">el post-mortem</a>.</li>
+    <li>Recarga forzada (Ctrl+Shift+R) en cada pestaña: el navegador puede guardar una versión vieja de la hoja de estilo.</li>
+    <li>Elegir el tema según el proyector: oscuro para sala con poca luz, <em>versión clara</em> (botón arriba a la derecha) si hay luz de día o si se imprime.</li>
+    <li>Probar que los mapas se ven horizontales; el botón "↕ Ver en vertical" sirve para mostrar cómo se ve en el celular.</li>
+    <li>Tener a mano el <a href="../casos-fallidos-dimensionamiento/actividad.html">enlace de la actividad</a> para pasarlo por el grupo de la comisión, para el cierre.</li>
+    <li>Recordar que los estudiantes no tienen computadora en clase: todo se resuelve con el proyector y, como máximo, el celular.</li>
+  </ul>
+
+  <h2>Franja 1: Diseño de Sistemas Web (19:20 a 21:20)</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Horario</th><th>Qué se hace</th><th>Material</th></tr></thead>
+    <tbody>
+      <tr><td><span class="clock">19:20–19:50</span><span class="dur">30 min</span></td>
+        <td><strong>Revisión "a toda furia".</strong> Cada grupo, 3 a 4 minutos: entrega de Requisitos + HU + Casos de uso, solo con hallazgos concretos.<span class="p">Anotar los errores que se repiten en más de un grupo, sin nombres.</span></td><td>Entregas subidas</td></tr>
+      <tr><td><span class="clock">19:50–20:20</span><span class="dur">30 min</span></td>
+        <td><strong>Errores comunes de la corrida.</strong> Mostrar 3 ejemplos anonimizados de "mal / bien". Enganchar con los RNF: un requisito sin número no se puede verificar.<span class="p">Puente: "así se cayó Healthcare.gov".</span></td><td><a href="../casos-fallidos-dimensionamiento/metricas-y-requisitos.html">Métricas y requisitos</a> (plantilla de cuatro partes)</td></tr>
+      <tr><td><span class="clock">20:20–21:00</span><span class="dur">40 min</span></td>
+        <td><strong>Trabajo en el aire.</strong> Cada grupo corrige lo marcado y escribe un RNF de capacidad de su proyecto con la plantilla. Circular por los grupos.</td><td>"Para aplicar a tu proyecto", en la misma página</td></tr>
+      <tr><td><span class="clock">21:00–21:20</span><span class="dur">20 min</span></td>
+        <td><strong>Lo que viene.</strong> Modelo ER y Diseño UI (entrega del viernes 25/09, virtual). Pedir un borrador del ER en papel. Cierre y avisos.</td><td>Cronograma de la comisión</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Franja 2: los tres casos (21:30 a 23:00)</h2>
+  <p>En cada caso el orden es el mismo: <strong>contexto → mapa → requisitos → métricas → discusión</strong>. Los minutos de abajo suman 28; los 3 restantes son el pase entre casos.</p>
+
+  <h3>Caso 1 · Healthcare.gov (21:30 a 21:58)</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Horario</th><th>Qué mostrar y qué decir</th><th>Pantalla</th></tr></thead>
+    <tbody>
+      <tr><td><span class="clock">21:30–21:35</span><span class="dur">5 min</span></td>
+        <td><strong>Contexto y números.</strong> 1.100 probados, 55.000 esperados, 250.000 que llegaron. "La cuenta que hace mal a la vista": unas 200 veces.
+          <div class="say">"No fue un problema de tecnología primero: fue de gestión y de requisitos."</div></td>
+        <td><a href="../casos-fallidos-dimensionamiento/healthcare-gov.html">healthcare-gov</a>: portada y cuadro de siglas (aclarar CMS)</td></tr>
+      <tr><td><span class="clock">21:35–21:43</span><span class="dur">8 min</span></td>
+        <td><strong>Mapa.</strong> Arrancar en 501 usuarios (fluye). Ir a "Probado: 1.100": todavía fluye. Subir un poco: se corta. "Esperado: 55.000": pasa el 2 %. Activar el arreglo real (50.000) y después las dos hipótesis. Tocar "Identidad" y aclarar que ese bloque es ilustrativo.
+          <span class="p">Frase clave: se corta mucho antes de lo esperado.</span></td>
+        <td><a href="../casos-fallidos-dimensionamiento/mapa-healthcare-gov.html">mapa-healthcare-gov</a></td></tr>
+      <tr><td><span class="clock">21:43–21:51</span><span class="dur">8 min</span></td>
+        <td><strong>Requisitos (el corazón del caso).</strong> Los dos informes de la GAO y qué dicen sobre requisitos; la tabla de metas de CMS antes y después; RF frente a RNF; qué le sigue faltando a esas metas (verificación y degradación). Trazabilidad con el repaso de EIDAS.
+          <div class="say">"Un requisito sin origen ni dueño no se puede verificar antes del lanzamiento."</div></td>
+        <td>healthcare-gov: sección "Ampliación: los documentos oficiales sobre los requisitos"</td></tr>
+      <tr><td><span class="clock">21:51–21:55</span><span class="dur">4 min</span></td>
+        <td><strong>Métricas (Redes).</strong> Usuarios simultáneos, tiempo de respuesta bajo carga, disponibilidad. Recordar las clases 1 a 3.</td>
+        <td>healthcare-gov: "Lectura desde Redes y Comunicaciones"</td></tr>
+      <tr><td><span class="clock">21:55–21:58</span><span class="dur">3 min</span></td>
+        <td><strong>Discusión.</strong> ¿Quién debía tener autoridad para frenar el lanzamiento con 1.100 probados? ¿Habría cambiado algo un lanzamiento gradual?</td><td>Preguntas de la página</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">
+    <strong>Si vas atrasado</strong> Recortá las métricas a 2 minutos y pasá la discusión al final del día. No recortes el mapa ni los requisitos: son lo que este caso viene a mostrar.
+  </div>
+
+  <h3>Caso 2 · Pokémon Go (22:01 a 22:29)</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Horario</th><th>Qué mostrar y qué decir</th><th>Pantalla</th></tr></thead>
+    <tbody>
+      <tr><td><span class="clock">22:01–22:05</span><span class="dur">4 min</span></td>
+        <td><strong>Contexto.</strong> Objetivo 1×, peor caso 5×, realidad 50×. El peor caso fue diez veces menor que la realidad.
+          <div class="say">"Estimar mal no es un error del 20 %: acá fue un orden de magnitud."</div></td>
+        <td><a href="../casos-fallidos-dimensionamiento/pokemon-go.html">pokemon-go</a>: cifras y barras</td></tr>
+      <tr><td><span class="clock">22:05–22:13</span><span class="dur">8 min</span></td>
+        <td><strong>Mapa.</strong> Atajo "Peor caso previsto: 5×": aguanta. Subir a 6×: se rompe el balanceador. "Real: 50×". Activar solo el balanceador nuevo: el problema se mueve al clúster, que llega a su tope. Activar solo los nodos: no cambia nada. Con los dos: 100 %. Cerrar con el lanzamiento de Japón.
+          <span class="p">Mensaje: arreglar una etapa revela la siguiente.</span></td>
+        <td><a href="../casos-fallidos-dimensionamiento/mapa-pokemon-go.html">mapa-pokemon-go</a></td></tr>
+      <tr><td><span class="clock">22:13–22:21</span><span class="dur">8 min</span></td>
+        <td><strong>Requisitos reconstruidos.</strong> Aclarar primero que no existe un documento público de requisitos: es una reconstrucción a partir del post de Google. Recorrer la tabla dato → requisito → tipo, y el RNF con las cuatro partes. Remarcar la cuarta: qué se degrada primero.</td>
+        <td>pokemon-go: "Ampliación: los requisitos, reconstruidos"</td></tr>
+      <tr><td><span class="clock">22:21–22:25</span><span class="dur">4 min</span></td>
+        <td><strong>Métricas (Redes).</strong> Balanceo de carga, escalado horizontal, elasticidad, y lanzamiento escalonado por región.</td>
+        <td>pokemon-go: "Lectura desde Redes y Comunicaciones"</td></tr>
+      <tr><td><span class="clock">22:25–22:29</span><span class="dur">4 min</span></td>
+        <td><strong>Discusión.</strong> Si el peor caso era 5× y ocurrió 50×, ¿había que diseñar otro número o mayor capacidad de reacción? ¿Qué funciones se podrían apagar?</td><td>Preguntas de la página</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">
+    <strong>Si vas atrasado</strong> Mostrá en el mapa solo 5×, 50× y "los dos cambios". Dejá la tabla de requisitos con las tres primeras filas y el RNF con las cuatro partes.
+  </div>
+
+  <h3>Caso 3 · Prime Day 2018 (22:32 a 23:00)</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Horario</th><th>Qué mostrar y qué decir</th><th>Pantalla</th></tr></thead>
+    <tbody>
+      <tr><td><span class="clock">22:32–22:36</span><span class="dur">4 min</span></td>
+        <td><strong>Contexto.</strong> Un pico con fecha y hora, sobre la infraestructura más grande del mundo. Falló y batió récord de ventas.
+          <div class="say">"La pregunta no es si se cayó: es cuánto costó la falla y cuánto costó evitarla."</div></td>
+        <td><a href="../casos-fallidos-dimensionamiento/prime-day-2018.html">prime-day-2018</a></td></tr>
+      <tr><td><span class="clock">22:36–22:43</span><span class="dur">7 min</span></td>
+        <td><strong>Mapa.</strong> Subir hasta 12×: Sable se satura y arrastra Prime, autenticación y video, que por sí solos estaban al 51–60 %. Mostrar el autoescalado llegando al tope. Activar la portada reducida: todo vuelve a fluir. Conectar con HTML frente a JSON de la clase 1.</td>
+        <td><a href="../casos-fallidos-dimensionamiento/mapa-prime-day.html">mapa-prime-day</a></td></tr>
+      <tr><td><span class="clock">22:43–22:50</span><span class="dur">7 min</span></td>
+        <td><strong>Requisitos.</strong> Aclarar que Amazon no publicó los requisitos; sí documentos de cómo diseña (Well-Architected REL 4 a 7 y load shedding). Recorrer RNF-1 a RNF-5, destacando RNF-3 (aislar dependencias) y RNF-4 (degradación).</td>
+        <td>prime-day-2018: "Ampliación: los requisitos y los documentos de Amazon"</td></tr>
+      <tr><td><span class="clock">22:50–22:56</span><span class="dur">6 min</span></td>
+        <td><strong>Post-mortem y el informe.</strong> Las cuatro fuentes de evidencia y qué hay de cada caso. Recorrer el post-mortem de Prime Day ya redactado, marcando hecho, inferencia y estimación. Cerrar con la habilidad de escribir informes.
+          <div class="say">"Para escribir esto hace falta evidencia y hace falta escribir bien: las dos cosas son trabajo del analista."</div></td>
+        <td><a href="../casos-fallidos-dimensionamiento/postmortem.html">postmortem</a></td></tr>
+      <tr><td><span class="clock">22:56–23:00</span><span class="dur">4 min</span></td>
+        <td><strong>Cierre.</strong> Los tres casos en una tabla; la plantilla de RNF de cuatro partes. Pasar el enlace de la actividad para hacer en casa (celular).</td>
+        <td><a href="../casos-fallidos-dimensionamiento/metricas-y-requisitos.html">metricas-y-requisitos</a></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">
+    <strong>Si vas atrasado</strong> Recortá primero el post-mortem a 3 minutos (mostrar solo la tabla de evidencia por caso). Los ejercicios de la actividad se pueden dejar como tarea.
+  </div>
+
+  <h2>Qué no afirmar sin aclarar la fuente</h2>
+  <div class="grid">
+    <div class="card"><h3>Pérdidas de Prime Day</h3><p>Los 72–99 millones de dólares son una <strong>estimación de terceros</strong> que circuló en la prensa. No es una cifra de Amazon.</p></div>
+    <div class="card"><h3>Los mapas son modelos</h3><p>Las capacidades de cada bloque son <strong>ilustrativas</strong>. En Healthcare.gov, la fuente dice que el <em>sistema completo</em> llegaba a 1.100; no dice en qué componente.</p></div>
+    <div class="card"><h3>"Atendido" no es "inscripto"</h3><p>En el mapa de Healthcare.gov, "llega hasta el final" significa que la petición se atiende. Ese primer día solo 6 personas completaron la inscripción.</p></div>
+    <div class="card"><h3>Lanzar Japón después</h3><p>Baja el porcentaje de jugadores atendidos porque esos jugadores se dejan de contar. No es una pérdida de servicio; aclararlo si preguntan.</p></div>
+    <div class="card"><h3>Cifras sin confirmar</h3><p>Los 185.000 usuarios simultáneos del 31/03/2014 (de un resumen de la GAO) y las cifras de AWS de 2025 <strong>no se verificaron en el original</strong>. No usarlas en clase sin abrir la fuente.</p></div>
+    <div class="card"><h3>Load shedding y Atlassian</h3><p>El artículo de load shedding de Amazon y las guías de Atlassian en español se revisaron solo por resúmenes o títulos. Leerlos completos antes de citarlos textual.</p></div>
+  </div>
+
+  <h2>Preguntas para tener a mano</h2>
+  <ol>
+    <li>¿Qué habría cambiado si el resultado de 1.100 usuarios hubiera sido un criterio de "no se lanza"?</li>
+    <li>¿Cuál es el equivalente a Sable en el proyecto de cada grupo (la pieza compartida sin margen)?</li>
+    <li>De los tres casos, ¿cuál se puede analizar con más rigor y por qué? (Depende de la evidencia disponible.)</li>
+    <li>¿Qué RNF de los que vimos podrían escribir hoy para su proyecto, con las cuatro partes?</li>
+  </ol>
+
+  <h2>Enlaces del material</h2>
+  <div class="grid">
+    <a class="card" href="../casos-fallidos-dimensionamiento/index.html"><h3>Portada del material</h3><p>Con menú a todo el conjunto y botón de tema.</p></a>
+    <a class="card" href="../casos-fallidos-dimensionamiento/claro/index.html"><h3>Versión clara</h3><p>Fondo blanco: para proyector con luz o para imprimir.</p></a>
+    <a class="card" href="../casos-fallidos-dimensionamiento/actividad.html"><h3>Actividad para el celular</h3><p>Para pasar por el grupo al final.</p></a>
+  </div>
+</main>
+<footer>Guía docente · Terciario Urquiza. Uso interno; la página no está enlazada desde el material de los estudiantes.</footer>
+</body>
+</html>
