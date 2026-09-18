@@ -42,6 +42,8 @@
   .legend i{display:inline-block;width:22px;height:0;border-top:3px dashed;vertical-align:middle;margin-right:6px;}
   .marks{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
   .marks button{width:auto;margin:0;min-height:0;padding:8px 12px;font-size:.85rem;text-align:center;}
+  .viewbar{display:flex;justify-content:flex-end;margin:0 0 10px;}
+  .viewbar button{width:auto;margin:0;min-height:0;padding:8px 14px;font-size:.85rem;text-align:center;}
   #detail{min-height:110px;}
   #detail h3{margin-top:0;}
 </style>
@@ -74,6 +76,7 @@
   </section>
 
   <div class="sim">
+    <div class="viewbar"><button id="viewBtn" type="button" aria-label="Cambiar la orientación del mapa"></button></div>
     <svg id="map" role="img" aria-label="Mapa simplificado del flujo de inscripción de Healthcare.gov"></svg>
     <div class="legend">
       <span><i style="border-color:var(--ok)"></i>fluye bien</span>
@@ -204,7 +207,9 @@ function anchors(a,b,L){
   if(L.edgeDir==='x') return [A.x+A.w, A.y+A.h/2, B.x, B.y+B.h/2, 'cx'];
   return [A.x+A.w/2, A.y+A.h, B.x+B.w/2, B.y, 'cy'];
 }
+let forced = null;   // elección hecha con el botón
 function wantLayout(){
+  if(forced) return forced;
   const f = new URLSearchParams(location.search).get('layout');   // ?layout=v fuerza el diseño de celular
   if(f==='v') return 'V'; if(f==='h') return 'H';
   return innerWidth < 700 ? 'V' : 'H';
@@ -236,6 +241,11 @@ function build(){
     svg.appendChild(g); els.nodes[id] = g;
   });
   if(selected) els.nodes[selected].classList.add('sel');
+  updateViewBtn();
+}
+function updateViewBtn(){
+  const b = $('viewBtn'); if(!b) return;
+  b.textContent = layoutKey==='V' ? '↔ Ver en horizontal' : '↕ Ver en vertical';
 }
 function flowOf(a,b){
   switch(a+'>'+b){
@@ -300,6 +310,7 @@ function renderMarks(){
 
 $('mult').addEventListener('input', ()=>{ exactUsers = null; });
 addEventListener('resize', ()=>{ const k = wantLayout(); if(k!==layoutKey){ build(); draw(); } });
+$('viewBtn').onclick = ()=>{ forced = layoutKey==='V' ? 'H' : 'V'; build(); draw(); };
 build(); renderMitig(); renderMarks(); model(); draw();
 setInterval(()=>{ model(); draw(); }, 200);
 </script>
