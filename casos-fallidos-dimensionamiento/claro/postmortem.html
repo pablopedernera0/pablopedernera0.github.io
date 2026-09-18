@@ -75,10 +75,10 @@
     <thead><tr><th></th><th>Documentación inicial</th><th>Datos y logs</th><th>Registro del incidente</th><th>Análisis posterior</th></tr></thead>
     <tbody>
       <tr><th>Healthcare.gov</th>
-        <td>Los contratos y requisitos originales no son públicos, pero las auditorías (GAO) los analizan y citan qué faltó.</td>
+        <td>Los contratos y requisitos originales no son públicos, pero las auditorías de la GAO (<a href="https://www.gao.gov/products/gao-14-694" target="_blank" rel="noopener">GAO-14-694</a> y <a href="https://www.gao.gov/products/gao-15-238" target="_blank" rel="noopener">GAO-15-238</a>) los analizan y citan qué faltó.</td>
         <td>Prueba de carga de la víspera (1.100 usuarios) y las series de CMS (la agencia a cargo del sitio): respuesta, errores y disponibilidad.</td>
         <td>Notas internas del "war room" entregadas al Congreso (6 inscripciones el primer día).</td>
-        <td>OIG del Departamento de Salud (HHS), 2016; GAO (Oficina de Rendición de Cuentas del Congreso), 2014 y 2015; y el Servicio Digital de EE.UU. (USDS), 2016.</td></tr>
+        <td>OIG del Departamento de Salud (HHS), 2016; GAO (Oficina de Rendición de Cuentas del Congreso): <a href="https://www.gao.gov/products/gao-14-694" target="_blank" rel="noopener">GAO-14-694</a> (2014) y <a href="https://www.gao.gov/products/gao-15-238" target="_blank" rel="noopener">GAO-15-238</a> (2015); y el Servicio Digital de EE.UU. (USDS), 2016.</td></tr>
       <tr><th>Pokémon Go</th>
         <td>No es pública.</td>
         <td>No son públicos. Solo se conocen las cifras agregadas: 1×, 5× y 50×.</td>
@@ -134,7 +134,7 @@
     <div class="card"><h3>Citar la fuente de cada cifra</h3><p>Número, unidad, fecha y de dónde sale. Una cifra sin origen no se puede verificar ni defender.</p></div>
     <div class="card"><h3>Cronología con hora y zona</h3><p>Los sucesos en orden, con la hora y la zona horaria, sin mezclar lo que pasó con lo que se interpretó después.</p></div>
     <div class="card"><h3>Lenguaje sin culpables</h3><p>"Faltó una verificación previa al lanzamiento", no "el equipo X no probó". El informe describe el proceso y las decisiones, no juzga personas.</p></div>
-    <div class="card"><h3>Acciones con dueño y cierre</h3><p>Cada acción tiene responsable, fecha y criterio para darla por cerrada. La GAO, por ejemplo, hace el seguimiento de sus recomendaciones sobre Healthcare.gov hasta que quedan implementadas.</p></div>
+    <div class="card"><h3>Acciones con dueño y cierre</h3><p>Cada acción tiene responsable, fecha y criterio para darla por cerrada. La GAO, por ejemplo, hace el seguimiento de sus recomendaciones hasta que quedan implementadas: las cinco de <a href="https://www.gao.gov/products/gao-14-694" target="_blank" rel="noopener">GAO-14-694</a> figuran cerradas como implementadas en 2016.</p></div>
   </div>
   <div class="callout ok">
     <strong>Es la misma habilidad que usás en tu proyecto</strong>
@@ -177,7 +177,7 @@
   <ul class="sources">
     <li><span class="tag prim">primaria</span><a href="https://sre.google/sre-book/postmortem-culture/" target="_blank" rel="noopener">Google, Site Reliability Engineering, cap. 15: Postmortem Culture: Learning from Failure</a><span class="desc">Definición de post-mortem, cuándo escribirlo y qué significa "sin culpables".</span></li>
     <li><span class="tag prim">primaria</span><a href="https://sre.google/sre-book/example-postmortem/" target="_blank" rel="noopener">Google, Site Reliability Engineering: Example Postmortem</a><span class="desc">La estructura de secciones que usamos para el ejemplo de Prime Day.</span></li>
-    <li><span class="tag prim">primaria</span><a href="https://www.gao.gov/products/gao-14-694" target="_blank" rel="noopener">GAO-14-694</a> · <a href="https://www.gao.gov/products/gao-15-238" target="_blank" rel="noopener">GAO-15-238</a><span class="desc">Ejemplos de análisis posteriores con recomendaciones y seguimiento.</span></li>
+    <li><span class="tag prim">primaria</span><a href="https://www.gao.gov/products/gao-14-694" target="_blank" rel="noopener">GAO-14-694</a> · <a href="https://www.gao.gov/products/gao-15-238" target="_blank" rel="noopener">GAO-15-238</a><span class="desc">GAO-14-694 (2014): planificación y supervisión de contratos. GAO-15-238 (2015): buenas prácticas de desarrollo de sistemas. Ejemplos de análisis posteriores con recomendaciones y seguimiento.</span></li>
     <li><span class="tag prensa">prensa</span><a href="https://www.cnbc.com/2018/07/19/amazon-internal-documents-what-caused-prime-day-crash-company-scramble.html" target="_blank" rel="noopener">CNBC: documentos internos de Amazon sobre el Prime Day</a><span class="desc">La evidencia del registro del incidente en el caso de Prime Day.</span></li>
   </ul>
 
@@ -202,7 +202,7 @@ const QS = [
   {t:'"La verificación de identidad fue el cuello de botella de Healthcare.gov."', a:1,
    e:'Inferencia nuestra, sin sustento en la fuente: los informes dicen que el sistema completo llegaba a 1.100 usuarios, no en qué componente. Por eso en el mapa la marcamos como ilustrativa.'},
   {t:'"La GAO concluyó que Healthcare.gov se lanzó sin verificar que cumpliera los requisitos de rendimiento."', a:0,
-   e:'Hecho documentado: está escrito en el informe GAO-14-694 (julio de 2014).'}
+   e:'Hecho documentado: está escrito en el informe <a href="https://www.gao.gov/products/gao-14-694" target="_blank" rel="noopener">GAO-14-694</a> (julio de 2014), sobre planificación y supervisión de contratos.'}
 ];
 let ok = 0, done = 0;
 const quiz = document.getElementById('quiz');
@@ -223,7 +223,7 @@ QS.forEach((q, i) => {
     };
     opts.appendChild(b); return b;
   });
-  exp.innerHTML = '<strong>Respuesta</strong>'; exp.appendChild(document.createTextNode(q.e));
+  exp.innerHTML = '<strong>Respuesta</strong>' + q.e;   // textos fijos definidos arriba, con enlaces
   box.appendChild(exp); quiz.appendChild(box);
 });
 </script>
