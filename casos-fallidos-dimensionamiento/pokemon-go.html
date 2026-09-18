@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caso Pokémon Go</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../">pablopedernera0.github.io</a>
+  <nav>
+    <a href="index.html">Inicio</a>
+    <a href="healthcare-gov.html">Healthcare.gov</a>
+    <a class="on" href="pokemon-go.html">Pokémon Go</a>
+    <a href="prime-day-2018.html">Prime Day 2018</a>
+    <a href="mapa-prime-day.html">Mapa Prime Day</a>
+    <a href="mapa-pokemon-go.html">Mapa Pokémon Go</a>
+    <a href="mapa-healthcare-gov.html">Mapa Healthcare.gov</a>
+    <a href="cuellos-de-botella.html">Cuellos de botella</a>
+    <a href="metricas-y-requisitos.html">Métricas y requisitos</a>
+    <a href="actividad.html">Actividad</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="kicker">Caso 2 · Videojuego · 2016</span>
+    <h1>Pokémon Go: se planificó para 5×, llegó 50×</h1>
+    <p class="lead">En julio de 2016 Niantic lanzó un juego que corría sobre Google Cloud. El equipo había
+    estimado la demanda con cuidado, incluyendo un "peor caso". La realidad superó el peor caso
+    <strong>diez veces</strong>. Es el mejor caso para entender qué significa estimar mal la concurrencia,
+    porque el post-mortem lo escribió el propio proveedor de nube.</p>
+  </section>
+
+  <div class="grid">
+    <div class="stat ok"><div class="n">1×</div><div class="l">tráfico objetivo con el que se dimensionó el sistema</div></div>
+    <div class="stat acc"><div class="n">~5×</div><div class="l">estimación del peor caso</div></div>
+    <div class="stat bad"><div class="n">50×</div><div class="l">tráfico real, según el post de Google Cloud</div></div>
+  </div>
+
+  <h2>Objetivo, peor caso y realidad</h2>
+  <div class="bars">
+    <div class="bar-row"><div class="lab">Objetivo</div><div class="bar-track"><div class="bar-fill ok" style="width:2%;min-width:44px">1×</div></div></div>
+    <div class="bar-row"><div class="lab">Peor caso previsto</div><div class="bar-track"><div class="bar-fill acc" style="width:10%;min-width:44px">5×</div></div></div>
+    <div class="bar-row"><div class="lab">Realidad</div><div class="bar-track"><div class="bar-fill bad" style="width:100%">50×</div></div></div>
+  </div>
+  <div class="callout">
+    <strong>La lección de proporción</strong>
+    No fue un error del 20 %. El peor caso que el equipo consideró razonable quedó a un factor de <strong>diez</strong> de lo que pasó. Cuando el producto es nuevo y viral, no hay datos históricos: la estimación de concurrencia es una apuesta, y por eso se diseña para <em>crecer rápido</em> en vez de acertar un número.
+  </div>
+
+  <h2>Qué hicieron para sostenerlo</h2>
+  <ul class="timeline">
+    <li><time>Julio de 2016</time>Lanzamiento en Estados Unidos y otros países. El tráfico supera todas las previsiones y el equipo de Google Customer Reliability Engineering trabaja junto a Niantic.</li>
+    <li class="ok"><time>Sobre la marcha</time>Reemplazan el balanceador de carga de red por el balanceador HTTP/S de Google, con más control y mayor rendimiento.</li>
+    <li class="ok"><time>Sobre la marcha</time>Actualizan Google Container Engine (hoy GKE) a una versión que permite sumar más de mil nodos al clúster, sin cortar el servicio para los jugadores activos. Google lo compara con "cambiar el motor del avión en pleno vuelo".</li>
+    <li class="ok"><time>Dos semanas después</time>Lanzamiento en Japón, con registros de usuarios nuevos que triplicaron los del lanzamiento en EE.UU. Esta vez salió sin incidentes, gracias a lo aprendido y a la capacidad ya provisionada.</li>
+    <li><time>29 de septiembre de 2016</time>Luke Stone (director de Customer Reliability Engineering en Google) publica el post-mortem en el blog de Google Cloud.</li>
+  </ul>
+
+  <div class="grid">
+    <div class="stat info"><div class="n">Decenas de miles</div><div class="l">de núcleos de CPU que Google aprovisionó para el clúster de Niantic</div></div>
+    <div class="stat info"><div class="n">+1.000</div><div class="l">nodos que la actualización de GKE permitió agregar</div></div>
+    <div class="stat info"><div class="n">Mayor</div><div class="l">despliegue de Kubernetes en GKE hasta ese momento, según el post</div></div>
+  </div>
+
+  <div class="callout info">
+    <strong>Verlo animado</strong>
+    En el <a href="mapa-pokemon-go.html">mapa animado de Pokémon Go</a> podés poner la demanda en 1×, 5× o 50× y probar los dos cambios reales: el nuevo balanceador y los mil nodos más.
+  </div>
+
+  <h2>Lectura desde Diseño de Sistemas Web</h2>
+  <p>Acá el requisito no faltaba: el equipo escribió un objetivo y un peor caso. Lo que falló fue la
+  <strong>hipótesis detrás del requisito</strong>. Por eso conviene escribir los RNF de capacidad como
+  <em>rango con crecimiento</em>, no como un único número:</p>
+  <div class="callout ok">
+    <strong>RNF con elasticidad</strong>
+    "El sistema debe operar con la carga base (1×) y poder escalar hasta 10× en menos de X horas sin
+    interrumpir el servicio. Si se supera ese nivel, se activa el plan de contingencia (lista de espera,
+    lanzamiento por regiones, degradación de funciones no críticas)."
+  </div>
+  <p>La pregunta que un analista puede hacer al cliente es <em>"¿qué pasa si esto funciona demasiado bien?"</em>
+  Un éxito inesperado es también un riesgo del proyecto.</p>
+
+  <h2>Lectura desde Redes y Comunicaciones</h2>
+  <ul>
+    <li><strong>Balanceo de carga</strong>: el cambio de balanceador de red a HTTP/S muestra que la elección del componente que reparte el tráfico es una decisión de dimensionamiento, no un detalle.</li>
+    <li><strong>Escalado horizontal</strong>: más nodos, no una máquina más grande. Es lo que permite crecer sin cortar el servicio.</li>
+    <li><strong>Escalado escalonado por región</strong>: lanzar en Japón dos semanas después, con la lección aprendida, es una forma de controlar la rampa de demanda.</li>
+    <li><strong>Conexión con la clase 2</strong>: los pasos "usuarios concurrentes → CPU y RAM" cambian por completo si la concurrencia real es 50 veces la que se supuso.</li>
+  </ul>
+
+  <h2>Preguntas para discutir</h2>
+  <ol>
+    <li>Si el peor caso estimado era 5× y ocurrió 50×, ¿qué habría que haber diseñado distinto: el número o la capacidad de reacción?</li>
+    <li>¿Por qué lanzar en Japón salió bien dos semanas después, con tres veces más registros nuevos?</li>
+    <li>¿Qué funciones de un juego así se podrían apagar temporalmente para sobrevivir a un pico?</li>
+  </ol>
+
+  <h2>Fuentes</h2>
+  <ul class="sources">
+    <li><span class="tag prim">primaria</span><a href="https://cloud.google.com/blog/products/containers-kubernetes/bringing-pokemon-go-to-life-on-google-cloud" target="_blank" rel="noopener">Google Cloud Blog (Luke Stone, 29/09/2016): Bringing Pokémon GO to life on Google Cloud</a><span class="desc">De acá salen el objetivo 1×, el peor caso ~5×, los 50×, el cambio de balanceador y la actualización de GKE.</span></li>
+    <li><span class="tag prensa">prensa</span><a href="https://www.sdxcentral.com/news/how-google-dealt-with-pokemon-go-traffic-50-times-beyond-expectations/" target="_blank" rel="noopener">SDxCentral: How Google dealt with Pokémon GO traffic 50 times beyond expectations</a></li>
+    <li><span class="tag prensa">prensa</span><a href="https://www.itpro.com/cloud/363071/pokemon-gos-google-cloud-was-hit-by-50x-expected-server-traffic" target="_blank" rel="noopener">ITPro: Pokémon Go's Google Cloud was hit by 50x expected server traffic</a></li>
+    <li><span class="tag prensa">prensa</span><a href="https://gamesbeat.com/this-chart-shows-why-pokemon-gos-server-collapse-was-inevitable/" target="_blank" rel="noopener">GamesBeat: This chart shows why Pokémon Go's server collapse was inevitable</a><span class="desc">Un gráfico simple que compara la demanda con la capacidad.</span></li>
+  </ul>
+
+  <div class="pager">
+    <a href="healthcare-gov.html"><small>← Caso anterior</small>Healthcare.gov</a>
+    <a href="prime-day-2018.html"><small>Siguiente caso →</small>Prime Day 2018</a>
+  </div>
+</main>
+<footer>Material para clases de Diseño de Sistemas Web y Redes y Comunicaciones · Terciario Urquiza.</footer>
+</body>
+</html>

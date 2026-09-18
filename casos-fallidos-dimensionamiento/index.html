@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casos fallidos de dimensionamiento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../">pablopedernera0.github.io</a>
+  <nav>
+    <a class="on" href="index.html">Inicio</a>
+    <a href="healthcare-gov.html">Healthcare.gov</a>
+    <a href="pokemon-go.html">Pokémon Go</a>
+    <a href="prime-day-2018.html">Prime Day 2018</a>
+    <a href="mapa-prime-day.html">Mapa Prime Day</a>
+    <a href="mapa-pokemon-go.html">Mapa Pokémon Go</a>
+    <a href="mapa-healthcare-gov.html">Mapa Healthcare.gov</a>
+    <a href="cuellos-de-botella.html">Cuellos de botella</a>
+    <a href="metricas-y-requisitos.html">Métricas y requisitos</a>
+    <a href="actividad.html">Actividad</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="kicker">Diseño de Sistemas Web · Redes y Comunicaciones</span>
+    <h1>Cuando el sistema no aguanta: tres casos reales</h1>
+    <p class="lead">Tres lanzamientos con mucho presupuesto y equipos de primer nivel que se cayeron por
+    no haber estimado bien cuánta gente iba a usarlos a la vez. Los tres tienen números públicos, informes
+    oficiales o publicaciones de los propios protagonistas. Los vamos a leer con dos lentes: qué
+    <strong>requisito</strong> faltó (Diseño de Sistemas Web) y qué <strong>métrica</strong> falló
+    (Redes y Comunicaciones).</p>
+  </section>
+
+  <div class="grid">
+    <div class="stat bad"><div class="n">1.100</div><div class="l">usuarios simultáneos que soportaba Healthcare.gov la víspera del lanzamiento</div></div>
+    <div class="stat acc"><div class="n">50×</div><div class="l">el tráfico que Pokémon Go recibió respecto del objetivo de Niantic</div></div>
+    <div class="stat info"><div class="n">3 p.m.</div><div class="l">hora exacta a la que empezó el Prime Day 2018. A los pocos minutos ya fallaba</div></div>
+  </div>
+
+  <h2>Los casos</h2>
+  <div class="grid">
+    <a class="card" href="healthcare-gov.html">
+      <h3>Healthcare.gov</h3>
+      <div class="meta">EE.UU. · octubre de 2013 · sector público</div>
+      <p>Un portal de inscripción a seguros de salud que se probó con 1.100 usuarios y salió a recibir cientos de miles.
+      El caso donde <em>nadie era dueño</em> del requisito de capacidad.</p>
+    </a>
+    <a class="card" href="pokemon-go.html">
+      <h3>Pokémon Go</h3>
+      <div class="meta">Niantic + Google Cloud · julio de 2016 · videojuego</div>
+      <p>Objetivo 1×, peor caso 5×, realidad 50×. Un post-mortem escrito por Google que cuenta cómo se
+      escaló en vivo con millones de jugadores conectados.</p>
+    </a>
+    <a class="card" href="prime-day-2018.html">
+      <h3>Prime Day 2018</h3>
+      <div class="meta">Amazon · julio de 2018 · ventas online</div>
+      <p>El caso del comercio electrónico y el pico de demanda: el sitio falló en los primeros minutos
+      y, aun así, fue el evento de ventas más grande de la historia de Amazon.</p>
+    </a>
+  </div>
+
+  <h2>Cómo se usa este material</h2>
+  <div class="grid">
+    <a class="card" href="mapa-prime-day.html">
+      <h3>Mapa animado de Prime Day</h3>
+      <p>Los componentes de Amazon con sus dependencias y el flujo de peticiones entre ellos. Al subir la demanda
+      se ve cómo la saturación de Sable arrastra a Prime, autenticación y video.</p>
+    </a>
+    <a class="card" href="mapa-healthcare-gov.html">
+      <h3>Mapa animado de Healthcare.gov</h3>
+      <p>El flujo de inscripción con usuarios simultáneos reales: 1.100 probados, 55.000 esperados, 250.000 llegados.
+      Se ve dónde se corta y qué habría pasado con otras decisiones.</p>
+    </a>
+    <a class="card" href="mapa-pokemon-go.html">
+      <h3>Mapa animado de Pokémon Go</h3>
+      <p>Balanceador, clúster y base de datos frente a una demanda de 1×, 5× y 50×. Se prueban los dos cambios reales
+      que hicieron Niantic y Google.</p>
+    </a>
+    <a class="card" href="cuellos-de-botella.html">
+      <h3>Cuellos de botella (animación)</h3>
+      <p>Una simulación donde se sube la demanda y se ve qué etapa se satura primero, con las medidas
+      reales de cada caso como botones.</p>
+    </a>
+    <a class="card" href="metricas-y-requisitos.html">
+      <h3>Métricas y requisitos</h3>
+      <p>Los tres casos lado a lado: qué se midió, qué se debió haber pedido, y las fallas que se repiten.
+      Es el puente entre las dos materias.</p>
+    </a>
+    <a class="card" href="actividad.html">
+      <h3>Actividad para el celular</h3>
+      <p>Predicciones de una sola pulsación y un medidor donde se mueve un control deslizante. No requiere
+      calcular nada.</p>
+    </a>
+  </div>
+
+  <h2>Antes de citar estas cifras</h2>
+  <div class="callout info">
+    <strong>Cómo distinguimos las fuentes</strong>
+    Cada página marca sus fuentes como <span class="tag prim mono" style="font-size:.7rem;padding:2px 8px;border-radius:999px;">primaria</span>
+    (informe oficial, comunicado o post de la propia empresa),
+    <span class="tag prensa mono" style="font-size:.7rem;padding:2px 8px;border-radius:999px;">prensa</span>
+    (medio que revisó documentos) o
+    <span class="tag sec mono" style="font-size:.7rem;padding:2px 8px;border-radius:999px;">secundaria</span>
+    (análisis de terceros). Donde una cifra es una estimación externa y no un dato de la organización, lo decimos.
+  </div>
+</main>
+<footer>Material para clases de Diseño de Sistemas Web y Redes y Comunicaciones · Terciario Urquiza.</footer>
+</body>
+</html>

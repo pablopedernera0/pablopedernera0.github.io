@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuellos de botella animados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  .sim{background:var(--panel);border:1px solid var(--panel-border);border-radius:14px;padding:16px;margin:18px 0;}
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+  .tabs button{width:auto;margin:0;text-align:center;padding:10px 16px;}
+  .tabs button.on{border-color:var(--accent);background:var(--accent-soft);}
+  canvas{width:100%;height:auto;display:block;background:#0b0f14;border:1px solid var(--panel-border);border-radius:10px;}
+  .ctrl{margin:14px 0 6px;}
+  .ctrl label{display:flex;justify-content:space-between;gap:12px;font-size:.9rem;color:var(--muted);}
+  .ctrl label b{color:var(--text);font-family:'IBM Plex Mono',monospace;}
+  .mitig{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:10px 0;}
+  .mitig button{margin:0;font-size:.9rem;}
+  .mitig button.act{border-color:var(--ok);background:var(--ok-soft);}
+  .readout{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-top:12px;}
+  .readout .stat .n{font-size:1.5rem;}
+  .marks{display:none;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .marks button{width:auto;margin:0;min-height:0;padding:8px 12px;font-size:.85rem;text-align:center;}
+  .note{font-size:.82rem;color:var(--muted);margin-top:10px;}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../">pablopedernera0.github.io</a>
+  <nav>
+    <a href="index.html">Inicio</a>
+    <a href="healthcare-gov.html">Healthcare.gov</a>
+    <a href="pokemon-go.html">Pokémon Go</a>
+    <a href="prime-day-2018.html">Prime Day 2018</a>
+    <a href="mapa-prime-day.html">Mapa Prime Day</a>
+    <a href="mapa-pokemon-go.html">Mapa Pokémon Go</a>
+    <a href="mapa-healthcare-gov.html">Mapa Healthcare.gov</a>
+    <a class="on" href="cuellos-de-botella.html">Cuellos de botella</a>
+    <a href="metricas-y-requisitos.html">Métricas y requisitos</a>
+    <a href="actividad.html">Actividad</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="kicker">Simulación · Redes y Comunicaciones</span>
+    <h1>Dónde se traba un sistema</h1>
+    <p class="lead">Las peticiones (puntos) viajan de izquierda a derecha. Cada etapa atiende un máximo por segundo.
+    Lo que no entra se acumula (la barra de la etapa se llena) y, cuando se llena del todo, se rechaza (puntos rojos).
+    Subí la demanda y mirá <strong>qué etapa se satura primero</strong>: esa es la que manda, sin importar cuánto
+    sobre en las demás.</p>
+  </section>
+
+  <div class="sim">
+    <div class="tabs" id="tabs"></div>
+    <canvas id="cv" width="960" height="300" aria-label="Simulación de peticiones fluyendo por etapas de un sistema"></canvas>
+
+    <div class="ctrl">
+      <label><span id="multName">Demanda (× lo esperado)</span><b id="multLabel">1×</b></label>
+      <input type="range" id="mult" min="1" max="50" value="1" step="1">
+      <div class="marks" id="marks"></div>
+    </div>
+
+    <div class="mitig" id="mitig"></div>
+
+    <div class="readout">
+      <div class="stat info"><div class="n" id="rDem">0</div><div class="l" id="rDemL">peticiones por segundo llegando</div></div>
+      <div class="stat ok"><div class="n" id="rOk">0 %</div><div class="l">llega hasta el final</div></div>
+      <div class="stat bad"><div class="n" id="rRej">0</div><div class="l" id="rRejL">rechazadas o en espera por segundo</div></div>
+      <div class="stat acc"><div class="n" id="rBot" style="font-size:1.05rem;line-height:1.3">—</div><div class="l">cuello de botella actual</div></div>
+    </div>
+    <p class="note" id="caseNote"></p>
+  </div>
+
+  <div class="callout">
+    <strong>Un modelo, no un plano</strong>
+    Es una simplificación para entender la idea. Los <em>números reales</em> de cada caso (factor 50×, 1.100 usuarios,
+    "out of capacity for scaling") están en las páginas de los casos. Las capacidades exactas de cada etapa acá son
+    ilustrativas. Lo que sí es real es el <em>tipo de cuello de botella</em> y las medidas que se tomaron.
+  </div>
+
+  <h2>Qué mirar</h2>
+  <ol>
+    <li>Con demanda 1×, todo fluye. Subí de a poco: ¿a partir de qué multiplicador aparece el primer punto rojo?</li>
+    <li>Ampliar una etapa que <em>no</em> es el cuello de botella, ¿mejora algo? Probalo.</li>
+    <li>Una medida de mitigación reduce la demanda que llega, y otra aumenta la capacidad. ¿Cuál cuesta más en la vida real?</li>
+  </ol>
+
+  <div class="pager">
+    <a href="prime-day-2018.html"><small>← Caso anterior</small>Prime Day 2018</a>
+    <a href="metricas-y-requisitos.html"><small>Siguiente →</small>Métricas y requisitos</a>
+  </div>
+</main>
+<footer>Material para clases de Diseño de Sistemas Web y Redes y Comunicaciones · Terciario Urquiza.</footer>
+
+<script>
+/* Modelo: cada etapa tiene capacidad (req/s) y una cola limitada. La demanda base (1×) es 100 req/s. */
+const BASE = 100;
+const CASES = {
+  pokemon: {
+    name: 'Pokémon Go',
+    stages: [
+      {n:'Jugadores', cap:1e9},
+      {n:'Balanceador', cap:560},
+      {n:'Clúster de app', cap:1100},
+      {n:'Datastore', cap:6000}
+    ],
+    mitig: [
+      {id:'lb',  t:'Cambiar al balanceador HTTP/S', d:'Sube la capacidad del balanceador', fx:s=>{s.stages[1].cap=6000;}},
+      {id:'nodes', t:'Sumar más de 1.000 nodos', d:'Sube la capacidad del clúster de app', fx:s=>{s.stages[2].cap=6000;}},
+      {id:'ramp', t:'Lanzar por regiones (rampa)', d:'Reduce la demanda que llega a la vez', fx:s=>{s.entry=0.35;}}
+    ],
+    note: 'Real: el equipo cambió el balanceador de red por el HTTP/S y amplió el clúster de GKE. El objetivo era 1×, el peor caso 5× y la realidad fue 50×.'
+  },
+  prime: {
+    name: 'Prime Day 2018',
+    stages: [
+      {n:'Compradores', cap:1e9},
+      {n:'Portada', cap:1600},
+      {n:'Prime, Auth, Video', cap:1200},
+      {n:'Sable', cap:900}
+    ],
+    mitig: [
+      {id:'fallback', t:'Portada reducida (fallback)', d:'Cada visita genera menos llamadas a servicios internos', fx:s=>{s.load=[1,1,0.5,0.5];}},
+      {id:'intl', t:'Cortar tráfico internacional', d:'Menos compradores llegando al sistema', fx:s=>{s.entry*=0.65;}},
+      {id:'q25', t:'Limitar la portada al 25 %', d:'Solo una parte de los visitantes entra', fx:s=>{s.entry*=0.25;}}
+    ],
+    note: 'Real: según documentos internos revisados por CNBC, Sable se saturó y cayó en cascada Prime, autenticación y video. Amazon usó portada reducida, cortó el tráfico internacional y limitó la portada al 25 %.'
+  },
+  health: {
+    name: 'Healthcare.gov',
+    unit: 'usuarios',
+    users: true,          // el control va en usuarios simultáneos reales (escala logarítmica)
+    stages: [
+      {n:'Usuarios', cap:1e9},
+      {n:'Portal web', cap:90000},
+      {n:'Verificación de identidad', cap:1100},
+      {n:'Inscripción', cap:30000}
+    ],
+    mitig: [
+      {id:'phased', t:'Lanzamiento gradual', d:'Se habilita por tramos: solo una pequeña parte de los usuarios entra a la vez', fx:s=>{s.entry=0.004;}},
+      {id:'expand', t:'Ampliar verificación de identidad', d:'Sube la capacidad de la etapa lenta', fx:s=>{s.stages[2].cap=300000;}},
+      {id:'wait', t:'Sala de espera virtual', d:'Deja entrar solo lo que el sistema puede atender; el resto espera', fx:s=>{s.wait=true;}}
+    ],
+    note: 'Real: la prueba de carga de la víspera llegó a 1.100 usuarios simultáneos; se esperaban 50–60 mil y llegaron ~250 mil. La etapa lenta es una ilustración de esa brecha (no el diagrama real del sistema); los tres números sí son los reales. Probá los atajos: se rompe ya en 1.100, muy por debajo de lo esperado.'
+  }
+};
+
+let cur = 'pokemon';
+let active = {};           // mitigaciones activas por caso
+let state = null;          // estado de simulación
+let particles = [];
+
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const $ = id => document.getElementById(id);
+
+function build(){
+  const c = CASES[cur];
+  const s = {
+    stages: c.stages.map(x=>({n:x.n, cap:x.cap, q:0, in:0, out:0, drop:0})),
+    entry: 1, load: [1,1,1,1], wait: false
+  };
+  (c.mitig).forEach(m=>{ if(active[cur] && active[cur][m.id]) m.fx(s); });
+  return s;
+}
+const HEALTH_MARKS = [['Probado: 1.100',1100],['Esperado: 55.000',55000],['Real: 250.000',250000]];
+function usersFromSlider(v){ return Math.round(100*Math.pow(10, v*3.5/100)); }   // 0..100 -> 100..316.000
+function sliderFromUsers(u){ return Math.round(Math.log10(u/100)/3.5*100); }
+function unitOf(){ return CASES[cur].unit || '/s'; }
+let exactUsers = null;   // atajo: usa la cifra exacta (1.100, 55.000, 250.000) sin el redondeo del control
+function curDemand(){ const v = +$('mult').value; return CASES[cur].users ? (exactUsers ?? usersFromSlider(v)) : BASE*v; }
+function updateLabel(){
+  const v = +$('mult').value;
+  $('multLabel').textContent = CASES[cur].users ? curDemand().toLocaleString('es-AR')+' usuarios' : v+'×';
+}
+function configSlider(){
+  const c = CASES[cur], m = $('mult'), marks = $('marks');
+  marks.innerHTML = ''; marks.style.display = 'none'; exactUsers = null;
+  if(c.users){
+    m.min = 0; m.max = 100; m.step = 1; m.value = 20;       // arranca en ~500 usuarios: por debajo de la capacidad
+    $('multName').textContent = 'Usuarios simultáneos (escala logarítmica)';
+    $('rDemL').textContent = 'usuarios simultáneos';
+    marks.style.display = 'flex';
+    HEALTH_MARKS.forEach(([t,u])=>{ const b=document.createElement('button'); b.textContent=t; b.onclick=()=>{ m.value=sliderFromUsers(u); exactUsers=u; updateLabel(); }; marks.appendChild(b); });
+  } else {
+    m.min = 1; m.max = 50; m.step = 1; m.value = 1;
+    $('multName').textContent = 'Demanda (× lo esperado)';
+    $('rDemL').textContent = 'peticiones por segundo llegando';
+  }
+  updateLabel();
+}
+function reset(keepSlider){
+  state = build(); particles = [];
+  if(!keepSlider) configSlider();
+  const c = CASES[cur];
+  $('caseNote').textContent = c.note;
+  $('rRejL').textContent = c.users ? 'usuarios rechazados o en espera' : 'rechazadas o en espera por segundo';
+  renderTabs(); renderMitig();
+}
+function renderTabs(){
+  $('tabs').innerHTML = '';
+  Object.keys(CASES).forEach(k=>{
+    const b = document.createElement('button');
+    b.textContent = CASES[k].name;
+    if(k===cur) b.className='on';
+    b.onclick = ()=>{ cur = k; reset(); };
+    $('tabs').appendChild(b);
+  });
+}
+function renderMitig(){
+  const c = CASES[cur];
+  $('mitig').innerHTML = '';
+  c.mitig.forEach(m=>{
+    const b = document.createElement('button');
+    const on = active[cur] && active[cur][m.id];
+    b.className = on ? 'act' : '';
+    b.innerHTML = '<strong>'+(on?'✓ ':'')+m.t+'</strong><br><small style="color:var(--muted)">'+m.d+'</small>';
+    b.onclick = ()=>{ active[cur] = active[cur]||{}; active[cur][m.id] = !active[cur][m.id]; reset(true); };
+    $('mitig').appendChild(b);
+  });
+}
+
+const QMAX = 1.2;       // segundos de cola máxima (capacidad × QMAX)
+const DT = 0.1;
+function effCap(s,i){ return s.cap / (state.load[i]||1); }
+function tick(){
+  const st = state.stages;
+  const demand = curDemand();
+  const arrivals = demand * state.entry;
+  let flow = arrivals, waiting = 0;
+  if(state.wait){
+    // la sala de espera deja pasar solo lo que la etapa más lenta puede procesar
+    let lim = Infinity;
+    for(let i=1;i<st.length;i++) lim = Math.min(lim, effCap(st[i],i));
+    if(flow > lim){ waiting = flow - lim; flow = lim; }
+  }
+  st.forEach((s,i)=>{
+    if(i===0){ s.in = flow; s.out = flow; s.drop = 0; return; }
+    const cap = effCap(s,i);
+    const avail = s.q + flow*DT;
+    const served = Math.min(avail, cap*DT);
+    let q = avail - served, drop = 0;
+    const qmax = cap*QMAX;
+    if(q > qmax){ drop = q - qmax; q = qmax; }
+    s.q = q; s.in = flow; s.out = served/DT; s.drop = drop/DT;
+    flow = s.out;
+  });
+  const last = st[st.length-1];
+  const totalDrop = st.reduce((a,s)=>a+s.drop,0) + waiting + (demand-arrivals);
+  const okPct = Math.max(0, Math.min(100, last.out / demand * 100));
+  $('rDem').textContent = Math.round(demand).toLocaleString('es-AR');
+  $('rOk').textContent = Math.round(okPct) + ' %';
+  $('rRej').textContent = Math.round(totalDrop).toLocaleString('es-AR');
+  $('rRejL').textContent = CASES[cur].users ? 'usuarios rechazados o en espera' : 'rechazadas o en espera por segundo';
+  // cuello de botella: entre las etapas que ya se están llenando, la de menor capacidad es la que limita el conjunto
+  const full = st.map((s,i)=>i).filter(i=> i>0 && st[i].q/(effCap(st[i],i)*QMAX) > 0.15);
+  const idx = full.length ? full.reduce((a,b)=> effCap(st[b],b) < effCap(st[a],a) ? b : a) : -1;
+  $('rBot').textContent = idx>=0 ? st[idx].n : 'ninguno: todo fluye';
+  spawnParticles();
+}
+
+function nodeX(i, W, n){ const pad=70; return pad + i*((W-2*pad)/(n-1)); }
+function spawnParticles(){
+  if(particles.length>400) return;   // tope: con la pestaña oculta no se dibuja ni se limpia
+  const W = cv.width, n = state.stages.length, y = cv.height/2;
+  state.stages.forEach((s,i)=>{
+    if(i===0) return;
+    const rate = Math.min(6, s.in/120);   // partículas por tick (10/s)
+    let k = rate; while(k>0){ if(Math.random()<Math.min(1,k)) particles.push({x:nodeX(i-1,W,n),y:y+(Math.random()-.5)*44,tx:nodeX(i,W,n),bad:false,life:0}); k--; }
+    const dr = Math.min(3, s.drop/120);
+    let d = dr; while(d>0){ if(Math.random()<Math.min(1,d)) particles.push({x:nodeX(i,W,n)-20,y:y+30,tx:0,bad:true,life:0,vy:1+Math.random()*2}); d--; }
+  });
+}
+
+function draw(){
+  const W = cv.width, H = cv.height, n = state.stages.length, y = H/2;
+  ctx.clearRect(0,0,W,H);
+  // enlaces
+  ctx.strokeStyle='#2a343f'; ctx.lineWidth=2;
+  for(let i=0;i<n-1;i++){ ctx.beginPath(); ctx.moveTo(nodeX(i,W,n),y); ctx.lineTo(nodeX(i+1,W,n),y); ctx.stroke(); }
+  // partículas
+  for(let i=particles.length-1;i>=0;i--){
+    const p = particles[i]; p.life++;
+    if(p.bad){ p.y += p.vy; p.x += 0.3; if(p.life>30){ particles.splice(i,1); continue; } ctx.fillStyle='rgba(229,96,77,'+(1-p.life/30)+')'; }
+    else { p.x += 7; if(p.x>=p.tx){ particles.splice(i,1); continue; } ctx.fillStyle='#6aa6e8'; }
+    ctx.beginPath(); ctx.arc(p.x,p.y,3,0,7); ctx.fill();
+  }
+  // nodos
+  state.stages.forEach((s,i)=>{
+    const x = nodeX(i,W,n), bw = 118, bh = 110;
+    const r = i===0 ? 0 : Math.min(1, s.q/(effCap(s,i)*QMAX));
+    const col = r>0.9 ? '#e5604d' : r>0.35 ? '#e0a63e' : '#45b8a8';
+    ctx.fillStyle='#1a222b'; ctx.strokeStyle = i===0 ? '#6aa6e8' : col; ctx.lineWidth=3;
+    roundRect(x-bw/2,y-bh/2,bw,bh,12); ctx.fill(); ctx.stroke();
+    if(i>0){
+      ctx.fillStyle = col; ctx.globalAlpha=.85;
+      const fh = (bh-12)*r; ctx.fillRect(x-bw/2+6, y+bh/2-6-fh, bw-12, fh);
+      ctx.globalAlpha=1;
+    }
+    ctx.fillStyle='#e7ecf0'; ctx.textAlign='center';
+    ctx.font='600 14px "IBM Plex Sans",sans-serif';
+    wrap(s.n, x, y-bh/2+22, bw-12, 16);
+    ctx.font='12px "IBM Plex Mono",monospace'; ctx.fillStyle='#8b9db0';
+    if(i>0) ctx.fillText(Math.round(effCap(s,i)).toLocaleString('es-AR')+' '+unitOf(), x, y+bh/2-12);
+  });
+}
+function wrap(t,x,y,mw,lh){
+  const words=t.split(' '); let line='', yy=y;
+  words.forEach(w=>{ const test=line?line+' '+w:w; if(ctx.measureText(test).width>mw && line){ ctx.fillText(line,x,yy); line=w; yy+=lh; } else line=test; });
+  ctx.fillText(line,x,yy);
+}
+function roundRect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+function frame(){ draw(); requestAnimationFrame(frame); }
+
+$('mult').addEventListener('input', ()=>{ exactUsers = null; updateLabel(); });
+reset();
+setInterval(tick, DT*1000);
+frame();
+</script>
+</body>
+</html>

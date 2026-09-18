@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caso Prime Day 2018</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../">pablopedernera0.github.io</a>
+  <nav>
+    <a href="index.html">Inicio</a>
+    <a href="healthcare-gov.html">Healthcare.gov</a>
+    <a href="pokemon-go.html">Pokémon Go</a>
+    <a class="on" href="prime-day-2018.html">Prime Day 2018</a>
+    <a href="mapa-prime-day.html">Mapa Prime Day</a>
+    <a href="mapa-pokemon-go.html">Mapa Pokémon Go</a>
+    <a href="mapa-healthcare-gov.html">Mapa Healthcare.gov</a>
+    <a href="cuellos-de-botella.html">Cuellos de botella</a>
+    <a href="metricas-y-requisitos.html">Métricas y requisitos</a>
+    <a href="actividad.html">Actividad</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="kicker">Caso 3 · Ventas online · 2018</span>
+    <h1>Prime Day 2018: la tienda más grande del mundo también se cae</h1>
+    <p class="lead">Un evento de ventas anunciado con semanas de anticipación, con fecha y hora exactas, sobre
+    la infraestructura de comercio electrónico más grande del planeta. Igual falló en los primeros minutos.
+    Es el caso para pensar en <strong>picos de tráfico previsibles</strong>, como Navidad, Black Friday o
+    Hot Sale.</p>
+  </section>
+
+  <div class="grid">
+    <div class="stat bad"><div class="n">3:04 p.m.</div><div class="l">hora (ET) desde la que Downdetector mostró fallas. El evento empezó a las 3:00 p.m.</div></div>
+    <div class="stat acc"><div class="n">36 h</div><div class="l">duración del evento, del 16 al 17 de julio de 2018</div></div>
+    <div class="stat ok"><div class="n">+100 M</div><div class="l">productos vendidos en el evento, según Amazon: el mayor de su historia</div></div>
+  </div>
+
+  <div class="callout">
+    <strong>Dos verdades a la vez</strong>
+    El sitio falló y el evento batió el récord de ventas. Ambas cosas están documentadas. Por eso la pregunta que
+    conviene hacer no es "¿se cayó?" sino <strong>"¿cuánto costó la falla y cuánto costó evitarla?"</strong>
+  </div>
+
+  <h2>Cronología con las horas del documento interno</h2>
+  <p class="meta" style="color:var(--muted);font-size:.85rem">Las horas del ítem 2 en adelante están en hora del Pacífico (PT) y provienen de documentos internos de Amazon revisados por CNBC. El evento empezó a las 3:00 p.m. ET, que son las 12:00 PT.</p>
+  <ul class="timeline">
+    <li><time>16 de julio de 2018, 3:00 p.m. ET</time>Empieza el Prime Day. En minutos, compradores en escritorio y celular ven la página de error de Amazon con fotos de perros ("Sorry, something went wrong on our end").</li>
+    <li class="bad"><time>12:00 PT</time>Amazon pasa a una <strong>página de inicio reducida de emergencia</strong> porque los errores aumentan.</li>
+    <li class="bad"><time>12:15 PT</time><strong>Se corta temporalmente el tráfico internacional</strong> para descargar la presión sobre Sable, un sistema interno de almacenamiento y cómputo del que dependen varios servicios.</li>
+    <li class="bad"><time>~1 hora después del inicio</time>Un parte interno dice "Currently out of capacity for scaling": no queda capacidad para seguir escalando. Los expertos que revisaron los documentos infieren que el autoescalado no alcanzó y hubo que agregar servidores a mano.</li>
+    <li class="ok"><time>12:37 PT</time>La página de inicio normal se reabre solo para el <strong>25 %</strong> del tráfico.</li>
+    <li class="ok"><time>Horas después</time>El sitio se recupera. Amazon anuncia el evento como el más grande de su historia.</li>
+  </ul>
+
+  <h2>El mecanismo de la falla</h2>
+  <div class="grid">
+    <div class="card"><h3>1. Faltó capacidad</h3><p>Según los documentos, Amazon no había conseguido suficientes servidores para el tráfico del arranque.</p></div>
+    <div class="card"><h3>2. Un servicio compartido se saturó</h3><p>Sable, una dependencia interna, recibió más presión de la que podía sostener.</p></div>
+    <div class="card"><h3>3. La falla se propagó en cascada</h3><p>Cayeron servicios que dependen de Sable: Prime, autenticación y reproducción de video.</p></div>
+    <div class="card"><h3>4. Se apagaron cosas a propósito</h3><p>Se redujo el tráfico internacional y se limitó la portada al 25 %: sacrificar parte del servicio para salvar el resto.</p></div>
+  </div>
+
+  <div class="callout info">
+    <strong>Conexión con lo que ya vimos en Redes y Comunicaciones</strong>
+    La "página de inicio reducida" es el mismo principio de la <a href="../dimensionamiento-servidores/html-vs-json.html">comparación HTML vs. JSON</a>:
+    cuando el servidor no da abasto, lo primero que se hace es entregar una respuesta más liviana.
+    Una página armada por completo pesa mucho más que un dato mínimo, y a escala esa diferencia decide si el
+    sistema responde.
+  </div>
+
+  <div class="callout info">
+    <strong>Verlo animado</strong>
+    En el <a href="mapa-prime-day.html">mapa animado de Prime Day</a> podés subir la demanda y ver cómo se satura Sable y qué arrastra.
+  </div>
+
+  <h2>¿Cuánto costó?</h2>
+  <p>Circularon estimaciones de ventas perdidas de entre <strong>72 y 99 millones de dólares</strong>, atribuidas
+  por la prensa a análisis de terceros. <strong>No son cifras de Amazon</strong>, que informó récords de ventas y
+  no reconoció un monto de pérdida. Si la usamos en clase, la citamos como estimación externa.</p>
+  <div class="callout bad">
+    <strong>Una limitación del análisis</strong>
+    Con récord de ventas y falla simultáneos, es difícil separar cuánto se perdió de cuánto se recuperó
+    (gente que volvió más tarde). El costo real de una caída no es solo lo que se dejó de vender.
+  </div>
+
+  <h2>Lectura desde Diseño de Sistemas Web</h2>
+  <p>Este pico no era una sorpresa, tenía fecha y hora. El requisito habría sido de <strong>planificación de
+  picos</strong>:</p>
+  <div class="callout ok">
+    <strong>Ejemplo de RNF para una tienda online</strong>
+    "El sitio debe soportar el triple del pico de la temporada anterior durante las primeras 2 horas de una campaña anunciada,
+    con la página de inicio respondiendo en menos de 3 segundos. Si la carga supera ese nivel, el sistema deberá
+    degradar de forma controlada: página reducida, cola de espera o limitación por región."
+  </div>
+  <p>Fijate que el requisito incluye <strong>qué hacer cuando no alcanza</strong>: la degradación controlada es parte
+  del diseño, no una emergencia.</p>
+
+  <h2>Lectura desde Redes y Comunicaciones</h2>
+  <ul>
+    <li><strong>Autoescalado con límite</strong>: escalar automáticamente no sirve si el proveedor o la cuota se quedan sin capacidad ("out of capacity for scaling").</li>
+    <li><strong>Dependencias compartidas</strong>: un solo servicio interno saturado puede tumbar autenticación, video y compras a la vez. Se estima con el peor caso de <em>cada</em> dependencia.</li>
+    <li><strong>Pico de arranque</strong>: cuando un evento empieza a una hora exacta, todos llegan en el mismo minuto. La carga no crece de forma gradual, sube en escalón.</li>
+    <li><strong>Degradación controlada</strong>: página reducida, cola de espera, limitación de tráfico. Son herramientas de dimensionamiento tanto como comprar servidores.</li>
+  </ul>
+
+  <h2>Y después: cómo escala hoy</h2>
+  <p>Cada año AWS publica en su blog los números de infraestructura de Prime Day. Es un contraste útil con 2018:
+  según esos resúmenes, en 2025 DynamoDB llegó a un pico de unos <strong>151 millones de solicitudes por segundo</strong>
+  y CloudFront superó las 500 millones de peticiones HTTP por minuto. Los posts también describen pruebas de
+  resistencia previas con inyección de fallas. <em>(Verificar las cifras exactas en el post original antes de proyectarlas.)</em></p>
+
+  <h2>Preguntas para discutir</h2>
+  <ol>
+    <li>Un evento que empieza a las 15:00 exactas, ¿cómo cambia la estimación frente a un sitio con tráfico repartido durante el día?</li>
+    <li>Si tuvieras que apagar tres funciones para salvar la compra, ¿cuáles serían?</li>
+    <li>El sitio se cayó y aun así hubo récord de ventas. ¿Justifica esto invertir menos en capacidad?</li>
+    <li>¿Qué picos previsibles tiene un comercio argentino? (Hot Sale, Cyber Monday, Navidad, Día del Padre.)</li>
+  </ol>
+
+  <h2>Fuentes</h2>
+  <ul class="sources">
+    <li><span class="tag prensa">prensa</span><a href="https://www.cnbc.com/2018/07/19/amazon-internal-documents-what-caused-prime-day-crash-company-scramble.html" target="_blank" rel="noopener">CNBC: Internal documents show how Amazon scrambled to fix Prime Day glitches</a><span class="desc">Fuente de la cronología interna, Sable, "out of capacity for scaling" y las medidas de contención.</span></li>
+    <li><span class="tag prim">primaria</span><a href="https://press.aboutamazon.com/2018/7/prime-members-again-enjoyed-the-biggest-global-shopping-event-in-amazon-history-this-prime-day" target="_blank" rel="noopener">Amazon (comunicado): Prime Members again enjoyed the biggest global shopping event in Amazon history</a><span class="desc">Más de 100 millones de productos, récord de ventas. El comunicado no menciona las fallas.</span></li>
+    <li><span class="tag prensa">prensa</span><a href="https://money.cnn.com/2018/07/16/technology/amazon-website-down-prime-day/index.html" target="_blank" rel="noopener">CNN Business: Amazon website crashes shortly after deals go live</a></li>
+    <li><span class="tag prensa">prensa</span><a href="https://fortune.com/2018/07/16/amazon-prime-day-2018-glitch-website-crashing-not-working" target="_blank" rel="noopener">Fortune: Amazon Prime Day 2018 glitch, website crashing</a></li>
+    <li><span class="tag prensa">prensa</span><a href="https://bgr.com/2018/07/19/amazon-prime-day-traffic-surge-overwhelmed-company" target="_blank" rel="noopener">BGR: A behind-the-scenes look at how Amazon scrambled to handle traffic on Prime Day</a><span class="desc">Resume el reporte de CNBC. Ahí aparece la estimación de 72–99 millones.</span></li>
+    <li><span class="tag prensa">prensa</span><a href="https://techcrunch.com/2018/07/18/amazons-prime-day-again-became-the-biggest-sales-day-in-its-history/" target="_blank" rel="noopener">TechCrunch: Amazon's Prime Day again became the biggest sales day in its history</a></li>
+    <li><span class="tag prim">primaria</span><a href="https://aws.amazon.com/blogs/aws/prime-day-2023-powered-by-aws-all-the-numbers" target="_blank" rel="noopener">AWS News Blog: Prime Day 2023 powered by AWS, all the numbers</a><span class="desc">La serie anual de posts con números de infraestructura. Hay ediciones 2022, 2023, 2024 y 2025.</span></li>
+  </ul>
+
+  <div class="pager">
+    <a href="pokemon-go.html"><small>← Caso anterior</small>Pokémon Go</a>
+    <a href="cuellos-de-botella.html"><small>Siguiente →</small>Cuellos de botella</a>
+  </div>
+</main>
+<footer>Material para clases de Diseño de Sistemas Web y Redes y Comunicaciones · Terciario Urquiza.</footer>
+</body>
+</html>

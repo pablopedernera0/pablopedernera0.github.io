@@ -1,0 +1,310 @@
+    <!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa de Pokémon Go</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  .sim{background:var(--panel);border:1px solid var(--panel-border);border-radius:14px;padding:14px;margin:18px 0;}
+  svg#map{width:100%;height:auto;display:block;background:#0b0f14;border:1px solid var(--panel-border);border-radius:10px;}
+  .layer{fill:var(--muted);font:600 11px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;}
+  .node{cursor:pointer;}
+  .node .nr{fill:#1a222b;stroke-width:3;transition:stroke .3s;}
+  .node .ub{transition:width .3s,fill .3s;}
+  .node .t1{fill:var(--text);font:600 14px 'IBM Plex Sans',sans-serif;}
+  .node .t2{fill:var(--muted);font:11px 'IBM Plex Sans',sans-serif;}
+  .node .t3{fill:var(--text);font:600 12px 'IBM Plex Mono',monospace;}
+  .node.sel .nr{stroke-dasharray:none;filter:drop-shadow(0 0 6px rgba(224,166,62,.8));}
+  .s-ok .nr{stroke:var(--ok);} .s-ok .ub{fill:var(--ok);}
+  .s-warn .nr{stroke:var(--accent);} .s-warn .ub{fill:var(--accent);}
+  .s-bad .nr{stroke:var(--bad);} .s-bad .ub{fill:var(--bad);}
+  .s-src .nr{stroke:var(--info);} .s-src .ub{fill:var(--info);}
+  .s-bad .nr{animation:pulse 1s ease-in-out infinite;}
+  @keyframes pulse{50%{stroke-width:6;}}
+  .edge{fill:none;stroke-linecap:round;stroke-dasharray:8 8;animation:dash linear infinite;transition:stroke .3s,stroke-width .3s;}
+  @keyframes dash{to{stroke-dashoffset:-16;}}
+  .e-ok{stroke:var(--ok);} .e-warn{stroke:var(--accent);} .e-bad{stroke:var(--bad);}
+  .e-off{stroke:#3a4652;animation:none;}
+  @media (prefers-reduced-motion:reduce){ .edge,.s-bad .nr{animation:none;} }
+  .ctrl{margin:14px 0 6px;}
+  .ctrl label{display:flex;justify-content:space-between;gap:12px;font-size:.9rem;color:var(--muted);}
+  .ctrl label b{color:var(--text);font-family:'IBM Plex Mono',monospace;}
+  .mitig{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:10px 0;}
+  .mitig button{margin:0;font-size:.9rem;}
+  .mitig button.act{border-color:var(--ok);background:var(--ok-soft);}
+  .readout{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:12px;}
+  .readout .stat .n{font-size:1.5rem;}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.8rem;color:var(--muted);margin:10px 0 0;}
+  .legend i{display:inline-block;width:22px;height:0;border-top:3px dashed;vertical-align:middle;margin-right:6px;}
+  .marks{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .marks button{width:auto;margin:0;min-height:0;padding:8px 12px;font-size:.85rem;text-align:center;}
+  #detail{min-height:110px;}
+  #detail h3{margin-top:0;}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../">pablopedernera0.github.io</a>
+  <nav>
+    <a href="index.html">Inicio</a>
+    <a href="healthcare-gov.html">Healthcare.gov</a>
+    <a href="pokemon-go.html">Pokémon Go</a>
+    <a href="prime-day-2018.html">Prime Day 2018</a>
+    <a href="mapa-prime-day.html">Mapa Prime Day</a>
+    <a class="on" href="mapa-pokemon-go.html">Mapa Pokémon Go</a>
+    <a href="mapa-healthcare-gov.html">Mapa Healthcare.gov</a>
+    <a href="cuellos-de-botella.html">Cuellos de botella</a>
+    <a href="metricas-y-requisitos.html">Métricas y requisitos</a>
+    <a href="actividad.html">Actividad</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="kicker">Mapa animado · Pokémon Go 2016</span>
+    <h1>Dónde se saturó Pokémon Go</h1>
+    <p class="lead">Las líneas punteadas son las peticiones de los jugadores viajando por el sistema. El objetivo era 1×,
+    el peor caso previsto 5× y la realidad fue 50×. Movés la demanda, mirás qué bloque se pone rojo y probás
+    los cambios que Niantic y Google hicieron de verdad. Tocá un bloque para ver qué dice el post de Google.</p>
+  </section>
+
+  <div class="sim">
+    <svg id="map" role="img" aria-label="Mapa de arquitectura simplificada de Pokémon Go sobre Google Cloud"></svg>
+    <div class="legend">
+      <span><i style="border-color:var(--ok)"></i>fluye bien</span>
+      <span><i style="border-color:var(--accent)"></i>al límite</span>
+      <span><i style="border-color:var(--bad)"></i>saturado</span>
+      <span><i style="border-color:#3a4652"></i>sin tráfico</span>
+    </div>
+
+    <div class="ctrl">
+      <label><span>Demanda (× el objetivo)</span><b id="multLabel">1×</b></label>
+      <input type="range" id="mult" min="1" max="60" value="1" step="1">
+      <div class="marks" id="marks"></div>
+    </div>
+    <div class="mitig" id="mitig"></div>
+    <div class="readout">
+      <div class="stat info"><div class="n" id="rDem">0</div><div class="l">peticiones por segundo llegando</div></div>
+      <div class="stat ok"><div class="n" id="rOk">0 %</div><div class="l">jugadores atendidos</div></div>
+      <div class="stat acc"><div class="n" id="rBot" style="font-size:1.05rem;line-height:1.3">—</div><div class="l">cuello de botella actual</div></div>
+      <div class="stat bad"><div class="n" id="rScale" style="font-size:1.05rem;line-height:1.3">—</div><div class="l">escalado del clúster</div></div>
+    </div>
+  </div>
+
+  <div class="card" id="detail">
+    <h3>Tocá un bloque</h3>
+    <p>Cada bloque explica qué cuenta el post de Google Cloud sobre él.</p>
+  </div>
+
+  <div class="callout">
+    <strong>Un modelo, no el plano de Niantic</strong>
+    Los componentes (balanceador, clúster de GKE, Cloud Datastore) y los dos cambios que se hicieron (nuevo
+    balanceador y actualización de GKE para sumar más de mil nodos) vienen del post de Google Cloud. El post
+    <em>no</em> detalla qué componente se saturó primero ni con qué capacidades. Las cifras del mapa y el orden
+    en que se saturan son ilustrativos. Lo real son el 1× / 5× / 50× y las medidas tomadas.
+  </div>
+
+  <h2>Qué probar</h2>
+  <ol>
+    <li>Tocá "Peor caso: 5×". Todo aguanta. Ahora "Real: 50×": ¿qué se pone rojo primero?</li>
+    <li>Con 50×, activá solo el balanceador nuevo. ¿Se arregló? ¿Dónde se mueve el cuello de botella?</li>
+    <li>Ahora activá solo la actualización de GKE, sin el balanceador. ¿Alcanza?</li>
+    <li>Activá las dos y sumá el lanzamiento de Japón. Es lo que pasó dos semanas después: registros nuevos triplicaron los de EE.UU. y no hubo incidentes.</li>
+  </ol>
+
+  <div class="pager">
+    <a href="pokemon-go.html"><small>← Caso completo</small>Pokémon Go</a>
+    <a href="mapa-healthcare-gov.html"><small>Siguiente →</small>Mapa de Healthcare.gov</a>
+  </div>
+</main>
+<footer>Material para clases de Diseño de Sistemas Web y Redes y Comunicaciones · Terciario Urquiza.</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+const SRC = 'https://cloud.google.com/blog/products/containers-kubernetes/bringing-pokemon-go-to-life-on-google-cloud';
+
+/* ---------- Diseño: horizontal (proyector) y vertical (celular) ---------- */
+const LAYOUT = {
+  H: { vb:[1000,520], nodes:{
+      us:    {x:20,  y:150, w:170, h:70},  jp: {x:20,  y:300, w:170, h:70},
+      lb:    {x:270, y:225, w:170, h:80},
+      cluster:{x:530,y:190, w:190, h:100}, scaler:{x:530, y:350, w:190, h:80},
+      ds:    {x:800, y:190, w:180, h:100}
+    }, layers:[[20,40,'Jugadores'],[270,40,'Entrada'],[530,40,'Aplicación'],[800,40,'Datos']], edgeDir:'x', sideScaler:false },
+  V: { vb:[420,760], nodes:{
+      us:    {x:20,  y:40,  w:180, h:78},  jp: {x:220, y:40,  w:180, h:78},
+      lb:    {x:100, y:180, w:220, h:80},
+      cluster:{x:20, y:330, w:250, h:100}, scaler:{x:290, y:330, w:120, h:100},
+      ds:    {x:80,  y:500, w:260, h:100}
+    }, layers:[[10,22,'Jugadores'],[10,162,'Entrada'],[10,312,'Aplicación'],[10,482,'Datos']], edgeDir:'y', sideScaler:true }
+};
+const NODES = {
+  us:     {t:'Jugadores', s:'EE.UU. y otros'},
+  jp:     {t:'Jugadores', s:'Japón'},
+  lb:     {t:'Balanceador', s:'reparte el tráfico'},
+  cluster:{t:'Clúster de app', s:'Kubernetes en GKE'},
+  scaler: {t:'Nodos', s:'capacidad del clúster'},
+  ds:     {t:'Cloud Datastore', s:'base de datos principal'}
+};
+const EDGES = [
+  ['us','lb'],['jp','lb'],['lb','cluster'],['cluster','ds'],['scaler','cluster','up']
+];
+const DETAIL = {
+  us:  ['Jugadores (EE.UU. y otros países)','Se estimó un tráfico objetivo (1×) y un peor caso de unas 5 veces esa cifra. El tráfico real llegó a 50 veces el objetivo, diez veces más que el peor caso.',SRC],
+  jp:  ['Jugadores (Japón)','El lanzamiento en Japón fue dos semanas después del de EE.UU. Los registros de usuarios nuevos triplicaron los del lanzamiento estadounidense y salió sin incidentes, gracias a lo aprendido y a la capacidad ya provisionada.',SRC],
+  lb:  ['Balanceador de carga','Reemplazaron el balanceador de red por el balanceador HTTP/S de Google, más sofisticado: más control, conexiones más rápidas y mayor rendimiento. Se desplegó antes del lanzamiento en Japón.',SRC],
+  cluster:['Clúster de aplicación','Corría en Kubernetes sobre Google Container Engine (hoy GKE). Fue el mayor despliegue de Kubernetes en GKE hasta ese momento. La escala expuso muchos errores que se corrigieron y se integraron al proyecto Kubernetes de código abierto.',SRC],
+  scaler:['Nodos del clúster','Actualizaron GKE a una versión que permitía sumar más de mil nodos, sin interrumpir a los jugadores conectados. Google lo describe como "cambiar el motor del avión en pleno vuelo". Se aprovisionaron decenas de miles de núcleos.',SRC],
+  ds:  ['Cloud Datastore','Fue la base de datos principal del juego. En el modelo la dejamos con margen para mostrar que el cuello de botella no siempre está en los datos.',SRC]
+};
+const MIT = [
+  {id:'lb',    t:'Cambiar al balanceador HTTP/S', d:'Sube la capacidad del balanceador'},
+  {id:'nodes', t:'Actualizar GKE: +1.000 nodos', d:'Sube el tope de nodos que puede sumar el clúster'},
+  {id:'japan', t:'Lanzar Japón dos semanas después', d:'Retira por ahora al 30 % de los jugadores'}
+];
+const MARKS = [['Objetivo: 1×',1],['Peor caso previsto: 5×',5],['Real: 50×',50]];
+
+/* ---------- Modelo (ilustrativo) ---------- */
+const BASE = 100, LB_BASE = 560, LB_NEW = 6000, CL_BASE = 700, SCALE_OLD = 300, SCALE_NEW = 4500, DS_CAP = 6000;
+const mit = {lb:false, nodes:false, japan:false};
+let scale = 0, layoutKey = null, selected = null, M = {};
+
+function model(){
+  const mult = +$('mult').value, D = BASE*mult;
+  const us = .7*D, jp = mit.japan ? 0 : .3*D, inTot = us+jp;
+  const lbCap = mit.lb ? LB_NEW : LB_BASE, scaleMax = mit.nodes ? SCALE_NEW : SCALE_OLD;
+  const lbOut = Math.min(inTot, lbCap);
+  const need = Math.max(0, lbOut-CL_BASE), target = Math.min(scaleMax, need);
+  scale += (target-scale)*.2;
+  if(scale > scaleMax) scale = scaleMax;
+  const clCap = CL_BASE + scale, clOut = Math.min(lbOut, clCap), dsOut = Math.min(clOut, DS_CAP);
+  M = { D, us, jp, inTot, lbCap, lbOut, clCap, clOut, dsOut, scale, scaleMax,
+        capped: need >= scaleMax-1 && scale > scaleMax-Math.max(12, scaleMax*.04),
+        u: { us:null, jp:null, lb:inTot/lbCap, cluster:lbOut/clCap, ds:clOut/DS_CAP, scaler:scale/scaleMax },
+        caps: { lb:lbCap, cluster:clCap, ds:DS_CAP } };
+}
+function state(id){
+  if(id==='us'||id==='jp') return 's-src';
+  const u = M.u[id];
+  if(id==='scaler') return M.capped ? 's-bad' : (u>.5 ? 's-warn' : 's-ok');
+  return u>1.0 ? 's-bad' : (u>.75 ? 's-warn' : 's-ok');
+}
+
+/* ---------- Dibujo ---------- */
+const svg = $('map');
+const els = {nodes:{}, edges:{}};
+function anchors(a,b,up,L){
+  const A=L.nodes[a], B=L.nodes[b];
+  if(up){
+    if(L.sideScaler) return [A.x, A.y+A.h/2, B.x+B.w, B.y+B.h/2, 'line'];
+    return [A.x+A.w/2, A.y, B.x+B.w/2, B.y+B.h, 'line'];
+  }
+  if(L.edgeDir==='x') return [A.x+A.w, A.y+A.h/2, B.x, B.y+B.h/2, 'cx'];
+  return [A.x+A.w/2, A.y+A.h, B.x+B.w/2, B.y, 'cy'];
+}
+function wantLayout(){
+  const f = new URLSearchParams(location.search).get('layout');   // ?layout=v fuerza el diseño de celular
+  if(f==='v') return 'V'; if(f==='h') return 'H';
+  return innerWidth < 700 ? 'V' : 'H';
+}
+function build(){
+  const key = wantLayout();
+  layoutKey = key; const L = LAYOUT[key];
+  svg.setAttribute('viewBox', '0 0 '+L.vb[0]+' '+L.vb[1]);
+  svg.innerHTML = ''; els.nodes = {}; els.edges = {};
+  L.layers.forEach(([x,y,t])=>{ const e=document.createElementNS(NS,'text'); e.setAttribute('x',x); e.setAttribute('y',y); e.setAttribute('class','layer'); e.textContent=t; svg.appendChild(e); });
+  EDGES.forEach(([a,b,k])=>{
+    const [x1,y1,x2,y2,type] = anchors(a,b,k==='up',L);
+    let d;
+    if(type==='line') d='M'+x1+' '+y1+' L'+x2+' '+y2;
+    else if(type==='cx'){ const m=(x2-x1)/2; d='M'+x1+' '+y1+' C'+(x1+m)+' '+y1+' '+(x2-m)+' '+y2+' '+x2+' '+y2; }
+    else { const m=(y2-y1)/2; d='M'+x1+' '+y1+' C'+x1+' '+(y1+m)+' '+x2+' '+(y2-m)+' '+x2+' '+y2; }
+    const p = document.createElementNS(NS,'path'); p.setAttribute('d',d); p.setAttribute('class','edge e-off');
+    svg.appendChild(p); els.edges[a+'>'+b] = p;
+  });
+  Object.keys(L.nodes).forEach(id=>{
+    const n = L.nodes[id], g = document.createElementNS(NS,'g'); g.setAttribute('class','node s-ok'); g.setAttribute('tabindex','0');
+    g.innerHTML =
+      '<rect class="nr" x="'+n.x+'" y="'+n.y+'" width="'+n.w+'" height="'+n.h+'" rx="12"/>'+
+      '<rect class="ub" x="'+(n.x+8)+'" y="'+(n.y+n.h-10)+'" width="0" height="4" rx="2" data-w="'+(n.w-16)+'"/>'+
+      '<text class="t1" x="'+(n.x+n.w/2)+'" y="'+(n.y+22)+'" text-anchor="middle">'+NODES[id].t+'</text>'+
+      '<text class="t2" x="'+(n.x+n.w/2)+'" y="'+(n.y+38)+'" text-anchor="middle">'+NODES[id].s+'</text>'+
+      '<text class="t3" x="'+(n.x+n.w/2)+'" y="'+(n.y+n.h-17)+'" text-anchor="middle"></text>';
+    g.onclick = ()=>select(id);
+    g.onkeydown = e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); select(id);} };
+    svg.appendChild(g); els.nodes[id] = g;
+  });
+  if(selected) els.nodes[selected].classList.add('sel');
+}
+function flowOf(a,b){
+  switch(a+'>'+b){
+    case 'us>lb': return M.inTot>0 ? M.us*M.lbOut/M.inTot : 0;
+    case 'jp>lb': return M.inTot>0 ? M.jp*M.lbOut/M.inTot : 0;
+    case 'lb>cluster': return M.lbOut;
+    case 'cluster>ds': return M.clOut;
+    case 'scaler>cluster': return M.scale;
+  }
+  return 0;
+}
+function fmt(n){ return Math.round(n).toLocaleString('es-AR'); }
+function draw(){
+  Object.keys(els.nodes).forEach(id=>{
+    const g = els.nodes[id], s = state(id);
+    g.setAttribute('class','node '+s+(selected===id?' sel':''));
+    const ub = g.querySelector('.ub'), t3 = g.querySelector('.t3'), u = M.u[id];
+    if(u==null){ ub.setAttribute('width',0); t3.textContent = fmt(id==='us'?M.us:M.jp)+' /s'; }
+    else { ub.setAttribute('width', Math.min(1,u)*ub.dataset.w); t3.textContent = Math.round(u*100)+' % · cap. '+fmt(M.caps[id]||0)+' /s'; }
+    if(id==='scaler') t3.textContent = '+'+fmt(M.scale)+' de '+fmt(M.scaleMax);
+    if(id==='jp' && mit.japan) t3.textContent = 'aún no lanzado';
+  });
+  Object.keys(els.edges).forEach(k=>{
+    const [a,b] = k.split('>'), f = flowOf(a,b), p = els.edges[k];
+    if(f<1){ p.setAttribute('class','edge e-off'); p.style.strokeWidth = 2; return; }
+    const target = els.nodes[b].getAttribute('class');
+    const cls = (target.includes('s-bad') && a!=='scaler') ? 'e-bad' : (target.includes('s-warn') ? 'e-warn' : 'e-ok');
+    p.setAttribute('class','edge '+cls);
+    p.style.animationDuration = (2.4 - 2*Math.min(1,f/3000)).toFixed(2)+'s';
+    p.style.strokeWidth = (2 + 6*Math.min(1,f/3000)).toFixed(1);
+  });
+  $('rDem').textContent = fmt(M.D);
+  $('rOk').textContent = Math.round(Math.min(100, M.dsOut/M.D*100))+' %';
+  const sat = ['lb','cluster','ds'].filter(k=>M.u[k]>1);
+  const bot = sat.length ? sat.reduce((a,b)=> M.caps[b] < M.caps[a] ? b : a) : null;
+  $('rBot').textContent = bot ? NODES[bot].t : 'ninguno: todo fluye';
+  $('rScale').textContent = M.capped ? 'sin capacidad para escalar' : (M.scale>5 ? 'escalando (+'+fmt(M.scale)+')' : 'sin necesidad de escalar');
+}
+function select(id){
+  selected = id;
+  const [t,txt,url] = DETAIL[id];
+  $('detail').innerHTML = '<h3></h3><p></p><p style="font-size:.85rem;color:var(--muted)">Fuente: <a target="_blank" rel="noopener">Google Cloud Blog (Luke Stone, 29/09/2016)</a></p>';
+  $('detail').querySelector('h3').textContent = t;
+  $('detail').querySelectorAll('p')[0].textContent = txt;
+  $('detail').querySelector('a').href = url;
+  draw();
+}
+function renderMitig(){
+  $('mitig').innerHTML = '';
+  MIT.forEach(m=>{
+    const b = document.createElement('button');
+    b.className = mit[m.id] ? 'act' : '';
+    b.innerHTML = '<strong>'+(mit[m.id]?'✓ ':'')+m.t+'</strong><br><small style="color:var(--muted)">'+m.d+'</small>';
+    b.onclick = ()=>{ mit[m.id] = !mit[m.id]; renderMitig(); };
+    $('mitig').appendChild(b);
+  });
+}
+function renderMarks(){
+  MARKS.forEach(([t,v])=>{ const b=document.createElement('button'); b.textContent=t; b.onclick=()=>{ $('mult').value=v; $('multLabel').textContent=v+'×'; }; $('marks').appendChild(b); });
+}
+
+$('mult').addEventListener('input', ()=>{ $('multLabel').textContent = $('mult').value+'×'; });
+addEventListener('resize', ()=>{ const k = wantLayout(); if(k!==layoutKey){ build(); draw(); } });
+build(); renderMitig(); renderMarks(); model(); draw();
+setInterval(()=>{ model(); draw(); }, 200);
+</script>
+</body>
+</html>

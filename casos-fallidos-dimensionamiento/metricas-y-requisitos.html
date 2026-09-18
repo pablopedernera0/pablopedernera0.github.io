@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Métricas y requisitos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../">pablopedernera0.github.io</a>
+  <nav>
+    <a href="index.html">Inicio</a>
+    <a href="healthcare-gov.html">Healthcare.gov</a>
+    <a href="pokemon-go.html">Pokémon Go</a>
+    <a href="prime-day-2018.html">Prime Day 2018</a>
+    <a href="mapa-prime-day.html">Mapa Prime Day</a>
+    <a href="mapa-pokemon-go.html">Mapa Pokémon Go</a>
+    <a href="mapa-healthcare-gov.html">Mapa Healthcare.gov</a>
+    <a href="cuellos-de-botella.html">Cuellos de botella</a>
+    <a class="on" href="metricas-y-requisitos.html">Métricas y requisitos</a>
+    <a href="actividad.html">Actividad</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="kicker">Síntesis · las dos materias</span>
+    <h1>Los tres casos, lado a lado</h1>
+    <p class="lead">Tres organizaciones distintas, tres épocas y tres rubros. Las mismas preguntas:
+    ¿qué se esperaba, qué pasó, qué métrica lo muestra y qué requisito lo habría evitado?</p>
+  </section>
+
+  <h2>Comparación</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th></th><th>Healthcare.gov (2013)</th><th>Pokémon Go (2016)</th><th>Prime Day (2018)</th></tr></thead>
+    <tbody>
+      <tr><th>Qué se esperaba</th><td>50–60 mil usuarios simultáneos</td><td>Objetivo 1×, peor caso ~5×</td><td>Un pico con fecha y hora conocidas</td></tr>
+      <tr><th>Qué pasó</th><td>~250 mil simultáneos; 6 inscripciones el primer día</td><td>50× el objetivo</td><td>Fallas a los pocos minutos del arranque</td></tr>
+      <tr><th>Métrica clave</th><td>Usuarios simultáneos y tiempo de respuesta bajo carga (1.100 antes de degradarse)</td><td>Multiplicador de tráfico sobre el objetivo</td><td>Capacidad disponible para escalar ("out of capacity")</td></tr>
+      <tr><th>Cuello de botella</th><td>El sistema completo: no se llegó ni al 2 % de lo esperado</td><td>Balanceador de carga y tamaño del clúster</td><td>Sable, una dependencia interna compartida</td></tr>
+      <tr><th>Tipo de causa</th><td>Gestión: liderazgo, contratistas, tiempos</td><td>Estimación de demanda de un producto viral</td><td>Capacidad y dependencias en un pico previsible</td></tr>
+      <tr><th>Cómo se contuvo</th><td>Equipo de emergencia, prioridades duras, monitoreo en tiempo real</td><td>Nuevo balanceador, +1.000 nodos, lanzamiento escalonado por país</td><td>Portada reducida, corte de tráfico internacional, límite al 25 %</td></tr>
+      <tr><th>RNF que faltó</th><td>Concurrencia y tiempo de respuesta, con prueba de carga como condición de salida</td><td>Elasticidad: cuánto y en cuánto tiempo puede crecer</td><td>Comportamiento ante el pico y degradación controlada</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Las fallas que se repiten</h2>
+  <div class="grid">
+    <div class="card"><h3>1. Se estimó con datos que no existían</h3><p>Producto nuevo, sin historial. Las tres estimaciones eran suposiciones, y en dos casos la realidad las superó por mucho. La respuesta es diseñar para <em>crecer</em>, no para acertar.</p></div>
+    <div class="card"><h3>2. La prueba no se parecía a la realidad</h3><p>Healthcare.gov llegó a la víspera con 1.100 usuarios probados contra 55.000 esperados. Una prueba de carga sin umbral de aprobación no protege a nadie.</p></div>
+    <div class="card"><h3>3. Todos llegan a la misma hora</h3><p>El lanzamiento y la campaña son escalones, no rampas. Las tres fallas ocurrieron en las primeras horas.</p></div>
+    <div class="card"><h3>4. Una pieza compartida tumba todo</h3><p>Sable arrastró Prime, autenticación y video. Un solo componente sin margen determina el techo de todo el sistema.</p></div>
+    <div class="card"><h3>5. No había plan B diseñado</h3><p>La degradación controlada (página liviana, cola de espera, límites por región) se improvisó bajo presión. Podría haber estado en los requisitos.</p></div>
+    <div class="card"><h3>6. Nadie era dueño del requisito</h3><p>En Healthcare.gov el informe oficial habla de "ausencia de liderazgo claro". Un RNF sin responsable nadie lo verifica.</p></div>
+  </div>
+
+  <h2>Las métricas, en una línea cada una</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Métrica</th><th>Qué mide</th><th>Dónde apareció</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Usuarios concurrentes</strong></td><td>Cuántas personas usan el sistema a la vez (no cuántas están registradas)</td><td>Healthcare.gov</td></tr>
+      <tr><td><strong>Peticiones por segundo</strong></td><td>Cuánto trabajo llega al sistema en cada instante</td><td>Pokémon Go, Prime Day</td></tr>
+      <tr><td><strong>Tiempo de respuesta / latencia</strong></td><td>Cuánto tarda en contestar bajo una carga dada. Cuando se dispara, la capacidad "terminó"</td><td>Healthcare.gov (1.100)</td></tr>
+      <tr><td><strong>Multiplicador sobre lo esperado</strong></td><td>Cuántas veces la demanda real superó la prevista</td><td>Pokémon Go (50×)</td></tr>
+      <tr><td><strong>Margen de capacidad (headroom)</strong></td><td>Cuánto le queda al sistema antes de saturarse</td><td>Prime Day ("out of capacity")</td></tr>
+      <tr><td><strong>Tasa de rechazo / error</strong></td><td>Qué porcentaje de peticiones falla o no se atiende</td><td>Prime Day (página de perros)</td></tr>
+      <tr><td><strong>Tamaño de respuesta y TTFB</strong></td><td>Cuánto pesa y cuánto tarda en empezar a llegar cada respuesta</td><td>Clases 1 y 3, y la página reducida de Prime Day</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout info">
+    <strong>Vínculo con lo que ya practicamos</strong>
+    En la <a href="../dimensionamiento-servidores/html-vs-json.html">comparación HTML vs. JSON</a> y en la
+    práctica <code>medicion-http-servidores</code> medimos tamaño de respuesta y TTFB con <code>curl</code>. Son las mismas métricas a escala chica:
+    lo que en un sitio pesa unos kilobytes, con cientos de miles de usuarios simultáneos pasa a ser un problema de ancho de banda y de CPU.
+  </div>
+
+  <h2>Plantilla de RNF de capacidad</h2>
+  <p>Un requisito de capacidad bien escrito tiene cuatro partes. Los tres ejemplos de las páginas de los casos siguen esta estructura:</p>
+  <div class="grid">
+    <div class="stat info"><div class="n" style="font-size:1.2rem">1. Carga</div><div class="l">cuántos usuarios o peticiones simultáneas, con un factor de crecimiento</div></div>
+    <div class="stat info"><div class="n" style="font-size:1.2rem">2. Umbral</div><div class="l">tiempo de respuesta máximo y en qué porcentaje de casos</div></div>
+    <div class="stat info"><div class="n" style="font-size:1.2rem">3. Verificación</div><div class="l">cómo y cuándo se prueba, y quién decide si no se lanza</div></div>
+    <div class="stat info"><div class="n" style="font-size:1.2rem">4. Degradación</div><div class="l">qué se apaga o limita cuando la carga supera el máximo</div></div>
+  </div>
+  <div class="callout ok">
+    <strong>Ejemplo completo</strong>
+    "El sistema debe soportar 500 usuarios simultáneos con respuesta menor a 2 segundos en el 95 % de las peticiones, y escalar hasta 5 veces esa carga en 30 minutos. Se verificará con una prueba de carga antes de cada campaña; si no se cumple, no se publica. Por encima del máximo, se mostrará una sala de espera y se deshabilitará la búsqueda avanzada."
+  </div>
+
+  <h2>Para aplicar a tu proyecto</h2>
+  <ol>
+    <li>¿Cuál sería tu "día de lanzamiento"? ¿Cuántas personas usarían tu sistema en el mismo minuto?</li>
+    <li>¿Qué pasa si funciona diez veces mejor de lo esperado?</li>
+    <li>¿Cuál es tu componente compartido, el equivalente a Sable? (login, base de datos, servicio de correo)</li>
+    <li>Escribí un RNF de capacidad con las cuatro partes.</li>
+  </ol>
+
+  <div class="pager">
+    <a href="cuellos-de-botella.html"><small>← Anterior</small>Cuellos de botella</a>
+    <a href="actividad.html"><small>Siguiente →</small>Actividad</a>
+  </div>
+</main>
+<footer>Material para clases de Diseño de Sistemas Web y Redes y Comunicaciones · Terciario Urquiza.</footer>
+</body>
+</html>

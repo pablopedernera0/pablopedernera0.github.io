@@ -1,0 +1,314 @@
+    <!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa de Prime Day 2018</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  .sim{background:var(--panel);border:1px solid var(--panel-border);border-radius:14px;padding:14px;margin:18px 0;}
+  svg#map{width:100%;height:auto;display:block;background:#0b0f14;border:1px solid var(--panel-border);border-radius:10px;}
+  .layer{fill:var(--muted);font:600 11px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;}
+  .node{cursor:pointer;}
+  .node .nr{fill:#1a222b;stroke-width:3;transition:stroke .3s;}
+  .node .ub{transition:width .3s,fill .3s;}
+  .node .t1{fill:var(--text);font:600 14px 'IBM Plex Sans',sans-serif;}
+  .node .t2{fill:var(--muted);font:11px 'IBM Plex Sans',sans-serif;}
+  .node .t3{fill:var(--text);font:600 12px 'IBM Plex Mono',monospace;}
+  .node.sel .nr{stroke-dasharray:none;filter:drop-shadow(0 0 6px rgba(224,166,62,.8));}
+  .s-ok .nr{stroke:var(--ok);} .s-ok .ub{fill:var(--ok);}
+  .s-warn .nr{stroke:var(--accent);} .s-warn .ub{fill:var(--accent);}
+  .s-bad .nr{stroke:var(--bad);} .s-bad .ub{fill:var(--bad);}
+  .s-src .nr{stroke:var(--info);} .s-src .ub{fill:var(--info);}
+  .s-bad .nr{animation:pulse 1s ease-in-out infinite;}
+  @keyframes pulse{50%{stroke-width:6;}}
+  .edge{fill:none;stroke-linecap:round;stroke-dasharray:8 8;animation:dash linear infinite;transition:stroke .3s,stroke-width .3s;}
+  @keyframes dash{to{stroke-dashoffset:-16;}}
+  .e-ok{stroke:var(--ok);} .e-warn{stroke:var(--accent);} .e-bad{stroke:var(--bad);}
+  .e-off{stroke:#3a4652;animation:none;}
+  @media (prefers-reduced-motion:reduce){ .edge,.s-bad .nr{animation:none;} }
+  .ctrl{margin:14px 0 6px;}
+  .ctrl label{display:flex;justify-content:space-between;gap:12px;font-size:.9rem;color:var(--muted);}
+  .ctrl label b{color:var(--text);font-family:'IBM Plex Mono',monospace;}
+  .mitig{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:10px 0;}
+  .mitig button{margin:0;font-size:.9rem;}
+  .mitig button.act{border-color:var(--ok);background:var(--ok-soft);}
+  .readout{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:12px;}
+  .readout .stat .n{font-size:1.5rem;}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.8rem;color:var(--muted);margin:10px 0 0;}
+  .legend i{display:inline-block;width:22px;height:0;border-top:3px dashed;vertical-align:middle;margin-right:6px;}
+  #detail{min-height:110px;}
+  #detail h3{margin-top:0;}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../">pablopedernera0.github.io</a>
+  <nav>
+    <a href="index.html">Inicio</a>
+    <a href="healthcare-gov.html">Healthcare.gov</a>
+    <a href="pokemon-go.html">Pokémon Go</a>
+    <a href="prime-day-2018.html">Prime Day 2018</a>
+    <a class="on" href="mapa-prime-day.html">Mapa Prime Day</a>
+    <a href="mapa-pokemon-go.html">Mapa Pokémon Go</a>
+    <a href="mapa-healthcare-gov.html">Mapa Healthcare.gov</a>
+    <a href="cuellos-de-botella.html">Cuellos de botella</a>
+    <a href="metricas-y-requisitos.html">Métricas y requisitos</a>
+    <a href="actividad.html">Actividad</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="kicker">Mapa animado · Prime Day 2018</span>
+    <h1>Dónde se trabó Prime Day</h1>
+    <p class="lead">Las líneas punteadas son las peticiones que circulan entre los componentes. Subí la demanda
+    y mirá qué bloque se pone rojo primero. Tocá cualquier bloque para ver qué dicen los documentos sobre él.</p>
+  </section>
+
+  <div class="sim">
+    <svg id="map" role="img" aria-label="Mapa de arquitectura simplificada de Amazon durante el Prime Day 2018"></svg>
+    <div class="legend">
+      <span><i style="border-color:var(--ok)"></i>fluye bien</span>
+      <span><i style="border-color:var(--accent)"></i>al límite</span>
+      <span><i style="border-color:var(--bad)"></i>saturado o arrastrado</span>
+      <span><i style="border-color:#3a4652"></i>sin tráfico</span>
+    </div>
+
+    <div class="ctrl">
+      <label><span>Demanda (× lo normal)</span><b id="multLabel">1×</b></label>
+      <input type="range" id="mult" min="1" max="15" value="1" step="1">
+    </div>
+    <div class="mitig" id="mitig"></div>
+    <div class="readout">
+      <div class="stat info"><div class="n" id="rDem">0</div><div class="l">peticiones por segundo llegando</div></div>
+      <div class="stat ok"><div class="n" id="rOk">0 %</div><div class="l">compradores atendidos</div></div>
+      <div class="stat acc"><div class="n" id="rBot" style="font-size:1.05rem;line-height:1.3">—</div><div class="l">cuello de botella actual</div></div>
+      <div class="stat bad"><div class="n" id="rScale" style="font-size:1.05rem;line-height:1.3">—</div><div class="l">autoescalado</div></div>
+    </div>
+  </div>
+
+  <div class="card" id="detail">
+    <h3>Tocá un bloque</h3>
+    <p>Cada bloque explica qué se sabe de él en el caso real y de qué fuente sale.</p>
+  </div>
+
+  <div class="callout">
+    <strong>Un modelo, no un plano de Amazon</strong>
+    Los bloques y sus dependencias vienen de lo que informó CNBC a partir de documentos internos (Sable, Prime,
+    autenticación, video, portada, tráfico internacional, autoescalado). Las capacidades y proporciones son
+    <em>ilustrativas</em>: Amazon no publicó números de capacidad de estos componentes.
+  </div>
+
+  <h2>Qué probar</h2>
+  <ol>
+    <li>Subí la demanda de a poco. ¿A partir de qué multiplicador se rompe? ¿Qué bloque se satura primero?</li>
+    <li>Cuando Sable se satura, ¿qué pasa con Prime, autenticación y video, que funcionan bien por sí solos?</li>
+    <li>Mirá el autoescalado: sube capacidad, pero con un tope. ¿Qué pasa cuando llega al máximo?</li>
+    <li>Probá cada medida por separado. ¿Cuál resuelve más con menos costo?</li>
+  </ol>
+
+  <div class="pager">
+    <a href="prime-day-2018.html"><small>← Caso completo</small>Prime Day 2018</a>
+    <a href="mapa-pokemon-go.html"><small>Siguiente →</small>Mapa de Pokémon Go</a>
+  </div>
+</main>
+<footer>Material para clases de Diseño de Sistemas Web y Redes y Comunicaciones · Terciario Urquiza.</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+
+/* ---------- Diseño: horizontal (proyector) y vertical (celular) ---------- */
+const LAYOUT = {
+  H: { vb:[1000,520], nodes:{
+      us:    {x:20,  y:150, w:160, h:70},  intl: {x:20,  y:300, w:160, h:70},
+      front: {x:260, y:225, w:160, h:80},
+      prime: {x:520, y:80,  w:150, h:70},  auth: {x:520, y:225, w:150, h:70}, video:{x:520, y:370, w:150, h:70},
+      sable: {x:780, y:180, w:200, h:100}, scaler:{x:780, y:350, w:200, h:80}
+    }, layers:[[20,40,'Compradores'],[260,40,'Sitio'],[520,40,'Servicios'],[780,40,'Núcleo interno']], edgeDir:'x' },
+  V: { vb:[420,840], nodes:{
+      us:    {x:20,  y:40,  w:180, h:78},  intl: {x:220, y:40,  w:180, h:78},
+      front: {x:110, y:170, w:200, h:70},
+      prime: {x:10,  y:310, w:125, h:78},  auth: {x:147, y:310, w:125, h:78}, video:{x:284, y:310, w:125, h:78},
+      sable: {x:80,  y:460, w:260, h:90},  scaler:{x:80,  y:630, w:260, h:76}
+    }, layers:[[10,22,'Compradores'],[10,152,'Sitio'],[10,292,'Servicios'],[10,442,'Núcleo interno']], edgeDir:'y' }
+};
+const NODES = {
+  us:    {t:'Compradores', s:'EE.UU.'},
+  intl:  {t:'Compradores', s:'internacionales'},
+  front: {t:'Portada', s:'página de inicio'},
+  prime: {t:'Prime', s:'membresía'},
+  auth:  {t:'Autenticación', s:'inicio de sesión'},
+  video: {t:'Video', s:'reproducción'},
+  sable: {t:'Sable', s:'almacenamiento y cómputo interno'},
+  scaler:{t:'Autoescalado', s:'servidores que se suman'}
+};
+const EDGES = [
+  ['us','front'],['intl','front'],
+  ['front','prime'],['front','auth'],['front','video'],
+  ['prime','sable'],['auth','sable'],['video','sable'],
+  ['scaler','sable','up']
+];
+const DETAIL = {
+  us:    ['Compradores (EE.UU.)','A las 3:00 p.m. ET empezó el evento. Downdetector mostró fallas desde las 3:04 p.m. y la página de error con fotos de perros se volvió viral.','CNN Business / Fortune','https://money.cnn.com/2018/07/16/technology/amazon-website-down-prime-day/index.html'],
+  intl:  ['Tráfico internacional','A las 12:15 (hora del Pacífico) Amazon cortó temporalmente el tráfico internacional para aliviar la presión sobre Sable. Es una decisión de negocio: se sacrifican compradores para salvar al resto.','CNBC, documentos internos','https://www.cnbc.com/2018/07/19/amazon-internal-documents-what-caused-prime-day-crash-company-scramble.html'],
+  front: ['Portada','A las 12:00 (PT) Amazon pasó a una portada reducida de emergencia. A las 12:37 (PT) reabrió la portada normal solo para el 25 % del tráfico. Una portada liviana genera menos llamadas a los servicios internos, igual que un JSON pesa menos que una página completa.','CNBC, documentos internos','https://www.cnbc.com/2018/07/19/amazon-internal-documents-what-caused-prime-day-crash-company-scramble.html'],
+  prime: ['Prime','Servicio que depende de Sable. Según los documentos, se degradó en cascada cuando Sable se saturó, aunque por sí solo no tenía problema de capacidad.','CNBC, documentos internos','https://www.cnbc.com/2018/07/19/amazon-internal-documents-what-caused-prime-day-crash-company-scramble.html'],
+  auth:  ['Autenticación','Depende de Sable. Si la autenticación cae, nadie puede iniciar sesión, y sin sesión no hay compra. Es el ejemplo de una dependencia oculta.','CNBC, documentos internos','https://www.cnbc.com/2018/07/19/amazon-internal-documents-what-caused-prime-day-crash-company-scramble.html'],
+  video: ['Video','Depende de Sable. Se vio afectado en la cascada, aunque no tiene nada que ver con comprar.','CNBC, documentos internos','https://www.cnbc.com/2018/07/19/amazon-internal-documents-what-caused-prime-day-crash-company-scramble.html'],
+  sable: ['Sable','Sistema interno de almacenamiento y cómputo del que dependen varios servicios. Al faltar servidores, recibió más presión de la que podía sostener, y de ahí la cascada sobre Prime, autenticación y video.','CNBC, documentos internos','https://www.cnbc.com/2018/07/19/amazon-internal-documents-what-caused-prime-day-crash-company-scramble.html'],
+  scaler:['Autoescalado','Aproximadamente una hora después del inicio, un parte interno decía "Currently out of capacity for scaling". Los expertos que revisaron los documentos infieren que el autoescalado no alcanzó y hubo que agregar servidores a mano.','CNBC, documentos internos','https://www.cnbc.com/2018/07/19/amazon-internal-documents-what-caused-prime-day-crash-company-scramble.html']
+};
+const MIT = [
+  {id:'fallback', t:'Portada reducida (fallback)', d:'Cada visita genera la mitad de llamadas a servicios internos'},
+  {id:'intl', t:'Cortar tráfico internacional', d:'Quita el 30 % de los compradores'},
+  {id:'q25', t:'Portada normal solo al 25 %', d:'El resto ve la portada reducida'}
+];
+
+/* ---------- Modelo (ilustrativo) ---------- */
+const BASE = 100, FRONT_CAP = 1600, SABLE_BASE = 600, SCALE_MAX = 300;
+const SHARE = {prime:.3, auth:.4, video:.3}, SVC_CAP = {prime:700, auth:800, video:700};
+const mit = {fallback:false, intl:false, q25:false};
+let scale = 0, layoutKey = null, selected = null, M = {};
+
+function model(){
+  const mult = +$('mult').value, D = BASE*mult;
+  const us = .7*D, intl = mit.intl ? 0 : .3*D, inTot = us+intl;
+  const front = Math.min(inTot, FRONT_CAP);
+  const cost = mit.fallback ? .5 : (mit.q25 ? .625 : 1);
+  const svcIn = front*cost;
+  const need = Math.max(0, svcIn - SABLE_BASE), target = Math.min(SCALE_MAX, need);
+  scale += (target-scale)*.2;
+  const cap = SABLE_BASE + scale, r = svcIn>0 ? Math.min(1, cap/svcIn) : 1;
+  M = { D, us, intl, inTot, front, cost, svcIn, cap, r, scale,
+        capped: need >= SCALE_MAX-1 && scale > SCALE_MAX-12,
+        u: { us:null, intl:null, front:inTot/FRONT_CAP,
+             prime:svcIn*SHARE.prime/SVC_CAP.prime, auth:svcIn*SHARE.auth/SVC_CAP.auth, video:svcIn*SHARE.video/SVC_CAP.video,
+             sable: svcIn/cap, scaler: scale/SCALE_MAX },
+        served: front*r };
+}
+function state(id){
+  if(id==='us'||id==='intl') return 's-src';
+  const u = M.u[id];
+  if((id==='prime'||id==='auth'||id==='video') && M.r<.98) return 's-bad';
+  if(id==='scaler') return M.capped ? 's-bad' : (u>.5 ? 's-warn' : 's-ok');
+  return u>1.0 ? 's-bad' : (u>.75 ? 's-warn' : 's-ok');
+}
+
+/* ---------- Dibujo ---------- */
+const svg = $('map');
+const els = {nodes:{}, edges:{}};
+function anchors(a,b,up,L){
+  const A=L.nodes[a], B=L.nodes[b];
+  if(up){ return [A.x+A.w/2, A.y, B.x+B.w/2, B.y+B.h, 'line']; }
+  if(L.edgeDir==='x') return [A.x+A.w, A.y+A.h/2, B.x, B.y+B.h/2, 'cx'];
+  return [A.x+A.w/2, A.y+A.h, B.x+B.w/2, B.y, 'cy'];
+}
+function wantLayout(){
+  const f = new URLSearchParams(location.search).get('layout');   // ?layout=v fuerza el diseño de celular
+  if(f==='v') return 'V'; if(f==='h') return 'H';
+  return innerWidth < 700 ? 'V' : 'H';
+}
+function build(){
+  const key = wantLayout();
+  layoutKey = key; const L = LAYOUT[key];
+  svg.setAttribute('viewBox', '0 0 '+L.vb[0]+' '+L.vb[1]);
+  svg.innerHTML = ''; els.nodes = {}; els.edges = {};
+  L.layers.forEach(([x,y,t])=>{ const e=document.createElementNS(NS,'text'); e.setAttribute('x',x); e.setAttribute('y',y); e.setAttribute('class','layer'); e.textContent=t; svg.appendChild(e); });
+  EDGES.forEach(([a,b,k])=>{
+    const [x1,y1,x2,y2,type] = anchors(a,b,k==='up',L);
+    let d;
+    if(type==='line') d='M'+x1+' '+y1+' L'+x2+' '+y2;
+    else if(type==='cx'){ const m=(x2-x1)/2; d='M'+x1+' '+y1+' C'+(x1+m)+' '+y1+' '+(x2-m)+' '+y2+' '+x2+' '+y2; }
+    else { const m=(y2-y1)/2; d='M'+x1+' '+y1+' C'+x1+' '+(y1+m)+' '+x2+' '+(y2-m)+' '+x2+' '+y2; }
+    const p = document.createElementNS(NS,'path'); p.setAttribute('d',d); p.setAttribute('class','edge e-off');
+    svg.appendChild(p); els.edges[a+'>'+b] = p;
+  });
+  Object.keys(L.nodes).forEach(id=>{
+    const n = L.nodes[id], g = document.createElementNS(NS,'g'); g.setAttribute('class','node s-ok'); g.setAttribute('tabindex','0');
+    g.innerHTML =
+      '<rect class="nr" x="'+n.x+'" y="'+n.y+'" width="'+n.w+'" height="'+n.h+'" rx="12"/>'+
+      '<rect class="ub" x="'+(n.x+8)+'" y="'+(n.y+n.h-10)+'" width="0" height="4" rx="2" data-w="'+(n.w-16)+'"/>'+
+      '<text class="t1" x="'+(n.x+n.w/2)+'" y="'+(n.y+22)+'" text-anchor="middle">'+NODES[id].t+'</text>'+
+      '<text class="t2" x="'+(n.x+n.w/2)+'" y="'+(n.y+38)+'" text-anchor="middle">'+NODES[id].s+'</text>'+
+      '<text class="t3" x="'+(n.x+n.w/2)+'" y="'+(n.y+n.h-17)+'" text-anchor="middle"></text>';
+    g.onclick = ()=>select(id);
+    g.onkeydown = e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); select(id);} };
+    svg.appendChild(g); els.nodes[id] = g;
+  });
+  if(selected) els.nodes[selected].classList.add('sel');
+}
+function flowOf(a,b){
+  const sh = SHARE;
+  switch(a+'>'+b){
+    case 'us>front': return M.inTot>0 ? M.us*M.front/M.inTot : 0;
+    case 'intl>front': return M.inTot>0 ? M.intl*M.front/M.inTot : 0;
+    case 'front>prime': return M.svcIn*sh.prime;
+    case 'front>auth': return M.svcIn*sh.auth;
+    case 'front>video': return M.svcIn*sh.video;
+    case 'prime>sable': return M.svcIn*sh.prime*M.r;
+    case 'auth>sable': return M.svcIn*sh.auth*M.r;
+    case 'video>sable': return M.svcIn*sh.video*M.r;
+    case 'scaler>sable': return M.scale;
+  }
+  return 0;
+}
+function fmt(n){ return Math.round(n).toLocaleString('es-AR'); }
+function draw(){
+  const L = LAYOUT[layoutKey];
+  Object.keys(els.nodes).forEach(id=>{
+    const g = els.nodes[id], s = state(id);
+    g.setAttribute('class','node '+s+(selected===id?' sel':''));
+    const ub = g.querySelector('.ub'), t3 = g.querySelector('.t3');
+    const u = M.u[id];
+    if(u==null){ ub.setAttribute('width',0); t3.textContent = fmt(id==='us'?M.us:M.intl)+' /s'; }
+    else { ub.setAttribute('width', Math.min(1,u)*ub.dataset.w); t3.textContent = Math.round(u*100)+' % de carga'; }
+    if(id==='sable' && u!=null) t3.textContent = Math.round(u*100)+' % · cap. '+fmt(M.cap)+' /s';
+    if(id==='scaler') t3.textContent = '+'+fmt(M.scale)+' de '+SCALE_MAX+' /s';
+    if(id==='intl' && mit.intl) t3.textContent = 'cortado';
+  });
+  Object.keys(els.edges).forEach(k=>{
+    const [a,b] = k.split('>'), f = flowOf(a,b), p = els.edges[k];
+    if(f<1){ p.setAttribute('class','edge e-off'); p.style.strokeWidth = 2; return; }
+    const target = els.nodes[b] ? els.nodes[b].getAttribute('class') : '';
+    const cls = (target.includes('s-bad') && a!=='scaler') ? 'e-bad' : (target.includes('s-warn') ? 'e-warn' : 'e-ok');
+    p.setAttribute('class','edge '+cls);
+    p.style.animationDuration = (2.4 - 2*Math.min(1,f/1600)).toFixed(2)+'s';
+    p.style.strokeWidth = (2 + 6*Math.min(1,f/1600)).toFixed(1);
+  });
+  $('rDem').textContent = fmt(M.D);
+  $('rOk').textContent = Math.round(Math.min(100, M.served/M.D*100))+' %';
+  $('rBot').textContent = M.u.sable>1 ? 'Sable' : (M.u.front>1 ? 'Portada' : 'ninguno: todo fluye');
+  $('rScale').textContent = M.capped ? 'sin capacidad para escalar' : (M.scale>5 ? 'escalando (+'+fmt(M.scale)+')' : 'sin necesidad de escalar');
+}
+function select(id){
+  selected = id;
+  const [t,txt,src,url] = DETAIL[id];
+  $('detail').innerHTML = '<h3></h3><p></p><p style="font-size:.85rem;color:var(--muted)">Fuente: <a target="_blank" rel="noopener"></a></p>';
+  $('detail').querySelector('h3').textContent = t;
+  $('detail').querySelectorAll('p')[0].textContent = txt;
+  const a = $('detail').querySelector('a'); a.textContent = src; a.href = url;
+  draw();
+}
+function renderMitig(){
+  $('mitig').innerHTML = '';
+  MIT.forEach(m=>{
+    const b = document.createElement('button');
+    b.className = mit[m.id] ? 'act' : '';
+    b.innerHTML = '<strong>'+(mit[m.id]?'✓ ':'')+m.t+'</strong><br><small style="color:var(--muted)">'+m.d+'</small>';
+    b.onclick = ()=>{ mit[m.id] = !mit[m.id]; renderMitig(); };
+    $('mitig').appendChild(b);
+  });
+}
+
+$('mult').addEventListener('input', ()=>{ $('multLabel').textContent = $('mult').value+'×'; });
+addEventListener('resize', ()=>{ const k = wantLayout(); if(k!==layoutKey){ build(); draw(); } });
+build(); renderMitig(); model(); draw();
+setInterval(()=>{ model(); draw(); }, 200);
+</script>
+</body>
+</html>

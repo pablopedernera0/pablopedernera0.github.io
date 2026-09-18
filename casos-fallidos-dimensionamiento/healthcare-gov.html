@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caso Healthcare.gov</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../">pablopedernera0.github.io</a>
+  <nav>
+    <a href="index.html">Inicio</a>
+    <a class="on" href="healthcare-gov.html">Healthcare.gov</a>
+    <a href="pokemon-go.html">Pokémon Go</a>
+    <a href="prime-day-2018.html">Prime Day 2018</a>
+    <a href="mapa-prime-day.html">Mapa Prime Day</a>
+    <a href="mapa-pokemon-go.html">Mapa Pokémon Go</a>
+    <a href="mapa-healthcare-gov.html">Mapa Healthcare.gov</a>
+    <a href="cuellos-de-botella.html">Cuellos de botella</a>
+    <a href="metricas-y-requisitos.html">Métricas y requisitos</a>
+    <a href="actividad.html">Actividad</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="kicker">Caso 1 · Sector público · 2013</span>
+    <h1>Healthcare.gov: probado con 1.100, lanzado para cientos de miles</h1>
+    <p class="lead">El 1 de octubre de 2013 el gobierno de EE.UU. abrió el portal donde millones de personas debían
+    contratar un seguro de salud. Es el ejemplo más estudiado de un proyecto de software que falla por
+    <strong>gestión y requisitos</strong> antes que por tecnología.</p>
+  </section>
+
+  <div class="grid">
+    <div class="stat bad"><div class="n">1.100</div><div class="l">usuarios que soportaba el sistema antes de que el tiempo de respuesta se volviera inaceptable (prueba de carga, víspera del lanzamiento)</div></div>
+    <div class="stat acc"><div class="n">50–60 mil</div><div class="l">usuarios simultáneos que la administración decía esperar</div></div>
+    <div class="stat bad"><div class="n">~250 mil</div><div class="l">usuarios simultáneos que llegaron, según lo informado por el propio gobierno</div></div>
+    <div class="stat bad"><div class="n">6</div><div class="l">personas que lograron inscribirse el primer día, según documentos internos difundidos por la prensa</div></div>
+  </div>
+
+  <div class="callout">
+    <strong>La cuenta que hace mal a la vista</strong>
+    Se probó con 1.100, se esperaban ~55.000 y llegaron ~250.000. La demanda real fue unas
+    <strong>200 veces</strong> la capacidad probada (cálculo nuestro, dividiendo las cifras de arriba).
+    Y aun si la estimación oficial hubiera sido correcta, el sistema ya estaba 50 veces por debajo de lo prometido.
+  </div>
+
+  <h2>Cronología</h2>
+  <ul class="timeline">
+    <li><time>Antes de 2013</time>Se sanciona la ley y se fija la fecha de apertura del portal. Una parte importante del tiempo se va en definir reglas de política; la construcción técnica queda con menos margen.</li>
+    <li class="bad"><time>Víspera del lanzamiento</time>Documentos de prueba de rendimiento indican que el sistema alcanza 1.100 usuarios antes de que la respuesta se degrade demasiado. La meta de esas pruebas era llegar a 10.000 en los días siguientes, y aun así el lanzamiento siguió su calendario.</li>
+    <li class="bad"><time>1 de octubre de 2013</time>Lanzamiento. El sitio se cae en las primeras horas. Notas internas muestran que solo 6 personas completaron una inscripción ese día.</li>
+    <li class="bad"><time>2 de octubre</time>248 inscripciones acumuladas hacia el final del segundo día, según las mismas notas.</li>
+    <li class="ok"><time>Oct–Nov de 2013</time>Un equipo de emergencia reorganiza el trabajo: prioridades duras, equipos unificados (empleados y contratistas juntos), monitoreo de errores en tiempo real.</li>
+    <li class="ok"><time>Fines de 2013</time>El gobierno informa que el sitio ya soporta 50.000 usuarios simultáneos, la cifra que se había dicho esperar al inicio.</li>
+    <li><time>Febrero de 2016</time>La Oficina del Inspector General de HHS publica su estudio de caso sobre la gestión del proyecto (informe OEI-06-14-00350).</li>
+  </ul>
+
+  <h2>Qué salió mal, según los informes oficiales</h2>
+  <div class="grid">
+    <div class="card"><h3>Sin liderazgo claro</h3><p>El estudio del Inspector General identifica como causa central "la ausencia de un liderazgo claro", que generó demoras en las decisiones y falta de claridad en las tareas.</p></div>
+    <div class="card"><h3>Tiempos mal repartidos</h3><p>Demasiado tiempo en definir la política y muy poco para construir el sitio. La parte técnica trabajó siempre apurada.</p></div>
+    <div class="card"><h3>Contratistas sin control efectivo</h3><p>El organismo (CMS) no supervisó bien a su contratista principal, así que los problemas de calidad se arrastraron hasta el lanzamiento.</p></div>
+    <div class="card"><h3>Capacidad de hardware sin planificar</h3><p>La Oficina de Rendición de Cuentas (GAO) señaló que no se planificó ni se dispuso adecuadamente la capacidad de infraestructura del back-end.</p></div>
+  </div>
+
+  <div class="callout info">
+    <strong>Verlo animado</strong>
+    En el <a href="mapa-healthcare-gov.html">mapa animado de Healthcare.gov</a> podés poner 1.100, 55.000 o 250.000 usuarios y ver dónde se corta el flujo de inscripción.
+  </div>
+
+  <h2>Lectura desde Diseño de Sistemas Web: el requisito que faltó</h2>
+  <p>El sistema tenía cientos de requisitos funcionales (comparar planes, calcular subsidios, verificar identidad).
+  Lo que no tenía, o no tenía dueño, era un <strong>requisito no funcional medible</strong>. Un requisito de capacidad bien escrito habría sido algo así:</p>
+  <div class="callout ok">
+    <strong>Ejemplo de RNF bien redactado</strong>
+    "El portal debe soportar 60.000 usuarios simultáneos con un tiempo de respuesta menor a 2 segundos en el 95 % de las peticiones, verificado con una prueba de carga antes de la fecha de lanzamiento."
+  </div>
+  <p>Ese requisito tiene número, condición, umbral y forma de verificarlo. Con eso, el resultado de 1.100 usuarios
+  era un <em>criterio de "no se lanza"</em>, no una nota al pie.</p>
+
+  <h2>Lectura desde Redes y Comunicaciones: las métricas</h2>
+  <div class="bars">
+    <div class="bar-row"><div class="lab">Capacidad probada</div><div class="bar-track"><div class="bar-fill bad" style="width:0.5%;min-width:80px">1.100</div></div></div>
+    <div class="bar-row"><div class="lab">Demanda esperada</div><div class="bar-track"><div class="bar-fill acc" style="width:22%">~55.000</div></div></div>
+    <div class="bar-row"><div class="lab">Demanda real (pico)</div><div class="bar-track"><div class="bar-fill info" style="width:100%">~250.000</div></div></div>
+  </div>
+  <ul>
+    <li><strong>Usuarios concurrentes</strong>: la métrica correcta para dimensionar. Millones de registrados no implican millones simultáneos, pero el primer día todos llegan a la vez.</li>
+    <li><strong>Tiempo de respuesta bajo carga</strong>: la prueba de la víspera cortó en 1.100 justamente porque la latencia se volvía inaceptable. Ese es el punto donde la capacidad "termina".</li>
+    <li><strong>Lanzamiento único ("big bang")</strong>: todo el público el mismo día. Sin rampa gradual no hay margen para corregir con poco tráfico.</li>
+  </ul>
+
+  <h2>Preguntas para discutir</h2>
+  <ol>
+    <li>Si la prueba de carga de la víspera dio 1.100 y la meta era 55.000, ¿quién debía tener autoridad para frenar el lanzamiento?</li>
+    <li>¿Cómo se redacta un requisito de capacidad para un sistema que nunca existió antes (sin datos históricos)?</li>
+    <li>Un lanzamiento gradual (por estado, por franja horaria) ¿habría cambiado el resultado? ¿Qué costo tenía?</li>
+  </ol>
+
+  <h2>Fuentes</h2>
+  <ul class="sources">
+    <li><span class="tag prim">primaria</span><a href="https://oig.hhs.gov/reports/all/2016/healthcaregov-case-study-of-cms-management-of-the-federal-marketplace/" target="_blank" rel="noopener">HHS Oficina del Inspector General: HealthCare.gov, case study of CMS management of the Federal Marketplace (OEI-06-14-00350, feb. 2016)</a><span class="desc">Causas de gestión: liderazgo, contratistas, tiempos.</span></li>
+    <li><span class="tag prim">primaria</span><a href="https://www.hsgac.senate.gov/media/reps/cms-mismanagement-of-healthcaregov-contracts-led-to-millions-wasted-in-failed-healthcaregov-roll-out-new-gao-report-shows/" target="_blank" rel="noopener">Comité de Seguridad Nacional del Senado: resumen del informe de la GAO sobre los contratos de HealthCare.gov</a><span class="desc">Incluye la observación sobre capacidad de hardware del back-end.</span></li>
+    <li><span class="tag prensa">prensa</span><a href="https://techcrunch.com/2013/11/07/healthcare-gov-could-only-handle-1100-users-on-the-eve-of-launch" target="_blank" rel="noopener">TechCrunch: Healthcare.gov could only handle 1,100 users on the eve of launch</a><span class="desc">Origen de la cifra de 1.100, a partir del documento de prueba de carga.</span></li>
+    <li><span class="tag prensa">prensa</span><a href="https://www.nbcnews.com/politics/politics-news/only-6-able-sign-healthcare-govs-first-day-documents-show-flna8c11509571" target="_blank" rel="noopener">NBC News: Only 6 able to sign up on healthcare.gov's first day, documents show</a><span class="desc">Notas internas entregadas al Comité de Supervisión de la Cámara.</span></li>
+    <li><span class="tag prensa">prensa</span><a href="https://www.npr.org/sections/health-shots/2013/12/27/257398910/the-number-6-says-it-all-about-the-healthcare-gov-rollout" target="_blank" rel="noopener">NPR: The number 6 says it all about the HealthCare.gov rollout</a></li>
+    <li><span class="tag prensa">prensa</span><a href="https://www.washingtonpost.com/news/wonk/wp/2013/12/02/can-healthcare-gov-actually-handle-50000-users-at-a-time/" target="_blank" rel="noopener">The Washington Post: Can HealthCare.gov actually handle 50,000 users at a time?</a><span class="desc">El objetivo de 50.000 simultáneos, explicado.</span></li>
+    <li><span class="tag sec">secundaria</span><a href="https://www.brookings.edu/articles/a-look-back-at-technical-issues-with-healthcare-gov/" target="_blank" rel="noopener">Brookings: A look back at technical issues with Healthcare.gov</a></li>
+  </ul>
+  <div class="callout info">
+    <strong>Sobre las cifras de demanda</strong>
+    Las cifras de 50–60 mil esperados y ~250 mil reales las dio la administración, y las fuentes varían en el redondeo. Las de 1.100 y de las 6 inscripciones vienen de documentos internos que la prensa publicó. Conviene citarlas con esa atribución.
+  </div>
+
+  <div class="pager">
+    <a href="index.html"><small>← Volver</small>Inicio</a>
+    <a href="pokemon-go.html"><small>Siguiente caso →</small>Pokémon Go</a>
+  </div>
+</main>
+<footer>Material para clases de Diseño de Sistemas Web y Redes y Comunicaciones · Terciario Urquiza.</footer>
+</body>
+</html>

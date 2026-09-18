@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Actividad para el celular</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  .q{background:var(--panel);border:1px solid var(--panel-border);border-radius:14px;padding:16px 18px;margin:18px 0;}
+  .q h3{margin-top:0;color:var(--text);font-size:1.05rem;}
+  .q .num{font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:.8rem;}
+  .score{position:sticky;bottom:12px;background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:10px 16px;margin-top:24px;text-align:center;font-family:'IBM Plex Mono',monospace;}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../">pablopedernera0.github.io</a>
+  <nav>
+    <a href="index.html">Inicio</a>
+    <a href="healthcare-gov.html">Healthcare.gov</a>
+    <a href="pokemon-go.html">Pokémon Go</a>
+    <a href="prime-day-2018.html">Prime Day 2018</a>
+    <a href="mapa-prime-day.html">Mapa Prime Day</a>
+    <a href="mapa-pokemon-go.html">Mapa Pokémon Go</a>
+    <a href="mapa-healthcare-gov.html">Mapa Healthcare.gov</a>
+    <a href="cuellos-de-botella.html">Cuellos de botella</a>
+    <a href="metricas-y-requisitos.html">Métricas y requisitos</a>
+    <a class="on" href="actividad.html">Actividad</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="kicker">Desde el celular · sin cuentas</span>
+    <h1>Predecí antes de saber</h1>
+    <p class="lead">Cuatro preguntas de una sola pulsación y tres desafíos con la simulación. No hay nada que calcular:
+    se elige, se toca y se mira. Las respuestas salen de las páginas de los casos.</p>
+  </section>
+
+  <div id="quiz"></div>
+  <div class="score" id="score">Aciertos: 0 de 0</div>
+
+  <h2>Desafíos con la simulación</h2>
+  <p>Abrí la <a href="cuellos-de-botella.html" target="_blank" rel="noopener">simulación de cuellos de botella</a>
+  en otra pestaña. Cada desafío se resuelve moviendo el control deslizante y tocando botones.</p>
+
+  <div class="q">
+    <span class="num">DESAFÍO 1 · Pokémon Go</span>
+    <h3>Sin activar nada, ¿a partir de qué multiplicador empieza a fallar?</h3>
+    <button class="ans" data-open="1">Ver respuesta</button>
+    <div class="reveal callout ok"><strong>A partir de 6×</strong>Aguanta 5× (el peor caso previsto) y falla justo después. La etapa que se satura primero es el balanceador de carga.</div>
+  </div>
+  <div class="q">
+    <span class="num">DESAFÍO 2 · Pokémon Go</span>
+    <h3>Con demanda 50×, activá solo "Cambiar al balanceador HTTP/S". ¿Se arregló?</h3>
+    <button class="ans" data-open="1">Ver respuesta</button>
+    <div class="reveal callout ok"><strong>No del todo</strong>El cuello de botella se mueve: ahora se satura el clúster de aplicación. Hay que activar también "Sumar más de 1.000 nodos". Arreglar la etapa que no es el cuello no sirve, y arreglar solo el cuello descubre el siguiente.</div>
+  </div>
+  <div class="q">
+    <span class="num">DESAFÍO 3 · Prime Day</span>
+    <h3>Con demanda 10×, ¿qué botón resuelve el problema sin agregar capacidad?</h3>
+    <button class="ans" data-open="1">Ver respuesta</button>
+    <div class="reveal callout ok"><strong>"Portada reducida (fallback)"</strong>Cada visita genera menos trabajo para Sable y los servicios internos. Es la misma idea de HTML pesado frente a JSON liviano de la clase 1: pedirle menos al sistema.</div>
+  </div>
+
+  <h2>Para escribir (en la carpeta o en el celular)</h2>
+  <div class="callout">
+    <strong>Tu RNF de capacidad</strong>
+    Pensá en tu proyecto. Completá: "El sistema debe soportar ______ usuarios simultáneos con respuesta menor a ______ en el ____ % de los casos, y escalar hasta ______ veces esa carga. Si se supera, ______."
+  </div>
+
+  <div class="pager">
+    <a href="metricas-y-requisitos.html"><small>← Anterior</small>Métricas y requisitos</a>
+    <a href="index.html"><small>Volver →</small>Inicio</a>
+  </div>
+</main>
+<footer>Material para clases de Diseño de Sistemas Web y Redes y Comunicaciones · Terciario Urquiza.</footer>
+
+<script>
+const QS = [
+  {
+    t: 'Healthcare.gov: en la prueba de carga de la víspera, ¿cuántos usuarios simultáneos aguantó antes de que la respuesta se volviera inaceptable?',
+    o: ['500', '1.100', '10.000', '55.000'], a: 1,
+    e: 'Fueron 1.100. Se esperaban unos 55.000, o sea que el sistema estaba en el 2 % de lo prometido.'
+  },
+  {
+    t: 'Pokémon Go: el peor caso que Niantic había previsto era 5× el objetivo. ¿Cuánto tráfico llegó en realidad?',
+    o: ['10×', '20×', '50×', '100×'], a: 2,
+    e: '50× el objetivo, según el post de Google Cloud: diez veces más que el peor caso.'
+  },
+  {
+    t: 'Prime Day 2018: cuando el sistema no daba abasto, ¿qué medidas tomó Amazon?',
+    o: ['Apagó todo el sitio y pidió volver mañana', 'Comprar más servidores y esperar sin cambiar nada', 'Portada reducida, cortar el tráfico internacional y limitar la portada al 25 %', 'Nada: se recuperó solo'], a: 2,
+    e: 'Según los documentos internos que revisó CNBC: portada reducida, corte de tráfico internacional y portada normal solo para el 25 % del tráfico.'
+  },
+  {
+    t: 'En la medición de la clase 1, ¿cuántas veces más pesaba la página de login completa que el JSON equivalente?',
+    o: ['Unas 2 veces', 'Unas 10 veces', 'Unas 65 veces', 'Unas 1.000 veces'], a: 2,
+    e: 'Unas 65 veces. Por eso la "portada reducida" de Amazon es una herramienta de dimensionamiento.'
+  }
+];
+let ok = 0, done = 0;
+const quiz = document.getElementById('quiz');
+QS.forEach((q, i) => {
+  const box = document.createElement('div'); box.className = 'q';
+  box.innerHTML = '<span class="num">PREGUNTA ' + (i+1) + ' de ' + QS.length + '</span><h3></h3>';
+  box.querySelector('h3').textContent = q.t;
+  const btns = q.o.map((txt, j) => {
+    const b = document.createElement('button'); b.textContent = txt;
+    b.onclick = () => {
+      btns.forEach((x, k) => { x.disabled = true; if (k === q.a) x.classList.add('right'); });
+      if (j !== q.a) b.classList.add('wrong');
+      done++; if (j === q.a) ok++;
+      exp.classList.add('show');
+      document.getElementById('score').textContent = 'Aciertos: ' + ok + ' de ' + done;
+    };
+    box.appendChild(b); return b;
+  });
+  const exp = document.createElement('div'); exp.className = 'reveal callout ok';
+  exp.innerHTML = '<strong>Respuesta</strong>'; exp.appendChild(document.createTextNode(q.e));
+  box.appendChild(exp); quiz.appendChild(box);
+});
+document.querySelectorAll('button[data-open]').forEach(b => {
+  b.onclick = () => { b.nextElementSibling.classList.add('show'); b.style.display = 'none'; };
+});
+</script>
+</body>
+</html>
