@@ -779,6 +779,7 @@ general_log: <span class="dim">usuario = '' OR '1'='1' -- ' AND password = 'x'</
       <h3>Nota de infraestructura</h3>
       <p style="font-size:0.9rem; color:var(--text-muted); max-width:70ch;">Esta etapa dropea PhpMyAdmin y Nginx (no aportan al monitoreo) y usa la branch <code>monitoring</code> de <code>crud-python</code> (sin login, basada en <code>main</code>), para poder generarle carga directo al endpoint <code>/</code> con <code>curl</code>+<code>xargs</code>, igual que la versión liviana de la etapa 1 (Killercoda no permite <code>ab</code> en ninguna etapa, no solo en la 1). La app sigue corriendo en el host, no dockerizada; Prometheus la alcanza vía <code>host.docker.internal:8888</code>.</p>
     </div>
+    <p style="margin-top:0.9rem; font-size:0.88rem;">📄 <a href="documentacion/etapa6-monitoreo-guion-clase.html">Guion de clase (docente)</a> — el paso a paso de la clase presencial: bloques con tiempos, comandos, consultas PromQL y la navegación de Grafana 13.2.2, listo para imprimir</p>
     <p style="margin-top:0.4rem; font-size:0.88rem;">📄 <a href="documentacion/etapa6-informe-grupal-guia-docente.html">Guía docente</a> · <a href="documentacion/etapa6-informe-grupal-guia-estudiantes.html">Guía para estudiantes</a> — el cierre de esta etapa se resuelve como informe grupal, repartido entre el equipo</p>
   </div>
 
