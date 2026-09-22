@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modelo Entidad-Relación — Clase</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+        --bg1: #05070a;
+        --bg2: #0d1117;
+        --text: #c9d1d9;
+        --muted: #8b949e;
+        --blue: #58a6ff;
+        --green: #3fb950;
+        --orange: #f0883e;
+        --red: #f85149;
+        --line: rgba(255,255,255,0.1);
+        --panel: rgba(255,255,255,0.04);
+    }
+
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: linear-gradient(135deg, var(--bg1), var(--bg2));
+        color: var(--text);
+        line-height: 1.65;
+    }
+
+    .wrap {
+        max-width: 940px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem 5rem;
+    }
+
+    header.doc-head {
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 1.6rem;
+        margin-bottom: 2.2rem;
+    }
+
+    .eyebrow {
+        display: inline-block;
+        background: rgba(88, 166, 255, 0.12);
+        border: 1px solid var(--blue);
+        color: var(--blue);
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 1.1rem;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        color: var(--blue);
+        line-height: 1.15;
+        margin-bottom: 0.6rem;
+    }
+
+    .lead {
+        font-size: 1.15rem;
+        color: var(--muted);
+        max-width: 760px;
+    }
+
+    h2 {
+        font-size: 1.7rem;
+        color: var(--blue);
+        margin: 2.6rem 0 1rem;
+        padding-top: 0.4rem;
+    }
+
+    h3 {
+        font-size: 1.2rem;
+        color: var(--green);
+        margin: 1.6rem 0 0.6rem;
+    }
+
+    p { margin-bottom: 0.9rem; max-width: 820px; }
+    ul, ol { margin: 0 0 1rem 1.4rem; max-width: 820px; }
+    li { margin-bottom: 0.45rem; }
+
+    strong { color: var(--green); }
+    em { color: var(--muted); font-style: italic; }
+
+    code {
+        background: rgba(255,255,255,0.08);
+        padding: 0.12rem 0.4rem;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        color: var(--orange);
+        font-size: 0.92em;
+    }
+
+    .section-num {
+        color: var(--muted);
+        font-size: 1.1rem;
+        font-weight: normal;
+        margin-right: 0.4rem;
+    }
+
+    .pipeline {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        gap: 0.5rem;
+        margin: 1.2rem 0;
+    }
+
+    .pipeline .stage {
+        flex: 1 1 130px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0.7rem 0.8rem;
+        font-size: 0.85rem;
+        text-align: center;
+        color: var(--muted);
+    }
+
+    .pipeline .stage.here {
+        border-color: var(--blue);
+        color: var(--text);
+        background: rgba(88,166,255,0.08);
+    }
+
+    .pipeline .stage b { display: block; color: var(--text); font-size: 0.95rem; margin-bottom: 0.15rem; }
+    .pipeline .stage.here b { color: var(--blue); }
+
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1rem;
+        margin: 1.2rem 0;
+    }
+
+    .card {
+        background: var(--panel);
+        border: 1px solid rgba(63, 185, 80, 0.35);
+        border-radius: 12px;
+        padding: 1.1rem 1.2rem;
+    }
+
+    .card h4 { color: var(--blue); font-size: 1.05rem; margin-bottom: 0.4rem; }
+    .card p { font-size: 0.92rem; color: #b8c0c9; margin-bottom: 0; }
+
+    table.def {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.1rem 0;
+        font-size: 0.95rem;
+    }
+    table.def th, table.def td {
+        border: 1px solid var(--line);
+        padding: 0.6rem 0.8rem;
+        text-align: left;
+        vertical-align: top;
+    }
+    table.def th { background: rgba(88,166,255,0.08); color: var(--blue); font-weight: 600; }
+    table.def td:first-child { color: var(--green); font-weight: 600; white-space: nowrap; }
+
+    .warning-box, .note-box {
+        border-radius: 10px;
+        padding: 0.9rem 1.3rem;
+        margin: 1.2rem 0;
+        max-width: 820px;
+    }
+    .warning-box { background: rgba(240, 136, 62, 0.1); border: 1px solid var(--orange); }
+    .note-box { background: rgba(88, 166, 255, 0.08); border: 1px solid var(--blue); }
+    .warning-box p, .note-box p { margin-bottom: 0; }
+
+    .mono-block {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 1rem 1.3rem;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        line-height: 1.75;
+        margin: 1.1rem 0;
+        overflow-x: auto;
+    }
+    .er-entity { color: var(--green); font-weight: bold; }
+    .er-pk { color: var(--blue); font-weight: bold; text-decoration: underline; }
+    .er-fk { color: var(--orange); font-weight: bold; }
+    .er-rel { color: var(--muted); font-style: italic; }
+
+    .steps {
+        counter-reset: step;
+        margin: 1.2rem 0;
+        padding: 0;
+    }
+    .steps > li {
+        list-style: none;
+        position: relative;
+        padding-left: 2.6rem;
+        margin-bottom: 1.1rem;
+        max-width: 820px;
+    }
+    .steps > li::before {
+        counter-increment: step;
+        content: counter(step);
+        position: absolute;
+        left: 0; top: 0;
+        width: 1.8rem; height: 1.8rem;
+        background: var(--blue);
+        color: var(--bg1);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: bold; font-size: 0.95rem;
+    }
+
+    .bad { color: var(--red); }
+    .ok { color: var(--green); }
+
+    .toolbar {
+        position: fixed;
+        top: 1rem; right: 1rem;
+        display: flex; gap: 0.5rem;
+        z-index: 20;
+    }
+    .btn {
+        background: var(--green);
+        color: var(--bg1);
+        border: none;
+        padding: 0.55rem 1.1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .btn:hover { background: #56d364; }
+    .btn.ghost { background: transparent; border: 1px solid var(--muted); color: var(--muted); }
+    .btn.ghost:hover { color: var(--blue); border-color: var(--blue); }
+
+    footer.doc-foot {
+        margin-top: 3rem;
+        padding-top: 1.4rem;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.9rem;
+    }
+    footer.doc-foot a { color: var(--blue); }
+
+    /* ---------- Impresión / Guardar como PDF ---------- */
+    @media print {
+        @page { margin: 1.6cm; }
+        body {
+            background: #fff !important;
+            color: #111 !important;
+            font-size: 11pt;
+            line-height: 1.45;
+        }
+        .wrap { max-width: none; padding: 0; margin: 0; }
+        .toolbar { display: none !important; }
+        .eyebrow { color: #1a56b0; border-color: #1a56b0; background: #eef4ff; }
+        h1, h2 { color: #123a75 !important; }
+        h3 { color: #1a6b2e !important; }
+        .lead, .muted, .section-num, em, footer.doc-foot { color: #555 !important; }
+        strong { color: #1a6b2e !important; }
+        code { background: #f0f0f0; color: #a04000; }
+        .card, .pipeline .stage, .mono-block, table.def th, table.def td, .warning-box, .note-box {
+            background: #fafafa !important;
+            border-color: #ccc !important;
+            color: #111 !important;
+        }
+        .card h4, .pipeline .stage b, .pipeline .stage.here b { color: #123a75 !important; }
+        .card p, .pipeline .stage { color: #333 !important; }
+        table.def th { background: #eef4ff !important; color: #123a75 !important; }
+        table.def td:first-child { color: #1a6b2e !important; }
+        .warning-box { background: #fff6ee !important; border-color: #d98032 !important; }
+        .note-box { background: #eef4ff !important; border-color: #1a56b0 !important; }
+        .er-entity { color: #1a6b2e !important; }
+        .er-pk { color: #123a75 !important; }
+        .er-fk { color: #a04000 !important; }
+        .er-rel { color: #555 !important; }
+        .steps > li::before { background: #123a75 !important; color: #fff !important; }
+        .bad { color: #b02020 !important; }
+        h2 { page-break-after: avoid; }
+        h3 { page-break-after: avoid; }
+        .card-grid, .mono-block, table.def, .warning-box, .note-box, .pipeline { page-break-inside: avoid; }
+        footer.doc-foot { border-top: 1px solid #ccc; }
+        a { color: #123a75 !important; text-decoration: none; }
+    }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+    <a class="btn ghost" href="index.html">Índice</a>
+    <button class="btn" onclick="window.print()">Imprimir / PDF</button>
+</div>
+
+<div class="wrap">
+
+<header class="doc-head">
+    <div class="eyebrow">Diseño de Sistemas Web · Clase · Comisiones 3°1° y 3°2°</div>
+    <h1>Modelo Entidad-Relación</h1>
+    <p class="lead">Cómo pasar de "sé qué tiene que hacer el sistema" a "sé qué datos hay que guardar y cómo se conectan". El modelo ER es el plano de la base de datos antes de escribir una sola tabla.</p>
+</header>
+
+<h2><span class="section-num">1</span>Dónde encaja el ER en el proceso</h2>
+<p>El modelo ER no se inventa de la nada ni es el primer paso. Llega <strong>después</strong> de saber qué hace el sistema y <strong>antes</strong> de crear la base de datos real:</p>
+<div class="pipeline">
+    <div class="stage"><b>Requisitos + HU</b>qué necesita el sistema</div>
+    <div class="stage"><b>Casos de Uso</b>quién hace qué y con qué datos</div>
+    <div class="stage here"><b>Modelo ER</b>qué se guarda y cómo se relaciona</div>
+    <div class="stage"><b>Modelo relacional</b>tablas, columnas, claves</div>
+    <div class="stage"><b>Base de datos</b>el <code>CREATE TABLE</code> real</div>
+</div>
+<div class="note-box"><p>Regla de oro que vamos a repetir toda la clase: <strong>cada entidad y cada atributo del ER tiene que poder rastrearse hasta un requisito o un caso de uso.</strong> Si aparece algo que nadie pidió, sobra. Si un CU necesita un dato que no está, falta.</p></div>
+
+<h2><span class="section-num">2</span>Los tres bloques del modelo</h2>
+<p>Un modelo ER se arma con solo tres piezas. Todo lo demás son detalles de esas tres:</p>
+<div class="card-grid">
+    <div class="card">
+        <h4>Entidades</h4>
+        <p>Las "cosas" de las que el sistema guarda información: un cliente, un producto, un préstamo. Se dibujan como rectángulos.</p>
+    </div>
+    <div class="card">
+        <h4>Atributos</h4>
+        <p>Los datos concretos de cada entidad: el nombre del cliente, el precio del producto, la fecha del préstamo.</p>
+    </div>
+    <div class="card">
+        <h4>Relaciones</h4>
+        <p>Cómo se conectan las entidades entre sí: un cliente <em>realiza</em> pedidos, un socio <em>toma prestado</em> un libro.</p>
+    </div>
+</div>
+
+<h2><span class="section-num">3</span>Entidades</h2>
+<p>Una <strong>entidad</strong> es una clase de objeto sobre el que guardamos datos. Ojo con la diferencia clave:</p>
+<ul>
+    <li><strong>Entidad</strong> = el tipo, el molde. Ejemplo: <code>CLIENTE</code>.</li>
+    <li><strong>Instancia</strong> = un caso concreto de ese molde. Ejemplo: el cliente "Ana Gómez, DNI 30.111.222".</li>
+</ul>
+<p>En el modelo dibujamos la entidad (el molde) una sola vez, aunque después la base tenga miles de instancias.</p>
+<h3>Entidad fuerte y entidad débil</h3>
+<p>Una <strong>entidad fuerte</strong> existe por sí sola y tiene su propio identificador (un <code>CLIENTE</code> existe sin depender de nadie). Una <strong>entidad débil</strong> no puede identificarse sola: depende de otra para tener sentido. Ejemplo típico: un <code>DETALLE_PEDIDO</code> no existe sin su <code>PEDIDO</code>; una <code>CUOTA</code> no existe sin su <code>CREDITO</code>.</p>
+
+<h2><span class="section-num">4</span>Atributos</h2>
+<p>Los atributos son los datos de cada entidad. No todos son iguales, y distinguirlos evita errores clásicos:</p>
+<table class="def">
+    <tr><th>Tipo</th><th>Qué es</th><th>Ejemplo</th></tr>
+    <tr><td>Simple</td><td>Un solo valor indivisible.</td><td><code>precio</code>, <code>dni</code></td></tr>
+    <tr><td>Compuesto</td><td>Se puede descomponer en partes.</td><td><code>direccion</code> → calle, número, ciudad</td></tr>
+    <tr><td>Multivaluado</td><td>Puede tener varios valores para una misma instancia.</td><td><code>telefonos</code> de un cliente</td></tr>
+    <tr><td>Derivado</td><td>Se calcula a partir de otros; no se guarda "crudo".</td><td><code>edad</code> (se deriva de la fecha de nacimiento)</td></tr>
+    <tr><td>Clave</td><td>Identifica de forma única cada instancia.</td><td><code>cliente_id</code></td></tr>
+</table>
+<div class="warning-box"><p>Dos trampas frecuentes: guardar un dato <strong>derivado</strong> como si fuera fijo (guardar la edad en vez de calcularla — al día siguiente ya está mal), y meter un atributo <strong>multivaluado</strong> como una sola columna (un campo "teléfonos" con tres números separados por comas es un problema, no una solución: eso pide una entidad aparte).</p></div>
+
+<h2><span class="section-num">5</span>Claves: PK, candidata y FK</h2>
+<div class="card-grid">
+    <div class="card">
+        <h4>Clave primaria (PK)</h4>
+        <p>El atributo (o combinación) que identifica de forma única cada instancia. No se repite y no puede quedar vacío. Cada entidad tiene exactamente una PK.</p>
+    </div>
+    <div class="card">
+        <h4>Clave candidata</h4>
+        <p>Cualquier atributo que <em>también</em> podría servir de identificador único. De todas las candidatas se elige una como PK; el resto quedan como alternativas.</p>
+    </div>
+    <div class="card">
+        <h4>Clave foránea (FK)</h4>
+        <p>Un atributo que apunta a la PK de otra entidad. Es el mecanismo con el que se materializa una relación en los datos.</p>
+    </div>
+</div>
+<p>Notación que vamos a usar en el pizarrón y en el archivo: la PK <span class="er-pk">subrayada</span>, la FK marcada con <span class="er-fk">FK</span>.</p>
+
+<h2><span class="section-num">6</span>Relaciones y cardinalidad</h2>
+<p>Una <strong>relación</strong> conecta dos entidades. Lo importante no es solo que estén conectadas, sino <strong>cuántas</strong> instancias de una se conectan con cuántas de la otra. Eso es la <strong>cardinalidad</strong>:</p>
+<table class="def">
+    <tr><th>Cardinalidad</th><th>Significado</th><th>Ejemplo</th></tr>
+    <tr><td>1 : 1</td><td>Una instancia de A se relaciona con una sola de B, y viceversa.</td><td>Un <code>PEDIDO</code> tiene un solo <code>PAGO</code>.</td></tr>
+    <tr><td>1 : N</td><td>Una instancia de A se relaciona con muchas de B, pero cada B con una sola A.</td><td>Un <code>CLIENTE</code> realiza muchos <code>PEDIDO</code>; cada pedido es de un solo cliente.</td></tr>
+    <tr><td>N : M</td><td>Muchas de A con muchas de B, en ambos sentidos.</td><td>Un <code>LIBRO</code> lo escriben varios <code>AUTOR</code>; un autor escribe varios libros.</td></tr>
+</table>
+<h3>Participación total o parcial</h3>
+<p>Además de "cuántos", importa "¿es obligatorio?". Si <strong>toda</strong> instancia de una entidad tiene que participar en la relación, la participación es <strong>total</strong> (un <code>DETALLE_PEDIDO</code> siempre pertenece a un pedido). Si puede no participar, es <strong>parcial</strong> (un <code>CLIENTE</code> puede existir sin haber hecho ningún pedido todavía).</p>
+
+<h2><span class="section-num">7</span>El caso especial N:M</h2>
+<p>Una relación muchos-a-muchos <strong>no se puede implementar directamente</strong> en una base relacional: ¿dónde pondrías la FK, si de los dos lados hay "muchos"? Se resuelve creando una <strong>entidad intermedia</strong> (o entidad asociativa) que parte el N:M en dos relaciones 1:N:</p>
+<div class="mono-block">
+Antes (no se puede implementar así):<br>
+&nbsp;&nbsp;<span class="er-entity">LIBRO</span> <span class="er-rel">N --- M</span> <span class="er-entity">AUTOR</span><br>
+<br>
+Después (entidad intermedia AUTORIA):<br>
+&nbsp;&nbsp;<span class="er-entity">LIBRO</span> <span class="er-rel">1 --- N</span> <span class="er-entity">AUTORIA</span> <span class="er-rel">N --- 1</span> <span class="er-entity">AUTOR</span>
+</div>
+<p>La entidad intermedia además es el lugar natural para los datos <em>de la relación misma</em>: en un <code>DETALLE_PEDIDO</code> viven la <code>cantidad</code> y el <code>subtotal</code>, que no son ni del pedido ni del producto por separado, sino del cruce entre ambos.</p>
+
+<h2><span class="section-num">8</span>Caso resuelto paso a paso</h2>
+<p>Enunciado corto de ejemplo:</p>
+<div class="note-box"><p><em>"Una biblioteca registra sus socios y sus libros. Un socio puede pedir prestados varios libros a lo largo del tiempo, y cada libro puede ser prestado a muchos socios (en distintas fechas). De cada préstamo interesa la fecha en que se retiró y la fecha de devolución. Cada libro fue escrito por uno o más autores."</em></p></div>
+<ol class="steps">
+    <li><strong>Detectar las entidades</strong> — los sustantivos importantes que hay que guardar: <code>SOCIO</code>, <code>LIBRO</code>, <code>AUTOR</code>. "Préstamo" también es un candidato: guárdenlo en el radar.</li>
+    <li><strong>Detectar las relaciones</strong> — los verbos: un socio <em>pide prestado</em> un libro; un libro <em>fue escrito por</em> autores.</li>
+    <li><strong>Poner cardinalidades</strong> — "un socio pide varios libros y un libro va a muchos socios" → <span class="bad">N:M</span>. "un libro lo escriben uno o más autores y un autor escribe varios" → <span class="bad">N:M</span>. Dos muchos-a-muchos.</li>
+    <li><strong>Resolver los N:M</strong> — el préstamo socio-libro se vuelve la entidad <code>PRESTAMO</code> (que además guarda <code>fecha_retiro</code> y <code>fecha_devolucion</code>, datos de la relación). El libro-autor se vuelve <code>AUTORIA</code>.</li>
+    <li><strong>Asignar atributos y claves</strong> — cada entidad recibe su PK y sus datos; las intermedias reciben las FK a las dos entidades que cruzan.</li>
+</ol>
+<p>Modelo resultante:</p>
+<div class="mono-block">
+<span class="er-entity">SOCIO</span>(<span class="er-pk">socio_id</span>, nombre, email)<br>
+<span class="er-entity">LIBRO</span>(<span class="er-pk">libro_id</span>, titulo, anio, isbn)<br>
+<span class="er-entity">AUTOR</span>(<span class="er-pk">autor_id</span>, nombre)<br>
+<span class="er-entity">PRESTAMO</span>(<span class="er-pk">prestamo_id</span>, <span class="er-fk">socio_id</span> FK, <span class="er-fk">libro_id</span> FK, fecha_retiro, fecha_devolucion)<br>
+<span class="er-entity">AUTORIA</span>(<span class="er-pk">autoria_id</span>, <span class="er-fk">libro_id</span> FK, <span class="er-fk">autor_id</span> FK)<br>
+<br>
+<span class="er-rel">SOCIO  1 --- N  PRESTAMO  N --- 1  LIBRO</span><br>
+<span class="er-rel">LIBRO  1 --- N  AUTORIA   N --- 1  AUTOR</span>
+</div>
+
+<h2><span class="section-num">9</span>Del ER al modelo relacional (adelanto)</h2>
+<p>El ER es el plano; el modelo relacional es la obra. La traducción sigue reglas mecánicas que vemos en detalle más adelante, pero la idea básica ya se puede anticipar:</p>
+<ul>
+    <li>Cada <strong>entidad</strong> se vuelve una <strong>tabla</strong>; cada atributo, una columna.</li>
+    <li>La <strong>PK</strong> de la entidad es la PK de la tabla.</li>
+    <li>Una relación <strong>1:N</strong> se implementa poniendo la <strong>FK del lado "1" en la tabla del lado "N"</strong>.</li>
+    <li>Una relación <strong>N:M</strong> ya la resolvimos en el ER con una entidad intermedia, así que se traduce como cualquier tabla, con dos FK.</li>
+</ul>
+
+<h2><span class="section-num">10</span>Errores comunes (para revisar antes de entregar)</h2>
+<ul>
+    <li>Entidades que <strong>nadie pidió</strong> (no rastreables a un RF/CU) o que <strong>faltan</strong> aunque un CU las necesite.</li>
+    <li>Dejar un <strong>N:M sin resolver</strong>: en una base relacional no se puede implementar así.</li>
+    <li>Meter un atributo <strong>multivaluado</strong> (varios teléfonos, varias categorías) como una sola columna con comas.</li>
+    <li>Guardar un dato <strong>derivado</strong> (edad, total) como si fuera fijo, en vez de calcularlo.</li>
+    <li>Marcar la línea de relación pero <strong>no la cardinalidad</strong> (1:1 / 1:N / N:M): media relación no dice nada.</li>
+    <li>Poner una decisión de diseño <strong>enunciada</strong> ("agregamos la entidad X") sin <strong>justificarla</strong> (por qué, y qué alternativa se descartó).</li>
+</ul>
+
+<footer class="doc-foot">
+    <p>Diseño de Sistemas Web — Comisiones 3°1° y 3°2° · Prof. Pablo Pedernera.
+    Continúa en la <strong>práctica</strong> (clase virtual): casos para modelar y cuestionario de repaso.
+    Repaso rápido orientado a la rúbrica en <a href="modelo-er.html">modelo-er.html</a> ·
+    <a href="index.html">Volver al índice</a>.</p>
+</footer>
+
+</div>
+</body>
+</html>

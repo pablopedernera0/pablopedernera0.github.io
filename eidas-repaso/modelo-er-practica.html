@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modelo Entidad-Relación — Práctica y cuestionario</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+        --bg1:#05070a; --bg2:#0d1117; --text:#c9d1d9; --muted:#8b949e;
+        --blue:#58a6ff; --green:#3fb950; --orange:#f0883e; --red:#f85149;
+        --line:rgba(255,255,255,0.1); --panel:rgba(255,255,255,0.04);
+    }
+    body {
+        font-family:'Segoe UI',Arial,sans-serif;
+        background:linear-gradient(135deg,var(--bg1),var(--bg2));
+        color:var(--text); line-height:1.65;
+    }
+    .wrap { max-width:940px; margin:0 auto; padding:3rem 1.5rem 5rem; }
+    header.doc-head { border-bottom:1px solid var(--line); padding-bottom:1.6rem; margin-bottom:2rem; }
+    .eyebrow {
+        display:inline-block; background:rgba(88,166,255,0.12); border:1px solid var(--blue);
+        color:var(--blue); padding:0.3rem 1rem; border-radius:20px; font-size:0.8rem;
+        letter-spacing:0.05em; text-transform:uppercase; margin-bottom:1.1rem;
+    }
+    h1 { font-size:2.4rem; color:var(--blue); line-height:1.15; margin-bottom:0.6rem; }
+    .lead { font-size:1.12rem; color:var(--muted); max-width:780px; }
+    h2 { font-size:1.7rem; color:var(--blue); margin:2.6rem 0 0.6rem; }
+    .part-label { color:var(--green); font-weight:bold; letter-spacing:0.04em; text-transform:uppercase; font-size:0.85rem; }
+    h3 { font-size:1.2rem; color:var(--green); margin:1.6rem 0 0.6rem; }
+    p { margin-bottom:0.9rem; max-width:820px; }
+    ul,ol { margin:0 0 1rem 1.4rem; max-width:820px; }
+    li { margin-bottom:0.45rem; }
+    strong { color:var(--green); }
+    em { color:var(--muted); font-style:italic; }
+    code {
+        background:rgba(255,255,255,0.08); padding:0.12rem 0.4rem; border-radius:4px;
+        font-family:'Courier New',monospace; color:var(--orange); font-size:0.92em;
+    }
+    .note-box, .warning-box { border-radius:10px; padding:0.9rem 1.3rem; margin:1.2rem 0; max-width:820px; }
+    .note-box { background:rgba(88,166,255,0.08); border:1px solid var(--blue); }
+    .warning-box { background:rgba(240,136,62,0.1); border:1px solid var(--orange); }
+    .note-box p, .warning-box p { margin-bottom:0; }
+
+    .case {
+        background:var(--panel); border:1px solid var(--line);
+        border-left:4px solid var(--blue); border-radius:10px;
+        padding:1.1rem 1.3rem; margin:1.2rem 0;
+    }
+    .case .case-tag { font-size:0.78rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--blue); font-weight:bold; }
+    .case .enunciado { font-style:italic; color:var(--text); margin:0.5rem 0 0.8rem; }
+    .case .pedido { font-size:0.95rem; color:#b8c0c9; margin-bottom:0; }
+
+    details {
+        background:rgba(63,185,80,0.06); border:1px solid rgba(63,185,80,0.35);
+        border-radius:10px; padding:0.2rem 1.1rem; margin:0.9rem 0;
+    }
+    details > summary {
+        cursor:pointer; padding:0.7rem 0; color:var(--green); font-weight:bold; font-size:0.95rem;
+        list-style:none;
+    }
+    details > summary::before { content:"► "; color:var(--green); }
+    details[open] > summary::before { content:"▼ "; }
+    details > summary::-webkit-details-marker { display:none; }
+    details .body { padding-bottom:0.9rem; }
+
+    .mono-block {
+        background:rgba(0,0,0,0.35); border:1px solid var(--line); border-radius:10px;
+        padding:1rem 1.3rem; font-family:'Courier New',monospace; font-size:0.9rem;
+        line-height:1.75; margin:0.9rem 0; overflow-x:auto;
+    }
+    .er-entity { color:var(--green); font-weight:bold; }
+    .er-pk { color:var(--blue); font-weight:bold; text-decoration:underline; }
+    .er-fk { color:var(--orange); font-weight:bold; }
+    .er-rel { color:var(--muted); font-style:italic; }
+
+    /* --- quiz --- */
+    .quiz-q { margin:1.4rem 0; padding-bottom:0.4rem; border-bottom:1px dashed var(--line); }
+    .quiz-q .qtext { font-weight:600; margin-bottom:0.7rem; }
+    .quiz-q .qtext .qnum { color:var(--blue); margin-right:0.4rem; }
+    .opt {
+        display:block; width:100%; text-align:left; background:var(--panel);
+        border:1px solid var(--line); border-radius:8px; padding:0.6rem 0.9rem;
+        margin-bottom:0.5rem; color:var(--text); font-size:0.98rem; cursor:pointer;
+        font-family:inherit; transition:background 0.15s,border-color 0.15s;
+    }
+    .opt:hover { border-color:var(--blue); }
+    .opt.correct { border-color:var(--green); background:rgba(63,185,80,0.15); }
+    .opt.wrong { border-color:var(--red); background:rgba(248,81,73,0.13); }
+    .opt.correct::after { content:"  ✓"; color:var(--green); font-weight:bold; }
+    .opt.wrong::after { content:"  ✗"; color:var(--red); font-weight:bold; }
+    .feedback {
+        display:none; font-size:0.92rem; padding:0.6rem 0.9rem; border-radius:8px;
+        background:rgba(88,166,255,0.08); border:1px solid var(--blue); margin-top:0.3rem;
+    }
+    .feedback.show { display:block; }
+
+    .score-bar {
+        position:sticky; top:0; z-index:30; background:rgba(13,17,23,0.95);
+        border:1px solid var(--line); border-radius:10px; padding:0.6rem 1rem;
+        margin:1rem 0 0; display:flex; align-items:center; gap:1rem; backdrop-filter:blur(4px);
+    }
+    .score-bar b { color:var(--blue); font-size:1.1rem; }
+    .btn {
+        background:var(--green); color:var(--bg1); border:none; padding:0.5rem 1rem;
+        border-radius:8px; font-size:0.9rem; font-weight:bold; cursor:pointer; text-decoration:none;
+    }
+    .btn:hover { background:#56d364; }
+    .btn.ghost { background:transparent; border:1px solid var(--muted); color:var(--muted); }
+    .btn.ghost:hover { color:var(--blue); border-color:var(--blue); }
+
+    .toolbar { position:fixed; top:1rem; right:1rem; display:flex; gap:0.5rem; z-index:40; }
+
+    footer.doc-foot { margin-top:3rem; padding-top:1.4rem; border-top:1px solid var(--line); color:var(--muted); font-size:0.9rem; }
+    footer.doc-foot a { color:var(--blue); }
+
+    @media print {
+        @page { margin:1.5cm; }
+        body { background:#fff!important; color:#111!important; font-size:11pt; }
+        .wrap { max-width:none; padding:0; }
+        .toolbar, .score-bar, .btn { display:none!important; }
+        details { open:true; background:#fafafa!important; border-color:#ccc!important; }
+        details[open] .body, details .body { display:block!important; }
+        h1,h2 { color:#123a75!important; } h3,.part-label { color:#1a6b2e!important; }
+        .eyebrow { color:#1a56b0; border-color:#1a56b0; background:#eef4ff; }
+        strong { color:#1a6b2e!important; }
+        code { background:#f0f0f0; color:#a04000; }
+        .case,.note-box,.warning-box,.mono-block { background:#fafafa!important; border-color:#ccc!important; color:#111!important; }
+        .er-entity{color:#1a6b2e!important;} .er-pk{color:#123a75!important;} .er-fk{color:#a04000!important;} .er-rel{color:#555!important;}
+        .opt { border-color:#ccc!important; }
+        .feedback { display:block!important; background:#eef4ff!important; border-color:#1a56b0!important; color:#111!important; }
+        a { color:#123a75!important; text-decoration:none; }
+    }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+    <a class="btn ghost" href="modelo-er-teoria.html">Teoría</a>
+    <button class="btn" onclick="window.print()">Imprimir / PDF</button>
+</div>
+
+<div class="wrap">
+
+<header class="doc-head">
+    <div class="eyebrow">Diseño de Sistemas Web · Práctica · Comisiones 3°1° y 3°2°</div>
+    <h1>Modelo ER — Práctica y cuestionario</h1>
+    <p class="lead">Material para trabajar por tu cuenta. Primero resolvés los casos en papel o en una herramienta de diagramas; recién ahí abrís cada solución para compararte. El cuestionario del final se autocorrige. Si algo no cierra, volvé a la <a href="modelo-er-teoria.html" style="color:var(--blue)">teoría</a> y seguí estudiando en casa.</p>
+</header>
+
+<div class="note-box"><p><strong>Cómo aprovecharlo:</strong> no mires la solución antes de intentarlo. El objetivo no es "tener la respuesta", es equivocarte primero y entender dónde. Las soluciones muestran <em>una</em> forma correcta; puede haber variantes válidas si están bien justificadas.</p></div>
+
+<h2><span class="part-label">Parte A</span><br>Casos para modelar</h2>
+<p>Para cada caso: detectá entidades, relaciones y cardinalidades; resolvé los N:M con entidad intermedia; asigná PK y FK. Después abrí la solución.</p>
+
+<div class="case">
+    <span class="case-tag">Caso 1 · básico</span>
+    <p class="enunciado">"Un consultorio registra pacientes y médicos. Un paciente saca turnos con un médico; cada turno tiene una fecha y una hora. Un médico atiende muchos turnos; un paciente puede tener varios turnos a lo largo del tiempo."</p>
+    <p class="pedido">Pedido: entidades, cardinalidades, y el modelo con PK/FK.</p>
+</div>
+<details>
+    <summary>Ver solución del Caso 1</summary>
+    <div class="body">
+        <p>"Un paciente saca turnos con un médico" y "un turno tiene fecha y hora" → el <strong>turno</strong> es una entidad propia (tiene datos suyos). No es un N:M directo entre paciente y médico: es paciente 1:N turno, y médico 1:N turno.</p>
+        <div class="mono-block">
+<span class="er-entity">PACIENTE</span>(<span class="er-pk">paciente_id</span>, nombre, dni, telefono)<br>
+<span class="er-entity">MEDICO</span>(<span class="er-pk">medico_id</span>, nombre, especialidad)<br>
+<span class="er-entity">TURNO</span>(<span class="er-pk">turno_id</span>, <span class="er-fk">paciente_id</span> FK, <span class="er-fk">medico_id</span> FK, fecha, hora, estado)<br>
+<br>
+<span class="er-rel">PACIENTE 1 --- N TURNO N --- 1 MEDICO</span>
+        </div>
+        <p>Error típico: intentar una relación N:M directa "paciente atiende médico" y colgar ahí la fecha. La fecha y hora son <strong>del turno</strong>, no del cruce abstracto: por eso el turno merece ser entidad.</p>
+    </div>
+</details>
+
+<div class="case">
+    <span class="case-tag">Caso 2 · N:M</span>
+    <p class="enunciado">"Una plataforma de cursos online tiene estudiantes y cursos. Un estudiante se inscribe en varios cursos, y un curso tiene muchos estudiantes inscriptos. De cada inscripción interesa la fecha y la nota final."</p>
+    <p class="pedido">Pedido: identificá el N:M, resolvelo, y ubicá dónde van la fecha y la nota.</p>
+</div>
+<details>
+    <summary>Ver solución del Caso 2</summary>
+    <div class="body">
+        <p>"Un estudiante en varios cursos y un curso con muchos estudiantes" es un <strong>N:M</strong>. No se implementa directo: se crea la entidad intermedia <code>INSCRIPCION</code>, que además es el lugar natural para la fecha y la nota (son datos <em>del cruce</em>, no del estudiante ni del curso solos).</p>
+        <div class="mono-block">
+<span class="er-entity">ESTUDIANTE</span>(<span class="er-pk">estudiante_id</span>, nombre, email)<br>
+<span class="er-entity">CURSO</span>(<span class="er-pk">curso_id</span>, titulo, cupo)<br>
+<span class="er-entity">INSCRIPCION</span>(<span class="er-pk">inscripcion_id</span>, <span class="er-fk">estudiante_id</span> FK, <span class="er-fk">curso_id</span> FK, fecha, nota_final)<br>
+<br>
+<span class="er-rel">ESTUDIANTE 1 --- N INSCRIPCION N --- 1 CURSO</span>
+        </div>
+        <p>Si guardabas la nota como atributo del estudiante, ¿cuál de sus cinco cursos sería? Y si la guardabas en el curso, ¿de cuál de sus treinta estudiantes? Esa pregunta sin respuesta es la señal de que el dato va en la entidad intermedia.</p>
+    </div>
+</details>
+
+<div class="case">
+    <span class="case-tag">Caso 3 · integrador</span>
+    <p class="enunciado">"Una tienda vende productos y toma pedidos de sus clientes. Un pedido lo hace un cliente e incluye varios productos, cada uno con una cantidad. De cada pedido interesa la fecha y el estado. Un pedido se paga con un solo pago; interesa el método y si el pago fue aprobado."</p>
+    <p class="pedido">Pedido: el modelo completo. Prestá atención a la cantidad por producto y a la relación pedido–pago.</p>
+</div>
+<details>
+    <summary>Ver solución del Caso 3</summary>
+    <div class="body">
+        <p>Dos puntos finos: (1) "varios productos, cada uno con una cantidad" es un N:M entre pedido y producto, con la <code>cantidad</code> como dato del cruce → entidad <code>DETALLE_PEDIDO</code>. (2) "un pedido se paga con un solo pago" es una relación <strong>1:1</strong> → la FK del pedido va en <code>PAGO</code> (o al revés), no hace falta entidad intermedia.</p>
+        <div class="mono-block">
+<span class="er-entity">CLIENTE</span>(<span class="er-pk">cliente_id</span>, nombre, email)<br>
+<span class="er-entity">PRODUCTO</span>(<span class="er-pk">producto_id</span>, nombre, precio)<br>
+<span class="er-entity">PEDIDO</span>(<span class="er-pk">pedido_id</span>, <span class="er-fk">cliente_id</span> FK, fecha, estado)<br>
+<span class="er-entity">DETALLE_PEDIDO</span>(<span class="er-pk">detalle_id</span>, <span class="er-fk">pedido_id</span> FK, <span class="er-fk">producto_id</span> FK, cantidad, subtotal)<br>
+<span class="er-entity">PAGO</span>(<span class="er-pk">pago_id</span>, <span class="er-fk">pedido_id</span> FK, metodo, aprobado)<br>
+<br>
+<span class="er-rel">CLIENTE 1 --- N PEDIDO 1 --- N DETALLE_PEDIDO N --- 1 PRODUCTO</span><br>
+<span class="er-rel">PEDIDO 1 --- 1 PAGO</span>
+        </div>
+        <p>Este es el mismo caso de la materia (Sistema de Pedidos a Domicilio), recortado. Si te sale este, el modelo completo del proyecto es más de lo mismo, con más entidades.</p>
+    </div>
+</details>
+
+<h2><span class="part-label">Parte B</span><br>Cuestionario autocorregible</h2>
+<p>Elegí una opción por pregunta: se marca sola en verde o rojo y te explica el porqué. Podés ver tu puntaje arriba.</p>
+
+<div class="score-bar">
+    <span>Puntaje: <b id="score">0</b> / <span id="total">0</span></span>
+    <button class="btn ghost" onclick="resetQuiz()">Reiniciar</button>
+</div>
+
+<div id="quiz"></div>
+
+<h2><span class="part-label">Parte C</span><br>Preguntas para pensar y escribir</h2>
+<p>Estas no tienen opción única: respondé con tus palabras y después compará con la orientación.</p>
+
+<div class="quiz-q"><p class="qtext"><span class="qnum">C1.</span>Tu modelo tiene una entidad <code>NOTIFICACION</code> que ningún requisito ni caso de uso menciona. ¿Qué hacés y por qué?</p>
+<details><summary>Ver orientación</summary><div class="body"><p>Se saca (o se justifica trayéndola de un RF/CU real). La regla es que <strong>toda entidad debe rastrearse a un requisito o caso de uso</strong>. Una entidad "porque puede servir" agrega complejidad que nadie pidió y que la rúbrica marca como falta de coherencia.</p></div></details></div>
+
+<div class="quiz-q"><p class="qtext"><span class="qnum">C2.</span>Un compañero guardó los teléfonos de un cliente en una sola columna: <code>"351-555-1, 351-555-2"</code>. Explicale por qué es un problema y qué haría falta.</p>
+<details><summary>Ver orientación</summary><div class="body"><p>Es un atributo <strong>multivaluado</strong> metido en una columna. Problemas: no se puede buscar por un teléfono, ni validar cada uno, ni saber cuántos hay sin parsear texto. La solución es una entidad/tabla aparte <code>TELEFONO(telefono_id, cliente_id FK, numero)</code>, con relación 1:N desde cliente.</p></div></details></div>
+
+<div class="quiz-q"><p class="qtext"><span class="qnum">C3.</span>En el modelo pusiste <code>edad</code> como atributo de <code>PACIENTE</code>. ¿Está bien? Justificá.</p>
+<details><summary>Ver orientación</summary><div class="body"><p>No: la edad es un atributo <strong>derivado</strong> (cambia con el tiempo). Si la guardás fija, al año siguiente está mal. Se guarda <code>fecha_nacimiento</code> y la edad se calcula cuando se necesita.</p></div></details></div>
+
+<div class="quiz-q"><p class="qtext"><span class="qnum">C4.</span>Escribí una decisión de diseño <em>justificada</em> (no solo enunciada) sobre alguno de los casos de la Parte A.</p>
+<details><summary>Ver orientación</summary><div class="body"><p>Justificar = decir el <strong>qué</strong>, el <strong>por qué</strong> y la <strong>alternativa descartada</strong>. Ejemplo: "Puse la <code>nota_final</code> en INSCRIPCION y no en ESTUDIANTE porque un estudiante tiene una nota distinta por cada curso; si la ponía en ESTUDIANTE, solo podría guardar una y perdería el resto."</p></div></details></div>
+
+<footer class="doc-foot">
+    <p>Diseño de Sistemas Web — Comisiones 3°1° y 3°2° · Prof. Pablo Pedernera.
+    Teoría del tema en <a href="modelo-er-teoria.html">modelo-er-teoria.html</a> ·
+    Repaso orientado a la rúbrica en <a href="modelo-er.html">modelo-er.html</a> ·
+    <a href="index.html">Índice</a>.</p>
+</footer>
+
+</div>
+
+<script>
+const QUESTIONS = [
+    { q:"¿Qué representa una entidad en un modelo ER?",
+      opts:["Una fila concreta de datos","Una clase de objeto sobre el que se guardan datos","Una consulta a la base","Un usuario del sistema"],
+      correct:1, fb:"La entidad es el molde (el tipo); la fila concreta es la instancia." },
+    { q:"Un CLIENTE realiza muchos PEDIDO y cada PEDIDO es de un solo cliente. ¿Qué cardinalidad es?",
+      opts:["1:1","1:N","N:M","N:1 en ambos sentidos"],
+      correct:1, fb:"Uno a muchos: la FK cliente_id va del lado 'N', es decir en PEDIDO." },
+    { q:"¿Por qué una relación N:M no se implementa directamente en una base relacional?",
+      opts:["Porque es lenta","Porque no habría dónde poner la FK con 'muchos' de los dos lados","Porque Prometheus no la soporta","Porque viola la clave primaria"],
+      correct:1, fb:"Se resuelve con una entidad intermedia que parte el N:M en dos relaciones 1:N." },
+    { q:"En INSCRIPCION(estudiante_id FK, curso_id FK, nota_final), ¿dónde corresponde guardar la nota?",
+      opts:["En ESTUDIANTE","En CURSO","En la entidad intermedia INSCRIPCION","En una variable derivada"],
+      correct:2, fb:"La nota es un dato del cruce estudiante–curso: pertenece a la entidad intermedia." },
+    { q:"¿Qué es una clave foránea (FK)?",
+      opts:["El identificador único de la entidad","Un atributo que apunta a la PK de otra entidad","Un atributo que se calcula","Una clave que no se usa"],
+      correct:1, fb:"La FK materializa la relación apuntando a la PK de otra entidad." },
+    { q:"La 'edad' de una persona, sabiendo su fecha de nacimiento, es un atributo...",
+      opts:["Compuesto","Multivaluado","Derivado","Clave"],
+      correct:2, fb:"Derivado: se calcula a partir de otro dato, no se guarda fijo." },
+    { q:"Un DETALLE_PEDIDO no existe sin su PEDIDO. ¿Qué tipo de entidad es?",
+      opts:["Entidad fuerte","Entidad débil","Entidad derivada","Atributo compuesto"],
+      correct:1, fb:"Débil: depende de otra entidad para identificarse y existir." },
+    { q:"¿Cuál de estos es un buen candidato a PK de la entidad CLIENTE?",
+      opts:["nombre","email escrito a mano","cliente_id (identificador único)","direccion"],
+      correct:2, fb:"La PK debe ser única y estable; un id dedicado cumple, el nombre o la dirección no." },
+    { q:"Regla de trazabilidad del ER: cada entidad debería poder rastrearse hasta...",
+      opts:["Un color del diagrama","Un requisito o un caso de uso","La base de datos física","Un endpoint de la API"],
+      correct:1, fb:"Si una entidad no responde a ningún RF/CU, sobra; si falta una que un CU necesita, es un hueco." },
+    { q:"'Un PEDIDO tiene un solo PAGO y un PAGO corresponde a un solo PEDIDO' es una relación...",
+      opts:["1:1","1:N","N:M","sin cardinalidad"],
+      correct:0, fb:"Uno a uno: se resuelve poniendo la FK en una de las dos entidades, sin tabla intermedia." },
+    { q:"¿Cuál es la diferencia entre participación total y parcial?",
+      opts:["Total es más rápida","Total = toda instancia participa obligatoriamente; parcial = puede no participar","Parcial usa menos memoria","No existe tal distinción"],
+      correct:1, fb:"Ej: un DETALLE siempre pertenece a un pedido (total); un cliente puede no tener pedidos aún (parcial)." },
+    { q:"Al traducir el ER a tablas, una relación 1:N se implementa...",
+      opts:["Con una tabla intermedia nueva","Poniendo la FK del lado '1' en la tabla del lado 'N'","Duplicando la PK en ambas","Sin FK, solo con la relación dibujada"],
+      correct:1, fb:"La FK va en el lado 'muchos'. La tabla intermedia es solo para N:M." }
+];
+
+const quizEl = document.getElementById('quiz');
+let score = 0, answered = 0;
+document.getElementById('total').textContent = QUESTIONS.length;
+
+function buildQuiz() {
+    quizEl.innerHTML = '';
+    score = 0; answered = 0;
+    document.getElementById('score').textContent = 0;
+    QUESTIONS.forEach((item, qi) => {
+        const div = document.createElement('div');
+        div.className = 'quiz-q';
+        const p = document.createElement('p');
+        p.className = 'qtext';
+        p.innerHTML = '<span class="qnum">' + (qi+1) + '.</span>' + item.q;
+        div.appendChild(p);
+        item.opts.forEach((opt, oi) => {
+            const b = document.createElement('button');
+            b.className = 'opt';
+            b.textContent = opt;
+            b.onclick = () => choose(div, item, qi, oi, b);
+            div.appendChild(b);
+        });
+        const fb = document.createElement('div');
+        fb.className = 'feedback';
+        div.appendChild(fb);
+        quizEl.appendChild(div);
+    });
+}
+
+function choose(div, item, qi, oi, btn) {
+    if (div.dataset.done) return;
+    div.dataset.done = '1';
+    answered++;
+    const opts = div.querySelectorAll('.opt');
+    opts.forEach((o, i) => {
+        o.disabled = true;
+        if (i === item.correct) o.classList.add('correct');
+    });
+    const fb = div.querySelector('.feedback');
+    if (oi === item.correct) {
+        score++;
+        fb.textContent = 'Correcto. ' + item.fb;
+    } else {
+        btn.classList.add('wrong');
+        fb.textContent = 'La correcta está marcada. ' + item.fb;
+    }
+    fb.classList.add('show');
+    document.getElementById('score').textContent = score;
+}
+
+function resetQuiz() { buildQuiz(); window.scrollTo({top:document.querySelector('.score-bar').offsetTop-20,behavior:'smooth'}); }
+buildQuiz();
+</script>
+</body>
+</html>
