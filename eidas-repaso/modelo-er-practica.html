@@ -111,6 +111,16 @@
 
     .toolbar { position:fixed; top:1rem; right:1rem; display:flex; gap:0.5rem; z-index:40; }
 
+    .answer-box {
+        display:block; width:100%; max-width:820px; min-height:80px;
+        margin:0.6rem 0 0.9rem; padding:0.7rem 0.9rem;
+        background:var(--panel); border:1px solid var(--line); border-radius:8px;
+        color:var(--text); font-family:inherit; font-size:0.95rem; line-height:1.5;
+        resize:vertical;
+    }
+    .answer-box:focus { outline:none; border-color:var(--blue); }
+    #envio-box p { margin-bottom:0.7rem; }
+
     footer.doc-foot { margin-top:3rem; padding-top:1.4rem; border-top:1px solid var(--line); color:var(--muted); font-size:0.9rem; }
     footer.doc-foot a { color:var(--blue); }
 
@@ -118,7 +128,7 @@
         @page { margin:1.5cm; }
         body { background:#fff!important; color:#111!important; font-size:11pt; }
         .wrap { max-width:none; padding:0; }
-        .toolbar, .score-bar, .btn { display:none!important; }
+        .toolbar, .score-bar, .btn, .answer-box, #envio-box { display:none!important; }
         details { open:true; background:#fafafa!important; border-color:#ccc!important; }
         details[open] .body, details .body { display:block!important; }
         h1,h2 { color:#123a75!important; } h3,.part-label { color:#1a6b2e!important; }
@@ -230,16 +240,68 @@
 <p>Estas no tienen opción única: respondé con tus palabras y después compará con la orientación.</p>
 
 <div class="quiz-q"><p class="qtext"><span class="qnum">C1.</span>Tu modelo tiene una entidad <code>NOTIFICACION</code> que ningún requisito ni caso de uso menciona. ¿Qué hacés y por qué?</p>
+<textarea class="answer-box" id="c1" placeholder="Escribí tu respuesta acá..."></textarea>
 <details><summary>Ver orientación</summary><div class="body"><p>Se saca (o se justifica trayéndola de un RF/CU real). La regla es que <strong>toda entidad debe rastrearse a un requisito o caso de uso</strong>. Una entidad "porque puede servir" agrega complejidad que nadie pidió y que la rúbrica marca como falta de coherencia.</p></div></details></div>
 
 <div class="quiz-q"><p class="qtext"><span class="qnum">C2.</span>Un compañero guardó los teléfonos de un cliente en una sola columna: <code>"351-555-1, 351-555-2"</code>. Explicale por qué es un problema y qué haría falta.</p>
+<textarea class="answer-box" id="c2" placeholder="Escribí tu respuesta acá..."></textarea>
 <details><summary>Ver orientación</summary><div class="body"><p>Es un atributo <strong>multivaluado</strong> metido en una columna. Problemas: no se puede buscar por un teléfono, ni validar cada uno, ni saber cuántos hay sin parsear texto. La solución es una entidad/tabla aparte <code>TELEFONO(telefono_id, cliente_id FK, numero)</code>, con relación 1:N desde cliente.</p></div></details></div>
 
 <div class="quiz-q"><p class="qtext"><span class="qnum">C3.</span>En el modelo pusiste <code>edad</code> como atributo de <code>PACIENTE</code>. ¿Está bien? Justificá.</p>
+<textarea class="answer-box" id="c3" placeholder="Escribí tu respuesta acá..."></textarea>
 <details><summary>Ver orientación</summary><div class="body"><p>No: la edad es un atributo <strong>derivado</strong> (cambia con el tiempo). Si la guardás fija, al año siguiente está mal. Se guarda <code>fecha_nacimiento</code> y la edad se calcula cuando se necesita.</p></div></details></div>
 
 <div class="quiz-q"><p class="qtext"><span class="qnum">C4.</span>Escribí una decisión de diseño <em>justificada</em> (no solo enunciada) sobre alguno de los casos de la Parte A.</p>
+<textarea class="answer-box" id="c4" placeholder="Escribí tu respuesta acá..."></textarea>
 <details><summary>Ver orientación</summary><div class="body"><p>Justificar = decir el <strong>qué</strong>, el <strong>por qué</strong> y la <strong>alternativa descartada</strong>. Ejemplo: "Puse la <code>nota_final</code> en INSCRIPCION y no en ESTUDIANTE porque un estudiante tiene una nota distinta por cada curso; si la ponía en ESTUDIANTE, solo podría guardar una y perdería el resto."</p></div></details></div>
+
+<div class="note-box">
+    <p><strong>Antes de la C5:</strong> un diagrama ER en PlantUML se escribe así — cada <code>entity</code> es una entidad, la clave primaria va antes de la línea <code>--</code>, y las relaciones se escriben con la notación de "pata de gallo":</p>
+</div>
+<div class="mono-block">@startuml<br>
+entity SOCIO {<br>
+&nbsp;&nbsp;* socio_id : int<br>
+&nbsp;&nbsp;--<br>
+&nbsp;&nbsp;nombre : string<br>
+&nbsp;&nbsp;email : string<br>
+}<br>
+entity PRESTAMO {<br>
+&nbsp;&nbsp;* prestamo_id : int<br>
+&nbsp;&nbsp;--<br>
+&nbsp;&nbsp;socio_id : int &lt;&lt;FK&gt;&gt;<br>
+&nbsp;&nbsp;libro_id : int &lt;&lt;FK&gt;&gt;<br>
+&nbsp;&nbsp;fecha_retiro : date<br>
+}<br>
+SOCIO ||--o{ PRESTAMO<br>
+@enduml</div>
+
+<div class="quiz-q"><p class="qtext"><span class="qnum">C5.</span>Elegí uno de los casos de la Parte A (o el tuyo de la C4) y escribí su diagrama en código PlantUML, con entidades, PK, FK y las relaciones con cardinalidad.</p>
+<textarea class="answer-box" id="c5" placeholder="Pegá acá tu código PlantUML..." style="min-height:140px; font-family:'Courier New',monospace;"></textarea>
+<details><summary>Ver orientación</summary><div class="body"><p>Fijate que: (1) cada entidad tenga su <code>*</code> en la PK, (2) las FK estén marcadas <code>&lt;&lt;FK&gt;&gt;</code>, y (3) la cardinalidad de la relación sea la que corresponde (<code>||--o{</code> es 1 a muchos-opcional, <code>}o--o{</code> sería N:M sin resolver — si te queda así, es señal de que falta la entidad intermedia). Podés pegar el código en <a href="https://www.plantuml.com/plantuml/uml/" target="_blank" style="color:var(--blue)">plantuml.com</a> para ver el diagrama renderizado.</p></div></details></div>
+
+<div class="quiz-q"><p class="qtext"><span class="qnum">C6.</span>Un <code>CURSO</code> tiene un solo <code>PROFESOR</code> titular, pero un profesor puede ser titular de varios cursos. ¿Qué cardinalidad es, y en qué tabla va la FK?</p>
+<textarea class="answer-box" id="c6" placeholder="Escribí tu respuesta acá..."></textarea>
+<details><summary>Ver orientación</summary><div class="body"><p>Es <strong>1:N</strong> (un profesor, muchos cursos). La FK va del lado "N": <code>profesor_id</code> como FK en <code>CURSO</code>, no al revés — si la pusieras en PROFESOR, ¿cuál de sus varios cursos guardarías?</p></div></details></div>
+
+<div class="quiz-q"><p class="qtext"><span class="qnum">C7.</span>Una <code>FACTURA</code> tiene <code>ITEM_FACTURA</code> que no tienen sentido sin la factura a la que pertenecen. ¿<code>ITEM_FACTURA</code> es una entidad fuerte o débil? ¿Qué implica eso para su clave?</p>
+<textarea class="answer-box" id="c7" placeholder="Escribí tu respuesta acá..."></textarea>
+<details><summary>Ver orientación</summary><div class="body"><p><strong>Débil</strong>: no se identifica ni existe sin su <code>FACTURA</code>. Su FK a <code>factura_id</code> tiene que ser obligatoria (no puede quedar vacía), y muchas veces la PK se compone con la de la entidad fuerte (<code>factura_id + numero_item</code>) en vez de usar solo un id propio.</p></div></details></div>
+
+<div class="quiz-q"><p class="qtext"><span class="qnum">C8.</span>Una <code>EMPRESA</code> puede no tener <code>EMPLEADOS</code> todavía (recién fundada); un <code>EMPLEADO</code> siempre pertenece a una empresa. ¿Qué participación tiene cada entidad en la relación?</p>
+<textarea class="answer-box" id="c8" placeholder="Escribí tu respuesta acá..."></textarea>
+<details><summary>Ver orientación</summary><div class="body"><p><code>EMPLEADO</code> tiene participación <strong>total</strong> (toda instancia participa, no existe un empleado sin empresa). <code>EMPRESA</code> tiene participación <strong>parcial</strong> (puede existir sin ningún empleado).</p></div></details></div>
+
+<div class="quiz-q"><p class="qtext"><span class="qnum">C9.</span>Te dan este modelo para revisar: <code>CLIENTE(cliente_id, nombre, telefonos, edad)</code>. Tiene dos errores de diseño. Encontralos y decí cómo los corregirías.</p>
+<textarea class="answer-box" id="c9" placeholder="Escribí tu respuesta acá..."></textarea>
+<details><summary>Ver orientación</summary><div class="body"><p>(1) <code>telefonos</code> es un atributo <strong>multivaluado</strong> metido en una columna — se corrige con una entidad <code>TELEFONO(telefono_id, cliente_id FK, numero)</code>. (2) <code>edad</code> es <strong>derivado</strong> — se corrige guardando <code>fecha_nacimiento</code> y calculando la edad cuando se necesita.</p></div></details></div>
+
+<div class="quiz-q"><p class="qtext"><span class="qnum">C10.</span>Sobre el Caso 2 de la Parte A (cursos online): ahora un curso puede tener <em>varios</em> profesores a cargo, no solo uno. ¿Qué cambia en el modelo? Describí la nueva relación.</p>
+<textarea class="answer-box" id="c10" placeholder="Escribí tu respuesta acá..."></textarea>
+<details><summary>Ver orientación</summary><div class="body"><p>Aparece un nuevo <strong>N:M</strong> entre <code>CURSO</code> y <code>PROFESOR</code> (un profesor da varios cursos, un curso tiene varios profesores) — se resuelve con una entidad intermedia, por ejemplo <code>CURSO_PROFESOR(curso_id FK, profesor_id FK, rol)</code>, donde <code>rol</code> (titular/adjunto) es un buen candidato a dato del cruce.</p></div></details></div>
+
+<div class="note-box" id="envio-box">
+    <p><strong>La entrega de la Parte C es el cuestionario de Classroom</strong>, no esta página. Usá los cuadros de acá para borrador/práctica si te sirve, y después pasá las respuestas al cuestionario asignado en la clase.</p>
+</div>
 
 <footer class="doc-foot">
     <p>Diseño de Sistemas Web — Comisiones 3°1° y 3°2° · Prof. Pablo Pedernera.
