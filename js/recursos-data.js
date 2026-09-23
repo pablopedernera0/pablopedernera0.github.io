@@ -1,4 +1,4 @@
-// Índice de recursos del sitio. Última actualización: 2026-09-08 ART.
+// Índice de recursos del sitio. Última actualización: 2026-09-23 ART.
 // Cada entrada agrega una carpeta al índice de la home (ver render-recursos.js).
 // Para publicar un recurso nuevo: agregar un objeto acá, no tocar index.html.
 //
@@ -90,8 +90,8 @@ const RECURSOS = [
         categoria: "desarrollo",
         carpeta: "eidas-repaso",
         icono: "▸",
-        descripcion: "Una presentación de apoyo por cada sección de la rúbrica (Stakeholders, Requisitos, HU, Casos de Uso, Modelo ER, Diseño UI), todas con el mismo caso de ejemplo.",
-        fecha: "2026-08-18"
+        descripcion: "Una presentación de apoyo por cada sección de la rúbrica (Stakeholders, Requisitos, HU, Casos de Uso, Diseño UI), con el mismo caso de ejemplo — y Modelo ER como clase completa: teoría, práctica con 10 casos/preguntas (incluye diagramas en PlantUML) y cuestionario de entrega en Classroom.",
+        fecha: "2026-09-23"
     },
     {
         titulo: "S3 + IAM en profundidad",
