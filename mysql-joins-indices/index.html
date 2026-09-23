@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL, JOINs e índices</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem 5.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.6rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.1rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+        }
+
+        .card.bad {
+            border-color: rgba(248, 81, 73, 0.45);
+        }
+
+        .card p {
+            font-size: 0.96rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .card pre {
+            margin-top: 0.7rem;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .quote-box {
+            background: rgba(88, 166, 255, 0.08);
+            border-left: 4px solid #58a6ff;
+            border-radius: 0 10px 10px 0;
+            padding: 1.1rem 1.5rem;
+            max-width: 850px;
+            margin: 1rem 0;
+            font-style: italic;
+            font-size: 1.15rem;
+        }
+
+        .quote-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        pre {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 0.9rem 1.2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #e6edf3;
+            text-align: left;
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        pre .kw {
+            color: #ff7b72;
+            font-weight: bold;
+        }
+
+        pre .str {
+            color: #a5d6ff;
+        }
+
+        pre .cm {
+            color: #8b949e;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.05rem;
+            min-width: 6.5rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .step-item p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.4rem 1rem;
+            text-align: center;
+        }
+
+        .stat-card.bad {
+            border-color: rgba(248, 81, 73, 0.45);
+        }
+
+        .stat-card.bad .stat-number {
+            color: #f85149;
+        }
+
+        .stat-card.good {
+            border-color: rgba(63, 185, 80, 0.45);
+        }
+
+        .stat-card.good .stat-number {
+            color: #3fb950;
+        }
+
+        .stat-card .stat-number {
+            display: block;
+            font-size: 2.1rem;
+            font-weight: bold;
+            color: #58a6ff;
+            margin-bottom: 0.4rem;
+        }
+
+        .stat-card p {
+            font-size: 0.92rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+            text-align: center;
+        }
+
+        .table-wrap {
+            width: 100%;
+            max-width: 950px;
+            overflow-x: auto;
+        }
+
+        .mirror-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+
+        .mirror-table th, .mirror-table td {
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.7rem 1rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .mirror-table th {
+            background: rgba(88, 166, 255, 0.1);
+            color: #58a6ff;
+        }
+
+        .mirror-table th.bad {
+            background: rgba(248, 81, 73, 0.12);
+            color: #f85149;
+        }
+
+        .mirror-table th.good {
+            background: rgba(63, 185, 80, 0.12);
+            color: #3fb950;
+        }
+
+        /* Tablitas de datos para los diagramas de JOIN */
+        .tables-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.4rem;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 1050px;
+            margin: 0.8rem 0;
+        }
+
+        .data-table {
+            border-collapse: collapse;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .data-table caption {
+            color: #8b949e;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table th, .data-table td {
+            border: 1px solid rgba(255,255,255,0.14);
+            padding: 0.35rem 0.8rem;
+            text-align: left;
+        }
+
+        .data-table th {
+            background: rgba(255,255,255,0.06);
+            color: #c9d1d9;
+        }
+
+        .data-table .pk {
+            color: #d2a8ff;
+            font-weight: bold;
+        }
+
+        .data-table .fk {
+            color: #f0883e;
+            font-weight: bold;
+        }
+
+        .data-table tr.orphan td {
+            background: rgba(240, 136, 62, 0.14);
+            color: #f0883e;
+        }
+
+        .data-table td.null {
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .arrow {
+            align-self: center;
+            color: #58a6ff;
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+
+        .legend {
+            font-size: 0.88rem;
+            color: #8b949e;
+            text-align: center;
+        }
+
+        .legend .pk { color: #d2a8ff; font-weight: bold; }
+        .legend .fk { color: #f0883e; font-weight: bold; }
+
+        /* Visual de recorrido completo vs. índice */
+        .scan-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            justify-content: center;
+            max-width: 800px;
+            margin: 0.5rem auto 0.3rem;
+        }
+
+        .scan-row span {
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            background: rgba(248, 81, 73, 0.35);
+            border: 1px solid rgba(248, 81, 73, 0.6);
+        }
+
+        .scan-row.index span {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        .scan-row.index span.hit {
+            background: #3fb950;
+            border-color: #3fb950;
+        }
+
+        .scan-label {
+            font-size: 0.92rem;
+            color: #b8c0c9;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .cta {
+            display: inline-block;
+            margin-top: 1rem;
+            background: #3fb950;
+            color: #05070a;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .cta:hover {
+            background: #56d364;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        .btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+            background: #3fb950;
+        }
+
+        @media (max-width: 800px) {
+            .slide { padding: 4rem 1rem 5.5rem; justify-content: flex-start; }
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.6rem; }
+            .arrow { display: none; }
+            .btn { padding: 0.6rem 1rem; font-size: 0.9rem; white-space: nowrap; }
+        }
+    </style>
+</head>
+<body>
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Infraestructura de Redes · MySQL con phpMyAdmin</div>
+        <h1>SQL, JOINs e índices</h1>
+        <p class="subtitle">Cómo consultar una base relacional, y por qué la misma consulta puede tardar segundos o milisegundos sobre el mismo servidor.</p>
+        <a class="cta" href="https://killercoda.com/pablop22/scenario/mysql-joins-indices" target="_blank" rel="noopener">Abrir la práctica en Killercoda</a>
+    </div>
+
+    <!-- Slide 2: Por qué en Infraestructura -->
+    <div class="slide">
+        <h2>¿Por qué esto en Infraestructura?</h2>
+        <p>Cuando una aplicación anda lenta, la primera reacción suele ser pedir un servidor más grande. Pero muchas veces el problema no es el servidor ni la red: es <strong>cómo se consulta la base de datos</strong>.</p>
+        <div class="stat-grid">
+            <div class="stat-card bad">
+                <span class="stat-number">3,4 s</span>
+                <p>buscar a una persona por email entre 3 millones, sin índice (medido en Killercoda)</p>
+            </div>
+            <div class="stat-card bad">
+                <span class="stat-number">~17 s</span>
+                <p>5 usuarios iniciando sesión, uno detrás de otro</p>
+            </div>
+            <div class="stat-card good">
+                <span class="stat-number">milisegundos</span>
+                <p>la misma búsqueda con un índice, sin agregar ni un CPU</p>
+            </div>
+        </div>
+        <p>La práctica recorre el camino completo: consultar, relacionar tablas, medir y arreglar.</p>
+    </div>
+
+    <!-- Slide 3: Anatomía de una consulta -->
+    <div class="slide">
+        <h2>Anatomía de una consulta</h2>
+        <p>Una consulta de lectura siempre tiene la misma forma, y se lee casi como una oración:</p>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">SELECT</span>
+                <p>Qué columnas quiero ver. <code>*</code> significa todas.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">FROM</span>
+                <p>De qué tabla.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">WHERE</span>
+                <p>Qué filas: la condición que tienen que cumplir.</p>
+            </div>
+            <div class="step-item">
+                <span class="num">GROUP BY</span>
+                <p>Juntar filas con el mismo valor y calcular algo por grupo (<code>COUNT</code>, <code>SUM</code>, <code>AVG</code>).</p>
+            </div>
+            <div class="step-item">
+                <span class="num">ORDER BY</span>
+                <p>En qué orden. <code>DESC</code> de mayor a menor.</p>
+            </div>
+        </div>
+<pre><span class="kw">SELECT</span> ciudad, <span class="kw">COUNT</span>(*) <span class="kw">AS</span> cantidad
+<span class="kw">FROM</span> clientes
+<span class="kw">GROUP BY</span> ciudad
+<span class="kw">ORDER BY</span> cantidad <span class="kw">DESC</span>;</pre>
+    </div>
+
+    <!-- Slide 4: Base relacional -->
+    <div class="slide">
+        <h2>Una base relacional guarda números, no nombres</h2>
+        <p>La tabla <code>pedidos</code> no repite el nombre del cliente: guarda su <code>id</code>. Así, si un cliente cambia de apellido, se corrige en <strong>una sola fila</strong>.</p>
+        <div class="tables-row">
+            <table class="data-table">
+                <caption>clientes</caption>
+                <tr><th class="pk">id</th><th>nombre</th></tr>
+                <tr><td class="pk">1</td><td>Juan Pérez</td></tr>
+                <tr><td class="pk">2</td><td>María Gómez</td></tr>
+                <tr><td class="pk">7</td><td>Laura Paz</td></tr>
+            </table>
+            <span class="arrow">&larr;</span>
+            <table class="data-table">
+                <caption>pedidos</caption>
+                <tr><th class="pk">id</th><th class="fk">cliente_id</th><th class="fk">producto_id</th><th>cantidad</th></tr>
+                <tr><td class="pk">1</td><td class="fk">1</td><td class="fk">1</td><td>1</td></tr>
+                <tr><td class="pk">2</td><td class="fk">1</td><td class="fk">2</td><td>2</td></tr>
+                <tr><td class="pk">3</td><td class="fk">2</td><td class="fk">5</td><td>1</td></tr>
+            </table>
+            <span class="arrow">&rarr;</span>
+            <table class="data-table">
+                <caption>productos</caption>
+                <tr><th class="pk">id</th><th>nombre</th></tr>
+                <tr><td class="pk">1</td><td>Notebook 14"</td></tr>
+                <tr><td class="pk">2</td><td>Mouse</td></tr>
+                <tr><td class="pk">5</td><td>Switch</td></tr>
+            </table>
+        </div>
+        <p class="legend"><span class="pk">Clave primaria (PK)</span>: identifica cada fila, no se repite. <span class="fk">Clave foránea (FK)</span>: apunta a la PK de otra tabla.</p>
+        <p>El costo: para mostrar un pedido "legible" hay que ir a buscar los nombres a otras tablas. Eso es un <strong>JOIN</strong>.</p>
+    </div>
+
+    <!-- Slide 5: INNER JOIN -->
+    <div class="slide">
+        <h2>INNER JOIN: solo las filas con pareja</h2>
+<pre><span class="kw">SELECT</span> c.nombre, pe.id <span class="kw">AS</span> pedido
+<span class="kw">FROM</span> clientes c
+<span class="kw">INNER JOIN</span> pedidos pe <span class="kw">ON</span> pe.cliente_id = c.id;</pre>
+        <p>"A cada cliente, pegale los pedidos cuyo <code>cliente_id</code> coincida con su <code>id</code>." La condición del <code>ON</code> dice cómo se relacionan las filas.</p>
+        <div class="tables-row">
+            <table class="data-table">
+                <caption>resultado</caption>
+                <tr><th>nombre</th><th>pedido</th></tr>
+                <tr><td>Juan Pérez</td><td>1</td></tr>
+                <tr><td>Juan Pérez</td><td>2</td></tr>
+                <tr><td>María Gómez</td><td>3</td></tr>
+            </table>
+        </div>
+        <div class="warning-box">
+            <p><strong>Falta alguien.</strong> Laura Paz nunca hizo un pedido: no tiene pareja en <code>pedidos</code>, y el <code>INNER JOIN</code> la deja afuera sin avisar.</p>
+        </div>
+    </div>
+
+    <!-- Slide 6: LEFT JOIN -->
+    <div class="slide">
+        <h2>LEFT JOIN: todas las de la izquierda</h2>
+<pre><span class="kw">SELECT</span> c.nombre, pe.id <span class="kw">AS</span> pedido
+<span class="kw">FROM</span> clientes c
+<span class="kw">LEFT JOIN</span> pedidos pe <span class="kw">ON</span> pe.cliente_id = c.id;</pre>
+        <div class="tables-row">
+            <table class="data-table">
+                <caption>resultado</caption>
+                <tr><th>nombre</th><th>pedido</th></tr>
+                <tr><td>Juan Pérez</td><td>1</td></tr>
+                <tr><td>Juan Pérez</td><td>2</td></tr>
+                <tr><td>María Gómez</td><td>3</td></tr>
+                <tr class="orphan"><td>Laura Paz</td><td class="null">NULL</td></tr>
+            </table>
+        </div>
+        <p>El <code>LEFT JOIN</code> conserva <strong>todas</strong> las filas de la tabla del <code>FROM</code>, tengan pareja o no. Donde no hay pareja, completa con <code>NULL</code>.</p>
+        <p>Existe también <code>RIGHT JOIN</code>, que es lo mismo con las tablas dadas vuelta. En la práctica casi siempre se escribe <code>LEFT JOIN</code>.</p>
+    </div>
+
+    <!-- Slide 7: Patrón IS NULL -->
+    <div class="slide">
+        <h2>El patrón para encontrar "los que no tienen"</h2>
+        <p>Si el <code>LEFT JOIN</code> completa con <code>NULL</code> a quienes no tienen pareja, alcanza con filtrar esos <code>NULL</code>:</p>
+<pre><span class="kw">SELECT</span> c.nombre
+<span class="kw">FROM</span> clientes c
+<span class="kw">LEFT JOIN</span> pedidos pe <span class="kw">ON</span> pe.cliente_id = c.id
+<span class="kw">WHERE</span> pe.id <span class="kw">IS NULL</span>;   <span class="cm">-- resultado: Laura Paz</span></pre>
+        <div class="card-grid">
+            <div class="card">
+                <h4>Clientes que nunca compraron</h4>
+                <p>El ejemplo de arriba.</p>
+            </div>
+            <div class="card">
+                <h4>Productos que nunca se vendieron</h4>
+                <p>Mismo patrón, con <code>productos</code> a la izquierda.</p>
+            </div>
+            <div class="card">
+                <h4>Usuarios que nunca iniciaron sesión</h4>
+                <p>Mismo patrón, con la tabla de accesos.</p>
+            </div>
+        </div>
+        <div class="warning-box">
+            <p>Se escribe <code>IS NULL</code>. La comparación <code>= NULL</code> nunca es verdadera en SQL, así que la consulta no devuelve nada y no da error: falla en silencio.</p>
+        </div>
+    </div>
+
+    <!-- Slide 8: Qué es un índice -->
+    <div class="slide">
+        <h2>¿Por qué tarda una búsqueda?</h2>
+        <p>Sin índice, para encontrar un email MySQL lee <strong>todas</strong> las filas una por una y compara. Es buscar un número en una guía telefónica desordenada.</p>
+        <div class="scan-row">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <p class="scan-label">Sin índice: se revisan todas las filas (3 millones en el padrón de la práctica)</p>
+        <div class="scan-row index">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span class="hit"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <p class="scan-label">Con índice: se va directo a la fila buscada</p>
+        <p>Un <strong>índice</strong> es una estructura aparte que MySQL mantiene <strong>ordenada</strong> por una columna, con un puntero a cada fila: la guía ordenada alfabéticamente, donde vas directo a la letra.</p>
+<pre><span class="kw">CREATE INDEX</span> idx_email <span class="kw">ON</span> padron (email);</pre>
+    </div>
+
+    <!-- Slide 9: EXPLAIN -->
+    <div class="slide">
+        <h2>EXPLAIN: cómo piensa MySQL una consulta</h2>
+        <p><code>EXPLAIN</code> no ejecuta la consulta: muestra el <strong>plan</strong> que MySQL va a seguir para resolverla.</p>
+<pre><span class="kw">EXPLAIN SELECT</span> * <span class="kw">FROM</span> padron <span class="kw">WHERE</span> email = <span class="str">'persona1500007@correo.com.ar'</span>;</pre>
+        <div class="table-wrap">
+            <table class="mirror-table">
+                <tr><th>Columna</th><th class="bad">Sin índice</th><th class="good">Con índice</th></tr>
+                <tr><td><code>type</code></td><td><code>ALL</code>: recorrido completo de la tabla</td><td><code>ref</code>: búsqueda por índice</td></tr>
+                <tr><td><code>key</code></td><td><code>NULL</code>: ningún índice disponible</td><td><code>idx_email</code></td></tr>
+                <tr><td><code>rows</code></td><td>casi 3 millones</td><td>1</td></tr>
+            </table>
+        </div>
+        <p>De revisar 3 millones de filas a revisar <strong>una</strong>. <code>rows</code> es una estimación a partir de estadísticas, por eso no da exactamente 3.000.000.</p>
+    </div>
+
+    <!-- Slide 10: Un login no es una consulta -->
+    <div class="slide">
+        <h2>Un login no es una sola consulta</h2>
+        <p>Una aplicación no busca a un solo usuario: busca a <strong>cada uno que inicia sesión</strong>. La práctica lo simula con <code>buscar_lote.sh</code>.</p>
+        <div class="stat-grid">
+            <div class="stat-card bad">
+                <span class="stat-number">~17 s</span>
+                <p>5 logins sin índice: el último usuario espera todo eso</p>
+            </div>
+            <div class="stat-card good">
+                <span class="stat-number">&lt; 0,2 s</span>
+                <p>los mismos 5 logins con índice sobre <code>email</code></p>
+            </div>
+            <div class="stat-card good">
+                <span class="stat-number">1000</span>
+                <p>logins con índice tardan menos que <strong>uno</strong> sin índice</p>
+            </div>
+        </div>
+        <div class="quote-box">
+            <p>Mismo servidor, misma base, mismos datos. Lo único que cambió es cómo se buscan.</p>
+        </div>
+    </div>
+
+    <!-- Slide 11: Límites -->
+    <div class="slide">
+        <h2>Lo que un índice no arregla</h2>
+        <div class="card-grid">
+            <div class="card">
+                <h4>Buscar por cómo empieza</h4>
+<pre><span class="kw">WHERE</span> email <span class="kw">LIKE</span> <span class="str">'persona15000%'</span></pre>
+                <p>El índice sirve: va directo al tramo ordenado que empieza así. <code>type: range</code>, unas 100 filas.</p>
+            </div>
+            <div class="card bad">
+                <h4>Buscar algo del medio</h4>
+<pre><span class="kw">WHERE</span> email <span class="kw">LIKE</span> <span class="str">'%77777%'</span></pre>
+                <p>El <code>%</code> inicial puede ser cualquier cosa: hay que revisar todas las entradas del índice. <code>rows</code>: casi 3 millones.</p>
+            </div>
+        </div>
+        <p>En la guía telefónica: encontrar a todos los que empiezan con "Gonz" es fácil. Encontrar a todos los que tienen "ález" en el medio te obliga a leerla entera.</p>
+    </div>
+
+    <!-- Slide 12: Índice compuesto -->
+    <div class="slide">
+        <h2>Cuando un índice simple no alcanza</h2>
+        <p>¿Cuántos Pérez viven en Rosario?</p>
+<pre><span class="kw">WHERE</span> p.apellido = <span class="str">'Pérez'</span> <span class="kw">AND</span> l.nombre = <span class="str">'Rosario'</span></pre>
+        <div class="table-wrap">
+            <table class="mirror-table">
+                <tr><th>Índice</th><th>Filas que revisa</th><th>Resultado</th></tr>
+                <tr><td>Ninguno</td><td>casi 3 millones</td><td>Lento</td></tr>
+                <tr><td><code>(apellido)</code></td><td>unas 150.000: todos los Pérez de la provincia, y después busca la localidad de cada uno</td><td>Igual de lento, o peor</td></tr>
+                <tr><td><code>(apellido, localidad_id)</code></td><td>unas 3.700: directo a los Pérez de Rosario</td><td>Milisegundos</td></tr>
+            </table>
+        </div>
+        <p>Un índice rinde cuando <strong>descarta la mayor parte de la tabla</strong> (selectividad). Un email descarta todo menos una fila; un apellido entre 40 posibles descarta poco. El índice <strong>compuesto</strong> se ordena por apellido y, dentro de cada apellido, por localidad.</p>
+    </div>
+
+    <!-- Slide 13: Costo -->
+    <div class="slide">
+        <h2>Los índices no son gratis</h2>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <span class="stat-number">272 MB</span>
+                <p>ocupan los datos del padrón</p>
+            </div>
+            <div class="stat-card bad">
+                <span class="stat-number">127 MB</span>
+                <p>ocupa un solo índice sobre <code>email</code>: casi la mitad</p>
+            </div>
+        </div>
+        <ul>
+            <li>Cada índice ocupa disco y memoria.</li>
+            <li>Cada <code>INSERT</code>, <code>UPDATE</code> o <code>DELETE</code> tiene que actualizar <strong>todos</strong> los índices de la tabla: más índices, escrituras más lentas.</li>
+        </ul>
+        <div class="warning-box">
+            <p>La regla práctica: indexar las columnas por las que la aplicación busca seguido (el email del login, el DNI en una ventanilla), no todas por las dudas.</p>
+        </div>
+    </div>
+
+    <!-- Slide 14: Cierre -->
+    <div class="slide">
+        <h2>Antes de pedir más servidor</h2>
+        <div class="quote-box">
+            <p>La misma consulta, sobre el mismo servidor, pasó de más de 15 segundos a milisegundos sin agregar ni un CPU. El problema no era de capacidad: era de cómo se buscaban los datos.</p>
+        </div>
+        <p>Antes de dimensionar hacia arriba, conviene mirar el <code>EXPLAIN</code>.</p>
+        <a class="cta" href="https://killercoda.com/pablop22/scenario/mysql-joins-indices" target="_blank" rel="noopener">Hacer la práctica en Killercoda</a>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">14</span>
+</div>
+
+<div class="controls">
+    <button class="btn prev" onclick="previousSlide()">← Anterior</button>
+    <button class="btn next" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const prevBtn = document.querySelector('.btn.prev');
+    const nextBtn = document.querySelector('.btn.next');
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function updateControls() {
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide === totalSlides - 1;
+        nextBtn.textContent = currentSlide === totalSlides - 1 ? 'Fin de la presentación' : 'Siguiente →';
+    }
+
+    function showSlide(n) {
+        const target = Math.max(0, Math.min(n, totalSlides - 1));
+        if (target === currentSlide) return;
+        slides[currentSlide].classList.remove('active');
+        currentSlide = target;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+        updateControls();
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    updateControls();
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>

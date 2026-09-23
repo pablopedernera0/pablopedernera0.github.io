@@ -6,6 +6,14 @@
 //   'infraestructura' | 'desarrollo' | 'redes'
 const RECURSOS = [
     {
+        titulo: "SQL, JOINs e índices",
+        categoria: "infraestructura",
+        carpeta: "mysql-joins-indices",
+        icono: "▸",
+        descripcion: "Consultas SQL básicas, INNER y LEFT JOIN, y cómo un índice convierte una búsqueda de segundos en una de milisegundos sobre un padrón de 3 millones de personas. Acompaña la práctica de Killercoda con MySQL y phpMyAdmin.",
+        fecha: "2026-09-23"
+    },
+    {
         titulo: "Reconocimiento, fuerza bruta y SQLi",
         categoria: "infraestructura",
         carpeta: "repaso-red-ataques",
