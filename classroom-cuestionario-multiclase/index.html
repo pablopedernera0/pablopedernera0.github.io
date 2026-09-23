@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classroom - Tarea con cuestionario multi-clase</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b24;
+    --border: rgba(255,255,255,0.08);
+    --text: #e6edf3;
+    --muted: #8b949e;
+
+    --o-color: #3fb950;
+    --o-bg: rgba(63,185,80,0.1);
+    --r-color: #f0883e;
+    --r-bg: rgba(240,136,62,0.1);
+    --a-color: #ff7b72;
+    --a-bg: rgba(255,123,114,0.1);
+    --d-color: #58a6ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.55;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(255,255,255,0.08);
+    color: var(--r-color);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+
+  header {
+    width: 100%;
+    max-width: 900px;
+    padding: 2.5rem 2rem 1rem;
+  }
+
+  header h1 {
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  header h1 span { color: var(--d-color); }
+
+  header p.tagline {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  main {
+    width: 100%;
+    max-width: 900px;
+    padding: 0 2rem 4rem;
+  }
+
+  section { margin-top: 2.4rem; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.9rem;
+  }
+
+  .steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--o-color);
+    border-radius: 8px;
+    padding: 0.9rem 1.2rem;
+  }
+
+  .step-item .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--o-color);
+    font-size: 1.05rem;
+    min-width: 1.4rem;
+  }
+
+  .step-item h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    display: inline;
+  }
+
+  .step-item p {
+    margin: 0.3rem 0 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .step-item p strong { color: var(--text); font-weight: 600; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 0.9rem;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--o-bg);
+    border-left: 3px solid var(--o-color);
+    border-radius: 10px;
+    padding: 0.95rem 1.15rem;
+  }
+
+  .card.warn {
+    border-color: var(--r-bg);
+    border-left-color: var(--r-color);
+  }
+
+  .card .lede {
+    display: block;
+    font-weight: 700;
+    font-size: 0.88rem;
+    margin-bottom: 0.25rem;
+    color: var(--o-color);
+  }
+
+  .card.warn .lede { color: var(--r-color); }
+
+  .card p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  footer {
+    width: 100%;
+    max-width: 900px;
+    padding: 1.5rem 2rem 3rem;
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Google Classroom <span>-</span> Tarea con cuestionario multi-clase</h1>
+  <p class="tagline">Referencia operativa del docente — no es material de clase</p>
+</header>
+
+<main>
+
+<section>
+  <div class="section-label">Pasos — crear el cuestionario</div>
+  <div class="steps-list">
+    <div class="step-item">
+      <span class="num">1</span>
+      <div>
+        <h3>Trabajo en clase → Crear → Tarea con cuestionario</h3>
+        <p>Dentro de la clase donde vas a armarlo. Classroom genera automáticamente un
+        Google Form vacío ("Blank Quiz") y lo adjunta.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <span class="num">2</span>
+      <div>
+        <h3>Completar título e instrucciones de la tarea</h3>
+        <p>Esto es el título de la <strong>tarea</strong> en Classroom, no el del formulario
+        — son independientes.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <span class="num">3</span>
+      <div>
+        <h3>Abrir el formulario adjunto ("Blank Quiz")</h3>
+        <p>Clic en el link — abre Google Forms en una pestaña nueva. Cambiar ahí el título
+        del formulario.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <span class="num">4</span>
+      <div>
+        <h3>Por cada pregunta: escribir el enunciado y elegir tipo</h3>
+        <p>Clic en el campo de texto, <code>Ctrl+A</code> para seleccionar todo, escribir el
+        enunciado. Para respuesta de texto libre (no opción múltiple), cambiar el tipo a
+        <strong>Párrafo</strong> en el selector de la derecha.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <span class="num">5</span>
+      <div>
+        <h3>Puntos y obligatoriedad</h3>
+        <p>Clic en "Clave de respuesta" para desplegar el panel de puntos, escribir el
+        número, clic en "Listo". Activar el toggle <strong>Obligatoria</strong> si
+        corresponde.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <span class="num">6</span>
+      <div>
+        <h3>Duplicar para la siguiente pregunta</h3>
+        <p>El ícono de copiar (junto a la papelera) duplica la pregunta con el mismo tipo,
+        puntos y obligatoriedad ya configurados — mucho más rápido que armar cada una desde
+        cero. Después solo hay que reemplazar el texto del enunciado.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <span class="num">7</span>
+      <div>
+        <h3>Volver a Classroom, elegir las clases en "Para"</h3>
+        <p>El dropdown "Para" tiene checkboxes — se puede marcar más de una clase a la vez
+        para la misma tarea.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <span class="num">8</span>
+      <div>
+        <h3>Cerrar con la X (no "Asignar") para guardar como borrador</h3>
+        <p>Queda listado como <strong>Borrador</strong> en "Trabajo en clase" de la clase
+        donde lo creaste, para revisarlo antes de publicarlo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-label">Lo que no es obvio</div>
+  <div class="card-grid">
+    <div class="card warn">
+      <span class="lede">Un borrador multi-clase NO se ve en las otras clases</span>
+      <p>Aunque "Para" muestre "2 clases" guardado, el borrador solo aparece listado (y
+      solo se puede editar) desde la clase en la que lo creaste. Confirmado en el foro de
+      soporte de Google Classroom: <em>"you must edit the assignment in each classroom
+      separately"</em> y <em>"I can't see those activities in those other classes until
+      they publish live on the class page."</em> No es un bug de esta sesión ni algo que se
+      pueda arreglar desde la configuración.</p>
+    </div>
+    <div class="card">
+      <span class="lede">Al publicar, sí aparece en todas a la vez</span>
+      <p>Cuando se hace clic en "Asignar" (con o sin fecha límite), la tarea se publica en
+      todas las clases marcadas en "Para" simultáneamente. La limitación es solo de
+      visibilidad del borrador, no de la publicación real.</p>
+    </div>
+    <div class="card">
+      <span class="lede">Duplicar hereda toda la configuración</span>
+      <p>Tipo de pregunta, puntos y "Obligatoria" se copian con la pregunta — no hace falta
+      re-configurarlos en cada una, solo reemplazar el texto.</p>
+    </div>
+    <div class="card warn">
+      <span class="lede">Ctrl+A dentro del campo, no en la página</span>
+      <p>Si el clic no cae exactamente en el texto del enunciado (cae en el borde o en el
+      padding del campo), <code>Ctrl+A</code> selecciona toda la página en vez del campo, y
+      lo que se escribe después no reemplaza nada. Verificar que aparezca la barra de
+      formato (B I U) debajo del campo antes de seleccionar todo.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Prof. Pablo Pedernera — referencia operativa, no enlazada desde el índice del sitio.
+</footer>
+
+</body>
+</html>
