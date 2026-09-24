@@ -4,7 +4,17 @@
 //
 // categoria: debe coincidir con el id de la course-card en index.html
 //   'infraestructura' | 'desarrollo' | 'redes'
+// archivo (opcional): página dentro de la carpeta, si no es index.html
 const RECURSOS = [
+    {
+        titulo: "Monitoreo en tiempo real: Prometheus y Grafana",
+        categoria: "infraestructura",
+        carpeta: "hilo-conductor-redes/documentacion",
+        archivo: "crud-monitoreo-prometheus-grafana-clase.html",
+        icono: "▸",
+        descripcion: "Clase de conceptos de la Etapa 6 del hilo conductor de redes: métricas vs. logs, series temporales, scrape y exporters, la arquitectura de la práctica en un diagrama, el viaje de un dato hasta el panel, PromQL (up, etiquetas, rate) y Grafana.",
+        fecha: "2026-09-24"
+    },
     {
         titulo: "Simulador de capacidad: por qué un servidor se cae",
         categoria: "redes",
