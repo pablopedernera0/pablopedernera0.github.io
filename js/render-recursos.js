@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         contenedor.innerHTML = recursos.map(function (r) {
             return '' +
-                '<a class="resource-item" href="' + r.carpeta + '/index.html">' +
+                '<a class="resource-item" href="' + r.carpeta + '/' + (r.archivo || 'index.html') + '">' +
                     '<span class="resource-item-icon">' + r.icono + '</span>' +
                     '<span class="resource-item-body">' +
                         '<span class="resource-item-title">' + r.titulo + '</span>' +
