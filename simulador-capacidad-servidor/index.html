@@ -251,9 +251,10 @@ y tomes <strong>tus</strong> decisiones — antes de que te pase con un sistema 
     <div class="card">
         <h4>Workers</h4>
         <p>Cuántos procesos tiene para atender peticiones al mismo tiempo. Es la misma
-        idea que los <em>workers</em> de Gunicorn que ya viste (o vas a ver) en
-        Infraestructura de Redes: cada worker atiende una petición a la vez, y el resto
-        espera su turno.</p>
+        idea de "usuarios concurrentes → CPU" que viste en la
+        <a href="../dimensionamiento-servidores/clase2.html">Clase 2</a>: cada bloque de
+        peticiones simultáneas necesita su propia capacidad de cómputo. Con poca, las que
+        no entran esperan su turno.</p>
     </div>
     <div class="card">
         <h4>RAM</h4>
@@ -325,9 +326,9 @@ resuelve el problema.</p></div>
     <li><a href="https://killercoda.com/pablop22/scenario/medicion-http-servidores" target="_blank" rel="noopener">Medición de tiempos de respuesta</a>
     (Killercoda) — la misma lógica de medir con <code>curl</code>, pero contra servidores
     reales en internet en vez de un simulador.</li>
-    <li>Si cursás Infraestructura de Redes: la práctica de <em>stress testing</em> del
-    hilo conductor mide workers de Gunicorn reales, no simulados, sobre la misma app que
-    ya conocés.</li>
+    <li><a href="../calculadora-infraestructura/index.html">Calculadora de Infraestructura</a>
+    — la misma conversión de usuarios concurrentes a CPU y RAM, ahora aplicada a tu propio
+    proyecto EIDAS.</li>
 </ul>
 
 <footer class="doc-foot">
