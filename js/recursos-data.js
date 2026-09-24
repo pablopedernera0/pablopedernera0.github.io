@@ -1,10 +1,18 @@
-// Índice de recursos del sitio. Última actualización: 2026-09-23 ART.
+// Índice de recursos del sitio. Última actualización: 2026-09-24 ART.
 // Cada entrada agrega una carpeta al índice de la home (ver render-recursos.js).
 // Para publicar un recurso nuevo: agregar un objeto acá, no tocar index.html.
 //
 // categoria: debe coincidir con el id de la course-card en index.html
 //   'infraestructura' | 'desarrollo' | 'redes'
 const RECURSOS = [
+    {
+        titulo: "Simulador de capacidad: por qué un servidor se cae",
+        categoria: "redes",
+        carpeta: "simulador-capacidad-servidor",
+        icono: "🖥️",
+        descripcion: "Guía y práctica extra de dimensionamiento: subís carga sobre un servidor simulado hasta encontrar sus dos cuellos de botella (procesos y memoria), los resolvés cada uno con su script, y cerrás con tu propio RNF de capacidad. Acompaña la práctica de Killercoda.",
+        fecha: "2026-09-24"
+    },
     {
         titulo: "SQL, JOINs e índices",
         categoria: "infraestructura",
