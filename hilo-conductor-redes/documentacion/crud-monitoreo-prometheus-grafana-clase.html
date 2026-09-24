@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoreo en tiempo real — clase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.6rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.1rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul, .slide ol {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+        }
+
+        .card.bad {
+            border-color: rgba(248, 81, 73, 0.45);
+        }
+
+        .card h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            font-size: 0.96rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: bold;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 0.6rem;
+        }
+
+        .tag.ok {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .tag.no {
+            background: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+        }
+
+        .pair-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.9rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .idea-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.35);
+            border-radius: 12px;
+            padding: 1.4rem 1.6rem;
+            text-align: center;
+        }
+
+        .idea-card .idea-label {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #58a6ff;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .idea-card p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .quote-box {
+            background: rgba(88, 166, 255, 0.08);
+            border-left: 4px solid #58a6ff;
+            border-radius: 0 10px 10px 0;
+            padding: 1.1rem 1.5rem;
+            max-width: 850px;
+            margin: 1rem 0;
+            font-style: italic;
+            font-size: 1.15rem;
+        }
+
+        .quote-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        pre {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            max-width: 900px;
+            width: 100%;
+            overflow-x: auto;
+            margin: 0.8rem 0;
+            text-align: left;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: #79c0ff;
+            font-size: 0.92rem;
+        }
+
+        a {
+            color: #58a6ff;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.05rem;
+            min-width: 2.2rem;
+        }
+
+        .step-item p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.4rem 1rem;
+            text-align: center;
+        }
+
+        .stat-card .stat-number {
+            display: block;
+            font-size: 1.9rem;
+            font-weight: bold;
+            color: #58a6ff;
+            margin-bottom: 0.4rem;
+        }
+
+        .stat-card p {
+            font-size: 0.92rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+            text-align: center;
+        }
+
+        .mirror-table, .flags-table {
+            width: 100%;
+            max-width: 950px;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+        }
+
+        .mirror-table th, .mirror-table td,
+        .flags-table th, .flags-table td {
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.7rem 1rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .mirror-table th:first-child {
+            background: rgba(240, 136, 62, 0.12);
+            color: #f0883e;
+        }
+
+        .mirror-table th:last-child {
+            background: rgba(63, 185, 80, 0.12);
+            color: #3fb950;
+        }
+
+        .flags-table th {
+            background: rgba(88, 166, 255, 0.12);
+            color: #58a6ff;
+        }
+
+        .flags-table code {
+            white-space: nowrap;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+        }
+
+        .series-nav a:hover {
+            color: #58a6ff;
+        }
+
+        .series-nav span.current {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        .btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+            background: #3fb950;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.6rem; }
+            .series-nav { display: none; }
+            .pair-grid { grid-template-columns: 1fr; }
+        }
+
+        .slide-diagram {
+            padding-bottom: 5rem;
+        }
+
+        .slide-diagram h2 {
+            margin-bottom: 0.4rem;
+        }
+
+        .diagram {
+            width: 100%;
+            max-width: 880px;
+            margin: 0.5rem 0;
+        }
+
+        .diagram svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .diagram text {
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1.6rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            color: #8b949e;
+            margin-top: 0.4rem;
+        }
+
+        .legend span::before {
+            content: '';
+            display: inline-block;
+            width: 28px;
+            height: 0;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .legend .l-scrape::before { border-top: 2px dashed #3fb950; }
+        .legend .l-query::before { border-top: 2px solid #58a6ff; }
+        .legend .l-traffic::before { border-top: 2px solid #f0883e; }
+
+        .flow-row {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .flow-box {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.35);
+            border-radius: 10px;
+            padding: 0.9rem 0.8rem;
+            text-align: center;
+        }
+
+        .flow-box .flow-num {
+            display: block;
+            font-size: 0.75rem;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.3rem;
+        }
+
+        .flow-box h4 {
+            font-size: 1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .flow-box p {
+            font-size: 0.85rem;
+            color: #b8c0c9;
+            margin-bottom: 0;
+            text-align: center;
+        }
+
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            padding: 0 0.35rem;
+            color: #3fb950;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .timing {
+            font-weight: bold;
+            color: #f0883e;
+            min-width: 5.5rem;
+        }
+
+        @media (max-width: 800px) {
+            .flow-row { flex-direction: column; }
+            .flow-arrow { justify-content: center; transform: rotate(90deg); padding: 0.2rem 0; }
+        }
+    </style>
+</head>
+<body>
+<div class="series-nav">
+    <a href="../index.html">← Hilo conductor</a>
+    <span class="current">Clase: conceptos</span>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Infraestructura de Redes · Etapa 6 · crud-monitoreo-prometheus-grafana</div>
+        <h1>Monitoreo en tiempo real</h1>
+        <p class="subtitle">Prometheus, exporters y Grafana sobre la misma app Flask + MySQL que venimos desplegando, midiendo, atacando e investigando. Los conceptos detrás de la práctica, y cómo viaja un dato desde la app hasta un panel.</p>
+    </div>
+
+    <!-- Slide 2: Agenda -->
+    <div class="slide">
+        <h2>Plan de la clase</h2>
+        <div class="steps-list">
+            <div class="step-item"><span class="timing">0 – 5'</span><p>De dónde venimos: la etapa 5 miró el incidente <strong>después</strong>. Hoy lo miramos <strong>mientras pasa</strong>.</p></div>
+            <div class="step-item"><span class="timing">5 – 15'</span><p>Métricas vs. logs. Qué es una serie temporal. Contadores y gauges.</p></div>
+            <div class="step-item"><span class="timing">15 – 30'</span><p>La arquitectura del stack y el flujo de un dato: scrape, exporters, almacenamiento, consulta.</p></div>
+            <div class="step-item"><span class="timing">30 – 40'</span><p>PromQL: <code>up</code>, selectores por etiqueta y por qué casi siempre se usa <code>rate()</code>.</p></div>
+            <div class="step-item"><span class="timing">40 – 50'</span><p>Grafana: fuente de datos, dashboard, panel. Demo en vivo con carga.</p></div>
+            <div class="step-item"><span class="timing">50 – 60'</span><p>Un caso real de la práctica (cAdvisor en Killercoda), cierre del hilo conductor y preguntas.</p></div>
+        </div>
+    </div>
+
+    <!-- Slide 3: De dónde venimos -->
+    <div class="slide">
+        <h2>De dónde venimos</h2>
+        <p>En la etapa 5 reconstruimos un pico de carga, una fuerza bruta y una inyección SQL leyendo archivos de log con <code>grep</code> y <code>awk</code>. Funcionó, pero tuvimos que:</p>
+        <div class="flow-row">
+            <div class="flow-box"><span class="flow-num">1</span><h4>Esperar</h4><p>que el incidente termine</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">2</span><h4>Buscar</h4><p>el archivo de log correcto</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">3</span><h4>Filtrar y contar</h4><p>a mano, línea por línea</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">4</span><h4>Descubrir</h4><p>recién ahí, que hubo un pico</p></div>
+        </div>
+        <div class="quote-box">
+            <p>Pregunta para arrancar: si esto pasa a las 3 de la mañana un domingo, ¿cuándo se entera alguien?</p>
+        </div>
+    </div>
+
+    <!-- Slide 4: Logs vs métricas -->
+    <div class="slide">
+        <h2>Logs vs. métricas</h2>
+        <table class="mirror-table">
+            <tr><th>Log</th><th>Métrica</th></tr>
+            <tr><td>Un <strong>evento</strong>: una línea por petición, con todo el detalle</td><td>Un <strong>número</strong> que cambia en el tiempo</td></tr>
+            <tr><td><code>10.0.0.5 - - [24/Sep] "POST /login" 401</code></td><td><code>http_requests_total{status="401"} 1832</code></td></tr>
+            <tr><td>Responde: <em>qué pasó exactamente, con quién, cuándo</em></td><td>Responde: <em>cuánto, qué tan rápido, está subiendo o bajando</em></td></tr>
+            <tr><td>Crece con el tráfico (más requests = más líneas)</td><td>Tamaño casi fijo (un contador no ocupa más por contar más)</td></tr>
+            <tr><td>Se usa para <strong>investigar</strong> después</td><td>Se usa para <strong>detectar y alertar</strong> en el momento</td></tr>
+        </table>
+        <div class="warning-box">
+            <p>No compiten: en producción se usan las dos. La métrica te avisa que algo anda mal; el log te dice qué fue.</p>
+        </div>
+    </div>
+
+    <!-- Slide 5: Serie temporal -->
+    <div class="slide">
+        <h2>Qué es, exactamente, una métrica</h2>
+        <p>Para Prometheus, una métrica es una <strong>serie temporal</strong>: un nombre, un conjunto de etiquetas, y una lista de pares (momento, valor).</p>
+        <pre><code>flask_http_request_duration_seconds_count{method="GET", path="/", status="200"}  4213
+└─────────────── nombre ──────────────┘└──────────── etiquetas ───────────────┘  valor</code></pre>
+        <div class="pair-grid">
+            <div class="idea-card"><span class="idea-label">Contador (counter)</span><p>Solo sube (o vuelve a 0 si el proceso se reinicia). Ej: peticiones atendidas, queries ejecutadas. El valor absoluto dice poco; importa <strong>cuánto sube por segundo</strong>.</p></div>
+            <div class="idea-card"><span class="idea-label">Medidor (gauge)</span><p>Sube y baja. Ej: conexiones abiertas a MySQL, memoria usada. El valor actual <strong>ya dice algo</strong> por sí solo.</p></div>
+        </div>
+        <p>Cada combinación distinta de etiquetas es una serie distinta: <code>status="200"</code> y <code>status="500"</code> son dos series.</p>
+    </div>
+
+    <!-- Slide 6: /metrics -->
+    <div class="slide">
+        <h2>Cómo se ve por dentro: <code>/metrics</code></h2>
+        <p>Una app "instrumentada" expone sus números como texto plano en un endpoint HTTP. En la práctica, la librería <code>prometheus-flask-exporter</code> lo agrega a la app sin tocar su lógica.</p>
+        <pre><code>$ curl -s http://127.0.0.1:8888/metrics | head
+# HELP flask_http_request_duration_seconds Flask HTTP request duration in seconds
+# TYPE flask_http_request_duration_seconds histogram
+flask_http_request_duration_seconds_count{method="GET",path="/",status="200"} 57.0
+flask_http_request_duration_seconds_sum{method="GET",path="/",status="200"} 0.84
+# HELP flask_http_request_total Total number of HTTP requests
+# TYPE flask_http_request_total counter
+flask_http_request_total{method="GET",status="200"} 57.0</code></pre>
+        <div class="quote-box">
+            <p>Esto es todo lo que Prometheus lee. No hay magia: es un <code>curl</code> repetido cada 5 segundos.</p>
+        </div>
+    </div>
+
+    <!-- Slide 7: Pull vs push -->
+    <div class="slide">
+        <h2>Pull, no push: el <em>scrape</em></h2>
+        <div class="pair-grid">
+            <div class="card bad"><span class="tag no">Push</span><h4>El servicio manda sus datos</h4><p>Cada app tiene que saber a dónde enviar. Si el receptor se cae, los datos se pierden o se acumulan. Si una app muere, simplemente deja de mandar... y nadie se da cuenta.</p></div>
+            <div class="card"><span class="tag ok">Pull (Prometheus)</span><h4>Prometheus va a buscarlos</h4><p>Tiene una lista de <strong>targets</strong> y cada <code>scrape_interval</code> (5s en la práctica) hace un GET a cada uno. Si un target no responde, eso ya es un dato: <code>up = 0</code>.</p></div>
+        </div>
+        <pre><code># prometheus.yml (el que genera setup.sh)
+global:
+  scrape_interval: 5s
+scrape_configs:
+  - job_name: 'cadvisor'   → cadvisor:8080
+  - job_name: 'mysql'      → dbexporter:9104
+  - job_name: 'crud-app'   → host.docker.internal:8888</code></pre>
+    </div>
+
+    <!-- Slide 8: Exporters -->
+    <div class="slide">
+        <h2>¿Y si el servicio no habla "Prometheus"?</h2>
+        <p>MySQL no tiene un <code>/metrics</code>. Docker tampoco. Para eso existen los <strong>exporters</strong>: programas chicos que consultan el estado de un sistema y lo traducen al formato de texto de Prometheus.</p>
+        <table class="flags-table">
+            <tr><th>Fuente</th><th>Cómo expone métricas</th><th>Ejemplo de métrica</th></tr>
+            <tr><td>App Flask</td><td>Directo: la librería agrega <code>/metrics</code> a la app</td><td><code>flask_http_request_total</code></td></tr>
+            <tr><td>MySQL</td><td><code>mysqld-exporter</code> (servicio <code>dbexporter</code>): se conecta a MySQL, corre <code>SHOW GLOBAL STATUS</code> y lo traduce</td><td><code>mysql_global_status_threads_connected</code></td></tr>
+            <tr><td>Contenedores</td><td><code>cAdvisor</code>: lee los <em>cgroups</em> del kernel, donde Linux lleva la cuenta de CPU/memoria/red de cada contenedor</td><td><code>container_cpu_usage_seconds_total</code></td></tr>
+        </table>
+        <div class="warning-box">
+            <p>Hay exporters para casi todo: Linux (<code>node_exporter</code>), Nginx, PostgreSQL, Redis, routers vía SNMP. El patrón es siempre el mismo.</p>
+        </div>
+    </div>
+
+    <!-- Slide 9: Arquitectura (imagen) -->
+    <div class="slide slide-diagram">
+        <h2>La arquitectura de la práctica</h2>
+        <div class="diagram">
+            <svg viewBox="0 0 1000 600" role="img" aria-label="Diagrama del stack de monitoreo: la app Flask en el host, y MySQL, dbexporter, cAdvisor, Prometheus y Grafana en la red de docker-compose">
+                <defs>
+                    <marker id="ar-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fb950"/></marker>
+                    <marker id="ar-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#58a6ff"/></marker>
+                    <marker id="ar-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f0883e"/></marker>
+                </defs>
+
+                <!-- Host -->
+                <rect x="10" y="30" width="770" height="560" rx="14" fill="rgba(255,255,255,0.02)" stroke="#8b949e" stroke-width="1.5"/>
+                <text x="30" y="578" fill="#8b949e" font-size="14">Máquina de Killercoda (host Ubuntu)</text>
+
+                <!-- Compose network -->
+                <rect x="245" y="65" width="520" height="490" rx="12" fill="rgba(88,166,255,0.04)" stroke="#58a6ff" stroke-width="1.2" stroke-dasharray="6 5"/>
+                <text x="260" y="545" fill="#58a6ff" font-size="13">Red de docker-compose — cada servicio se encuentra por su nombre</text>
+
+                <!-- Generador de carga -->
+                <rect x="30" y="80" width="190" height="60" rx="8" fill="rgba(240,136,62,0.1)" stroke="#f0883e"/>
+                <text x="125" y="106" fill="#f0883e" font-size="15" font-weight="bold" text-anchor="middle">Generador de carga</text>
+                <text x="125" y="126" fill="#b8c0c9" font-size="12" text-anchor="middle">seq | xargs -P 50 curl</text>
+
+                <!-- Flask -->
+                <rect x="30" y="240" width="190" height="100" rx="8" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="125" y="270" fill="#c9d1d9" font-size="16" font-weight="bold" text-anchor="middle">App Flask</text>
+                <text x="125" y="292" fill="#b8c0c9" font-size="13" text-anchor="middle">proceso en el host</text>
+                <text x="125" y="312" fill="#f0883e" font-size="13" text-anchor="middle" font-family="monospace">:8888  /  y  /metrics</text>
+
+                <!-- Prometheus -->
+                <rect x="270" y="100" width="180" height="80" rx="8" fill="rgba(63,185,80,0.12)" stroke="#3fb950" stroke-width="2"/>
+                <text x="360" y="132" fill="#3fb950" font-size="17" font-weight="bold" text-anchor="middle">Prometheus</text>
+                <text x="360" y="152" fill="#b8c0c9" font-size="12" text-anchor="middle">scrapea + guarda (TSDB)</text>
+                <text x="360" y="170" fill="#f0883e" font-size="12" text-anchor="middle" font-family="monospace">:9090</text>
+
+                <!-- Grafana -->
+                <rect x="565" y="100" width="180" height="80" rx="8" fill="rgba(88,166,255,0.12)" stroke="#58a6ff" stroke-width="2"/>
+                <text x="655" y="132" fill="#58a6ff" font-size="17" font-weight="bold" text-anchor="middle">Grafana</text>
+                <text x="655" y="152" fill="#b8c0c9" font-size="12" text-anchor="middle">solo visualiza</text>
+                <text x="655" y="170" fill="#f0883e" font-size="12" text-anchor="middle" font-family="monospace">:3000</text>
+
+                <!-- dbexporter -->
+                <rect x="270" y="310" width="180" height="70" rx="8" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="360" y="340" fill="#c9d1d9" font-size="15" font-weight="bold" text-anchor="middle">dbexporter</text>
+                <text x="360" y="362" fill="#b8c0c9" font-size="12" text-anchor="middle">mysqld-exporter  :9104</text>
+
+                <!-- cAdvisor -->
+                <rect x="565" y="310" width="180" height="70" rx="8" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="655" y="340" fill="#c9d1d9" font-size="15" font-weight="bold" text-anchor="middle">cAdvisor</text>
+                <text x="655" y="362" fill="#b8c0c9" font-size="12" text-anchor="middle">:8080</text>
+
+                <!-- MySQL -->
+                <rect x="270" y="450" width="180" height="70" rx="8" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="360" y="480" fill="#c9d1d9" font-size="15" font-weight="bold" text-anchor="middle">MySQL</text>
+                <text x="360" y="502" fill="#b8c0c9" font-size="12" text-anchor="middle">:3306</text>
+
+                <!-- cgroups -->
+                <rect x="565" y="450" width="180" height="70" rx="8" fill="none" stroke="#8b949e" stroke-dasharray="4 4"/>
+                <text x="655" y="480" fill="#8b949e" font-size="13" text-anchor="middle">cgroups del kernel</text>
+                <text x="655" y="500" fill="#8b949e" font-size="12" text-anchor="middle">CPU / RAM / red</text>
+
+                <!-- Navegador -->
+                <rect x="810" y="100" width="175" height="80" rx="8" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="897" y="132" fill="#c9d1d9" font-size="15" font-weight="bold" text-anchor="middle">Navegador</text>
+                <text x="897" y="152" fill="#b8c0c9" font-size="12" text-anchor="middle">del alumno</text>
+                <text x="897" y="170" fill="#b8c0c9" font-size="11" text-anchor="middle">(Traffic / Ports)</text>
+
+                <!-- Tráfico: carga -> Flask -->
+                <line x1="125" y1="140" x2="125" y2="236" stroke="#f0883e" stroke-width="2" marker-end="url(#ar-o)"/>
+                <text x="135" y="195" fill="#f0883e" font-size="12">HTTP GET /</text>
+                <!-- Flask -> MySQL -->
+                <path d="M125 340 V485 H266" fill="none" stroke="#f0883e" stroke-width="2" marker-end="url(#ar-o)"/>
+                <text x="135" y="420" fill="#f0883e" font-size="12">SQL (una conexión</text>
+                <text x="135" y="436" fill="#f0883e" font-size="12">por request)</text>
+
+                <!-- Exporters leen su fuente -->
+                <line x1="360" y1="380" x2="360" y2="446" stroke="#58a6ff" stroke-width="2" marker-end="url(#ar-b)"/>
+                <text x="370" y="418" fill="#58a6ff" font-size="12">SHOW GLOBAL STATUS</text>
+                <line x1="655" y1="380" x2="655" y2="446" stroke="#58a6ff" stroke-width="2" marker-end="url(#ar-b)"/>
+                <text x="665" y="418" fill="#58a6ff" font-size="12">lee</text>
+
+                <!-- Scrapes -->
+                <line x1="360" y1="180" x2="360" y2="306" stroke="#3fb950" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#ar-g)"/>
+                <line x1="420" y1="180" x2="600" y2="306" stroke="#3fb950" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#ar-g)"/>
+                <line x1="270" y1="160" x2="224" y2="262" stroke="#3fb950" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#ar-g)"/>
+                <text x="370" y="250" fill="#3fb950" font-size="13" font-weight="bold">scrape cada 5s</text>
+                <text x="132" y="358" fill="#3fb950" font-size="11">scrapeada vía</text><text x="132" y="372" fill="#3fb950" font-size="11">host.docker.internal</text>
+
+                <!-- Grafana -> Prometheus -->
+                <line x1="565" y1="140" x2="454" y2="140" stroke="#58a6ff" stroke-width="2" marker-end="url(#ar-b)"/>
+                <text x="509" y="132" fill="#58a6ff" font-size="12" text-anchor="middle">PromQL</text>
+                <text x="509" y="160" fill="#8b949e" font-size="10" text-anchor="middle">prometheus:9090</text>
+
+                <!-- Navegador -> Grafana / Prometheus -->
+                <line x1="810" y1="140" x2="749" y2="140" stroke="#58a6ff" stroke-width="2" marker-end="url(#ar-b)"/>
+                <path d="M897 100 V50 H360 V96" fill="none" stroke="#58a6ff" stroke-width="1.5" stroke-dasharray="3 3" marker-end="url(#ar-b)"/>
+                <text x="905" y="72" fill="#8b949e" font-size="12">directo a :9090</text>
+            </svg>
+        </div>
+        <div class="legend">
+            <span class="l-traffic">tráfico de la app</span>
+            <span class="l-scrape">scrape (Prometheus va a buscar)</span>
+            <span class="l-query">consulta / lectura</span>
+        </div>
+    </div>
+
+    <!-- Slide 10: detalles de la arquitectura -->
+    <div class="slide">
+        <h2>Tres detalles de red en el diagrama</h2>
+        <div class="card-grid">
+            <div class="card"><h4>Nombres de servicio, no IPs</h4><p>Grafana se conecta a <code>http://prometheus:9090</code>, no a <code>localhost</code>. Dentro de la red de compose, Docker resuelve cada nombre de servicio a la IP del contenedor, igual que la app encuentra a <code>mysql</code>.</p></div>
+            <div class="card"><h4><code>localhost</code> depende de quién pregunta</h4><p>Dentro del contenedor de Grafana, <code>localhost</code> es el propio Grafana. Por eso poner <code>localhost:9090</code> como fuente de datos falla, aunque desde el navegador funcione.</p></div>
+            <div class="card"><h4>Salir de la red de compose</h4><p>La app Flask corre en el host, fuera de compose. Prometheus la alcanza por <code>host.docker.internal</code>, un nombre que el <code>extra_hosts: host-gateway</code> del compose apunta a la IP del host.</p></div>
+        </div>
+    </div>
+
+    <!-- Slide 11: flujo de un dato -->
+    <div class="slide">
+        <h2>El viaje de un dato</h2>
+        <p>Qué pasa desde que llega una petición hasta que la ves en un gráfico:</p>
+        <div class="flow-row">
+            <div class="flow-box"><span class="flow-num">1 · App</span><h4>Llega un GET</h4><p>la librería suma 1 al contador en memoria</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">2 · /metrics</span><h4>Queda expuesto</h4><p>el contador actual, como texto</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">3 · Scrape</span><h4>Prometheus lo lee</h4><p>cada 5s, con timestamp</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">4 · TSDB</span><h4>Lo guarda</h4><p>un punto más en la serie temporal</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">5 · PromQL</span><h4>Grafana consulta</h4><p><code>rate(...[1m])</code></p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">6 · Panel</span><h4>Se dibuja</h4><p>el dashboard refresca cada 5s</p></div>
+        </div>
+        <div class="warning-box">
+            <p>Consecuencia práctica: lo que ves en Grafana tiene hasta ~10 segundos de atraso (scrape + refresco). Es "tiempo real" a escala humana, no al milisegundo.</p>
+        </div>
+    </div>
+
+    <!-- Slide 12: up -->
+    <div class="slide">
+        <h2>PromQL, paso 1: <code>up</code></h2>
+        <p>Prometheus genera por su cuenta una métrica por cada target: <code>up</code>. Vale 1 si el último scrape funcionó y 0 si no.</p>
+        <pre><code>up
+up{instance="cadvisor:8080",            job="cadvisor"}   1
+up{instance="dbexporter:9104",          job="mysql"}      1
+up{instance="host.docker.internal:8888", job="crud-app"}  1
+up{instance="localhost:9090",           job="prometheus"} 1</code></pre>
+        <p>Es la misma información que la pantalla <strong>Status → Targets</strong>, pero como dato: se puede graficar y, sobre todo, se puede <strong>alertar</strong> con ella (<code>up == 0</code> durante 1 minuto → avisar).</p>
+    </div>
+
+    <!-- Slide 13: selectores -->
+    <div class="slide">
+        <h2>PromQL, paso 2: filtrar por etiquetas</h2>
+        <pre><code>mysql_global_status_threads_connected            # gauge: conexiones abiertas ahora
+
+flask_http_request_total{status="200"}           # solo respuestas OK
+flask_http_request_total{status=~"5.."}          # regex: cualquier 5xx
+container_cpu_usage_seconds_total{id=~".*abc123.*"}   # un contenedor puntual</code></pre>
+        <table class="flags-table">
+            <tr><th>Operador</th><th>Significado</th></tr>
+            <tr><td><code>=</code></td><td>igual</td></tr>
+            <tr><td><code>!=</code></td><td>distinto</td></tr>
+            <tr><td><code>=~</code></td><td>coincide con la expresión regular</td></tr>
+            <tr><td><code>!~</code></td><td>no coincide con la expresión regular</td></tr>
+        </table>
+    </div>
+
+    <!-- Slide 14: rate -->
+    <div class="slide">
+        <h2>PromQL, paso 3: por qué <code>rate()</code></h2>
+        <p>Un contador solo sube. Graficado tal cual, un pico de carga se ve como una pendiente más empinada — difícil de leer. <code>rate()</code> calcula <strong>cuánto subió por segundo</strong> en una ventana de tiempo.</p>
+        <div class="pair-grid">
+            <div class="idea-card">
+                <span class="idea-label">Contador crudo</span>
+                <svg viewBox="0 0 400 180" role="img" aria-label="Contador que sube lento, luego empinado durante la carga, y de nuevo lento">
+                    <line x1="30" y1="160" x2="390" y2="160" stroke="#8b949e"/>
+                    <line x1="30" y1="10" x2="30" y2="160" stroke="#8b949e"/>
+                    <rect x="150" y="10" width="110" height="150" fill="rgba(240,136,62,0.08)"/>
+                    <text x="205" y="26" fill="#f0883e" font-size="12" text-anchor="middle">carga</text>
+                    <polyline points="30,150 150,138 260,40 390,30" fill="none" stroke="#58a6ff" stroke-width="3"/>
+                    <text x="36" y="176" fill="#8b949e" font-size="11">tiempo →</text>
+                </svg>
+                <p><code>flask_http_request_duration_seconds_count</code></p>
+            </div>
+            <div class="idea-card">
+                <span class="idea-label">Con rate(...[1m])</span>
+                <svg viewBox="0 0 400 180" role="img" aria-label="Tasa por segundo: baja, meseta alta durante la carga, vuelve a bajar">
+                    <line x1="30" y1="160" x2="390" y2="160" stroke="#8b949e"/>
+                    <line x1="30" y1="10" x2="30" y2="160" stroke="#8b949e"/>
+                    <rect x="150" y="10" width="110" height="150" fill="rgba(240,136,62,0.08)"/>
+                    <text x="205" y="26" fill="#f0883e" font-size="12" text-anchor="middle">carga</text>
+                    <polyline points="30,150 150,150 175,45 260,45 290,150 390,152" fill="none" stroke="#3fb950" stroke-width="3"/>
+                    <text x="36" y="176" fill="#8b949e" font-size="11">tiempo →</text>
+                </svg>
+                <p>requests por segundo: el pico se ve de un vistazo</p>
+            </div>
+        </div>
+        <div class="warning-box">
+            <p>Regla práctica: <strong>contador → siempre con <code>rate()</code></strong>. Gauge → directo. El <code>[1m]</code> es la ventana: más corta reacciona más rápido pero es más ruidosa.</p>
+        </div>
+    </div>
+
+    <!-- Slide 15: Grafana -->
+    <div class="slide">
+        <h2>Grafana: tres piezas</h2>
+        <div class="flow-row">
+            <div class="flow-box"><span class="flow-num">Data source</span><h4>De dónde saca datos</h4><p>Prometheus en <code>http://prometheus:9090</code>. Grafana no guarda métricas propias.</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">Panel</span><h4>Una consulta, un gráfico</h4><p>cada panel es una consulta PromQL + cómo dibujarla</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">Dashboard</span><h4>Varios paneles juntos</h4><p>con un rango de tiempo y un refresco en común</p></div>
+        </div>
+        <div class="card-grid">
+            <div class="card"><h4>Panel 1 · Requests por segundo</h4><p><code>rate(flask_http_request_duration_seconds_count[1m])</code></p></div>
+            <div class="card"><h4>Panel 2 · Conexiones a MySQL</h4><p><code>mysql_global_status_threads_connected</code></p></div>
+            <div class="card"><h4>Panel 3 · CPU de MySQL</h4><p><code>rate(container_cpu_usage_seconds_total{id=~".*&lt;id&gt;.*"}[1m])</code></p></div>
+        </div>
+        <p>Por qué separar recolección y visualización: Grafana puede mostrar en el mismo dashboard datos de Prometheus, de una base SQL, de logs... y Prometheus puede servir a varias herramientas a la vez.</p>
+    </div>
+
+    <!-- Slide 16: Demo -->
+    <div class="slide">
+        <h2>Demo en vivo: la carga de la etapa 1, mirada en vivo</h2>
+        <p>Dashboard con refresco en <strong>5s</strong> y rango <strong>Last 5 minutes</strong>. En otra terminal:</p>
+        <pre><code>seq 1 2000 | xargs -P 50 -I{} curl -s -o /dev/null http://127.0.0.1:8888/</code></pre>
+        <div class="stat-grid">
+            <div class="stat-card"><span class="stat-number">2000</span><p>peticiones en total</p></div>
+            <div class="stat-card"><span class="stat-number">50</span><p>en simultáneo</p></div>
+            <div class="stat-card"><span class="stat-number">~10 s</span><p>de atraso esperable hasta verlo en el panel</p></div>
+        </div>
+        <div class="quote-box">
+            <p>Antes de largar la carga, preguntar: ¿qué panel va a subir primero? ¿Las conexiones a MySQL van a subir junto con los requests? ¿Por qué?</p>
+        </div>
+    </div>
+
+    <!-- Slide 17: caso cAdvisor -->
+    <div class="slide">
+        <h2>Un caso real: cAdvisor sin nombres</h2>
+        <p>En una PC de desarrollo, cAdvisor etiqueta cada contenedor con <code>name</code> e <code>image</code>. En Killercoda <strong>no</strong>: cada contenedor aparece solo como el ID de su cgroup.</p>
+        <pre><code>container_cpu_usage_seconds_total{cpu="total", id="/system.slice/docker-3f9a1c...e21.scope", ...}</code></pre>
+        <div class="steps-list">
+            <div class="step-item"><span class="num">1</span><p><code>{name="mysql"}</code> no devuelve nada: la etiqueta no existe en este entorno.</p></div>
+            <div class="step-item"><span class="num">2</span><p>El ID corto de <code>docker ps -qf "name=mysql"</code> es un pedazo del ID completo del cgroup.</p></div>
+            <div class="step-item"><span class="num">3</span><p>Entonces se filtra por regex: <code>{id=~".*&lt;id corto&gt;.*"}</code>. El script <code>query_cpu_mysql.sh</code> arma esa consulta por vos.</p></div>
+        </div>
+        <div class="warning-box">
+            <p>Lección general: las etiquetas que tenés dependen del entorno donde corre el exporter. Antes de escribir un filtro, mirá qué etiquetas trae realmente la serie. Este problema lo detectó una compañera en clase.</p>
+        </div>
+    </div>
+
+    <!-- Slide 18: cierre del hilo -->
+    <div class="slide">
+        <h2>Cierre del hilo conductor</h2>
+        <div class="steps-list">
+            <div class="step-item"><span class="num">0</span><p><strong>Desplegar</strong> — MySQL + app Flask a mano</p></div>
+            <div class="step-item"><span class="num">1</span><p><strong>Medir</strong> — carga con <code>curl</code>, dev server vs. Gunicorn</p></div>
+            <div class="step-item"><span class="num">2</span><p><strong>Proteger</strong> — login y sesiones</p></div>
+            <div class="step-item"><span class="num">3-4</span><p><strong>Atacar</strong> — reconocimiento, fuerza bruta, inyección SQL</p></div>
+            <div class="step-item"><span class="num">5</span><p><strong>Investigar</strong> — logs con <code>grep</code>/<code>awk</code>, después del hecho</p></div>
+            <div class="step-item"><span class="num">6</span><p><strong>Monitorear</strong> — métricas en vivo, para enterarse mientras pasa</p></div>
+        </div>
+        <div class="quote-box">
+            <p>La misma app y la misma base, a lo largo de todo su ciclo de vida. El paso siguiente en un entorno real: reglas de <strong>alerta</strong> (Alertmanager) para que el sistema avise solo.</p>
+        </div>
+    </div>
+
+    <!-- Slide 19: repaso -->
+    <div class="slide">
+        <h2>Preguntas de repaso</h2>
+        <div class="steps-list">
+            <div class="step-item"><span class="num">1</span><p>¿Qué diferencia hay entre una métrica y un log? Dá un ejemplo de pregunta que responde cada uno.</p></div>
+            <div class="step-item"><span class="num">2</span><p>¿Por qué Prometheus "va a buscar" las métricas en vez de recibirlas? ¿Qué ventaja da <code>up</code>?</p></div>
+            <div class="step-item"><span class="num">3</span><p>¿Para qué sirve <code>dbexporter</code>? ¿Por qué no hace falta uno para la app Flask?</p></div>
+            <div class="step-item"><span class="num">4</span><p>¿Por qué la fuente de datos de Grafana es <code>prometheus:9090</code> y no <code>localhost:9090</code>?</p></div>
+            <div class="step-item"><span class="num">5</span><p>¿Por qué el pico de carga de la etapa 1 se pudo ver en vivo acá y no en aquella práctica?</p></div>
+        </div>
+        <p>La pregunta 5 es la del mini-reporte de la etapa.</p>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">19</span>
+</div>
+
+<div class="controls">
+    <button class="btn prev" onclick="previousSlide()">← Anterior</button>
+    <button class="btn next" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const prevBtn = document.querySelector('.btn.prev');
+    const nextBtn = document.querySelector('.btn.next');
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function updateControls() {
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide === totalSlides - 1;
+        nextBtn.textContent = currentSlide === totalSlides - 1 ? 'Fin de la clase' : 'Siguiente →';
+    }
+
+    function showSlide(n) {
+        const target = Math.max(0, Math.min(n, totalSlides - 1));
+        if (target === currentSlide) return;
+        slides[currentSlide].classList.remove('active');
+        currentSlide = target;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+        updateControls();
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    if (location.hash) {
+        const target = document.querySelector(location.hash);
+        const idx = target ? Array.from(slides).indexOf(target) : -1;
+        if (idx >= 0) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = idx;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+    }
+
+    updateControls();
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>
