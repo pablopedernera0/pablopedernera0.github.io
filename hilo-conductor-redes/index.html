@@ -429,6 +429,7 @@
     <a class="navlink" href="#etapa-5">Etapa 5</a>
     <a class="navlink" href="#etapa-6">Etapa 6</a>
     <a class="navlink" href="#sistema-operativo">Sistema operativo</a>
+    <a class="navlink" href="#forense-digital">Forense digital</a>
     <a class="navlink" href="#trabajo-7">Trabajo n°7</a>
     <a class="navlink" href="#notas">Notas técnicas</a>
   </div>
@@ -815,6 +816,35 @@ general_log: <span class="dim">usuario = '' OR '1'='1' -- ' AND password = 'x'</
     </div>
     <p style="margin-top:0.9rem; font-size:0.88rem;">🧪 <a href="https://killercoda.com/pablop22/scenario/crud-sistema-operativo" target="_blank">Escenario en Killercoda</a> — autónomo: no necesita haber hecho las etapas anteriores, aunque las usa como referencia. Toda la carga se genera con scripts con topes fijos</p>
     <p style="margin-top:0.4rem; font-size:0.88rem;">📄 <a href="documentacion/crud-sistema-operativo-clase.html">Presentación de conceptos</a> — clase de 1 hora: capas del sistema operativo, llamadas al sistema, estados de un proceso, <code>fork()</code>, hilos, scheduler, memoria virtual, tablas Linux | Windows, virtualización vs. contenedores y cgroups</p>
+  </div>
+
+  <!-- TRANSVERSAL: FORENSE DIGITAL -->
+  <div class="etapa" id="forense-digital" style="scroll-margin-top:4rem;">
+    <div class="etapa-head">
+      <span class="etapa-chip">Transversal</span>
+      <span class="etapa-slug">forense digital</span>
+      <span class="etapa-time">lectura</span>
+    </div>
+    <div class="etapa-grid">
+      <div class="etapa-block">
+        <h3>Objetivos de aprendizaje</h3>
+        <ul>
+          <li>Explicar los principios de la forense digital: no alterar el original, integridad verificable con hash, cadena de custodia</li>
+          <li>Ordenar la evidencia según su volatilidad (RFC 3227) y decidir qué se pierde al apagar un equipo</li>
+          <li>Entender por qué un archivo borrado muchas veces se puede recuperar</li>
+          <li>Reconocer el marco legal argentino (Ley 26.388, Resolución 234/2016)</li>
+        </ul>
+      </div>
+      <div class="etapa-block">
+        <h3>Relación con el hilo conductor</h3>
+        <ul>
+          <li>Etapa 5: los logs analizados con <code>grep</code> y <code>awk</code> ya son forense de red y de aplicaciones</li>
+          <li>Etapa 6: las métricas en Prometheus son registros guardados fuera del servidor</li>
+          <li>Escenario de sistemas operativos: procesos y memoria, lo primero que se pierde al apagar</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:0.9rem; font-size:0.88rem;">📄 <a href="../forense-digital/">Resumen y recursos</a> — principios, fases, hash e integridad, orden de volatilidad, marco legal, y guías, cursos y herramientas gratuitas, priorizando material en español</p>
   </div>
 
   <!-- TRABAJO N7 -->
