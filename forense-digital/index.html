@@ -306,6 +306,7 @@
             <a href="#borrado">Archivos borrados</a>
             <a href="#hilo">En nuestra infraestructura</a>
             <a href="#marco-legal">Marco legal</a>
+            <a href="#practica">Práctica</a>
             <a href="#recursos">Recursos</a>
             <a href="#preguntas">Para pensar</a>
         </nav>
@@ -606,6 +607,19 @@
             <tr><td><a href="https://csrc.nist.gov/pubs/sp/800/86/final" target="_blank">NIST SP 800-86</a></td><td>Guía para integrar técnicas forenses en la respuesta a incidentes, desde la mirada de TI (en inglés, gratuita).</td></tr>
             <tr><td>ISO/IEC 27037</td><td>Norma internacional para la identificación, recolección, adquisición y preservación de evidencia digital (paga).</td></tr>
         </table>
+    </section>
+
+    <!-- PRÁCTICA -->
+    <section id="practica">
+        <h2>Práctica en Killercoda</h2>
+        <p>En <a href="https://killercoda.com/pablop22/scenario/forense-archivos-borrados" target="_blank">forense-archivos-borrados</a> vas a trabajar, desde el navegador y sin instalar nada, con dos imágenes de disco públicas de <strong>NIST</strong> armadas para practicar recuperación de archivos borrados:</p>
+        <ul>
+            <li>Verificar la integridad de la evidencia con SHA-256, al principio y al final.</li>
+            <li>Leer la tabla de particiones y el sistema de archivos sin montar el disco.</li>
+            <li>Encontrar archivos borrados y recuperar su contenido con The Sleuth Kit.</li>
+            <li>Comprobar, sector por sector, qué pasa cuando un archivo borrado fue sobrescrito.</li>
+        </ul>
+        <p>Lo mejor de estas imágenes es que NIST publica cómo las armó, así que podés comparar cada hallazgo con la respuesta oficial.</p>
     </section>
 
     <!-- RECURSOS -->
