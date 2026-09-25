@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema operativo — clase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.6rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.1rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul, .slide ol {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+        }
+
+        .card.bad {
+            border-color: rgba(248, 81, 73, 0.45);
+        }
+
+        .card h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            font-size: 0.96rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: bold;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 0.6rem;
+        }
+
+        .tag.ok {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .tag.no {
+            background: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+        }
+
+        .pair-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.9rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .idea-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.35);
+            border-radius: 12px;
+            padding: 1.4rem 1.6rem;
+            text-align: center;
+        }
+
+        .idea-card .idea-label {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #58a6ff;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .idea-card p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .quote-box {
+            background: rgba(88, 166, 255, 0.08);
+            border-left: 4px solid #58a6ff;
+            border-radius: 0 10px 10px 0;
+            padding: 1.1rem 1.5rem;
+            max-width: 850px;
+            margin: 1rem 0;
+            font-style: italic;
+            font-size: 1.15rem;
+        }
+
+        .quote-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        pre {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            max-width: 900px;
+            width: 100%;
+            overflow-x: auto;
+            margin: 0.8rem 0;
+            text-align: left;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: #79c0ff;
+            font-size: 0.92rem;
+        }
+
+        a {
+            color: #58a6ff;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.05rem;
+            min-width: 2.2rem;
+        }
+
+        .step-item p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.4rem 1rem;
+            text-align: center;
+        }
+
+        .stat-card .stat-number {
+            display: block;
+            font-size: 1.9rem;
+            font-weight: bold;
+            color: #58a6ff;
+            margin-bottom: 0.4rem;
+        }
+
+        .stat-card p {
+            font-size: 0.92rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+            text-align: center;
+        }
+
+        .mirror-table, .flags-table {
+            width: 100%;
+            max-width: 950px;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+        }
+
+        .mirror-table th, .mirror-table td,
+        .flags-table th, .flags-table td {
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.7rem 1rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .mirror-table th:first-child {
+            background: rgba(240, 136, 62, 0.12);
+            color: #f0883e;
+        }
+
+        .mirror-table th:last-child {
+            background: rgba(63, 185, 80, 0.12);
+            color: #3fb950;
+        }
+
+        .flags-table th {
+            background: rgba(88, 166, 255, 0.12);
+            color: #58a6ff;
+        }
+
+        .flags-table code {
+            white-space: nowrap;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+        }
+
+        .series-nav a:hover {
+            color: #58a6ff;
+        }
+
+        .series-nav span.current {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        .btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+            background: #3fb950;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.6rem; }
+            .series-nav { display: none; }
+            .pair-grid { grid-template-columns: 1fr; }
+        }
+
+        .slide-diagram {
+            padding-bottom: 5rem;
+        }
+
+        .slide-diagram h2 {
+            margin-bottom: 0.4rem;
+        }
+
+        .diagram {
+            width: 100%;
+            max-width: 880px;
+            margin: 0.5rem 0;
+        }
+
+        .diagram svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .diagram text {
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1.6rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            color: #8b949e;
+            margin-top: 0.4rem;
+        }
+
+        .legend span::before {
+            content: '';
+            display: inline-block;
+            width: 28px;
+            height: 0;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .legend .l-scrape::before { border-top: 2px dashed #3fb950; }
+        .legend .l-query::before { border-top: 2px solid #58a6ff; }
+        .legend .l-traffic::before { border-top: 2px solid #f0883e; }
+
+        .flow-row {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .flow-box {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.35);
+            border-radius: 10px;
+            padding: 0.9rem 0.8rem;
+            text-align: center;
+        }
+
+        .flow-box .flow-num {
+            display: block;
+            font-size: 0.75rem;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.3rem;
+        }
+
+        .flow-box h4 {
+            font-size: 1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .flow-box p {
+            font-size: 0.85rem;
+            color: #b8c0c9;
+            margin-bottom: 0;
+            text-align: center;
+        }
+
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            padding: 0 0.35rem;
+            color: #3fb950;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .timing {
+            font-weight: bold;
+            color: #f0883e;
+            min-width: 5.5rem;
+        }
+
+        @media (max-width: 800px) {
+            .flow-row { flex-direction: column; }
+            .flow-arrow { justify-content: center; transform: rotate(90deg); padding: 0.2rem 0; }
+        }
+
+        .os-table {
+            width: 100%;
+            max-width: 1000px;
+            border-collapse: collapse;
+            margin: 0.8rem 0;
+            font-size: 0.9rem;
+        }
+
+        .os-table th, .os-table td {
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.55rem 0.9rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .os-table th {
+            background: rgba(139, 148, 158, 0.12);
+            color: #c9d1d9;
+        }
+
+        .os-table th.linux {
+            background: rgba(63, 185, 80, 0.12);
+            color: #3fb950;
+        }
+
+        .os-table th.windows {
+            background: rgba(88, 166, 255, 0.12);
+            color: #58a6ff;
+        }
+
+        .os-table td:first-child {
+            color: #8b949e;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .legend .l-sys::before { border-top: 2px dashed #f0883e; }
+        .legend .l-shared::before { border-top: 2px solid #3fb950; }
+        .legend .l-own::before { border-top: 2px solid #58a6ff; }
+        .legend .l-swap::before { border-top: 2px dashed #8b949e; }
+    </style>
+</head>
+<body>
+<div class="series-nav">
+    <a href="https://killercoda.com/pablop22/scenario/crud-sistema-operativo" target="_blank">← Ver escenario</a>
+    <span class="current">Clase: conceptos</span>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Infraestructura de Redes · Transversal al hilo conductor · crud-sistema-operativo</div>
+        <h1>El sistema operativo debajo de la infraestructura</h1>
+        <p class="subtitle">Kernel, llamadas al sistema, procesos, hilos, memoria, scheduler, namespaces y cgroups. Los conceptos que estuvieron trabajando en cada etapa del hilo conductor sin que los nombráramos, y cómo los resuelven Linux y Windows.</p>
+    </div>
+
+    <!-- Slide 2: Agenda -->
+    <div class="slide">
+        <h2>Plan de la clase</h2>
+        <div class="steps-list">
+            <div class="step-item"><span class="timing">0 – 5'</span><p>Ya lo usaste sin nombrarlo: qué hizo el sistema operativo en cada etapa.</p></div>
+            <div class="step-item"><span class="timing">5 – 15'</span><p>Qué es un sistema operativo. El kernel, sus componentes, modo usuario y modo kernel, llamadas al sistema.</p></div>
+            <div class="step-item"><span class="timing">15 – 27'</span><p>Procesos y sus estados, <code>fork()</code>, hilos. Gunicorn y MySQL como los dos modelos.</p></div>
+            <div class="step-item"><span class="timing">27 – 38'</span><p>El scheduler y la memoria virtual: páginas, swap, OOM killer.</p></div>
+            <div class="step-item"><span class="timing">38 – 46'</span><p>Linux | Windows: kernel, procesos, memoria, archivos y permisos.</p></div>
+            <div class="step-item"><span class="timing">46 – 56'</span><p>Virtualización vs. contenedores: namespaces, cgroups y de dónde sale la CPU que muestra Grafana.</p></div>
+            <div class="step-item"><span class="timing">56 – 60'</span><p>Preguntas de repaso.</p></div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Ya lo usaste -->
+    <div class="slide">
+        <h2>Ya lo usaste sin nombrarlo</h2>
+        <table class="flags-table">
+            <tr><th>Lo que hicimos en el hilo conductor</th><th>Concepto de sistema operativo</th></tr>
+            <tr><td>Etapa 1: servidor de desarrollo de Flask vs. Gunicorn con 4 workers</td><td><strong>Procesos</strong>, <code>fork()</code>, concurrencia con varios procesos</td></tr>
+            <tr><td>Etapa 1: calcular cuántos workers hacen falta</td><td>Reparto de <strong>CPU</strong> y <strong>memoria</strong> entre procesos</td></tr>
+            <tr><td>MySQL atendiendo muchas conexiones a la vez</td><td><strong>Hilos</strong>: un proceso, un hilo por conexión</td></tr>
+            <tr><td>Etapa 5: <code>grep</code> y <code>awk</code> sobre archivos de log</td><td><strong>Sistema de archivos</strong>, descriptores, entrada y salida estándar</td></tr>
+            <tr><td>Todas las etapas: <code>docker run</code>, <code>docker-compose up</code></td><td><strong>Namespaces</strong> y <strong>cgroups</strong>: aislamiento sin máquina virtual</td></tr>
+            <tr><td>Etapa 6: CPU de MySQL en Grafana (y el <code>id</code> raro de cAdvisor)</td><td>El kernel <strong>contando</strong> la CPU de cada cgroup</td></tr>
+        </table>
+        <div class="quote-box">
+            <p>Hoy es la misma infraestructura de siempre, vista desde abajo.</p>
+        </div>
+    </div>
+
+    <!-- Slide 4: Qué es un SO -->
+    <div class="slide">
+        <h2>¿Qué hace un sistema operativo?</h2>
+        <p>Es el software que <strong>administra el hardware</strong> y lo <strong>reparte</strong> entre los programas, de forma que cada uno crea que la máquina es suya y ninguno pueda romper a los demás.</p>
+        <div class="card-grid">
+            <div class="card"><h4>Administra la CPU</h4><p>Decide qué programa corre, en qué núcleo y durante cuánto tiempo. Muchos programas "a la vez" con pocos núcleos.</p></div>
+            <div class="card"><h4>Administra la memoria</h4><p>Le da a cada proceso su propio espacio, lo protege de los demás y decide qué queda en RAM y qué va a disco.</p></div>
+            <div class="card"><h4>Administra la E/S</h4><p>Disco, red, teclado, pantalla: los programas no hablan con los dispositivos, hablan con el sistema operativo.</p></div>
+            <div class="card"><h4>Ofrece abstracciones</h4><p>Archivos, procesos, sockets, usuarios. Ideas más simples que "sectores de disco" o "registros de la placa de red".</p></div>
+            <div class="card"><h4>Protege</h4><p>Usuarios, permisos, aislamiento: quién puede leer qué, quién puede matar a quién.</p></div>
+            <div class="card"><h4>Lleva la cuenta</h4><p>Cuánta CPU, memoria y disco usó cada proceso. De ahí sale lo que muestran <code>top</code>, el Administrador de tareas o Grafana.</p></div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Componentes (diagrama) -->
+    <div class="slide slide-diagram">
+        <h2>Las capas de un sistema operativo</h2>
+        <div class="diagram">
+            <svg viewBox="0 0 1000 580" role="img" aria-label="Diagrama de capas: programas en modo usuario, la interfaz de llamadas al sistema, los subsistemas del kernel y el hardware">
+                <defs>
+                    <marker id="c-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f0883e"/></marker>
+                </defs>
+
+                <!-- Modo usuario -->
+                <rect x="150" y="20" width="830" height="175" rx="12" fill="rgba(88,166,255,0.05)" stroke="#58a6ff" stroke-width="1.2"/>
+                <text x="20" y="90" fill="#58a6ff" font-size="15" font-weight="bold">Modo usuario</text>
+                <text x="20" y="110" fill="#8b949e" font-size="12">sin acceso directo</text>
+                <text x="20" y="126" fill="#8b949e" font-size="12">al hardware</text>
+
+                <rect x="175" y="40" width="140" height="60" rx="8" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="245" y="68" fill="#c9d1d9" font-size="15" font-weight="bold" text-anchor="middle">bash</text>
+                <text x="245" y="88" fill="#b8c0c9" font-size="11" text-anchor="middle">la terminal</text>
+                <rect x="335" y="40" width="140" height="60" rx="8" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="405" y="68" fill="#c9d1d9" font-size="15" font-weight="bold" text-anchor="middle">curl</text>
+                <text x="405" y="88" fill="#b8c0c9" font-size="11" text-anchor="middle">generador de carga</text>
+                <rect x="495" y="40" width="140" height="60" rx="8" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="565" y="68" fill="#c9d1d9" font-size="15" font-weight="bold" text-anchor="middle">gunicorn</text>
+                <text x="565" y="88" fill="#b8c0c9" font-size="11" text-anchor="middle">la app Flask</text>
+                <rect x="655" y="40" width="140" height="60" rx="8" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="725" y="68" fill="#c9d1d9" font-size="15" font-weight="bold" text-anchor="middle">mysqld</text>
+                <text x="725" y="88" fill="#b8c0c9" font-size="11" text-anchor="middle">en un contenedor</text>
+                <rect x="815" y="40" width="140" height="60" rx="8" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="885" y="68" fill="#c9d1d9" font-size="15" font-weight="bold" text-anchor="middle">dockerd</text>
+                <text x="885" y="88" fill="#b8c0c9" font-size="11" text-anchor="middle">el demonio de Docker</text>
+
+                <rect x="175" y="125" width="780" height="45" rx="8" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="565" y="153" fill="#58a6ff" font-size="14" text-anchor="middle">Bibliotecas del sistema (glibc): envuelven las llamadas al sistema en funciones comunes</text>
+
+                <!-- Interfaz de syscalls -->
+                <line x1="150" y1="222" x2="980" y2="222" stroke="#f0883e" stroke-width="2" stroke-dasharray="8 5"/>
+                <rect x="330" y="208" width="470" height="28" rx="6" fill="#0d1117"/>
+                <text x="565" y="228" fill="#f0883e" font-size="14" font-weight="bold" text-anchor="middle">llamadas al sistema: openat · read · write · fork · mmap · connect</text>
+                <line x1="265" y1="170" x2="265" y2="262" stroke="#f0883e" stroke-width="2" marker-end="url(#c-o)"/>
+                <line x1="865" y1="170" x2="865" y2="262" stroke="#f0883e" stroke-width="2" marker-end="url(#c-o)"/>
+
+                <!-- Kernel -->
+                <rect x="150" y="265" width="830" height="190" rx="12" fill="rgba(63,185,80,0.06)" stroke="#3fb950" stroke-width="1.5"/>
+                <text x="20" y="345" fill="#3fb950" font-size="15" font-weight="bold">Modo kernel</text>
+                <text x="20" y="365" fill="#8b949e" font-size="12">acceso total</text>
+                <text x="20" y="381" fill="#8b949e" font-size="12">al hardware</text>
+                <text x="565" y="290" fill="#3fb950" font-size="16" font-weight="bold" text-anchor="middle">Kernel Linux</text>
+
+                <rect x="175" y="305" width="185" height="62" rx="8" fill="rgba(255,255,255,0.05)" stroke="#3fb950"/>
+                <text x="267" y="332" fill="#c9d1d9" font-size="14" font-weight="bold" text-anchor="middle">Scheduler</text>
+                <text x="267" y="352" fill="#b8c0c9" font-size="11" text-anchor="middle">procesos e hilos</text>
+                <rect x="375" y="305" width="185" height="62" rx="8" fill="rgba(255,255,255,0.05)" stroke="#3fb950"/>
+                <text x="467" y="332" fill="#c9d1d9" font-size="14" font-weight="bold" text-anchor="middle">Memoria virtual</text>
+                <text x="467" y="352" fill="#b8c0c9" font-size="11" text-anchor="middle">páginas, swap, OOM</text>
+                <rect x="575" y="305" width="185" height="62" rx="8" fill="rgba(255,255,255,0.05)" stroke="#3fb950"/>
+                <text x="667" y="332" fill="#c9d1d9" font-size="14" font-weight="bold" text-anchor="middle">Sistema de archivos</text>
+                <text x="667" y="352" fill="#b8c0c9" font-size="11" text-anchor="middle">VFS, ext4, /proc</text>
+                <rect x="775" y="305" width="185" height="62" rx="8" fill="rgba(255,255,255,0.05)" stroke="#3fb950"/>
+                <text x="867" y="332" fill="#c9d1d9" font-size="14" font-weight="bold" text-anchor="middle">Red</text>
+                <text x="867" y="352" fill="#b8c0c9" font-size="11" text-anchor="middle">TCP/IP, sockets</text>
+
+                <rect x="175" y="380" width="385" height="55" rx="8" fill="rgba(255,255,255,0.05)" stroke="#3fb950"/>
+                <text x="367" y="404" fill="#c9d1d9" font-size="14" font-weight="bold" text-anchor="middle">Namespaces + cgroups</text>
+                <text x="367" y="423" fill="#b8c0c9" font-size="11" text-anchor="middle">lo que usa Docker para armar contenedores</text>
+                <rect x="575" y="380" width="385" height="55" rx="8" fill="rgba(255,255,255,0.05)" stroke="#3fb950"/>
+                <text x="767" y="404" fill="#c9d1d9" font-size="14" font-weight="bold" text-anchor="middle">Drivers (controladores)</text>
+                <text x="767" y="423" fill="#b8c0c9" font-size="11" text-anchor="middle">saben hablar con cada dispositivo</text>
+
+                <!-- Hardware -->
+                <rect x="150" y="480" width="830" height="85" rx="12" fill="rgba(255,255,255,0.02)" stroke="#8b949e" stroke-width="1.5"/>
+                <text x="20" y="528" fill="#8b949e" font-size="15" font-weight="bold">Hardware</text>
+                <rect x="175" y="498" width="185" height="50" rx="8" fill="none" stroke="#8b949e"/>
+                <text x="267" y="528" fill="#c9d1d9" font-size="14" text-anchor="middle">CPU (núcleos)</text>
+                <rect x="375" y="498" width="185" height="50" rx="8" fill="none" stroke="#8b949e"/>
+                <text x="467" y="528" fill="#c9d1d9" font-size="14" text-anchor="middle">RAM + MMU</text>
+                <rect x="575" y="498" width="185" height="50" rx="8" fill="none" stroke="#8b949e"/>
+                <text x="667" y="528" fill="#c9d1d9" font-size="14" text-anchor="middle">Disco</text>
+                <rect x="775" y="498" width="185" height="50" rx="8" fill="none" stroke="#8b949e"/>
+                <text x="867" y="528" fill="#c9d1d9" font-size="14" text-anchor="middle">Placa de red</text>
+                <line x1="267" y1="455" x2="267" y2="494" stroke="#3fb950" stroke-width="1.5"/>
+                <line x1="467" y1="455" x2="467" y2="494" stroke="#3fb950" stroke-width="1.5"/>
+                <line x1="667" y1="455" x2="667" y2="494" stroke="#3fb950" stroke-width="1.5"/>
+                <line x1="867" y1="455" x2="867" y2="494" stroke="#3fb950" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <div class="legend">
+            <span class="l-sys">la única puerta entre programas y kernel</span>
+        </div>
+    </div>
+
+    <!-- Slide 6: Modo usuario / kernel -->
+    <div class="slide">
+        <h2>Modo usuario y modo kernel</h2>
+        <p>El procesador mismo tiene dos (o más) niveles de privilegio. En x86 se llaman <strong>anillos</strong>: el kernel corre en el anillo 0, los programas en el 3.</p>
+        <div class="pair-grid">
+            <div class="idea-card"><span class="idea-label">Modo usuario (anillo 3)</span><p>No puede tocar dispositivos ni la memoria de otros procesos. Si lo intenta, el procesador lo frena y el kernel termina el proceso (el famoso <code>Segmentation fault</code>).</p></div>
+            <div class="idea-card"><span class="idea-label">Modo kernel (anillo 0)</span><p>Puede todo. Por eso hay un solo programa que corre así, y se entra solo por puertas controladas: las llamadas al sistema y las interrupciones del hardware.</p></div>
+        </div>
+        <pre><code>$ top
+%Cpu(s): 20.6 us,  3.2 sy,  0.0 ni, 76.2 id, ...
+          └ usuario  └ kernel         └ ocioso</code></pre>
+        <div class="warning-box">
+            <p>Bajo la carga de la práctica, Gunicorn y MySQL suman tiempo <code>us</code>; cada lectura de red, escritura a disco o conexión nueva suma tiempo <code>sy</code>. Parte del costo de atender tráfico lo paga el kernel.</p>
+        </div>
+    </div>
+
+    <!-- Slide 7: Syscalls -->
+    <div class="slide">
+        <h2>Una llamada al sistema, de punta a punta</h2>
+        <div class="flow-row">
+            <div class="flow-box"><span class="flow-num">1 · programa</span><h4><code>cat</code> quiere leer</h4><p>llama a la función <code>read()</code> de glibc</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">2 · glibc</span><h4>Prepara el pedido</h4><p>número de syscall y parámetros en registros</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">3 · CPU</span><h4>Instrucción <code>syscall</code></h4><p>salta a modo kernel</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">4 · kernel</span><h4>Verifica y hace</h4><p>permisos, sistema de archivos, driver del disco</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">5 · vuelta</span><h4>Devuelve el resultado</h4><p>y vuelve a modo usuario</p></div>
+        </div>
+        <pre><code>$ strace -e trace=openat,read,write,close cat /etc/hostname
+openat(AT_FDCWD, "/etc/hostname", O_RDONLY) = 3     ← "abrime esto" → descriptor 3
+read(3, "1128768a9e42\n", 131072)       = 13        ← "dame lo que tiene"
+write(1, "1128768a9e42\n", 13)          = 13        ← "escribilo en la salida estándar"
+close(3)                                = 0
+
+$ strace -c -f curl -s -o /dev/null http://127.0.0.1:8888/
+100.00    0.002739           6       450        10 total    ← una sola petición HTTP</code></pre>
+    </div>
+
+    <!-- Slide 8: Tipos de kernel -->
+    <div class="slide">
+        <h2>¿Qué va adentro del kernel?</h2>
+        <p>No todos los sistemas operativos ponen lo mismo en modo kernel. Es una decisión de diseño con costos de los dos lados.</p>
+        <table class="flags-table">
+            <tr><th>Diseño</th><th>Qué corre en modo kernel</th><th>A favor</th><th>En contra</th><th>Ejemplos</th></tr>
+            <tr><td><strong>Monolítico</strong></td><td>Todo: scheduler, memoria, archivos, red, drivers</td><td>Rápido: todo se llama directamente</td><td>Un driver con errores puede tirar abajo todo el sistema</td><td>Linux (con módulos que se cargan en caliente: <code>lsmod</code>)</td></tr>
+            <tr><td><strong>Microkernel</strong></td><td>Lo mínimo: scheduler, memoria, mensajes entre procesos</td><td>Robusto: un driver que falla es un proceso que se reinicia</td><td>Más lento: todo pasa por mensajes</td><td>MINIX 3, QNX (autos, equipos industriales)</td></tr>
+            <tr><td><strong>Híbrido</strong></td><td>Estructura de microkernel, pero con muchos servicios adentro por rendimiento</td><td>Un equilibrio entre los dos</td><td>Tiene un poco de los problemas de ambos</td><td>Windows (NT), macOS (XNU)</td></tr>
+        </table>
+    </div>
+
+    <!-- Slide 9: Proceso -->
+    <div class="slide">
+        <h2>Proceso: un programa en ejecución</h2>
+        <p>El programa es el archivo (<code>/usr/local/bin/gunicorn</code>). El <strong>proceso</strong> es ese programa corriendo, más todo lo que el kernel lleva anotado de él.</p>
+        <div class="card-grid">
+            <div class="card"><h4>Identidad</h4><p>PID propio, PID del padre (PPID), usuario dueño (UID).</p></div>
+            <div class="card"><h4>Estado</h4><p>Corriendo, listo, dormido esperando algo, terminado.</p></div>
+            <div class="card"><h4>Memoria</h4><p>Su espacio de direcciones: código, datos, pila, bibliotecas.</p></div>
+            <div class="card"><h4>Recursos abiertos</h4><p>Archivos, sockets, conexiones: la tabla de descriptores (<code>/proc/&lt;pid&gt;/fd</code>).</p></div>
+            <div class="card"><h4>Contexto de CPU</h4><p>Los registros del procesador, guardados cada vez que el proceso sale del núcleo.</p></div>
+            <div class="card"><h4>Contabilidad</h4><p>Cuánta CPU usó, cuánta memoria ocupa, a qué cgroup pertenece.</p></div>
+        </div>
+        <pre><code>$ grep -E '^(Name|State|Pid|PPid|Threads|VmRSS)' /proc/$(pgrep -o gunicorn)/status
+Name:    gunicorn
+State:   S (sleeping)
+Pid:     1208
+PPid:    1
+VmRSS:   26312 kB
+Threads: 2</code></pre>
+    </div>
+
+    <!-- Slide 10: Estados (diagrama) -->
+    <div class="slide slide-diagram">
+        <h2>Los estados de un proceso</h2>
+        <div class="diagram">
+            <svg viewBox="0 0 1000 440" role="img" aria-label="Diagrama de estados: nuevo, listo, ejecutando, bloqueado y terminado, con las transiciones entre ellos">
+                <defs>
+                    <marker id="e-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fb950"/></marker>
+                    <marker id="e-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#58a6ff"/></marker>
+                    <marker id="e-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f0883e"/></marker>
+                    <marker id="e-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f85149"/></marker>
+                </defs>
+
+                <!-- Nuevo -->
+                <rect x="20" y="70" width="150" height="70" rx="35" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="95" y="102" fill="#c9d1d9" font-size="17" font-weight="bold" text-anchor="middle">Nuevo</text>
+                <text x="95" y="122" fill="#8b949e" font-size="12" text-anchor="middle">recién creado</text>
+
+                <!-- Listo -->
+                <rect x="270" y="70" width="170" height="70" rx="35" fill="rgba(88,166,255,0.1)" stroke="#58a6ff" stroke-width="2"/>
+                <text x="355" y="102" fill="#58a6ff" font-size="17" font-weight="bold" text-anchor="middle">Listo</text>
+                <text x="355" y="122" fill="#8b949e" font-size="12" text-anchor="middle">esperando un núcleo</text>
+
+                <!-- Ejecutando -->
+                <rect x="580" y="70" width="190" height="70" rx="35" fill="rgba(63,185,80,0.12)" stroke="#3fb950" stroke-width="2"/>
+                <text x="675" y="102" fill="#3fb950" font-size="17" font-weight="bold" text-anchor="middle">Ejecutando</text>
+                <text x="675" y="122" fill="#8b949e" font-size="12" text-anchor="middle">usando un núcleo</text>
+
+                <!-- Terminado -->
+                <rect x="840" y="62" width="150" height="86" rx="30" fill="rgba(248,81,73,0.08)" stroke="#f85149"/>
+                <text x="915" y="94" fill="#f85149" font-size="17" font-weight="bold" text-anchor="middle">Terminado</text>
+                <text x="915" y="114" fill="#8b949e" font-size="12" text-anchor="middle">espera que el padre</text>
+                <text x="915" y="130" fill="#8b949e" font-size="12" text-anchor="middle">lo recoja</text>
+
+                <!-- Bloqueado -->
+                <rect x="420" y="290" width="210" height="70" rx="35" fill="rgba(240,136,62,0.1)" stroke="#f0883e" stroke-width="2"/>
+                <text x="525" y="322" fill="#f0883e" font-size="17" font-weight="bold" text-anchor="middle">Bloqueado</text>
+                <text x="525" y="342" fill="#8b949e" font-size="12" text-anchor="middle">esperando un evento</text>
+
+                <!-- Transiciones -->
+                <line x1="170" y1="105" x2="266" y2="105" stroke="#c9d1d9" stroke-width="2" marker-end="url(#e-b)"/>
+                <text x="218" y="95" fill="#8b949e" font-size="12" text-anchor="middle">fork()</text>
+
+                <path d="M440 92 H576" fill="none" stroke="#3fb950" stroke-width="2" marker-end="url(#e-g)"/>
+                <text x="508" y="82" fill="#3fb950" font-size="12" text-anchor="middle">el scheduler lo elige</text>
+
+                <path d="M580 120 H444" fill="none" stroke="#58a6ff" stroke-width="2" marker-end="url(#e-b)"/>
+                <text x="512" y="150" fill="#58a6ff" font-size="12" text-anchor="middle">se le terminó el turno</text>
+                <text x="512" y="165" fill="#58a6ff" font-size="12" text-anchor="middle">(preempción)</text>
+
+                <path d="M690 140 V325 H634" fill="none" stroke="#f0883e" stroke-width="2" marker-end="url(#e-o)"/>
+                <text x="700" y="225" fill="#f0883e" font-size="12">pide algo que tarda:</text>
+                <text x="700" y="241" fill="#f0883e" font-size="12">read(), accept(), SLEEP()</text>
+
+                <path d="M420 325 H340 V144" fill="none" stroke="#58a6ff" stroke-width="2" marker-end="url(#e-b)"/>
+                <text x="140" y="225" fill="#58a6ff" font-size="12">llegó el dato, se conectó</text>
+                <text x="140" y="241" fill="#58a6ff" font-size="12">un cliente, pasó el tiempo</text>
+
+                <line x1="770" y1="105" x2="836" y2="105" stroke="#f85149" stroke-width="2" marker-end="url(#e-r)"/>
+                <text x="803" y="95" fill="#f85149" font-size="12" text-anchor="middle">exit</text>
+                <text x="803" y="160" fill="#f85149" font-size="11" text-anchor="middle">o una señal</text>
+                <text x="803" y="174" fill="#f85149" font-size="11" text-anchor="middle">(kill, OOM)</text>
+
+                <!-- Letras de ps -->
+                <text x="355" y="60" fill="#8b949e" font-size="13" text-anchor="middle" font-family="monospace">ps: R</text>
+                <text x="675" y="60" fill="#8b949e" font-size="13" text-anchor="middle" font-family="monospace">ps: R</text>
+                <text x="525" y="385" fill="#8b949e" font-size="13" text-anchor="middle" font-family="monospace">ps: S (o D si espera al disco)</text>
+                <text x="915" y="52" fill="#8b949e" font-size="13" text-anchor="middle" font-family="monospace">ps: Z (zombie)</text>
+            </svg>
+        </div>
+        <p>Linux muestra <code>R</code> tanto para "listo" como para "ejecutando". En la práctica, sin tráfico, los workers de Gunicorn están en <code>S</code>: bloqueados en <code>accept()</code> esperando un cliente.</p>
+    </div>
+
+    <!-- Slide 11: fork en Gunicorn (diagrama) -->
+    <div class="slide slide-diagram">
+        <h2><code>fork()</code>: así nacen los workers de Gunicorn</h2>
+        <div class="diagram">
+            <svg viewBox="0 0 1000 440" role="img" aria-label="El master de Gunicorn con dos workers creados por fork; un worker muere y el master crea otro con un PID nuevo">
+                <defs>
+                    <marker id="f-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fb950"/></marker>
+                    <marker id="f-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f85149"/></marker>
+                    <marker id="f-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f0883e"/></marker>
+                </defs>
+
+                <!-- Master -->
+                <rect x="340" y="20" width="320" height="95" rx="10" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="2"/>
+                <text x="500" y="50" fill="#3fb950" font-size="17" font-weight="bold" text-anchor="middle">gunicorn master · PID 1208</text>
+                <text x="500" y="72" fill="#b8c0c9" font-size="13" text-anchor="middle">abre el socket :8888 y supervisa</text>
+                <text x="500" y="95" fill="#8b949e" font-size="12" text-anchor="middle">+ un hilo propio {gunicorn}(1215)</text>
+
+                <!-- Socket -->
+                <rect x="40" y="35" width="200" height="60" rx="8" fill="rgba(240,136,62,0.1)" stroke="#f0883e"/>
+                <text x="140" y="62" fill="#f0883e" font-size="15" font-weight="bold" text-anchor="middle">socket :8888</text>
+                <text x="140" y="81" fill="#b8c0c9" font-size="12" text-anchor="middle">escucha conexiones</text>
+                <line x1="240" y1="65" x2="336" y2="65" stroke="#f0883e" stroke-width="2" marker-start="url(#f-o)"/>
+
+                <!-- Worker 1213 (muerto) -->
+                <rect x="60" y="215" width="240" height="85" rx="10" fill="rgba(248,81,73,0.06)" stroke="#f85149" stroke-dasharray="6 4"/>
+                <text x="180" y="245" fill="#f85149" font-size="16" font-weight="bold" text-anchor="middle">✕ worker · PID 1213</text>
+                <text x="180" y="267" fill="#b8c0c9" font-size="12" text-anchor="middle">recibe kill (SIGTERM)</text>
+                <text x="180" y="287" fill="#b8c0c9" font-size="12" text-anchor="middle">"Worker exiting"</text>
+
+                <!-- Worker 1214 -->
+                <rect x="380" y="215" width="240" height="85" rx="10" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="500" y="245" fill="#c9d1d9" font-size="16" font-weight="bold" text-anchor="middle">worker · PID 1214</text>
+                <text x="500" y="267" fill="#b8c0c9" font-size="12" text-anchor="middle">sigue atendiendo</text>
+                <text x="500" y="287" fill="#b8c0c9" font-size="12" text-anchor="middle">como si nada</text>
+
+                <!-- Worker 1324 (nuevo) -->
+                <rect x="700" y="215" width="240" height="85" rx="10" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="2"/>
+                <text x="820" y="245" fill="#3fb950" font-size="16" font-weight="bold" text-anchor="middle">worker · PID 1324</text>
+                <text x="820" y="267" fill="#b8c0c9" font-size="12" text-anchor="middle">el reemplazo</text>
+                <text x="820" y="287" fill="#b8c0c9" font-size="12" text-anchor="middle">"Booting worker"</text>
+
+                <!-- Flechas fork -->
+                <path d="M400 115 L200 211" fill="none" stroke="#8b949e" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#f-r)"/>
+                <text x="300" y="150" fill="#8b949e" font-size="12" text-anchor="end">fork() al arrancar</text>
+                <line x1="500" y1="115" x2="500" y2="211" stroke="#3fb950" stroke-width="2" marker-end="url(#f-g)"/>
+                <text x="510" y="170" fill="#3fb950" font-size="12">fork() al arrancar</text>
+                <path d="M600 115 L800 211" fill="none" stroke="#3fb950" stroke-width="2.5" marker-end="url(#f-g)"/>
+                <text x="705" y="150" fill="#3fb950" font-size="13" font-weight="bold">fork() nuevo:</text>
+                <text x="705" y="166" fill="#3fb950" font-size="13" font-weight="bold">"se me murió un hijo"</text>
+
+                <!-- Nota inferior -->
+                <rect x="60" y="340" width="880" height="80" rx="10" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.15)"/>
+                <text x="500" y="370" fill="#c9d1d9" font-size="14" text-anchor="middle">Cada hijo nace como copia del padre, y hereda sus descriptores abiertos, incluido el socket :8888.</text>
+                <text x="500" y="395" fill="#c9d1d9" font-size="14" text-anchor="middle">Por eso todos los workers pueden atender en el mismo puerto sin pelearse por él.</text>
+            </svg>
+        </div>
+        <p>La copia de memoria es barata gracias al <strong>copy-on-write</strong>: padre e hijo comparten las páginas hasta que alguno escribe en una, y recién ahí el kernel la duplica.</p>
+    </div>
+
+    <!-- Slide 12: Hilos (diagrama) -->
+    <div class="slide slide-diagram">
+        <h2>Hilos: varias ejecuciones, una sola memoria</h2>
+        <div class="diagram">
+            <svg viewBox="0 0 1000 470" role="img" aria-label="El proceso mysqld: memoria compartida por todos los hilos y un hilo por cada conexión de cliente, cada uno con su propia pila">
+                <defs>
+                    <marker id="h-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f0883e"/></marker>
+                </defs>
+
+                <!-- Clientes -->
+                <rect x="10" y="215" width="150" height="45" rx="8" fill="rgba(240,136,62,0.1)" stroke="#f0883e"/>
+                <text x="85" y="243" fill="#f0883e" font-size="13" text-anchor="middle">worker 1214</text>
+                <rect x="10" y="275" width="150" height="45" rx="8" fill="rgba(240,136,62,0.1)" stroke="#f0883e"/>
+                <text x="85" y="303" fill="#f0883e" font-size="13" text-anchor="middle">worker 1324</text>
+                <rect x="10" y="335" width="150" height="45" rx="8" fill="rgba(240,136,62,0.1)" stroke="#f0883e"/>
+                <text x="85" y="363" fill="#f0883e" font-size="13" text-anchor="middle">mysql (consola)</text>
+                <text x="85" y="200" fill="#8b949e" font-size="12" text-anchor="middle">clientes</text>
+
+                <!-- Proceso -->
+                <rect x="200" y="20" width="785" height="435" rx="14" fill="rgba(255,255,255,0.02)" stroke="#c9d1d9" stroke-width="1.5"/>
+                <text x="222" y="48" fill="#c9d1d9" font-size="17" font-weight="bold">proceso mysqld · un PID · unos 40 hilos</text>
+
+                <!-- Memoria compartida -->
+                <rect x="225" y="65" width="735" height="105" rx="10" fill="rgba(63,185,80,0.08)" stroke="#3fb950" stroke-width="1.5"/>
+                <text x="245" y="90" fill="#3fb950" font-size="15" font-weight="bold">Compartido por todos los hilos</text>
+                <rect x="245" y="102" width="160" height="52" rx="6" fill="none" stroke="#3fb950"/>
+                <text x="325" y="125" fill="#c9d1d9" font-size="13" text-anchor="middle">código</text>
+                <text x="325" y="143" fill="#8b949e" font-size="11" text-anchor="middle">el programa mysqld</text>
+                <rect x="420" y="102" width="220" height="52" rx="6" fill="none" stroke="#3fb950"/>
+                <text x="530" y="125" fill="#c9d1d9" font-size="13" text-anchor="middle">heap: buffer pool de InnoDB</text>
+                <text x="530" y="143" fill="#8b949e" font-size="11" text-anchor="middle">las tablas cacheadas en memoria</text>
+                <rect x="655" y="102" width="285" height="52" rx="6" fill="none" stroke="#3fb950"/>
+                <text x="797" y="125" fill="#c9d1d9" font-size="13" text-anchor="middle">descriptores abiertos</text>
+                <text x="797" y="143" fill="#8b949e" font-size="11" text-anchor="middle">archivos de datos, sockets, logs</text>
+
+                <!-- Hilos de conexión -->
+                <text x="245" y="205" fill="#58a6ff" font-size="15" font-weight="bold">Propio de cada hilo: pila + registros</text>
+                <rect x="245" y="215" width="220" height="45" rx="8" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="355" y="243" fill="#58a6ff" font-size="13" text-anchor="middle">connection · conexión 1</text>
+                <rect x="245" y="275" width="220" height="45" rx="8" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="355" y="303" fill="#58a6ff" font-size="13" text-anchor="middle">connection · conexión 2</text>
+                <rect x="245" y="335" width="220" height="45" rx="8" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="355" y="363" fill="#58a6ff" font-size="13" text-anchor="middle">connection · conexión 3</text>
+                <rect x="245" y="395" width="220" height="40" rx="8" fill="none" stroke="#58a6ff" stroke-dasharray="4 4"/>
+                <text x="355" y="420" fill="#8b949e" font-size="12" text-anchor="middle">thread cache: hilos libres para reusar</text>
+
+                <line x1="160" y1="237" x2="241" y2="237" stroke="#f0883e" stroke-width="2" marker-end="url(#h-o)"/>
+                <line x1="160" y1="297" x2="241" y2="297" stroke="#f0883e" stroke-width="2" marker-end="url(#h-o)"/>
+                <line x1="160" y1="357" x2="241" y2="357" stroke="#f0883e" stroke-width="2" marker-end="url(#h-o)"/>
+
+                <!-- Hilos internos -->
+                <rect x="500" y="215" width="210" height="45" rx="8" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="605" y="243" fill="#58a6ff" font-size="13" text-anchor="middle">ib_io_rd-1 … rd-6</text>
+                <rect x="730" y="215" width="210" height="45" rx="8" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="835" y="243" fill="#58a6ff" font-size="13" text-anchor="middle">ib_io_wr-1 … wr-4</text>
+                <rect x="500" y="275" width="210" height="45" rx="8" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="605" y="303" fill="#58a6ff" font-size="13" text-anchor="middle">ib_log_writer</text>
+                <rect x="730" y="275" width="210" height="45" rx="8" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="835" y="303" fill="#58a6ff" font-size="13" text-anchor="middle">ib_pg_flush_co</text>
+                <rect x="500" y="335" width="210" height="45" rx="8" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="605" y="363" fill="#58a6ff" font-size="13" text-anchor="middle">sig_handler</text>
+                <rect x="730" y="335" width="210" height="45" rx="8" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="835" y="363" fill="#58a6ff" font-size="13" text-anchor="middle">evt_sched, …</text>
+                <text x="720" y="420" fill="#8b949e" font-size="12" text-anchor="middle">hilos internos: disco, registro de transacciones, señales</text>
+
+                <line x1="480" y1="170" x2="480" y2="435" stroke="rgba(255,255,255,0.12)"/>
+            </svg>
+        </div>
+        <div class="legend">
+            <span class="l-shared">memoria común a todos</span>
+            <span class="l-own">propio de cada hilo</span>
+        </div>
+    </div>
+
+    <!-- Slide 13: Procesos vs hilos -->
+    <div class="slide">
+        <h2>¿Procesos o hilos? Los dos modelos, en la misma práctica</h2>
+        <table class="mirror-table">
+            <tr><th>Gunicorn: varios procesos</th><th>MySQL: un proceso, muchos hilos</th></tr>
+            <tr><td>Cada worker tiene su propia memoria</td><td>Todos los hilos comparten la memoria del proceso</td></tr>
+            <tr><td>Si un worker falla, el master lo reemplaza y el resto sigue</td><td>Un error grave en un hilo puede tirar abajo todo <code>mysqld</code></td></tr>
+            <tr><td>Compartir datos entre workers es difícil (por eso la sesión va en una cookie o en la base, no en memoria)</td><td>Compartir es trivial: el buffer pool es uno solo. A cambio, hacen falta <em>locks</em> para no pisarse</td></tr>
+            <tr><td>Crear uno es más caro (<code>fork</code>)</td><td>Crear uno es más barato, pero no gratis: por eso el <em>thread cache</em></td></tr>
+            <tr><td>En Python además esquiva el <strong>GIL</strong>, que no deja correr dos hilos de Python a la vez en el mismo proceso</td><td>MySQL está escrito en C++: sus hilos sí corren en paralelo en varios núcleos</td></tr>
+        </table>
+        <div class="warning-box">
+            <p>En la práctica: al abrir 10 conexiones con <code>abrir_conexiones.sh</code>, los hilos de <code>mysqld</code> suben; <code>Threads_connected</code> sube a 11 y <code>Threads_cached</code> baja, porque MySQL reusa hilos guardados antes de crear nuevos.</p>
+        </div>
+    </div>
+
+    <!-- Slide 14: Scheduler (diagrama) -->
+    <div class="slide slide-diagram">
+        <h2>El scheduler: muchos hilos, pocos núcleos</h2>
+        <div class="diagram">
+            <svg viewBox="0 0 1000 400" role="img" aria-label="Línea de tiempo de dos núcleos: el scheduler va alternando hilos de Gunicorn, MySQL y curl en porciones de tiempo, con cambios de contexto entre ellos">
+                <!-- Cola de listos -->
+                <rect x="20" y="40" width="200" height="230" rx="10" fill="rgba(88,166,255,0.06)" stroke="#58a6ff"/>
+                <text x="120" y="66" fill="#58a6ff" font-size="15" font-weight="bold" text-anchor="middle">Listos para correr</text>
+                <rect x="40" y="82" width="160" height="32" rx="6" fill="rgba(63,185,80,0.25)" stroke="#3fb950"/>
+                <text x="120" y="103" fill="#c9d1d9" font-size="13" text-anchor="middle">worker 1214</text>
+                <rect x="40" y="122" width="160" height="32" rx="6" fill="rgba(63,185,80,0.12)" stroke="#3fb950"/>
+                <text x="120" y="143" fill="#c9d1d9" font-size="13" text-anchor="middle">worker 1324</text>
+                <rect x="40" y="162" width="160" height="32" rx="6" fill="rgba(88,166,255,0.25)" stroke="#58a6ff"/>
+                <text x="120" y="183" fill="#c9d1d9" font-size="13" text-anchor="middle">mysqld · connection</text>
+                <rect x="40" y="202" width="160" height="32" rx="6" fill="rgba(240,136,62,0.25)" stroke="#f0883e"/>
+                <text x="120" y="223" fill="#c9d1d9" font-size="13" text-anchor="middle">curl (×10)</text>
+
+                <!-- Ejes -->
+                <text x="260" y="118" fill="#c9d1d9" font-size="14" font-weight="bold">Núcleo 0</text>
+                <text x="260" y="208" fill="#c9d1d9" font-size="14" font-weight="bold">Núcleo 1</text>
+
+                <!-- Núcleo 0 -->
+                <rect x="350" y="92" width="120" height="40" fill="rgba(63,185,80,0.35)" stroke="#3fb950"/>
+                <text x="410" y="117" fill="#c9d1d9" font-size="12" text-anchor="middle">1214</text>
+                <rect x="474" y="92" width="90" height="40" fill="rgba(240,136,62,0.35)" stroke="#f0883e"/>
+                <text x="519" y="117" fill="#c9d1d9" font-size="12" text-anchor="middle">curl</text>
+                <rect x="568" y="92" width="150" height="40" fill="rgba(88,166,255,0.35)" stroke="#58a6ff"/>
+                <text x="643" y="117" fill="#c9d1d9" font-size="12" text-anchor="middle">mysqld</text>
+                <rect x="722" y="92" width="120" height="40" fill="rgba(63,185,80,0.35)" stroke="#3fb950"/>
+                <text x="782" y="117" fill="#c9d1d9" font-size="12" text-anchor="middle">1214</text>
+                <rect x="846" y="92" width="130" height="40" fill="rgba(240,136,62,0.35)" stroke="#f0883e"/>
+                <text x="911" y="117" fill="#c9d1d9" font-size="12" text-anchor="middle">curl</text>
+
+                <!-- Núcleo 1 -->
+                <rect x="350" y="182" width="160" height="40" fill="rgba(63,185,80,0.2)" stroke="#3fb950"/>
+                <text x="430" y="207" fill="#c9d1d9" font-size="12" text-anchor="middle">1324</text>
+                <rect x="514" y="182" width="110" height="40" fill="rgba(88,166,255,0.35)" stroke="#58a6ff"/>
+                <text x="569" y="207" fill="#c9d1d9" font-size="12" text-anchor="middle">mysqld</text>
+                <rect x="628" y="182" width="100" height="40" fill="rgba(240,136,62,0.35)" stroke="#f0883e"/>
+                <text x="678" y="207" fill="#c9d1d9" font-size="12" text-anchor="middle">curl</text>
+                <rect x="732" y="182" width="244" height="40" fill="rgba(63,185,80,0.2)" stroke="#3fb950"/>
+                <text x="854" y="207" fill="#c9d1d9" font-size="12" text-anchor="middle">1324</text>
+
+                <!-- Cambios de contexto -->
+                <line x1="472" y1="80" x2="472" y2="144" stroke="#f85149" stroke-width="2"/>
+                <line x1="566" y1="80" x2="566" y2="144" stroke="#f85149" stroke-width="2"/>
+                <line x1="720" y1="80" x2="720" y2="144" stroke="#f85149" stroke-width="2"/>
+                <line x1="844" y1="80" x2="844" y2="144" stroke="#f85149" stroke-width="2"/>
+                <line x1="512" y1="170" x2="512" y2="234" stroke="#f85149" stroke-width="2"/>
+                <line x1="626" y1="170" x2="626" y2="234" stroke="#f85149" stroke-width="2"/>
+                <line x1="730" y1="170" x2="730" y2="234" stroke="#f85149" stroke-width="2"/>
+                <text x="566" y="72" fill="#f85149" font-size="12" text-anchor="middle">cambio de contexto</text>
+
+                <!-- Eje de tiempo -->
+                <line x1="350" y1="260" x2="976" y2="260" stroke="#8b949e"/>
+                <text x="350" y="280" fill="#8b949e" font-size="12">0 ms</text>
+                <text x="976" y="280" fill="#8b949e" font-size="12" text-anchor="end">unos pocos ms →</text>
+
+                <!-- Nota -->
+                <text x="500" y="325" fill="#c9d1d9" font-size="14" text-anchor="middle">En cada cambio de contexto el kernel guarda los registros del hilo que sale</text>
+                <text x="500" y="347" fill="#c9d1d9" font-size="14" text-anchor="middle">y carga los del que entra. Ocurre miles de veces por segundo.</text>
+                <text x="500" y="375" fill="#8b949e" font-size="13" text-anchor="middle">Los hilos bloqueados (S) no están en la cola: no compiten por CPU hasta que llega su evento.</text>
+            </svg>
+        </div>
+        <p>Linux usa desde la versión 6.6 (2023) el scheduler <strong>EEVDF</strong>, sucesor de CFS: reparte el tiempo buscando que cada hilo reciba su parte justa según su prioridad (<code>nice</code>). Los <strong>cgroups</strong> le agregan un tope por grupo.</p>
+    </div>
+
+    <!-- Slide 15: Memoria virtual (diagrama) -->
+    <div class="slide slide-diagram">
+        <h2>Memoria virtual: cada proceso cree que tiene toda la RAM</h2>
+        <div class="diagram">
+            <svg viewBox="0 0 1000 470" role="img" aria-label="Dos procesos con su espacio de direcciones virtual, traducido por la MMU a marcos de RAM física; una biblioteca compartida apunta al mismo marco y una página está en swap">
+                <defs>
+                    <marker id="m-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#58a6ff"/></marker>
+                    <marker id="m-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fb950"/></marker>
+                    <marker id="m-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f0883e"/></marker>
+                    <marker id="m-s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8b949e"/></marker>
+                </defs>
+
+                <!-- Proceso A -->
+                <text x="110" y="30" fill="#58a6ff" font-size="15" font-weight="bold" text-anchor="middle">worker Gunicorn</text>
+                <text x="110" y="48" fill="#8b949e" font-size="12" text-anchor="middle">espacio virtual</text>
+                <rect x="40" y="60" width="140" height="44" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="110" y="87" fill="#c9d1d9" font-size="13" text-anchor="middle">pila</text>
+                <rect x="40" y="104" width="140" height="80" fill="rgba(255,255,255,0.02)" stroke="#58a6ff" stroke-dasharray="4 4"/>
+                <text x="110" y="148" fill="#8b949e" font-size="12" text-anchor="middle">reservado, sin usar</text>
+                <rect x="40" y="184" width="140" height="44" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="110" y="211" fill="#c9d1d9" font-size="13" text-anchor="middle">heap</text>
+                <rect x="40" y="228" width="140" height="44" fill="rgba(63,185,80,0.12)" stroke="#3fb950"/>
+                <text x="110" y="255" fill="#c9d1d9" font-size="13" text-anchor="middle">libc.so</text>
+                <rect x="40" y="272" width="140" height="44" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="110" y="299" fill="#c9d1d9" font-size="13" text-anchor="middle">código</text>
+
+                <!-- Proceso B -->
+                <text x="890" y="30" fill="#58a6ff" font-size="15" font-weight="bold" text-anchor="middle">mysqld</text>
+                <text x="890" y="48" fill="#8b949e" font-size="12" text-anchor="middle">espacio virtual</text>
+                <rect x="820" y="60" width="140" height="44" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="890" y="87" fill="#c9d1d9" font-size="13" text-anchor="middle">pilas (una por hilo)</text>
+                <rect x="820" y="104" width="140" height="80" fill="rgba(255,255,255,0.02)" stroke="#58a6ff" stroke-dasharray="4 4"/>
+                <text x="890" y="148" fill="#8b949e" font-size="12" text-anchor="middle">reservado, sin usar</text>
+                <rect x="820" y="184" width="140" height="44" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="890" y="211" fill="#c9d1d9" font-size="13" text-anchor="middle">buffer pool</text>
+                <rect x="820" y="228" width="140" height="44" fill="rgba(63,185,80,0.12)" stroke="#3fb950"/>
+                <text x="890" y="255" fill="#c9d1d9" font-size="13" text-anchor="middle">libc.so</text>
+                <rect x="820" y="272" width="140" height="44" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="890" y="299" fill="#c9d1d9" font-size="13" text-anchor="middle">código</text>
+
+                <!-- MMU -->
+                <rect x="380" y="20" width="240" height="44" rx="8" fill="rgba(240,136,62,0.1)" stroke="#f0883e"/>
+                <text x="500" y="47" fill="#f0883e" font-size="14" font-weight="bold" text-anchor="middle">MMU + tabla de páginas</text>
+
+                <!-- RAM -->
+                <text x="500" y="100" fill="#c9d1d9" font-size="15" font-weight="bold" text-anchor="middle">RAM física (marcos de 4 KB)</text>
+                <g fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.25)">
+                    <rect x="380" y="112" width="60" height="40"/><rect x="440" y="112" width="60" height="40"/><rect x="500" y="112" width="60" height="40"/><rect x="560" y="112" width="60" height="40"/>
+                    <rect x="380" y="152" width="60" height="40"/><rect x="440" y="152" width="60" height="40"/><rect x="500" y="152" width="60" height="40"/><rect x="560" y="152" width="60" height="40"/>
+                    <rect x="380" y="192" width="60" height="40"/><rect x="440" y="192" width="60" height="40"/><rect x="500" y="192" width="60" height="40"/><rect x="560" y="192" width="60" height="40"/>
+                    <rect x="380" y="232" width="60" height="40"/><rect x="440" y="232" width="60" height="40"/><rect x="500" y="232" width="60" height="40"/><rect x="560" y="232" width="60" height="40"/>
+                </g>
+                <rect x="380" y="112" width="60" height="40" fill="rgba(88,166,255,0.35)"/>
+                <rect x="500" y="152" width="60" height="40" fill="rgba(88,166,255,0.35)"/>
+                <rect x="440" y="192" width="60" height="40" fill="rgba(63,185,80,0.4)"/>
+                <text x="470" y="217" fill="#c9d1d9" font-size="11" text-anchor="middle">libc</text>
+                <rect x="560" y="112" width="60" height="40" fill="rgba(88,166,255,0.35)"/>
+                <rect x="560" y="232" width="60" height="40" fill="rgba(88,166,255,0.35)"/>
+                <rect x="380" y="232" width="60" height="40" fill="rgba(88,166,255,0.35)"/>
+
+                <!-- Traducciones -->
+                <path d="M180 82 C 280 82, 300 132, 376 132" fill="none" stroke="#58a6ff" stroke-width="1.8" marker-end="url(#m-b)"/>
+                <path d="M180 294 C 280 294, 330 252, 376 252" fill="none" stroke="#58a6ff" stroke-width="1.8" marker-end="url(#m-b)"/>
+                <path d="M180 250 C 290 250, 360 212, 436 212" fill="none" stroke="#3fb950" stroke-width="2" marker-end="url(#m-g)"/>
+                <path d="M820 250 C 710 250, 640 225, 504 212" fill="none" stroke="#3fb950" stroke-width="2" marker-end="url(#m-g)"/>
+                <path d="M820 82 C 720 82, 690 132, 624 132" fill="none" stroke="#58a6ff" stroke-width="1.8" marker-end="url(#m-b)"/>
+                <path d="M820 206 C 720 206, 680 172, 564 172" fill="none" stroke="#58a6ff" stroke-width="1.8" marker-end="url(#m-b)"/>
+                <path d="M820 294 C 720 294, 690 252, 624 252" fill="none" stroke="#58a6ff" stroke-width="1.8" marker-end="url(#m-b)"/>
+
+                <!-- Swap -->
+                <rect x="400" y="330" width="200" height="50" rx="8" fill="rgba(255,255,255,0.02)" stroke="#8b949e" stroke-dasharray="5 4"/>
+                <text x="500" y="352" fill="#8b949e" font-size="14" font-weight="bold" text-anchor="middle">swap (en disco)</text>
+                <text x="500" y="370" fill="#8b949e" font-size="11" text-anchor="middle">páginas poco usadas</text>
+                <path d="M180 206 C 260 206, 300 355, 396 355" fill="none" stroke="#8b949e" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#m-s)"/>
+
+                <!-- Nota -->
+                <text x="500" y="420" fill="#c9d1d9" font-size="14" text-anchor="middle">La biblioteca libc está una sola vez en RAM, aunque la usen los dos procesos.</text>
+                <text x="500" y="444" fill="#c9d1d9" font-size="14" text-anchor="middle">Lo "reservado, sin usar" cuenta en la memoria virtual, pero no ocupa ningún marco de RAM.</text>
+            </svg>
+        </div>
+        <div class="legend">
+            <span class="l-own">página propia del proceso</span>
+            <span class="l-shared">página compartida</span>
+            <span class="l-swap">página enviada a swap</span>
+        </div>
+    </div>
+
+    <!-- Slide 16: Números de memoria -->
+    <div class="slide">
+        <h2>Memoria virtual vs. memoria real, en números</h2>
+        <pre><code>$ grep -E '^(VmSize|VmRSS)' /proc/$(pgrep -x mysqld)/status
+VmSize:  3074448 kB     ← todo lo que reservó (virtual)
+VmRSS:    486464 kB     ← lo que de verdad ocupa en RAM</code></pre>
+        <div class="stat-grid">
+            <div class="stat-card"><span class="stat-number">≈ 3 GB</span><p>memoria virtual de <code>mysqld</code></p></div>
+            <div class="stat-card"><span class="stat-number">≈ 475 MB</span><p>memoria real (RSS)</p></div>
+            <div class="stat-card"><span class="stat-number">4 KB</span><p>tamaño de una página en x86</p></div>
+        </div>
+        <div class="card-grid">
+            <div class="card"><h4>Page cache</h4><p>La RAM libre se usa como caché de disco. Por eso en <code>free -h</code> el número que importa es <code>available</code>, no <code>free</code>.</p></div>
+            <div class="card"><h4>Swap</h4><p>Cuando falta RAM, el kernel manda a disco páginas poco usadas. Evita el desastre, pero el disco es miles de veces más lento que la RAM.</p></div>
+            <div class="card bad"><h4>OOM killer</h4><p>Si no queda RAM ni swap (o se llega al límite del cgroup), el kernel elige un proceso y lo termina con <code>SIGKILL</code>. En la práctica: código de salida <code>137</code> = 128 + 9.</p></div>
+        </div>
+    </div>
+
+    <!-- Slide 17: Linux vs Windows 1 -->
+    <div class="slide">
+        <h2>Linux | Windows: la arquitectura</h2>
+        <table class="os-table">
+            <tr><th>Aspecto</th><th class="linux">Linux</th><th class="windows">Windows</th></tr>
+            <tr><td>Kernel</td><td>Linux: monolítico con módulos cargables</td><td>Windows NT: híbrido (kernel + capa HAL + ejecutivo)</td></tr>
+            <tr><td>Código</td><td>Abierto (GPL). Muchas distribuciones: Ubuntu, Debian, Red Hat…</td><td>Cerrado. Un solo fabricante, varias ediciones</td></tr>
+            <tr><td>Interfaz con el kernel</td><td>Llamadas al sistema documentadas y estables</td><td>API Win32 (<code>kernel32.dll</code>, <code>ntdll.dll</code>); las syscalls de bajo nivel no son públicas y cambian entre versiones</td></tr>
+            <tr><td>Primer proceso</td><td><code>systemd</code> (PID 1)</td><td><code>System</code> (PID 4), después <code>smss.exe</code>, <code>wininit.exe</code>…</td></tr>
+            <tr><td>Servicios en segundo plano</td><td>Demonios, administrados con <code>systemctl</code></td><td>Servicios, administrados por el Service Control Manager (<code>services.msc</code>)</td></tr>
+            <tr><td>Configuración</td><td>Archivos de texto en <code>/etc</code></td><td>El Registro (<code>regedit</code>), una base de datos jerárquica</td></tr>
+            <tr><td>Ventana al kernel</td><td><code>/proc</code> y <code>/sys</code>: archivos de texto</td><td>WMI, contadores de rendimiento, APIs (Administrador de tareas, <code>Get-Process</code>)</td></tr>
+            <tr><td>Dónde predomina</td><td>Servidores, nube, contenedores, Android, embebidos</td><td>Escritorio, redes corporativas (Active Directory)</td></tr>
+        </table>
+    </div>
+
+    <!-- Slide 18: Linux vs Windows 2 -->
+    <div class="slide">
+        <h2>Linux | Windows: procesos e hilos</h2>
+        <table class="os-table">
+            <tr><th>Aspecto</th><th class="linux">Linux</th><th class="windows">Windows</th></tr>
+            <tr><td>Crear un proceso</td><td><code>fork()</code> (copia del padre) + <code>exec()</code> (cargar otro programa)</td><td><code>CreateProcess()</code>: crea el proceso y carga el programa en un solo paso. No hay <code>fork</code></td></tr>
+            <tr><td>Árbol de procesos</td><td>Estricto: todo proceso tiene padre; si el padre muere, lo adopta otro</td><td>Se guarda el padre, pero no hay una jerarquía que el sistema haga cumplir</td></tr>
+            <tr><td>Hilos</td><td>Para el kernel, un hilo es una "tarea" que comparte memoria con otras (<code>clone()</code>)</td><td>El hilo es la unidad de ejecución; el proceso es el contenedor de recursos</td></tr>
+            <tr><td>Qué planifica el scheduler</td><td>Hilos (tareas), con EEVDF y prioridades <code>nice</code> de −20 a 19</td><td>Hilos, con 32 niveles de prioridad y preempción por <em>quantum</em></td></tr>
+            <tr><td>Terminar un proceso</td><td>Señales: <code>SIGTERM</code> (pedido amable), <code>SIGKILL</code> (forzado)</td><td>No hay señales POSIX: <code>TerminateProcess()</code>, <code>taskkill</code>, mensajes de ventana</td></tr>
+            <tr><td>Ver procesos</td><td><code>ps</code>, <code>top</code>, <code>pstree</code>, <code>/proc/&lt;pid&gt;</code></td><td>Administrador de tareas, <code>tasklist</code>, <code>Get-Process</code>, Process Explorer</td></tr>
+            <tr><td>Servidor web típico</td><td>Prefork o workers (Gunicorn, Nginx, Apache)</td><td>IIS: pools de hilos dentro de procesos <code>w3wp.exe</code></td></tr>
+        </table>
+        <div class="warning-box">
+            <p>Por la falta de <code>fork()</code>, Gunicorn no corre en Windows. En Windows se usa otro servidor WSGI (por ejemplo <code>waitress</code>, basado en hilos) o directamente se corre la app en Linux, dentro de un contenedor.</p>
+        </div>
+    </div>
+
+    <!-- Slide 19: Linux vs Windows 3 -->
+    <div class="slide">
+        <h2>Linux | Windows: memoria, archivos y permisos</h2>
+        <table class="os-table">
+            <tr><th>Aspecto</th><th class="linux">Linux</th><th class="windows">Windows</th></tr>
+            <tr><td>Memoria virtual</td><td>Paginación, espacio virtual por proceso</td><td>Igual: paginación, espacio virtual por proceso</td></tr>
+            <tr><td>Área de intercambio</td><td>Swap: partición o archivo</td><td>Archivo de paginación: <code>pagefile.sys</code></td></tr>
+            <tr><td>Cuando falta memoria</td><td>Deja reservar de más (<em>overcommit</em>); si se agota, el <strong>OOM killer</strong> mata un proceso</td><td>Lleva la cuenta de lo comprometido (<em>commit limit</em>); si se agota, la reserva <strong>falla</strong> y el programa recibe un error</td></tr>
+            <tr><td>Sistemas de archivos</td><td>ext4, XFS, Btrfs</td><td>NTFS, ReFS</td></tr>
+            <tr><td>Rutas</td><td>Un solo árbol desde <code>/</code>; los discos se <em>montan</em> en carpetas</td><td>Una letra por unidad: <code>C:\</code>, <code>D:\</code></td></tr>
+            <tr><td>Mayúsculas en nombres</td><td>Distingue: <code>App.py</code> ≠ <code>app.py</code></td><td>No distingue (por defecto): <code>App.py</code> = <code>app.py</code></td></tr>
+            <tr><td>"Todo es un archivo"</td><td>Sí: dispositivos (<code>/dev</code>), procesos (<code>/proc</code>), el kernel (<code>/sys</code>)</td><td>No: dispositivos y procesos se manejan con APIs propias</td></tr>
+            <tr><td>Usuarios y permisos</td><td>UID/GID y permisos <code>rwx</code> (dueño, grupo, otros); <code>root</code> = UID 0</td><td>SID y listas de control de acceso (ACL); <code>Administrador</code> y <code>SYSTEM</code></td></tr>
+        </table>
+    </div>
+
+    <!-- Slide 20: VM vs contenedor (diagrama) -->
+    <div class="slide slide-diagram">
+        <h2>Virtualización vs. contenedores</h2>
+        <div class="diagram">
+            <svg viewBox="0 0 1000 440" role="img" aria-label="Comparación de capas: máquinas virtuales con un kernel por máquina sobre un hipervisor, frente a contenedores que comparten el kernel del host">
+                <!-- VM -->
+                <text x="245" y="28" fill="#f0883e" font-size="18" font-weight="bold" text-anchor="middle">Máquinas virtuales</text>
+                <rect x="30" y="45" width="200" height="45" rx="6" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="130" y="73" fill="#c9d1d9" font-size="13" text-anchor="middle">app + bibliotecas</text>
+                <rect x="260" y="45" width="200" height="45" rx="6" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="360" y="73" fill="#c9d1d9" font-size="13" text-anchor="middle">app + bibliotecas</text>
+                <rect x="30" y="98" width="200" height="45" rx="6" fill="rgba(63,185,80,0.12)" stroke="#3fb950"/>
+                <text x="130" y="126" fill="#3fb950" font-size="13" font-weight="bold" text-anchor="middle">kernel invitado</text>
+                <rect x="260" y="98" width="200" height="45" rx="6" fill="rgba(63,185,80,0.12)" stroke="#3fb950"/>
+                <text x="360" y="126" fill="#3fb950" font-size="13" font-weight="bold" text-anchor="middle">kernel invitado</text>
+                <rect x="30" y="151" width="200" height="45" rx="6" fill="rgba(255,255,255,0.02)" stroke="#8b949e" stroke-dasharray="4 3"/>
+                <text x="130" y="179" fill="#8b949e" font-size="13" text-anchor="middle">hardware virtual</text>
+                <rect x="260" y="151" width="200" height="45" rx="6" fill="rgba(255,255,255,0.02)" stroke="#8b949e" stroke-dasharray="4 3"/>
+                <text x="360" y="179" fill="#8b949e" font-size="13" text-anchor="middle">hardware virtual</text>
+                <rect x="30" y="206" width="430" height="50" rx="6" fill="rgba(240,136,62,0.12)" stroke="#f0883e"/>
+                <text x="245" y="237" fill="#f0883e" font-size="15" font-weight="bold" text-anchor="middle">Hipervisor (KVM, VMware, Hyper-V)</text>
+                <rect x="30" y="264" width="430" height="50" rx="6" fill="rgba(255,255,255,0.02)" stroke="#8b949e"/>
+                <text x="245" y="295" fill="#c9d1d9" font-size="15" text-anchor="middle">Hardware físico</text>
+
+                <!-- Contenedores -->
+                <text x="755" y="28" fill="#58a6ff" font-size="18" font-weight="bold" text-anchor="middle">Contenedores</text>
+                <rect x="540" y="45" width="130" height="98" rx="6" fill="rgba(255,255,255,0.05)" stroke="#58a6ff" stroke-dasharray="6 4"/>
+                <text x="605" y="85" fill="#c9d1d9" font-size="13" text-anchor="middle">mysqld</text>
+                <text x="605" y="105" fill="#8b949e" font-size="11" text-anchor="middle">+ su imagen</text>
+                <rect x="690" y="45" width="130" height="98" rx="6" fill="rgba(255,255,255,0.05)" stroke="#58a6ff" stroke-dasharray="6 4"/>
+                <text x="755" y="85" fill="#c9d1d9" font-size="13" text-anchor="middle">prometheus</text>
+                <text x="755" y="105" fill="#8b949e" font-size="11" text-anchor="middle">+ su imagen</text>
+                <rect x="840" y="45" width="130" height="98" rx="6" fill="rgba(255,255,255,0.05)" stroke="#58a6ff" stroke-dasharray="6 4"/>
+                <text x="905" y="85" fill="#c9d1d9" font-size="13" text-anchor="middle">cadvisor</text>
+                <text x="905" y="105" fill="#8b949e" font-size="11" text-anchor="middle">+ su imagen</text>
+                <rect x="540" y="151" width="430" height="45" rx="6" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                <text x="755" y="179" fill="#58a6ff" font-size="14" font-weight="bold" text-anchor="middle">namespaces (qué ve) + cgroups (qué usa)</text>
+                <rect x="540" y="206" width="430" height="50" rx="6" fill="rgba(63,185,80,0.12)" stroke="#3fb950"/>
+                <text x="755" y="237" fill="#3fb950" font-size="15" font-weight="bold" text-anchor="middle">Un solo kernel: el del host</text>
+                <rect x="540" y="264" width="430" height="50" rx="6" fill="rgba(255,255,255,0.02)" stroke="#8b949e"/>
+                <text x="755" y="295" fill="#c9d1d9" font-size="15" text-anchor="middle">Hardware (físico o virtual)</text>
+
+                <line x1="500" y1="40" x2="500" y2="320" stroke="rgba(255,255,255,0.12)"/>
+
+                <!-- Comparación -->
+                <text x="245" y="350" fill="#b8c0c9" font-size="13" text-anchor="middle">Arranca en minutos · ocupa GB · aislamiento fuerte</text>
+                <text x="245" y="370" fill="#b8c0c9" font-size="13" text-anchor="middle">puede correr otro sistema operativo (Windows sobre Linux)</text>
+                <text x="755" y="350" fill="#b8c0c9" font-size="13" text-anchor="middle">Arranca en segundos · ocupa MB · aislamiento más débil</text>
+                <text x="755" y="370" fill="#b8c0c9" font-size="13" text-anchor="middle">solo programas para el mismo kernel (Linux sobre Linux)</text>
+
+                <text x="500" y="420" fill="#c9d1d9" font-size="14" text-anchor="middle">En Killercoda están las dos cosas: el escenario corre en una máquina virtual (systemd-detect-virt), y adentro Docker arma contenedores.</text>
+            </svg>
+        </div>
+        <pre><code>$ uname -r                    $ docker exec mysql uname -r
+6.8.0-138-generic             6.8.0-138-generic        ← el mismo kernel</code></pre>
+    </div>
+
+    <!-- Slide 21: Namespaces -->
+    <div class="slide">
+        <h2>Namespaces: las anteojeras del contenedor</h2>
+        <p>Un contenedor es un proceso del host al que el kernel le muestra una versión recortada del sistema.</p>
+        <pre><code>$ pgrep -x mysqld                       $ docker exec mysql cat /proc/1/comm
+673                ← PID en el host       mysqld            ← adentro es el PID 1</code></pre>
+        <table class="flags-table">
+            <tr><th>Namespace</th><th>Qué aísla</th><th>En la práctica</th></tr>
+            <tr><td><code>pid</code></td><td>Numeración de procesos</td><td><code>mysqld</code> es PID 1 adentro y otro número afuera</td></tr>
+            <tr><td><code>net</code></td><td>Interfaces, IPs, puertos</td><td>Cada contenedor tiene su IP en la red de <code>docker-compose</code></td></tr>
+            <tr><td><code>mnt</code></td><td>Sistema de archivos visible</td><td>Adentro se ve la imagen de MySQL, no el disco del host</td></tr>
+            <tr><td><code>uts</code></td><td>Nombre de la máquina</td><td><code>/etc/hostname</code> distinto adentro y afuera</td></tr>
+            <tr><td><code>user</code></td><td>Usuarios y UID</td><td><strong>No se separa por defecto</strong>: el UID 999 de <code>mysql</code> es el 999 del host, y root adentro es el UID 0 de afuera</td></tr>
+        </table>
+    </div>
+
+    <!-- Slide 22: cgroups y throttling (diagrama) -->
+    <div class="slide slide-diagram">
+        <h2>cgroups: cuánto puede usar el contenedor</h2>
+        <div class="diagram">
+            <svg viewBox="0 0 1000 330" role="img" aria-label="Línea de tiempo en períodos de 100 ms: sin límite el hilo usa la CPU todo el período; con cuota de 50 ms, usa la mitad y el resto del período queda frenado">
+                <text x="20" y="30" fill="#c9d1d9" font-size="14" font-weight="bold">cpu.max = "50000 100000" → 50 ms de CPU por cada período de 100 ms</text>
+
+                <!-- Fila sin límite -->
+                <text x="20" y="95" fill="#3fb950" font-size="14" font-weight="bold">Sin límite</text>
+                <text x="20" y="113" fill="#8b949e" font-size="12">cpu.max = max</text>
+                <rect x="180" y="75" width="190" height="45" fill="rgba(63,185,80,0.4)" stroke="#3fb950"/>
+                <rect x="370" y="75" width="190" height="45" fill="rgba(63,185,80,0.4)" stroke="#3fb950"/>
+                <rect x="560" y="75" width="80" height="45" fill="rgba(63,185,80,0.4)" stroke="#3fb950"/>
+                <text x="410" y="103" fill="#c9d1d9" font-size="13" font-weight="bold" text-anchor="middle">trabajando todo el tiempo</text>
+                <text x="660" y="103" fill="#3fb950" font-size="13">terminó: 2.5 s en la práctica</text>
+
+                <!-- Fila con límite -->
+                <text x="20" y="185" fill="#f0883e" font-size="14" font-weight="bold">--cpus 0.5</text>
+                <text x="20" y="203" fill="#8b949e" font-size="12">cpu.max = 50000 100000</text>
+                <g>
+                    <rect x="180" y="165" width="95" height="45" fill="rgba(63,185,80,0.4)" stroke="#3fb950"/>
+                    <rect x="275" y="165" width="95" height="45" fill="rgba(248,81,73,0.12)" stroke="#f85149" stroke-dasharray="4 3"/>
+                    <rect x="370" y="165" width="95" height="45" fill="rgba(63,185,80,0.4)" stroke="#3fb950"/>
+                    <rect x="465" y="165" width="95" height="45" fill="rgba(248,81,73,0.12)" stroke="#f85149" stroke-dasharray="4 3"/>
+                    <rect x="560" y="165" width="95" height="45" fill="rgba(63,185,80,0.4)" stroke="#3fb950"/>
+                    <rect x="655" y="165" width="95" height="45" fill="rgba(248,81,73,0.12)" stroke="#f85149" stroke-dasharray="4 3"/>
+                    <rect x="750" y="165" width="95" height="45" fill="rgba(63,185,80,0.4)" stroke="#3fb950"/>
+                    <rect x="845" y="165" width="95" height="45" fill="rgba(248,81,73,0.12)" stroke="#f85149" stroke-dasharray="4 3"/>
+                </g>
+                <text x="322" y="192" fill="#f85149" font-size="12" text-anchor="middle">frenado</text>
+                <text x="512" y="192" fill="#f85149" font-size="12" text-anchor="middle">frenado</text>
+                <text x="702" y="192" fill="#f85149" font-size="12" text-anchor="middle">frenado</text>
+                <text x="892" y="192" fill="#f85149" font-size="12" text-anchor="middle">frenado</text>
+
+                <!-- Períodos -->
+                <g stroke="#8b949e" stroke-width="1">
+                    <line x1="180" y1="230" x2="180" y2="245"/><line x1="370" y1="230" x2="370" y2="245"/><line x1="560" y1="230" x2="560" y2="245"/><line x1="750" y1="230" x2="750" y2="245"/><line x1="940" y1="230" x2="940" y2="245"/>
+                    <line x1="180" y1="238" x2="940" y2="238"/>
+                </g>
+                <text x="275" y="262" fill="#8b949e" font-size="12" text-anchor="middle">período 1 (100 ms)</text>
+                <text x="465" y="262" fill="#8b949e" font-size="12" text-anchor="middle">período 2</text>
+                <text x="655" y="262" fill="#8b949e" font-size="12" text-anchor="middle">período 3</text>
+                <text x="845" y="262" fill="#8b949e" font-size="12" text-anchor="middle">período 4</text>
+
+                <text x="500" y="305" fill="#c9d1d9" font-size="14" text-anchor="middle">Cada período en que se agota la cuota suma 1 a nr_throttled. El mismo trabajo tardó 5.9 s.</text>
+            </svg>
+        </div>
+        <div class="stat-grid">
+            <div class="stat-card"><span class="stat-number">2.5 s</span><p>5 millones de SHA2, sin límite</p></div>
+            <div class="stat-card"><span class="stat-number">5.9 s</span><p>el mismo trabajo, con <code>--cpus 0.5</code></p></div>
+            <div class="stat-card"><span class="stat-number">283 / 451</span><p>períodos frenados (<code>nr_throttled</code> / <code>nr_periods</code>)</p></div>
+        </div>
+    </div>
+
+    <!-- Slide 23: De cgroup a Grafana -->
+    <div class="slide">
+        <h2>De un archivo del kernel a un panel de Grafana</h2>
+        <p>La CPU de MySQL que graficamos en la etapa 6 no la mide Docker ni MySQL: la cuenta el kernel, en el cgroup del contenedor.</p>
+        <div class="flow-row">
+            <div class="flow-box"><span class="flow-num">1 · kernel</span><h4>Cuenta la CPU</h4><p>de cada hilo de cada proceso del cgroup</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">2 · cgroup</span><h4><code>cpu.stat</code></h4><p><code>usage_usec 31149468</code></p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">3 · cAdvisor</span><h4>Lee el archivo</h4><p>y lo expone como métrica</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">4 · Prometheus</span><h4>Lo guarda</h4><p><code>31.128</code> segundos</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">5 · Grafana</span><h4>Lo dibuja</h4><p><code>rate()</code> / <code>irate()</code></p></div>
+        </div>
+        <pre><code>container_cpu_usage_seconds_total{id="/system.slice/docker-3f9a1c...e21.scope", ...}
+                                      └──────────── la ruta del cgroup en el kernel ───────────┘</code></pre>
+        <div class="warning-box">
+            <p>Por eso en Killercoda cAdvisor mostraba solo un <code>id</code>, sin nombre: sin acceso a la API de Docker, lo único que tiene es lo que le da el kernel, y el kernel no sabe cómo se llaman los contenedores. Solo conoce cgroups.</p>
+        </div>
+    </div>
+
+    <!-- Slide 24: Todas las capas (diagrama) -->
+    <div class="slide slide-diagram">
+        <h2>Todas las capas de la práctica, de afuera hacia adentro</h2>
+        <div class="diagram">
+            <svg viewBox="0 0 1000 440" role="img" aria-label="Capas anidadas: hardware físico, hipervisor, máquina virtual de Killercoda con su kernel, procesos del host, contenedores con namespaces y cgroups, y los hilos dentro de mysqld">
+                <rect x="10" y="10" width="980" height="420" rx="14" fill="rgba(255,255,255,0.01)" stroke="#8b949e" stroke-width="1.5"/>
+                <text x="30" y="36" fill="#8b949e" font-size="14" font-weight="bold">Hardware físico de Killercoda + hipervisor</text>
+
+                <rect x="35" y="50" width="930" height="360" rx="12" fill="rgba(240,136,62,0.04)" stroke="#f0883e" stroke-width="1.5"/>
+                <text x="55" y="76" fill="#f0883e" font-size="14" font-weight="bold">Máquina virtual Ubuntu · un kernel Linux (uname -r) · virtualización real</text>
+
+                <!-- Procesos del host -->
+                <rect x="60" y="95" width="300" height="290" rx="10" fill="rgba(255,255,255,0.03)" stroke="#c9d1d9"/>
+                <text x="80" y="120" fill="#c9d1d9" font-size="14" font-weight="bold">Procesos del host</text>
+                <rect x="80" y="135" width="260" height="70" rx="8" fill="rgba(63,185,80,0.1)" stroke="#3fb950"/>
+                <text x="210" y="162" fill="#3fb950" font-size="13" font-weight="bold" text-anchor="middle">gunicorn master</text>
+                <text x="210" y="184" fill="#b8c0c9" font-size="12" text-anchor="middle">+ 2 workers (fork)</text>
+                <rect x="80" y="215" width="125" height="50" rx="8" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="142" y="245" fill="#c9d1d9" font-size="13" text-anchor="middle">bash, curl</text>
+                <rect x="215" y="215" width="125" height="50" rx="8" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9"/>
+                <text x="277" y="245" fill="#c9d1d9" font-size="13" text-anchor="middle">dockerd</text>
+                <text x="210" y="300" fill="#8b949e" font-size="12" text-anchor="middle">sin namespaces propios:</text>
+                <text x="210" y="318" fill="#8b949e" font-size="12" text-anchor="middle">ven todo el sistema</text>
+
+                <!-- Contenedores -->
+                <rect x="385" y="95" width="555" height="290" rx="10" fill="rgba(88,166,255,0.04)" stroke="#58a6ff" stroke-dasharray="6 4"/>
+                <text x="405" y="120" fill="#58a6ff" font-size="14" font-weight="bold">Contenedores: procesos del host con namespaces + cgroups</text>
+
+                <rect x="405" y="135" width="330" height="230" rx="10" fill="rgba(255,255,255,0.03)" stroke="#58a6ff"/>
+                <text x="425" y="160" fill="#58a6ff" font-size="14" font-weight="bold">mysql</text>
+                <text x="715" y="160" fill="#8b949e" font-size="11" text-anchor="end">cgroup: cpu.max, memory.max</text>
+                <rect x="425" y="172" width="290" height="175" rx="8" fill="rgba(255,255,255,0.03)" stroke="#c9d1d9"/>
+                <text x="570" y="196" fill="#c9d1d9" font-size="13" font-weight="bold" text-anchor="middle">proceso mysqld (PID 1 adentro)</text>
+                <g fill="rgba(88,166,255,0.15)" stroke="#58a6ff">
+                    <rect x="440" y="210" width="125" height="28" rx="5"/><rect x="575" y="210" width="125" height="28" rx="5"/>
+                    <rect x="440" y="245" width="125" height="28" rx="5"/><rect x="575" y="245" width="125" height="28" rx="5"/>
+                    <rect x="440" y="280" width="125" height="28" rx="5"/><rect x="575" y="280" width="125" height="28" rx="5"/>
+                </g>
+                <text x="502" y="229" fill="#c9d1d9" font-size="11" text-anchor="middle">connection</text>
+                <text x="637" y="229" fill="#c9d1d9" font-size="11" text-anchor="middle">connection</text>
+                <text x="502" y="264" fill="#c9d1d9" font-size="11" text-anchor="middle">ib_io_rd-1</text>
+                <text x="637" y="264" fill="#c9d1d9" font-size="11" text-anchor="middle">ib_io_wr-1</text>
+                <text x="502" y="299" fill="#c9d1d9" font-size="11" text-anchor="middle">ib_log_writer</text>
+                <text x="637" y="299" fill="#c9d1d9" font-size="11" text-anchor="middle">sig_handler</text>
+                <text x="570" y="332" fill="#8b949e" font-size="11" text-anchor="middle">~40 hilos que comparten la memoria</text>
+
+                <rect x="755" y="135" width="165" height="105" rx="10" fill="rgba(255,255,255,0.03)" stroke="#58a6ff"/>
+                <text x="837" y="180" fill="#58a6ff" font-size="14" font-weight="bold" text-anchor="middle">prometheus</text>
+                <text x="837" y="200" fill="#8b949e" font-size="11" text-anchor="middle">su propio cgroup</text>
+                <rect x="755" y="255" width="165" height="110" rx="10" fill="rgba(255,255,255,0.03)" stroke="#58a6ff"/>
+                <text x="837" y="300" fill="#58a6ff" font-size="14" font-weight="bold" text-anchor="middle">cadvisor</text>
+                <text x="837" y="320" fill="#8b949e" font-size="11" text-anchor="middle">lee los cgroups</text>
+                <text x="837" y="336" fill="#8b949e" font-size="11" text-anchor="middle">de los demás</text>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Slide 25: Docker en Windows -->
+    <div class="slide">
+        <h2>¿Y Docker en Windows?</h2>
+        <p>Si un contenedor usa el kernel del host, ¿cómo corre un contenedor de MySQL (Linux) en una PC con Windows?</p>
+        <div class="pair-grid">
+            <div class="card"><span class="tag ok">Lo más común</span><h4>Docker Desktop + WSL 2</h4><p>Windows levanta una <strong>máquina virtual liviana con un kernel Linux real</strong> (WSL 2, sobre Hyper-V). Los contenedores corren adentro de esa VM. O sea: virtualización + contenedores, igual que en Killercoda.</p></div>
+            <div class="card"><span class="tag ok">Menos común</span><h4>Contenedores de Windows</h4><p>Existen contenedores con programas de Windows sobre el kernel de Windows. En vez de namespaces y cgroups, Windows usa <em>silos</em> y <em>job objects</em>. No pueden correr imágenes de Linux.</p></div>
+        </div>
+        <div class="quote-box">
+            <p>Por eso quien corre el entorno de <code>hilo-conductor-redes-ataques</code> en su PC con Windows está usando, sin saberlo, una máquina virtual con Linux.</p>
+        </div>
+    </div>
+
+    <!-- Slide 26: repaso -->
+    <div class="slide">
+        <h2>Preguntas de repaso</h2>
+        <div class="steps-list">
+            <div class="step-item"><span class="num">1</span><p>¿Por qué <code>cat</code> no puede leer un archivo por su cuenta? ¿Qué es una llamada al sistema?</p></div>
+            <div class="step-item"><span class="num">2</span><p>Gunicorn usa procesos y MySQL usa hilos. ¿Qué gana y qué arriesga cada modelo?</p></div>
+            <div class="step-item"><span class="num">3</span><p>Mataste un worker de Gunicorn y apareció otro con un PID nuevo. ¿Quién lo creó y con qué llamada al sistema?</p></div>
+            <div class="step-item"><span class="num">4</span><p><code>mysqld</code> tenía unos 3 GB de memoria virtual y menos de 500 MB reales. ¿Cómo puede ser?</p></div>
+            <div class="step-item"><span class="num">5</span><p>Un programa pide más memoria de la que hay. ¿Qué pasa en Linux y qué pasa en Windows?</p></div>
+            <div class="step-item"><span class="num">6</span><p>¿Por qué un contenedor no es una máquina virtual? Nombrá los dos mecanismos del kernel que lo hacen posible.</p></div>
+            <div class="step-item"><span class="num">7</span><p>Una app en un contenedor anda lenta, pero la máquina tiene CPU libre. ¿Qué contador mirarías?</p></div>
+        </div>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">26</span>
+</div>
+
+<div class="controls">
+    <button class="btn prev" onclick="previousSlide()">← Anterior</button>
+    <button class="btn next" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const prevBtn = document.querySelector('.btn.prev');
+    const nextBtn = document.querySelector('.btn.next');
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function updateControls() {
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide === totalSlides - 1;
+        nextBtn.textContent = currentSlide === totalSlides - 1 ? 'Fin de la clase' : 'Siguiente →';
+    }
+
+    function showSlide(n) {
+        const target = Math.max(0, Math.min(n, totalSlides - 1));
+        if (target === currentSlide) return;
+        slides[currentSlide].classList.remove('active');
+        currentSlide = target;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+        updateControls();
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    if (location.hash) {
+        const target = document.querySelector(location.hash);
+        const idx = target ? Array.from(slides).indexOf(target) : -1;
+        if (idx >= 0) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = idx;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+    }
+
+    updateControls();
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>

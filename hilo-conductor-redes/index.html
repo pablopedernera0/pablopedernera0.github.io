@@ -428,6 +428,7 @@
     <a class="navlink" href="#etapa-4">Etapa 4</a>
     <a class="navlink" href="#etapa-5">Etapa 5</a>
     <a class="navlink" href="#etapa-6">Etapa 6</a>
+    <a class="navlink" href="#sistema-operativo">Sistema operativo</a>
     <a class="navlink" href="#trabajo-7">Trabajo n°7</a>
     <a class="navlink" href="#notas">Notas técnicas</a>
   </div>
@@ -782,6 +783,38 @@ general_log: <span class="dim">usuario = '' OR '1'='1' -- ' AND password = 'x'</
     <p style="margin-top:0.9rem; font-size:0.88rem;">📄 <a href="documentacion/etapa6-monitoreo-guion-clase.html">Guion de clase (docente)</a> — el paso a paso de la clase presencial: bloques con tiempos, comandos, consultas PromQL y la navegación de Grafana 13.2.2, listo para imprimir</p>
     <p style="margin-top:0.4rem; font-size:0.88rem;">📄 <a href="documentacion/crud-monitoreo-prometheus-grafana-clase.html">Presentación de conceptos</a> — clase de 1 hora: métricas vs. logs, scrape y exporters, diagrama de la arquitectura de la práctica, el viaje de un dato, PromQL y Grafana</p>
     <p style="margin-top:0.4rem; font-size:0.88rem;">📄 <a href="documentacion/etapa6-informe-grupal-guia-docente.html">Guía docente</a> · <a href="documentacion/etapa6-informe-grupal-guia-estudiantes.html">Guía para estudiantes</a> — el cierre de esta etapa se resuelve como informe grupal, repartido entre el equipo</p>
+  </div>
+
+  <!-- TRANSVERSAL: SISTEMA OPERATIVO -->
+  <div class="etapa" id="sistema-operativo" style="scroll-margin-top:4rem;">
+    <div class="etapa-head">
+      <span class="etapa-chip">Transversal</span>
+      <span class="etapa-slug">crud-sistema-operativo</span>
+      <span class="etapa-time">60 min</span>
+    </div>
+    <div class="etapa-grid">
+      <div class="etapa-block">
+        <h3>Objetivos de aprendizaje</h3>
+        <ul>
+          <li>Explicar qué hace el kernel y qué es una llamada al sistema (<code>strace</code>)</li>
+          <li>Distinguir procesos de hilos con los dos modelos de la práctica: Gunicorn (procesos) y MySQL (hilos)</li>
+          <li>Diferenciar memoria virtual de memoria real, y reconocer un OOM kill (código 137)</li>
+          <li>Justificar por qué un contenedor no es una máquina virtual: namespaces + cgroups sobre el mismo kernel</li>
+          <li>Comparar cómo resuelven lo mismo Linux y Windows</li>
+        </ul>
+      </div>
+      <div class="etapa-block">
+        <h3>Qué debería mostrar cada estudiante</h3>
+        <ul>
+          <li>Un worker de Gunicorn reemplazado por otro con PID nuevo después de un <code>kill</code></li>
+          <li>La cantidad de hilos de <code>mysqld</code> subiendo al abrir conexiones</li>
+          <li>El mismo valor de CPU en <code>cpu.stat</code> del cgroup y en Prometheus</li>
+          <li>El mismo trabajo de CPU tardando el doble con <code>docker update --cpus 0.5</code></li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:0.9rem; font-size:0.88rem;">🧪 <a href="https://killercoda.com/pablop22/scenario/crud-sistema-operativo" target="_blank">Escenario en Killercoda</a> — autónomo: no necesita haber hecho las etapas anteriores, aunque las usa como referencia. Toda la carga se genera con scripts con topes fijos</p>
+    <p style="margin-top:0.4rem; font-size:0.88rem;">📄 <a href="documentacion/crud-sistema-operativo-clase.html">Presentación de conceptos</a> — clase de 1 hora: capas del sistema operativo, llamadas al sistema, estados de un proceso, <code>fork()</code>, hilos, scheduler, memoria virtual, tablas Linux | Windows, virtualización vs. contenedores y cgroups</p>
   </div>
 
   <!-- TRABAJO N7 -->
