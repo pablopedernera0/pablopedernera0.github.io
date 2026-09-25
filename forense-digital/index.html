@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forense digital — resumen y recursos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            background-attachment: fixed;
+            color: #c9d1d9;
+            line-height: 1.65;
+        }
+
+        .page {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 4rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #58a6ff;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            font-size: 1.12rem;
+            color: #8b949e;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        nav.toc {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 2rem 0 1rem;
+        }
+
+        nav.toc a {
+            text-decoration: none;
+            color: #8b949e;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 0.25rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        nav.toc a:hover {
+            color: #58a6ff;
+            border-color: #58a6ff;
+        }
+
+        section {
+            margin-top: 3.2rem;
+            scroll-margin-top: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: #58a6ff;
+            margin-bottom: 1rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid rgba(88,166,255,0.25);
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            color: #3fb950;
+            margin: 1.6rem 0 0.6rem;
+        }
+
+        h4 {
+            font-size: 1.02rem;
+            color: #58a6ff;
+            margin-bottom: 0.4rem;
+        }
+
+        p {
+            margin-bottom: 0.9rem;
+        }
+
+        ul, ol {
+            margin: 0 0 1rem 1.4rem;
+        }
+
+        li {
+            margin-bottom: 0.4rem;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.12rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+            font-size: 0.92em;
+        }
+
+        a {
+            color: #58a6ff;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0 1.4rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.1rem 1.2rem;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            color: #b8c0c9;
+            margin-bottom: 0;
+        }
+
+        .card.blue {
+            border-color: rgba(88, 166, 255, 0.35);
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            margin: 1.2rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+        }
+
+        .quote-box {
+            background: rgba(88, 166, 255, 0.08);
+            border-left: 4px solid #58a6ff;
+            border-radius: 0 10px 10px 0;
+            padding: 1rem 1.4rem;
+            margin: 1.2rem 0;
+            font-style: italic;
+        }
+
+        .quote-box p {
+            margin-bottom: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0 1.4rem;
+            font-size: 0.93rem;
+        }
+
+        th, td {
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.6rem 0.9rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: rgba(88, 166, 255, 0.12);
+            color: #58a6ff;
+        }
+
+        .diagram {
+            margin: 1.2rem 0 0.6rem;
+        }
+
+        .diagram svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .diagram text {
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .caption {
+            font-size: 0.88rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .resource {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 0.9rem 1.1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .resource h4 a {
+            text-decoration: none;
+        }
+
+        .resource h4 a:hover {
+            text-decoration: underline;
+        }
+
+        .resource p {
+            font-size: 0.93rem;
+            color: #b8c0c9;
+            margin-bottom: 0;
+        }
+
+        .lang {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 0.1rem 0.5rem;
+            border-radius: 10px;
+            margin-left: 0.4rem;
+            vertical-align: middle;
+        }
+
+        .lang.es {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .lang.en {
+            background: rgba(139, 148, 158, 0.18);
+            color: #8b949e;
+        }
+
+        .questions li {
+            margin-bottom: 0.7rem;
+        }
+
+        footer {
+            margin-top: 3.5rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.85rem;
+            color: #8b949e;
+            text-align: center;
+        }
+
+        @media (max-width: 700px) {
+            h1 { font-size: 1.9rem; }
+            h2 { font-size: 1.45rem; }
+            .page { padding: 2rem 1rem 3rem; }
+            table { font-size: 0.85rem; }
+            th, td { padding: 0.45rem 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <header>
+        <div class="eyebrow">Infraestructura de Redes · Resumen y recursos</div>
+        <h1>Forense digital</h1>
+        <p class="subtitle">Qué es, cuáles son sus principios y sus fases, por qué el hash es la base de todo, y una selección de guías, cursos y herramientas gratuitas, priorizando material en español.</p>
+        <nav class="toc">
+            <a href="#que-es">Qué es</a>
+            <a href="#principios">Principios</a>
+            <a href="#fases">Fases</a>
+            <a href="#integridad">Hash e integridad</a>
+            <a href="#volatilidad">Orden de volatilidad</a>
+            <a href="#tipos">Tipos</a>
+            <a href="#borrado">Archivos borrados</a>
+            <a href="#hilo">En nuestra infraestructura</a>
+            <a href="#marco-legal">Marco legal</a>
+            <a href="#recursos">Recursos</a>
+            <a href="#preguntas">Para pensar</a>
+        </nav>
+    </header>
+
+    <!-- QUÉ ES -->
+    <section id="que-es">
+        <h2>¿Qué es la forense digital?</h2>
+        <p>La <strong>forense digital</strong> (o informática forense) aplica métodos científicos para <strong>identificar, preservar, analizar y presentar</strong> evidencia digital, de forma que un tercero pueda confiar en ella: un juez, una auditoría, un comité de respuesta a incidentes.</p>
+        <p>La palabra clave es <em>confiar</em>. Encontrar un dato no alcanza: hay que poder demostrar que ese dato estaba ahí, que nadie lo modificó desde que se obtuvo, y que cualquier otra persona que repita el análisis va a llegar al mismo resultado.</p>
+        <div class="card-grid">
+            <div class="card"><h4>Ámbito judicial</h4><p>Peritajes en causas penales o civiles: el resultado es un informe pericial que se presenta en un proceso. Las reglas de preservación son estrictas.</p></div>
+            <div class="card blue"><h4>Ámbito corporativo</h4><p>Respuesta a incidentes: qué pasó, cómo entraron, qué se llevaron, cómo evitar que se repita. Muchas veces termina también en un proceso judicial, por eso conviene trabajar con los mismos cuidados.</p></div>
+        </div>
+    </section>
+
+    <!-- PRINCIPIOS -->
+    <section id="principios">
+        <h2>Principios</h2>
+        <p>Aparecen, con distintas palabras, en todas las guías y normas del área (incluido el protocolo argentino de la Resolución 234/2016):</p>
+        <table>
+            <tr><th>Principio</th><th>Qué significa en la práctica</th></tr>
+            <tr><td><strong>No alterar el original</strong></td><td>Sobre la evidencia original no se trabaja. Se hace una copia exacta bit a bit y se analiza la copia.</td></tr>
+            <tr><td><strong>Integridad verificable</strong></td><td>Se calcula un hash de la evidencia al obtenerla. Cualquiera puede recalcularlo más tarde y comprobar que no cambió.</td></tr>
+            <tr><td><strong>Cadena de custodia</strong></td><td>Registro de quién tuvo la evidencia, cuándo, dónde y para qué, desde que se obtiene hasta que se presenta. Un hueco en ese registro puede invalidarla.</td></tr>
+            <tr><td><strong>Documentar todo</strong></td><td>Cada paso, cada herramienta (con su versión) y cada resultado queda escrito. Si no está documentado, no pasó.</td></tr>
+            <tr><td><strong>Reproducibilidad</strong></td><td>Otra persona, con la misma copia y los mismos pasos, tiene que llegar a las mismas conclusiones.</td></tr>
+            <tr><td><strong>Personal capacitado</strong></td><td>Quien manipula la evidencia tiene que saber lo que hace: un error de procedimiento puede destruir o invalidar la prueba.</td></tr>
+        </table>
+    </section>
+
+    <!-- FASES -->
+    <section id="fases">
+        <h2>Las fases del proceso</h2>
+        <div class="diagram">
+            <svg viewBox="0 0 960 300" role="img" aria-label="Cuatro fases en secuencia: identificación, adquisición y preservación, análisis y presentación, con la cadena de custodia y la documentación recorriendo todas">
+                <defs>
+                    <marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fb950"/></marker>
+                </defs>
+                <rect x="10" y="20" width="205" height="150" rx="12" fill="rgba(88,166,255,0.08)" stroke="#58a6ff" stroke-width="1.5"/>
+                <text x="112" y="50" fill="#8b949e" font-size="12" text-anchor="middle">1</text>
+                <text x="112" y="76" fill="#58a6ff" font-size="17" font-weight="bold" text-anchor="middle">Identificación</text>
+                <text x="112" y="104" fill="#b8c0c9" font-size="12.5" text-anchor="middle">¿Qué dispositivos,</text>
+                <text x="112" y="122" fill="#b8c0c9" font-size="12.5" text-anchor="middle">sistemas y registros</text>
+                <text x="112" y="140" fill="#b8c0c9" font-size="12.5" text-anchor="middle">pueden tener evidencia?</text>
+
+                <rect x="252" y="20" width="205" height="150" rx="12" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="1.5"/>
+                <text x="354" y="50" fill="#8b949e" font-size="12" text-anchor="middle">2</text>
+                <text x="354" y="76" fill="#3fb950" font-size="17" font-weight="bold" text-anchor="middle">Adquisición</text>
+                <text x="354" y="96" fill="#3fb950" font-size="15" font-weight="bold" text-anchor="middle">y preservación</text>
+                <text x="354" y="122" fill="#b8c0c9" font-size="12.5" text-anchor="middle">Copia bit a bit,</text>
+                <text x="354" y="140" fill="#b8c0c9" font-size="12.5" text-anchor="middle">hash, acta, resguardo</text>
+
+                <rect x="494" y="20" width="205" height="150" rx="12" fill="rgba(240,136,62,0.1)" stroke="#f0883e" stroke-width="1.5"/>
+                <text x="596" y="50" fill="#8b949e" font-size="12" text-anchor="middle">3</text>
+                <text x="596" y="76" fill="#f0883e" font-size="17" font-weight="bold" text-anchor="middle">Análisis</text>
+                <text x="596" y="104" fill="#b8c0c9" font-size="12.5" text-anchor="middle">Sobre la copia:</text>
+                <text x="596" y="122" fill="#b8c0c9" font-size="12.5" text-anchor="middle">archivos, borrados,</text>
+                <text x="596" y="140" fill="#b8c0c9" font-size="12.5" text-anchor="middle">registros, línea de tiempo</text>
+
+                <rect x="736" y="20" width="210" height="150" rx="12" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9" stroke-width="1.5"/>
+                <text x="841" y="50" fill="#8b949e" font-size="12" text-anchor="middle">4</text>
+                <text x="841" y="76" fill="#c9d1d9" font-size="17" font-weight="bold" text-anchor="middle">Presentación</text>
+                <text x="841" y="104" fill="#b8c0c9" font-size="12.5" text-anchor="middle">Informe claro,</text>
+                <text x="841" y="122" fill="#b8c0c9" font-size="12.5" text-anchor="middle">reproducible y entendible</text>
+                <text x="841" y="140" fill="#b8c0c9" font-size="12.5" text-anchor="middle">por quien no es técnico</text>
+
+                <line x1="215" y1="95" x2="248" y2="95" stroke="#3fb950" stroke-width="2" marker-end="url(#fa)"/>
+                <line x1="457" y1="95" x2="490" y2="95" stroke="#3fb950" stroke-width="2" marker-end="url(#fa)"/>
+                <line x1="699" y1="95" x2="732" y2="95" stroke="#3fb950" stroke-width="2" marker-end="url(#fa)"/>
+
+                <rect x="10" y="200" width="936" height="42" rx="10" fill="rgba(210,168,255,0.08)" stroke="#d2a8ff" stroke-dasharray="6 4"/>
+                <text x="478" y="226" fill="#d2a8ff" font-size="14.5" font-weight="bold" text-anchor="middle">Cadena de custodia y documentación: recorren las cuatro fases, sin huecos</text>
+
+                <text x="478" y="280" fill="#8b949e" font-size="13" text-anchor="middle">Las fases son las mismas en un peritaje judicial y en la respuesta a un incidente dentro de una empresa.</text>
+            </svg>
+        </div>
+        <h3>Algunas decisiones que se toman en cada fase</h3>
+        <ul>
+            <li><strong>Identificación:</strong> ¿el equipo está encendido o apagado? Si está encendido, apagarlo borra la memoria RAM (ver <a href="#volatilidad">orden de volatilidad</a>).</li>
+            <li><strong>Adquisición:</strong> se usan bloqueadores de escritura (hardware o software) para que conectar el disco no lo modifique, y se registra el hash de la copia en el acta.</li>
+            <li><strong>Análisis:</strong> siempre sobre una copia de trabajo, verificada contra el hash del acta antes de empezar y al terminar.</li>
+            <li><strong>Presentación:</strong> los hallazgos se separan de las opiniones. El informe dice qué se encontró, dónde, con qué herramienta, y cómo verificarlo.</li>
+        </ul>
+    </section>
+
+    <!-- INTEGRIDAD -->
+    <section id="integridad">
+        <h2>Hash e integridad: la base de todo</h2>
+        <p>Una <strong>función hash</strong> (como SHA-256) toma cualquier cantidad de datos y devuelve una "huella" de tamaño fijo. Tiene dos propiedades que la hacen útil en forense:</p>
+        <ul>
+            <li>Los mismos datos dan <strong>siempre</strong> el mismo hash.</li>
+            <li>Si cambia <strong>un solo bit</strong>, el hash cambia por completo, y en la práctica es imposible fabricar otros datos con el mismo hash.</li>
+        </ul>
+        <div class="diagram">
+            <svg viewBox="0 0 960 330" role="img" aria-label="Flujo de integridad: evidencia original, copia bit a bit, hash registrado en el acta, copia de trabajo, y comparación del hash antes y después del análisis">
+                <defs>
+                    <marker id="ha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#58a6ff"/></marker>
+                    <marker id="hg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fb950"/></marker>
+                </defs>
+
+                <rect x="10" y="30" width="170" height="90" rx="10" fill="rgba(255,255,255,0.05)" stroke="#c9d1d9" stroke-width="1.5"/>
+                <text x="95" y="65" fill="#c9d1d9" font-size="15" font-weight="bold" text-anchor="middle">Evidencia original</text>
+                <text x="95" y="87" fill="#8b949e" font-size="12" text-anchor="middle">disco, pendrive,</text>
+                <text x="95" y="103" fill="#8b949e" font-size="12" text-anchor="middle">teléfono</text>
+
+                <rect x="245" y="30" width="170" height="90" rx="10" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="1.5"/>
+                <text x="330" y="65" fill="#3fb950" font-size="15" font-weight="bold" text-anchor="middle">Imagen forense</text>
+                <text x="330" y="87" fill="#8b949e" font-size="12" text-anchor="middle">copia bit a bit,</text>
+                <text x="330" y="103" fill="#8b949e" font-size="12" text-anchor="middle">con bloqueo de escritura</text>
+
+                <rect x="480" y="20" width="210" height="110" rx="10" fill="rgba(210,168,255,0.08)" stroke="#d2a8ff" stroke-width="1.5"/>
+                <text x="585" y="50" fill="#d2a8ff" font-size="15" font-weight="bold" text-anchor="middle">Acta</text>
+                <text x="585" y="74" fill="#b8c0c9" font-size="12" text-anchor="middle">fecha, lugar, testigos</text>
+                <text x="585" y="94" fill="#f0883e" font-size="12" text-anchor="middle" font-family="monospace">SHA-256: 9f2c…a41e</text>
+                <text x="585" y="114" fill="#8b949e" font-size="11" text-anchor="middle">queda fijo desde este momento</text>
+
+                <rect x="755" y="30" width="195" height="90" rx="10" fill="rgba(240,136,62,0.1)" stroke="#f0883e" stroke-width="1.5"/>
+                <text x="852" y="65" fill="#f0883e" font-size="15" font-weight="bold" text-anchor="middle">Copia de trabajo</text>
+                <text x="852" y="87" fill="#8b949e" font-size="12" text-anchor="middle">es la única que</text>
+                <text x="852" y="103" fill="#8b949e" font-size="12" text-anchor="middle">se analiza</text>
+
+                <line x1="180" y1="75" x2="241" y2="75" stroke="#58a6ff" stroke-width="2" marker-end="url(#ha)"/>
+                <line x1="415" y1="75" x2="476" y2="75" stroke="#58a6ff" stroke-width="2" marker-end="url(#ha)"/>
+                <line x1="690" y1="75" x2="751" y2="75" stroke="#58a6ff" stroke-width="2" marker-end="url(#ha)"/>
+                <text x="445" y="65" fill="#58a6ff" font-size="11" text-anchor="middle">hash</text>
+                <text x="720" y="65" fill="#58a6ff" font-size="11" text-anchor="middle">copia</text>
+
+                <rect x="245" y="185" width="705" height="95" rx="10" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.15)"/>
+                <text x="597" y="213" fill="#c9d1d9" font-size="14" font-weight="bold" text-anchor="middle">Antes y después de cada análisis: recalcular y comparar con el acta</text>
+                <text x="420" y="245" fill="#3fb950" font-size="13" text-anchor="middle" font-family="monospace">9f2c…a41e = 9f2c…a41e</text>
+                <text x="420" y="266" fill="#3fb950" font-size="12" text-anchor="middle">✓ la evidencia no cambió</text>
+                <text x="775" y="245" fill="#f85149" font-size="13" text-anchor="middle" font-family="monospace">9f2c…a41e ≠ 03b7…c9d2</text>
+                <text x="775" y="266" fill="#f85149" font-size="12" text-anchor="middle">✕ algo la modificó: hay que explicarlo</text>
+                <path d="M852 120 V181" fill="none" stroke="#3fb950" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#hg)"/>
+                <path d="M585 130 V181" fill="none" stroke="#d2a8ff" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#hg)"/>
+
+                <text x="95" y="215" fill="#8b949e" font-size="12" text-anchor="middle">El original se guarda</text>
+                <text x="95" y="233" fill="#8b949e" font-size="12" text-anchor="middle">y no se vuelve a tocar</text>
+                <path d="M95 120 V195" fill="none" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="3 3"/>
+            </svg>
+        </div>
+        <p class="caption">Los valores de hash del diagrama están abreviados; un SHA-256 real tiene 64 caracteres hexadecimales.</p>
+        <div class="warning-box">
+            <p>Un detalle que sorprende: <strong>abrir o leer</strong> un archivo en un sistema montado con escritura habilitada puede modificar la evidencia, porque el sistema operativo actualiza fechas de último acceso. Por eso la copia se analiza con herramientas que leen la imagen sin montarla, o montándola en <strong>solo lectura</strong>.</p>
+        </div>
+        <p>En Linux, calcular un hash es un solo comando: <code>sha256sum archivo</code>. En Windows: <code>Get-FileHash archivo -Algorithm SHA256</code> en PowerShell.</p>
+    </section>
+
+    <!-- VOLATILIDAD -->
+    <section id="volatilidad">
+        <h2>El orden de volatilidad</h2>
+        <p>No toda la evidencia dura lo mismo. La <a href="https://www.incibe.es/incibe-cert/blog/rfc3227" target="_blank">RFC 3227</a> propone recolectar primero lo que desaparece antes. Si el equipo está encendido, apagarlo "para llevarlo" destruye todo lo de arriba de esta lista.</p>
+        <div class="diagram">
+            <svg viewBox="0 0 960 400" role="img" aria-label="Lista ordenada de evidencia, de la más volátil a la menos volátil, según la RFC 3227">
+                <defs>
+                    <linearGradient id="vg" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="#f85149"/>
+                        <stop offset="0.5" stop-color="#f0883e"/>
+                        <stop offset="1" stop-color="#3fb950"/>
+                    </linearGradient>
+                </defs>
+                <rect x="20" y="20" width="16" height="360" rx="8" fill="url(#vg)"/>
+                <text x="50" y="34" fill="#f85149" font-size="13" font-weight="bold">dura nanosegundos</text>
+                <text x="50" y="378" fill="#3fb950" font-size="13" font-weight="bold">dura años</text>
+
+                <g font-size="14">
+                    <rect x="200" y="20" width="740" height="40" rx="8" fill="rgba(248,81,73,0.12)" stroke="#f85149"/>
+                    <text x="220" y="45" fill="#c9d1d9"><tspan font-weight="bold">1.</tspan> Registros del procesador y caché</text>
+
+                    <rect x="200" y="72" width="740" height="40" rx="8" fill="rgba(248,81,73,0.09)" stroke="#f85149"/>
+                    <text x="220" y="97" fill="#c9d1d9"><tspan font-weight="bold">2.</tspan> Tabla de ruteo, caché ARP, procesos en ejecución, estadísticas del kernel, memoria RAM</text>
+
+                    <rect x="200" y="124" width="740" height="40" rx="8" fill="rgba(240,136,62,0.1)" stroke="#f0883e"/>
+                    <text x="220" y="149" fill="#c9d1d9"><tspan font-weight="bold">3.</tspan> Sistemas de archivos temporales</text>
+
+                    <rect x="200" y="176" width="740" height="40" rx="8" fill="rgba(240,136,62,0.08)" stroke="#f0883e"/>
+                    <text x="220" y="201" fill="#c9d1d9"><tspan font-weight="bold">4.</tspan> Disco</text>
+
+                    <rect x="200" y="228" width="740" height="40" rx="8" fill="rgba(210,168,255,0.08)" stroke="#d2a8ff"/>
+                    <text x="220" y="253" fill="#c9d1d9"><tspan font-weight="bold">5.</tspan> Registros remotos y datos de monitoreo (logs centralizados, métricas)</text>
+
+                    <rect x="200" y="280" width="740" height="40" rx="8" fill="rgba(63,185,80,0.08)" stroke="#3fb950"/>
+                    <text x="220" y="305" fill="#c9d1d9"><tspan font-weight="bold">6.</tspan> Configuración física y topología de la red</text>
+
+                    <rect x="200" y="332" width="740" height="40" rx="8" fill="rgba(63,185,80,0.1)" stroke="#3fb950"/>
+                    <text x="220" y="357" fill="#c9d1d9"><tspan font-weight="bold">7.</tspan> Medios de archivo (backups, cintas)</text>
+                </g>
+            </svg>
+        </div>
+        <p class="caption">Orden de volatilidad según la RFC 3227 (<em>Guidelines for Evidence Collection and Archiving</em>).</p>
+        <div class="quote-box">
+            <p>Conexión con la materia: el punto 2 es exactamente lo que miramos con <code>ip route</code>, <code>ip neigh</code>, <code>ps</code> y <code>/proc</code>. Y el punto 5 es lo que armamos en la etapa 6 del hilo conductor con Prometheus: datos que viven fuera del equipo comprometido.</p>
+        </div>
+    </section>
+
+    <!-- TIPOS -->
+    <section id="tipos">
+        <h2>Tipos de forense</h2>
+        <div class="card-grid">
+            <div class="card"><h4>De disco y sistemas de archivos</h4><p>Imágenes de discos y pendrives: archivos, archivos borrados, metadatos, fechas. Es la más clásica.</p></div>
+            <div class="card"><h4>De memoria (RAM)</h4><p>Procesos, conexiones de red y programas que estaban vivos al momento de la captura. Se pierde al apagar el equipo.</p></div>
+            <div class="card"><h4>De red</h4><p>Capturas de tráfico, registros de firewall y de servidores web. Reconstruye comunicaciones: quién habló con quién y cuándo.</p></div>
+            <div class="card"><h4>De dispositivos móviles</h4><p>Teléfonos y tablets: mensajería, ubicaciones, fotos. Con herramientas y restricciones propias (cifrado, bloqueo).</p></div>
+            <div class="card"><h4>De aplicaciones y nube</h4><p>Registros de aplicaciones, bases de datos y servicios en la nube, donde a veces no hay "un disco" que copiar.</p></div>
+        </div>
+    </section>
+
+    <!-- BORRADO -->
+    <section id="borrado">
+        <h2>¿Qué pasa cuando se borra un archivo?</h2>
+        <p>En la mayoría de los sistemas de archivos, borrar un archivo <strong>no borra sus datos</strong>. Lo que se modifica es el índice: la entrada del archivo se marca como eliminada y su espacio queda disponible. Los datos siguen en el disco hasta que otro archivo ocupe ese lugar.</p>
+        <div class="diagram">
+            <svg viewBox="0 0 960 360" role="img" aria-label="Tres momentos de un archivo: guardado, borrado con los datos todavía presentes, y sobrescrito por otro archivo">
+                <g font-size="13">
+                    <!-- Fila 1 -->
+                    <text x="20" y="60" fill="#3fb950" font-size="15" font-weight="bold">1. Guardado</text>
+                    <rect x="200" y="30" width="200" height="50" rx="8" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                    <text x="300" y="52" fill="#58a6ff" text-anchor="middle" font-weight="bold">Índice</text>
+                    <text x="300" y="70" fill="#c9d1d9" text-anchor="middle">informe.txt → bloques 4-6</text>
+                    <g stroke="rgba(255,255,255,0.25)">
+                        <rect x="460" y="30" width="60" height="50" fill="rgba(255,255,255,0.03)"/>
+                        <rect x="520" y="30" width="60" height="50" fill="rgba(255,255,255,0.03)"/>
+                        <rect x="580" y="30" width="60" height="50" fill="rgba(255,255,255,0.03)"/>
+                        <rect x="640" y="30" width="60" height="50" fill="rgba(63,185,80,0.4)"/>
+                        <rect x="700" y="30" width="60" height="50" fill="rgba(63,185,80,0.4)"/>
+                        <rect x="760" y="30" width="60" height="50" fill="rgba(63,185,80,0.4)"/>
+                        <rect x="820" y="30" width="60" height="50" fill="rgba(255,255,255,0.03)"/>
+                    </g>
+                    <text x="730" y="60" fill="#c9d1d9" text-anchor="middle">datos de informe.txt</text>
+
+                    <!-- Fila 2 -->
+                    <text x="20" y="175" fill="#f0883e" font-size="15" font-weight="bold">2. Borrado</text>
+                    <rect x="200" y="145" width="200" height="50" rx="8" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                    <text x="300" y="167" fill="#58a6ff" text-anchor="middle" font-weight="bold">Índice</text>
+                    <text x="300" y="185" fill="#8b949e" text-anchor="middle" text-decoration="line-through">informe.txt</text>
+                    <text x="300" y="215" fill="#f0883e" text-anchor="middle" font-size="12">entrada marcada como borrada</text>
+                    <g stroke="rgba(255,255,255,0.25)">
+                        <rect x="460" y="145" width="60" height="50" fill="rgba(255,255,255,0.03)"/>
+                        <rect x="520" y="145" width="60" height="50" fill="rgba(255,255,255,0.03)"/>
+                        <rect x="580" y="145" width="60" height="50" fill="rgba(255,255,255,0.03)"/>
+                        <rect x="640" y="145" width="60" height="50" fill="rgba(63,185,80,0.18)" stroke-dasharray="4 3"/>
+                        <rect x="700" y="145" width="60" height="50" fill="rgba(63,185,80,0.18)" stroke-dasharray="4 3"/>
+                        <rect x="760" y="145" width="60" height="50" fill="rgba(63,185,80,0.18)" stroke-dasharray="4 3"/>
+                        <rect x="820" y="145" width="60" height="50" fill="rgba(255,255,255,0.03)"/>
+                    </g>
+                    <text x="730" y="175" fill="#c9d1d9" text-anchor="middle">los datos siguen ahí</text>
+                    <text x="730" y="215" fill="#3fb950" text-anchor="middle" font-size="12">marcados como "espacio libre": todavía recuperables</text>
+
+                    <!-- Fila 3 -->
+                    <text x="20" y="290" fill="#f85149" font-size="15" font-weight="bold">3. Sobrescrito</text>
+                    <rect x="200" y="260" width="200" height="50" rx="8" fill="rgba(88,166,255,0.1)" stroke="#58a6ff"/>
+                    <text x="300" y="282" fill="#58a6ff" text-anchor="middle" font-weight="bold">Índice</text>
+                    <text x="300" y="300" fill="#c9d1d9" text-anchor="middle">foto.jpg → bloques 4-5</text>
+                    <g stroke="rgba(255,255,255,0.25)">
+                        <rect x="460" y="260" width="60" height="50" fill="rgba(255,255,255,0.03)"/>
+                        <rect x="520" y="260" width="60" height="50" fill="rgba(255,255,255,0.03)"/>
+                        <rect x="580" y="260" width="60" height="50" fill="rgba(255,255,255,0.03)"/>
+                        <rect x="640" y="260" width="60" height="50" fill="rgba(88,166,255,0.4)"/>
+                        <rect x="700" y="260" width="60" height="50" fill="rgba(88,166,255,0.4)"/>
+                        <rect x="760" y="260" width="60" height="50" fill="rgba(63,185,80,0.18)" stroke-dasharray="4 3"/>
+                        <rect x="820" y="260" width="60" height="50" fill="rgba(255,255,255,0.03)"/>
+                    </g>
+                    <text x="700" y="290" fill="#c9d1d9" text-anchor="middle">foto.jpg</text>
+                    <text x="730" y="332" fill="#f85149" text-anchor="middle" font-size="12">de informe.txt solo queda un fragmento (bloque 6)</text>
+                </g>
+            </svg>
+        </div>
+        <p class="caption">Esquema simplificado. Cada sistema de archivos (FAT, NTFS, ext4) lo resuelve con detalles distintos, y en discos SSD el comando TRIM puede hacer que el borrado físico ocurra mucho antes.</p>
+        <p>Por eso importa tanto la <strong>velocidad</strong> de la adquisición: cada minuto que un equipo sigue en uso, aumentan las chances de que algo se sobrescriba.</p>
+    </section>
+
+    <!-- EN NUESTRA INFRAESTRUCTURA -->
+    <section id="hilo">
+        <h2>La forense en la infraestructura que ya armamos</h2>
+        <p>A lo largo del hilo conductor de la materia generamos, sin llamarla así, mucha de la evidencia que después analizaría un perito:</p>
+        <table>
+            <tr><th>Lo que ya hicimos</th><th>Qué evidencia deja</th><th>Tipo de forense</th></tr>
+            <tr><td>Etapa 5: <code>grep</code> y <code>awk</code> sobre logs de la app y el <code>general_log</code> de MySQL</td><td>Quién hizo cada petición, cuándo, con qué parámetros y qué respondió el servidor</td><td>De red y de aplicaciones</td></tr>
+            <tr><td>Etapa 6: Prometheus y Grafana</td><td>Métricas guardadas en otro sistema: un pico de tráfico o de CPU queda registrado aunque el servidor se borre</td><td>Registros remotos (punto 5 de la RFC 3227)</td></tr>
+            <tr><td>Escenario de sistemas operativos: <code>ps</code>, <code>/proc</code>, hilos, memoria</td><td>Procesos y conexiones vivas: lo primero que se pierde al apagar</td><td>De memoria</td></tr>
+            <tr><td>Contenedores con Docker</td><td>Un contenedor borrado se lleva su sistema de archivos, salvo lo que esté en volúmenes o en logs externos</td><td>De disco y de aplicaciones</td></tr>
+        </table>
+        <div class="warning-box">
+            <p>La lección de diseño: una infraestructura que <strong>guarda sus registros fuera del propio servidor</strong> y con la hora sincronizada (NTP) es mucho más fácil de investigar después de un incidente. Si el atacante controla el único lugar donde están los logs, puede borrarlos.</p>
+        </div>
+    </section>
+
+    <!-- MARCO LEGAL -->
+    <section id="marco-legal">
+        <h2>Marco legal y normas</h2>
+        <table>
+            <tr><th>Norma</th><th>Qué es</th></tr>
+            <tr><td><a href="https://www.argentina.gob.ar/normativa/nacional/ley-26388-141790/texto" target="_blank">Ley 26.388</a> (2008)</td><td>Incorporó los delitos informáticos al Código Penal argentino: acceso indebido a sistemas, daño informático, fraude informático, violación de comunicaciones electrónicas, entre otros. Resumen en lenguaje simple: <a href="https://www.argentina.gob.ar/justicia/derechofacil/leysimple/delitos-informaticos" target="_blank">Ley simple: delitos informáticos</a>.</td></tr>
+            <tr><td>Ley 27.411 (2017)</td><td>Aprobó la adhesión de Argentina al Convenio de Budapest sobre ciberdelito (cooperación internacional y preservación de datos).</td></tr>
+            <tr><td><a href="https://www.argentina.gob.ar/normativa/nacional/resoluci%C3%B3n-234-2016-262787/texto" target="_blank">Resolución 234/2016</a> del Ministerio de Seguridad</td><td>Protocolo general de actuación para las fuerzas policiales y de seguridad en la recolección de pruebas en ciberdelitos. Corto y claro: no modificar el original, personal capacitado, cadena de custodia.</td></tr>
+            <tr><td><a href="https://www.incibe.es/incibe-cert/blog/rfc3227" target="_blank">RFC 3227</a></td><td>Directrices para la recolección y el almacenamiento de evidencia, incluido el orden de volatilidad.</td></tr>
+            <tr><td><a href="https://csrc.nist.gov/pubs/sp/800/86/final" target="_blank">NIST SP 800-86</a></td><td>Guía para integrar técnicas forenses en la respuesta a incidentes, desde la mirada de TI (en inglés, gratuita).</td></tr>
+            <tr><td>ISO/IEC 27037</td><td>Norma internacional para la identificación, recolección, adquisición y preservación de evidencia digital (paga).</td></tr>
+        </table>
+    </section>
+
+    <!-- RECURSOS -->
+    <section id="recursos">
+        <h2>Recursos gratuitos</h2>
+        <p>Priorizamos material en español. Las etiquetas indican el idioma de cada recurso.</p>
+
+        <h3>Guías en español</h3>
+        <div class="resource">
+            <h4><a href="https://www.pensamientopenal.com.ar/doctrina/47360-guia-integral-empleo-informatica-forense-proceso-penal" target="_blank">Guía Integral de Empleo de la Informática Forense en el Proceso Penal (PAIF-PURI)</a><span class="lang es">ES</span></h4>
+            <p>De InFo-Lab (Universidad FASTA, Mar del Plata). El Ministerio Público de la Provincia de Buenos Aires la adoptó como estándar de trabajo. Es la referencia argentina más completa.</p>
+        </div>
+        <div class="resource">
+            <h4><a href="https://info-lab.org.ar/libros-y-guias/" target="_blank">InFo-Lab: libros y guías</a><span class="lang es">ES</span></h4>
+            <p>Todas las publicaciones del laboratorio se descargan gratis en PDF. Recomendadas: <em>El rastro digital del delito</em> y la <em>Guía de actuación para la adquisición, preservación y presentación de la prueba digital</em>.</p>
+        </div>
+        <div class="resource">
+            <h4><a href="https://www.incibe.es/sites/default/files/contenidos/guias/doc/incibe_toma_evidencias_analisis_forense.pdf" target="_blank">INCIBE: Toma de evidencias en entornos Windows</a><span class="lang es">ES</span></h4>
+            <p>Guía práctica del Instituto Nacional de Ciberseguridad de España sobre el proceso forense y la recolección de evidencia. Está escrita sobre Windows 7 y 8, pero la metodología sigue vigente.</p>
+        </div>
+        <div class="resource">
+            <h4><a href="https://www.oas.org/juridico/english/cyb_pan_manual.pdf" target="_blank">Manual de Manejo de Evidencias Digitales y Entornos Informáticos</a><span class="lang es">ES</span></h4>
+            <p>Manual procedimental (Panamá), publicado por la OEA.</p>
+        </div>
+
+        <h3>Cursos</h3>
+        <div class="resource">
+            <h4><a href="https://www.udemy.com/course/introduccion-informatica-forense-herramientas-metodologia-chirou/" target="_blank">Introducción a la Informática Forense. Conoce de qué se trata</a><span class="lang es">ES</span></h4>
+            <p>Curso gratuito de Álvaro Chirou en Udemy (sin certificado): definición, áreas de aplicación, herramientas por área y demostraciones. Buen primer contacto. Reseña en <a href="https://www.welivesecurity.com/la-es/2018/09/03/curso-online-gratuito-informatica-forense/" target="_blank">WeLiveSecurity (ESET)</a>.</p>
+        </div>
+        <div class="resource">
+            <h4><a href="https://achirou.com/cursos-gratis/" target="_blank">Cursos gratis de Álvaro Chirou</a><span class="lang es">ES</span></h4>
+            <p>Otros cursos introductorios de seguridad, además de forense.</p>
+        </div>
+        <div class="resource">
+            <h4><a href="https://tryhackme.com/room/introdigitalforensics" target="_blank">TryHackMe: Intro to Digital Forensics</a><span class="lang en">EN</span></h4>
+            <p>Sala gratuita con laboratorio en el navegador: el proceso forense aplicado a un caso práctico.</p>
+        </div>
+        <div class="resource">
+            <h4><a href="https://tryhackme.com/room/digitalforensicsfundamentals" target="_blank">TryHackMe: Digital Forensics Fundamentals</a><span class="lang en">EN</span></h4>
+            <p>Parte de la ruta gratuita <em>Cyber Security 101</em>.</p>
+        </div>
+
+        <h3>Herramientas libres o gratuitas</h3>
+        <div class="resource">
+            <h4><a href="https://www.sleuthkit.org/autopsy/" target="_blank">Autopsy y The Sleuth Kit</a><span class="lang en">EN</span></h4>
+            <p>El estándar libre para analizar imágenes de disco. Autopsy es la interfaz gráfica; The Sleuth Kit, las herramientas de línea de comandos.</p>
+        </div>
+        <div class="resource">
+            <h4><a href="https://www.caine-live.net/" target="_blank">CAINE</a><span class="lang en">EN</span></h4>
+            <p>Distribución Linux <em>live</em> pensada para forense: arranca sin montar los discos con escritura habilitada.</p>
+        </div>
+        <div class="resource">
+            <h4><a href="https://volatilityfoundation.org/" target="_blank">Volatility</a><span class="lang en">EN</span></h4>
+            <p>Análisis de capturas de memoria RAM: procesos, conexiones y módulos que estaban activos.</p>
+        </div>
+        <div class="resource">
+            <h4><a href="https://ericzimmerman.github.io/" target="_blank">Herramientas de Eric Zimmerman</a><span class="lang en">EN</span></h4>
+            <p>Utilidades gratuitas para interpretar artefactos de Windows: registro, archivos prefetch, accesos directos.</p>
+        </div>
+
+        <h3>Datos para practicar</h3>
+        <div class="resource">
+            <h4><a href="https://cfreds.nist.gov/" target="_blank">NIST CFReDS</a><span class="lang en">EN</span></h4>
+            <p>Imágenes de disco y casos de referencia armados por el NIST para practicar y validar herramientas.</p>
+        </div>
+        <div class="resource">
+            <h4><a href="https://digitalcorpora.org/" target="_blank">Digital Corpora</a><span class="lang en">EN</span></h4>
+            <p>Corpus de discos, teléfonos y escenarios completos pensados para la enseñanza.</p>
+        </div>
+    </section>
+
+    <!-- PREGUNTAS -->
+    <section id="preguntas">
+        <h2>Para pensar</h2>
+        <ol class="questions">
+            <li>¿Por qué el análisis se hace sobre una copia y no sobre el original, si la copia es idéntica?</li>
+            <li>Un perito recalcula el hash de la imagen al terminar y no coincide con el del acta. ¿Qué consecuencias tiene eso? ¿Qué pudo haber pasado?</li>
+            <li>Llegás a un servidor comprometido que está encendido. ¿Lo apagás? ¿Qué se pierde si lo hacés, según el orden de volatilidad?</li>
+            <li>¿Por qué un archivo borrado muchas veces se puede recuperar? ¿Qué hace que a veces no se pueda?</li>
+            <li>De la infraestructura del hilo conductor, ¿qué cambiarías para que un incidente sea más fácil de investigar después?</li>
+        </ol>
+    </section>
+
+    <footer>
+        Terciario Urquiza · Infraestructura de Redes · Recursos verificados en septiembre de 2026
+    </footer>
+
+</div>
+</body>
+</html>
