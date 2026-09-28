@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de Markov</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f6f2;
+    --panel: #ffffff;
+    --ink: #1f2328;
+    --muted: #5d646d;
+    --line: #d9d6cc;
+    --accent: #1f5fa8;
+    --accent-soft: #e3edf8;
+    --mark: #fbe7a1;
+    --warn: #9a3b1b;
+    --warn-soft: #fbeae3;
+    --bar: #9dbbe0;
+    --bar-chosen: #1f5fa8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15181c;
+      --panel: #1d2126;
+      --ink: #e6e8eb;
+      --muted: #9aa2ab;
+      --line: #343a42;
+      --accent: #7fb0ea;
+      --accent-soft: #23344a;
+      --mark: #5a4a12;
+      --warn: #f0a07f;
+      --warn-soft: #3a241b;
+      --bar: #3d5a80;
+      --bar-chosen: #7fb0ea;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15181c;
+    --panel: #1d2126;
+    --ink: #e6e8eb;
+    --muted: #9aa2ab;
+    --line: #343a42;
+    --accent: #7fb0ea;
+    --accent-soft: #23344a;
+    --mark: #5a4a12;
+    --warn: #f0a07f;
+    --warn-soft: #3a241b;
+    --bar: #3d5a80;
+    --bar-chosen: #7fb0ea;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 980px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.7rem; margin: 0 0 4px; }
+  h2 { font-size: 1.15rem; margin: 0 0 10px; }
+  .sub { color: var(--muted); margin: 0 0 20px; }
+  .tag {
+    display: inline-block; font-size: .75rem; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--warn); border: 1px solid var(--warn); border-radius: 4px; padding: 1px 6px;
+    margin-bottom: 8px;
+  }
+  .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 16px; margin-bottom: 16px;
+  }
+  .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--accent); color: var(--panel);
+    font-size: .85rem; font-weight: 700; margin-right: 6px;
+  }
+  .hint { color: var(--muted); font-size: .92rem; margin: 6px 0 0; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  label { font-size: .92rem; }
+  select, input[type="text"], textarea, button {
+    font: inherit; color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px;
+  }
+  textarea { width: 100%; min-height: 140px; resize: vertical; margin-top: 10px; font-size: .92rem; }
+  button { cursor: pointer; background: var(--accent-soft); border-color: var(--accent); }
+  button.primary { background: var(--accent); color: var(--panel); font-weight: 600; }
+  button:disabled { opacity: .45; cursor: default; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .seg button { border: 0; border-radius: 0; background: var(--bg); padding: 6px 12px; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--panel); }
+  .stats { font-size: .88rem; color: var(--muted); margin-top: 8px; }
+
+  #salida {
+    min-height: 3.2em; font-size: 1.15rem; line-height: 1.9; padding: 10px 12px;
+    background: var(--bg); border: 1px solid var(--line); border-radius: 6px; margin: 12px 0;
+  }
+  #salida .t { border-radius: 3px; padding: 1px 1px; cursor: pointer; }
+  #salida .t:hover { background: var(--accent-soft); }
+  #salida .t.sel { background: var(--mark); }
+  #salida .t.ini { color: var(--muted); cursor: default; }
+  #salida .t.ini:hover { background: none; }
+  #salida .t.ult { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 4px; }
+  .vacio { color: var(--muted); font-style: italic; font-size: 1rem; }
+
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .cols { grid-template-columns: 1fr; } }
+  .box { border: 1px solid var(--line); border-radius: 6px; padding: 12px; min-height: 120px; }
+  .box h3 { font-size: .95rem; margin: 0 0 8px; }
+  .opt { display: grid; grid-template-columns: minmax(70px, auto) 1fr 3.5em; gap: 8px; align-items: center; font-size: .92rem; margin: 3px 0; }
+  .opt .w { font-weight: 600; overflow-wrap: anywhere; }
+  .opt .b { height: 12px; background: var(--bar); border-radius: 2px; }
+  .opt.chosen .b { background: var(--bar-chosen); }
+  .opt.chosen .w { color: var(--accent); }
+  .opt .p { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .ctx { font-family: ui-monospace, Menlo, Consolas, monospace; background: var(--accent-soft); padding: 0 4px; border-radius: 3px; }
+  .aviso { background: var(--warn-soft); border-left: 3px solid var(--warn); padding: 8px 10px; border-radius: 4px; font-size: .95rem; }
+  .fuente { font-size: .92rem; margin: 6px 0; padding-left: 10px; border-left: 2px solid var(--line); }
+  .fuente mark { background: var(--mark); color: inherit; padding: 0 2px; border-radius: 2px; }
+
+  details summary { cursor: pointer; font-weight: 600; }
+  #tabla { max-height: 360px; overflow: auto; margin-top: 10px; font-size: .9rem; }
+  #tabla table { border-collapse: collapse; width: 100%; }
+  #tabla td { border-top: 1px solid var(--line); padding: 4px 6px; vertical-align: top; }
+  #tabla td:first-child { white-space: nowrap; }
+  .muted { color: var(--muted); }
+  .adv p { margin: 0 0 8px; }
+  .adv ul { margin: 0; padding-left: 20px; }
+</style>
+</head>
+<body>
+<main>
+  <span class="tag">Prototipo</span>
+  <h1>Un modelo de lenguaje a mano</h1>
+  <p class="sub">Un generador de texto que aprende contando qué palabra sigue a cuál. Todo corre en tu navegador: el texto que uses no sale de esta página.</p>
+
+  <!-- 1. Datos -->
+  <section class="panel">
+    <h2><span class="num">1</span>Los datos: el texto de partida</h2>
+    <div class="row">
+      <label for="corpusSel">Texto:</label>
+      <select id="corpusSel"></select>
+    </div>
+    <p class="hint" id="corpusHint"></p>
+    <textarea id="corpus" spellcheck="false" aria-label="Texto de partida"></textarea>
+    <div class="row" style="margin-top:8px">
+      <button id="btnEntrenar">Entrenar con este texto</button>
+      <span class="hint" style="margin:0">Podés editarlo o pegar uno propio. No pegues datos personales de nadie.</span>
+    </div>
+  </section>
+
+  <!-- 2. Entrenamiento -->
+  <section class="panel">
+    <h2><span class="num">2</span>El entrenamiento: contar</h2>
+    <div class="row">
+      <span>Mirar las últimas</span>
+      <div class="seg" role="group" aria-label="Largo del contexto">
+        <button data-n="1">1</button><button data-n="2">2</button><button data-n="3">3</button>
+      </div>
+      <span>palabras para decidir la siguiente.</span>
+    </div>
+    <p class="stats" id="stats"></p>
+    <details>
+      <summary id="tablaTit">Ver la tabla (el modelo)</summary>
+      <p class="hint">Cada fila es un contexto que apareció en el texto; a la derecha, qué palabras lo siguieron y cuántas veces. Esta tabla es todo lo que el modelo "sabe".</p>
+      <input type="text" id="tablaBuscar" placeholder="Buscar un contexto, p. ej. «está en»" style="margin-top:8px;width:100%">
+      <div id="tabla"></div>
+    </details>
+  </section>
+
+  <!-- 3. Uso -->
+  <section class="panel">
+    <h2><span class="num">3</span>El uso: generar sorteando la palabra siguiente</h2>
+    <div class="row">
+      <label for="semilla">Empezar con:</label>
+      <input type="text" id="semilla" placeholder="(vacío: un comienzo de oración al azar)" style="flex:1;min-width:200px">
+    </div>
+    <div class="row" style="margin-top:10px">
+      <span>Cómo elige:</span>
+      <div class="seg" role="group" aria-label="Modo de elección">
+        <button data-modo="sortear">Sortea según las veces</button><button data-modo="max">Siempre la más frecuente</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="primary" id="btnPaso">Siguiente palabra</button>
+      <button id="btnVarias">Generar 30 palabras</button>
+      <button id="btnReiniciar">Empezar de nuevo</button>
+      <button id="btnCopiar">Copiar resultado</button>
+    </div>
+    <div id="salida" aria-live="polite"></div>
+    <div class="cols">
+      <div class="box">
+        <h3>La última decisión</h3>
+        <div id="decision"><p class="vacio">Tocá «Siguiente palabra».</p></div>
+      </div>
+      <div class="box">
+        <h3>¿De dónde salió esta palabra?</h3>
+        <div id="fuente"><p class="vacio">Tocá una palabra del texto generado.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel adv">
+    <h2>Lo que este generador no es</h2>
+    <p>Un asistente como los que usan tus estudiantes hace <strong>la misma tarea</strong> —predecir lo que sigue— con <strong>otra maquinaria</strong>:</p>
+    <ul>
+      <li>Trabaja con fragmentos de palabras, no con palabras enteras.</li>
+      <li>Mira miles de fragmentos hacia atrás, no una, dos o tres palabras.</li>
+      <li>No busca el contexto exacto en una tabla: una red neuronal le permite responder ante contextos que nunca vio, parecidos a otros que sí vio. Esta tabla, en cambio, se traba.</li>
+      <li>Después de ese entrenamiento tiene otro, que lo ajusta para conversar y seguir instrucciones.</li>
+    </ul>
+    <p style="margin-top:8px">Si en lugar de eso comprende algo, o no, es una pregunta abierta.</p>
+  </section>
+</main>
+
+<script>
+(() => {
+  const CORPUS = {
+    hechos: {
+      nombre: 'Hechos de geografía',
+      hint: 'Todas las frases de este texto son verdaderas. Generá hasta encontrar una frase gramatical y falsa, y buscá de dónde salió cada palabra.',
+      texto:
+`Rosario está en la provincia de Santa Fe. Ushuaia está en la provincia de Tierra del Fuego. Bariloche está en la provincia de Río Negro. Mendoza está al pie de la cordillera de los Andes. La ciudad de Córdoba es la capital de la provincia de Córdoba. La ciudad de Santa Fe es la capital de la provincia de Santa Fe. Paraná es la capital de la provincia de Entre Ríos. Salta es la capital de la provincia de Salta. El río Paraná pasa por Rosario y por Corrientes. Las cataratas del Iguazú están en la provincia de Misiones. En la provincia de Mendoza se produce mucho vino. En la provincia de Tucumán se produce mucho azúcar. En Ushuaia nieva en invierno. El Aconcagua está en la provincia de Mendoza. El Aconcagua es la montaña más alta de América.`
+    },
+    oficios: {
+      nombre: 'Oficios',
+      hint: 'Probá empezar con «La ingeniera» o «El enfermero». Ninguna frase dice que no existan: simplemente no aparecen.',
+      texto:
+`El ingeniero revisó los planos de la obra. El ingeniero calculó la estructura del puente. La enfermera atendió a los pacientes de la guardia. La enfermera controló la presión del paciente. El médico firmó el alta del paciente. El director habló en el acto de la escuela. La maestra corrigió las tareas de los chicos. La maestra preparó el acto de la escuela. El programador escribió el código del sistema. El programador corrigió el error del sistema. La secretaria atendió el teléfono de la escuela. El jefe de la obra revisó los planos del puente.`
+    },
+    recetas: {
+      nombre: 'Recetas',
+      hint: 'Instrucciones de cocina. Compará cómo suena lo generado con 1, 2 y 3 palabras de contexto.',
+      texto:
+`Para hacer un bizcochuelo se baten los huevos con el azúcar. Se agrega la harina de a poco y se mezcla con cuidado. Se pone la mezcla en un molde enmantecado. Se cocina en el horno a temperatura moderada durante cuarenta minutos. Para hacer mate se llena el mate con yerba hasta las dos terceras partes. Se moja la yerba con agua tibia y se espera un minuto. Se pone la bombilla y se ceba con agua caliente, sin que hierva. Para hacer una salsa se pica la cebolla y se rehoga en aceite. Se agrega el tomate y se cocina a fuego bajo durante veinte minutos.`
+    },
+  };
+  CORPUS.mezcla = {
+    nombre: 'Mezcla: geografía y recetas',
+    hint: 'Dos textos juntos. El modelo es exactamente lo que se le dio: fijate en qué palabras pasa de uno al otro.',
+    texto: CORPUS.hechos.texto + '\n\n' + CORPUS.recetas.texto,
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const estado = {
+    corpusId: 'hechos', n: 2, modo: 'sortear',
+    tokens: [], filas: new Map(),
+    salida: [],      // {w, ini:bool, clave, opciones, elegido}
+    ctx: null, trabado: null, sel: -1,
+  };
+
+  // ---------- texto <-> palabras ----------
+  const tokenizar = (s) => s.match(/[\p{L}\p{N}]+|[.,;:¿?¡!()«»"]/gu) || [];
+  const SIN_ESPACIO_ANTES = new Set(['.', ',', ';', ':', '?', '!', ')', '»']);
+  const SIN_ESPACIO_DESPUES = new Set(['¿', '¡', '(', '«']);
+  const unir = (ws) => {
+    let s = '';
+    ws.forEach((w, i) => {
+      if (i > 0 && !SIN_ESPACIO_ANTES.has(w) && !SIN_ESPACIO_DESPUES.has(ws[i - 1])) s += ' ';
+      s += w;
+    });
+    return s;
+  };
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  // ---------- entrenamiento ----------
+  function entrenar() {
+    const toks = tokenizar($('corpus').value);
+    const filas = new Map();
+    // Si el texto termina en punto, el final empalma con el principio: después de la
+    // última oración viene otra, como en el resto del texto.
+    const circular = toks[toks.length - 1] === '.';
+    const T = toks.length;
+    const hasta = circular && T > estado.n ? T : T - estado.n;
+    for (let i = 0; i < hasta; i++) {
+      const clave = Array.from({ length: estado.n }, (_, k) => toks[(i + k) % T]).join(' ');
+      const sig = toks[(i + estado.n) % T];
+      if (!filas.has(clave)) filas.set(clave, new Map());
+      const fila = filas.get(clave);
+      if (!fila.has(sig)) fila.set(sig, { veces: 0, pos: [] });
+      const o = fila.get(sig);
+      o.veces++;
+      o.pos.push(i);
+    }
+    estado.tokens = toks;
+    estado.filas = filas;
+    const distintas = new Set(toks).size;
+    const conUna = [...filas.values()].filter((f) => f.size === 1).length;
+    $('stats').textContent = toks.length
+      ? `${toks.length} palabras y signos (${distintas} distintos). La tabla tiene ${filas.size} filas; en ${conUna} de ellas hay una sola continuación posible.`
+      : 'El texto está vacío.';
+    $('tablaTit').textContent = `Ver la tabla (el modelo): ${filas.size} filas`;
+    dibujarTabla();
+    reiniciar();
+  }
+
+  function dibujarTabla() {
+    const q = $('tablaBuscar').value.trim().toLowerCase();
+    const filas = [...estado.filas.entries()]
+      .filter(([k]) => !q || k.toLowerCase().includes(q))
+      .sort((a, b) => b[1].size - a[1].size || a[0].localeCompare(b[0], 'es'));
+    const max = 300;
+    const html = filas.slice(0, max).map(([k, fila]) => {
+      const ops = [...fila.entries()].sort((a, b) => b[1].veces - a[1].veces)
+        .map(([w, o]) => `${esc(w)} <span class="muted">(${o.veces})</span>`).join(' · ');
+      return `<tr><td><span class="ctx">${esc(k)}</span></td><td>${ops}</td></tr>`;
+    }).join('');
+    $('tabla').innerHTML = filas.length
+      ? `<table>${html}</table>${filas.length > max ? `<p class="hint">Se muestran ${max} de ${filas.length}. Buscá para filtrar.</p>` : ''}`
+      : '<p class="hint">No hay filas que coincidan.</p>';
+  }
+
+  // ---------- generación ----------
+  function comienzoAlAzar() {
+    const t = estado.tokens, n = estado.n, cand = [];
+    for (let i = 0; i + n < t.length; i++) {
+      if ((i === 0 || t[i - 1] === '.') && !t.slice(i, i + n).includes('.')) cand.push(i);
+    }
+    if (!cand.length) return null;
+    const i = cand[Math.floor(Math.random() * cand.length)];
+    return t.slice(i, i + n);
+  }
+
+  function arrancar() {
+    const semilla = tokenizar($('semilla').value);
+    let inicio;
+    if (!semilla.length) {
+      inicio = comienzoAlAzar();
+      if (!inicio) { estado.trabado = 'El texto es demasiado corto para este largo de contexto.'; return false; }
+    } else if (semilla.length >= estado.n) {
+      inicio = semilla;
+    } else {
+      // semilla más corta que el contexto: completar con una fila que empiece así
+      const pref = semilla.join(' ') + ' ';
+      const claves = [...estado.filas.keys()].filter((k) => k.startsWith(pref));
+      if (!claves.length) {
+        estado.salida = semilla.map((w) => ({ w, ini: true }));
+        estado.trabado = `En el texto de partida nunca aparece nada que empiece con <span class="ctx">${esc(semilla.join(' '))}</span>. El modelo no tiene con qué seguir.`;
+        return false;
+      }
+      inicio = claves[Math.floor(Math.random() * claves.length)].split(' ');
+    }
+    estado.salida = inicio.map((w) => ({ w, ini: true }));
+    estado.ctx = inicio.slice(-estado.n);
+    return true;
+  }
+
+  function paso() {
+    if (estado.trabado) return false;
+    if (!estado.salida.length && !arrancar()) { dibujar(); return false; }
+    const clave = estado.ctx.join(' ');
+    const fila = estado.filas.get(clave);
+    if (!fila) {
+      estado.trabado = `En el texto de partida, <span class="ctx">${esc(clave)}</span> nunca aparece seguido de nada. No hay fila en la tabla: el modelo no tiene con qué seguir.`;
+      return false;
+    }
+    const opciones = [...fila.entries()].map(([w, o]) => ({ w, veces: o.veces, pos: o.pos }))
+      .sort((a, b) => b.veces - a.veces);
+    let elegido;
+    if (estado.modo === 'max') {
+      elegido = opciones[0];
+    } else {
+      const total = opciones.reduce((s, o) => s + o.veces, 0);
+      let r = Math.random() * total;
+      elegido = opciones.find((o) => (r -= o.veces) < 0) || opciones[opciones.length - 1];
+    }
+    estado.salida.push({ w: elegido.w, ini: false, clave, opciones, elegido });
+    estado.ctx = [...estado.ctx, elegido.w].slice(-estado.n);
+    return true;
+  }
+
+  function reiniciar() {
+    estado.salida = []; estado.ctx = null; estado.trabado = null; estado.sel = -1;
+    dibujar();
+  }
+
+  // ---------- dibujo ----------
+  function dibujar() {
+    const s = estado.salida;
+    const ultimo = s.length - 1;
+    if (!s.length && !estado.trabado) {
+      $('salida').innerHTML = '<span class="vacio">Todavía no se generó nada.</span>';
+    } else {
+      $('salida').innerHTML = s.map((t, i) => {
+        const pre = i > 0 && !SIN_ESPACIO_ANTES.has(t.w) && !SIN_ESPACIO_DESPUES.has(s[i - 1].w) ? ' ' : '';
+        const cls = ['t', t.ini ? 'ini' : '', i === estado.sel ? 'sel' : '', i === ultimo && !t.ini ? 'ult' : ''].join(' ');
+        const title = t.ini ? 'Comienzo: no lo generó el modelo' : 'Tocá para ver de dónde salió';
+        return `${pre}<span class="${cls}" data-i="${i}" title="${title}">${esc(t.w)}</span>`;
+      }).join('');
+    }
+
+    const u = s[ultimo];
+    if (estado.trabado) {
+      $('decision').innerHTML = `<p class="aviso">${estado.trabado}</p>`;
+    } else if (u && !u.ini) {
+      const total = u.opciones.reduce((a, o) => a + o.veces, 0);
+      const maxV = u.opciones[0].veces;
+      $('decision').innerHTML =
+        `<p style="margin:0 0 8px">Contexto: <span class="ctx">${esc(u.clave)}</span>. En el texto lo siguieron:</p>` +
+        u.opciones.map((o) => {
+          const pct = Math.round((o.veces / total) * 100);
+          return `<div class="opt ${o === u.elegido ? 'chosen' : ''}"><span class="w">${esc(o.w)}</span>` +
+            `<span class="b" style="width:${Math.max(4, (o.veces / maxV) * 100)}%"></span><span class="p">${pct} %</span></div>`;
+        }).join('') +
+        `<p class="hint">${u.opciones.length === 1
+          ? 'Había una sola opción: no hubo nada que sortear.'
+          : (estado.modo === 'max' ? `Eligió la más frecuente: <strong>${esc(u.elegido.w)}</strong>.` : `Salió sorteada <strong>${esc(u.elegido.w)}</strong>.`)}</p>`;
+    } else {
+      $('decision').innerHTML = '<p class="vacio">Tocá «Siguiente palabra».</p>';
+    }
+
+    dibujarFuente();
+    const trabado = !!estado.trabado;
+    $('btnPaso').disabled = trabado;
+    $('btnVarias').disabled = trabado;
+  }
+
+  function dibujarFuente() {
+    const t = estado.salida[estado.sel];
+    if (!t || t.ini) {
+      $('fuente').innerHTML = '<p class="vacio">Tocá una palabra del texto generado.</p>';
+      return;
+    }
+    const toks = estado.tokens, n = estado.n, T = toks.length;
+    const citas = t.elegido.pos.slice(0, 6).map((p) => {
+      const fin = (p + n) % T;   // la secuencia puede empalmar el final con el principio
+      let a = p; while (a > 0 && toks[a - 1] !== '.') a--;
+      let b = fin; while (b < T - 1 && toks[b] !== '.') b++;
+      const antes = unir(toks.slice(a, p));
+      const medio = unir(fin > p ? toks.slice(p, fin + 1) : [...toks.slice(p), ...toks.slice(0, fin + 1)]);
+      const despues = toks.slice(fin + 1, b + 1);
+      const sepA = antes ? ' ' : '';
+      const sepD = despues.length && !SIN_ESPACIO_ANTES.has(despues[0]) ? ' ' : '';
+      return `<p class="fuente">${esc(antes)}${sepA}<mark>${esc(medio)}</mark>${sepD}${esc(unir(despues))}</p>`;
+    }).join('');
+    const extra = t.elegido.pos.length > 6 ? `<p class="hint">…y ${t.elegido.pos.length - 6} veces más.</p>` : '';
+    $('fuente').innerHTML =
+      `<p style="margin:0 0 6px"><strong>${esc(t.w)}</strong> salió de la fila <span class="ctx">${esc(t.clave)}</span>. ` +
+      `En el texto de partida, esa secuencia aparece ${t.elegido.veces === 1 ? 'una vez' : t.elegido.veces + ' veces'}:</p>` +
+      citas + extra;
+  }
+
+  // ---------- controles ----------
+  function marcar(sel, attr, val) {
+    document.querySelectorAll(sel).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset[attr] === String(val))));
+  }
+
+  function cargarCorpus(id) {
+    estado.corpusId = id;
+    $('corpusSel').value = id;
+    if (id !== 'propio') $('corpus').value = CORPUS[id].texto;
+    $('corpusHint').textContent = id === 'propio'
+      ? 'Tu texto. Cuanto más largo, más variado lo que genera.'
+      : CORPUS[id].hint;
+    entrenar();
+  }
+
+  Object.entries(CORPUS).forEach(([id, c]) => $('corpusSel').add(new Option(c.nombre, id)));
+  $('corpusSel').add(new Option('Texto propio', 'propio'));
+  $('corpusSel').addEventListener('change', (e) => {
+    if (e.target.value === 'propio') { $('corpus').value = ''; $('corpus').focus(); }
+    cargarCorpus(e.target.value);
+  });
+  $('corpus').addEventListener('input', () => {
+    if (estado.corpusId !== 'propio') {
+      estado.corpusId = 'propio';
+      $('corpusSel').value = 'propio';
+      $('corpusHint').textContent = 'Modificaste el texto: tocá «Entrenar con este texto» para que el modelo lo cuente de nuevo.';
+    }
+  });
+  $('btnEntrenar').addEventListener('click', entrenar);
+  $('tablaBuscar').addEventListener('input', dibujarTabla);
+
+  document.querySelectorAll('[data-n]').forEach((b) => b.addEventListener('click', () => {
+    estado.n = Number(b.dataset.n); marcar('[data-n]', 'n', estado.n); entrenar();
+  }));
+  document.querySelectorAll('[data-modo]').forEach((b) => b.addEventListener('click', () => {
+    estado.modo = b.dataset.modo; marcar('[data-modo]', 'modo', estado.modo);
+  }));
+
+  $('btnPaso').addEventListener('click', () => { paso(); estado.sel = -1; dibujar(); });
+  $('btnVarias').addEventListener('click', () => {
+    for (let i = 0; i < 30; i++) if (!paso()) break;
+    estado.sel = -1; dibujar();
+  });
+  $('btnReiniciar').addEventListener('click', reiniciar);
+  $('semilla').addEventListener('change', reiniciar);
+  $('salida').addEventListener('click', (e) => {
+    const el = e.target.closest('.t');
+    if (!el || el.classList.contains('ini')) return;
+    estado.sel = Number(el.dataset.i);
+    dibujar();
+  });
+
+  $('btnCopiar').addEventListener('click', async () => {
+    const nombre = estado.corpusId === 'propio' ? 'Texto propio' : CORPUS[estado.corpusId].nombre;
+    const modo = estado.modo === 'max' ? 'siempre la más frecuente' : 'sortea';
+    const txt = `Texto de partida: ${nombre} · Contexto: ${estado.n} palabra${estado.n > 1 ? 's' : ''} · Elección: ${modo}\n` +
+      `Texto generado: ${unir(estado.salida.map((t) => t.w))}`;
+    const b = $('btnCopiar');
+    try { await navigator.clipboard.writeText(txt); b.textContent = 'Copiado'; }
+    catch { b.textContent = 'No se pudo copiar'; }
+    setTimeout(() => { b.textContent = 'Copiar resultado'; }, 1600);
+  });
+
+  marcar('[data-n]', 'n', estado.n);
+  marcar('[data-modo]', 'modo', estado.modo);
+  cargarCorpus('hechos');
+})();
+</script>
+</body>
+</html>
