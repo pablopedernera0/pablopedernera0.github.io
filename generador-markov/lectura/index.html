@@ -227,7 +227,10 @@ python3 markov.py textos/hechos.txt              # genera con 2 palabras de cont
 python3 markov.py textos/oficios.txt 2 tabla     # muestra el modelo entero
 pip install markovify
 python3 con_markovify.py                         # una estrofa del Martín Fierro
-python3 con_markovify.py textos/martin-fierro.txt 3 copias</code></pre>
+python3 con_markovify.py textos/martin-fierro.txt 3 copias
+pip install flask
+python3 app.py                                   # página web sobre markov.py, en el puerto 5000</code></pre>
+    <p><code>app.py</code> es una página web mínima que no tiene lógica propia: llama a las mismas funciones de <code>markov.py</code>. Si se cambia <code>markov.py</code> y se recarga la página, se ve el efecto. Es, en chiquito, la relación entre un modelo y la aplicación que lo usa: un asistente conversacional también es una aplicación montada sobre un modelo.</p>
     <p>Para probarlo sin instalar nada, en el navegador: el escenario de Killercoda <a href="https://killercoda.com/pablop22/scenario/generador-markov">generador-markov</a> clona el repositorio, instala markovify y guía los mismos experimentos paso a paso en una terminal.</p>
   </section>
 
