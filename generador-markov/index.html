@@ -98,9 +98,11 @@
   }
   #salida .t { border-radius: 3px; padding: 1px 1px; cursor: pointer; }
   #salida .t:hover { background: var(--accent-soft); }
-  #salida .t.sel { background: var(--mark); }
+  #salida .t.sel, #salida .t.op.sel { background: var(--mark); }
   #salida .t.ini { color: var(--muted); cursor: default; }
   #salida .t.ini:hover { background: none; }
+  #salida .t.op, .leyenda-op { background: var(--accent-soft); box-shadow: inset 0 -2px 0 var(--accent); }
+  #salida .t.ini { font-style: italic; }
   #salida .t.ult { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 4px; }
   .vacio { color: var(--muted); font-style: italic; font-size: 1rem; }
 
@@ -189,6 +191,7 @@
       <button id="btnCopiar">Copiar resultado</button>
     </div>
     <div id="salida" aria-live="polite"></div>
+    <p class="hint" id="resumen" style="margin:-4px 0 12px"></p>
     <div class="cols">
       <div class="box">
         <h3>La última decisión</h3>
@@ -263,7 +266,7 @@
   };
 
   // ---------- texto <-> palabras ----------
-  const tokenizar = (s) => s.match(/[\p{L}\p{N}]+|[.,;:¿?¡!()«»"]/gu) || [];
+  const tokenizar = (s) => s.match(/[\p{L}\p{N}]+|[.,;:¿?¡!()«»"—]/gu) || [];
   const SIN_ESPACIO_ANTES = new Set(['.', ',', ';', ':', '?', '!', ')', '»']);
   const SIN_ESPACIO_DESPUES = new Set(['¿', '¡', '(', '«']);
   const unir = (ws) => {
@@ -396,10 +399,25 @@
     } else {
       $('salida').innerHTML = s.map((t, i) => {
         const pre = i > 0 && !SIN_ESPACIO_ANTES.has(t.w) && !SIN_ESPACIO_DESPUES.has(s[i - 1].w) ? ' ' : '';
-        const cls = ['t', t.ini ? 'ini' : '', i === estado.sel ? 'sel' : '', i === ultimo && !t.ini ? 'ult' : ''].join(' ');
-        const title = t.ini ? 'Comienzo: no lo generó el modelo' : 'Tocá para ver de dónde salió';
+        const op = !t.ini && t.opciones.length > 1;
+        const cls = ['t', t.ini ? 'ini' : '', op ? 'op' : '', i === estado.sel ? 'sel' : '', i === ultimo && !t.ini ? 'ult' : ''].join(' ');
+        const title = t.ini ? 'Comienzo: no lo generó el modelo'
+          : (op ? `Había ${t.opciones.length} opciones. Tocá para ver de dónde salió` : 'Una sola continuación posible: copió del texto. Tocá para ver de dónde salió');
         return `${pre}<span class="${cls}" data-i="${i}" title="${title}">${esc(t.w)}</span>`;
       }).join('');
+    }
+
+    const gen = s.filter((t) => !t.ini);
+    if (gen.length) {
+      const conOp = gen.filter((t) => t.opciones.length > 1).length;
+      const sinAlt = gen.length - conOp;
+      $('resumen').innerHTML =
+        `De ${gen.length} palabra${gen.length === 1 ? '' : 's'} generada${gen.length === 1 ? '' : 's'}, ` +
+        `<strong>${sinAlt}</strong> no ${sinAlt === 1 ? 'tuvo' : 'tuvieron'} alternativa (copió del texto) y ` +
+        `<strong>${conOp}</strong> ${conOp === 1 ? 'tuvo' : 'tuvieron'} más de una opción (<span class="leyenda-op" style="padding:0 3px;border-radius:3px">resaltadas</span>). ` +
+        'Un tramo largo sin resaltar es una copia del texto de partida.';
+    } else {
+      $('resumen').textContent = '';
     }
 
     const u = s[ultimo];
