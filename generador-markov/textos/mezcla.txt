@@ -1,0 +1,4 @@
+nombre: Mezcla: geografía, recetas y didáctica
+pista: Dos textos juntos. El modelo es exactamente lo que se le dio: fijate en qué palabras pasa de uno al otro.
+junta: hechos.txt, recetas.txt, didactica.txt
+---

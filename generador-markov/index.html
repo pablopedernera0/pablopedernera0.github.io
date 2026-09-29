@@ -216,31 +216,43 @@
 
 <script>
 (() => {
-  const CORPUS = {
-    hechos: {
-      nombre: 'Hechos de geografía',
-      hint: 'Todas las frases de este texto son verdaderas. Generá hasta encontrar una frase gramatical y falsa, y buscá de dónde salió cada palabra.',
-      texto:
-`Rosario está en la provincia de Santa Fe. Ushuaia está en la provincia de Tierra del Fuego. Bariloche está en la provincia de Río Negro. Mendoza está al pie de la cordillera de los Andes. La ciudad de Córdoba es la capital de la provincia de Córdoba. La ciudad de Santa Fe es la capital de la provincia de Santa Fe. Paraná es la capital de la provincia de Entre Ríos. Salta es la capital de la provincia de Salta. El río Paraná pasa por Rosario y por Corrientes. Las cataratas del Iguazú están en la provincia de Misiones. En la provincia de Mendoza se produce mucho vino. En la provincia de Tucumán se produce mucho azúcar. En Ushuaia nieva en invierno. El Aconcagua está en la provincia de Mendoza. El Aconcagua es la montaña más alta de América.`
-    },
-    oficios: {
-      nombre: 'Oficios',
-      hint: 'Probá empezar con «La ingeniera» o «El enfermero». Ninguna frase dice que no existan: simplemente no aparecen.',
-      texto:
-`El ingeniero revisó los planos de la obra. El ingeniero calculó la estructura del puente. La enfermera atendió a los pacientes de la guardia. La enfermera controló la presión del paciente. El médico firmó el alta del paciente. El director habló en el acto de la escuela. La maestra corrigió las tareas de los chicos. La maestra preparó el acto de la escuela. El programador escribió el código del sistema. El programador corrigió el error del sistema. La secretaria atendió el teléfono de la escuela. El jefe de la obra revisó los planos del puente.`
-    },
-    recetas: {
-      nombre: 'Recetas',
-      hint: 'Instrucciones de cocina. Compará cómo suena lo generado con 1, 2 y 3 palabras de contexto.',
-      texto:
-`Para hacer un bizcochuelo se baten los huevos con el azúcar. Se agrega la harina de a poco y se mezcla con cuidado. Se pone la mezcla en un molde enmantecado. Se cocina en el horno a temperatura moderada durante cuarenta minutos. Para hacer mate se llena el mate con yerba hasta las dos terceras partes. Se moja la yerba con agua tibia y se espera un minuto. Se pone la bombilla y se ceba con agua caliente, sin que hierva. Para hacer una salsa se pica la cebolla y se rehoga en aceite. Se agrega el tomate y se cocina a fuego bajo durante veinte minutos.`
-    },
+  // ---------- textos de partida (carpeta textos/) ----------
+  // textos/indice.txt lista los archivos en el orden del selector. Cada archivo tiene un
+  // encabezado de líneas «clave: valor» (nombre, pista y, opcional, junta), una línea
+  // «---» y después el texto. «junta: a.txt, b.txt» arma el texto pegando otros archivos.
+  const CORPUS = {};
+  const DIR = 'textos/';
+  const leer = async (archivo) => {
+    const r = await fetch(DIR + archivo, { cache: 'no-cache' });
+    if (!r.ok) throw new Error(`${archivo}: ${r.status}`);
+    return r.text();
   };
-  CORPUS.mezcla = {
-    nombre: 'Mezcla: geografía y recetas',
-    hint: 'Dos textos juntos. El modelo es exactamente lo que se le dio: fijate en qué palabras pasa de uno al otro.',
-    texto: CORPUS.hechos.texto + '\n\n' + CORPUS.recetas.texto,
-  };
+  function parsear(crudo) {
+    const lineas = crudo.replace(/\r/g, '').split('\n');
+    const corte = lineas.findIndex((l) => l.trim() === '---');
+    const cab = {};
+    (corte < 0 ? [] : lineas.slice(0, corte)).forEach((l) => {
+      const m = l.match(/^\s*([\p{L}]+)\s*:\s*(.*)$/u);
+      if (m) cab[m[1].toLowerCase()] = m[2].trim();
+    });
+    return { cab, texto: lineas.slice(corte + 1).join('\n').trim() };
+  }
+  async function cargarTextos() {
+    const archivos = (await leer('indice.txt')).split('\n').map((l) => l.trim())
+      .filter((l) => l && !l.startsWith('#'));
+    const crudos = new Map();
+    await Promise.all(archivos.map(async (a) => crudos.set(a, parsear(await leer(a)))));
+    for (const a of archivos) {
+      const { cab, texto } = crudos.get(a);
+      let t = texto;
+      if (cab.junta) {
+        const partes = cab.junta.split(',').map((s) => s.trim()).filter(Boolean);
+        for (const p of partes) if (!crudos.has(p)) crudos.set(p, parsear(await leer(p)));
+        t = [...partes.map((p) => crudos.get(p).texto), texto].filter(Boolean).join('\n\n');
+      }
+      CORPUS[a.replace(/\.txt$/, '')] = { nombre: cab.nombre || a, hint: cab.pista || '', texto: t };
+    }
+  }
 
   const $ = (id) => document.getElementById(id);
   const estado = {
@@ -456,8 +468,6 @@
     entrenar();
   }
 
-  Object.entries(CORPUS).forEach(([id, c]) => $('corpusSel').add(new Option(c.nombre, id)));
-  $('corpusSel').add(new Option('Texto propio', 'propio'));
   $('corpusSel').addEventListener('change', (e) => {
     if (e.target.value === 'propio') { $('corpus').value = ''; $('corpus').focus(); }
     cargarCorpus(e.target.value);
@@ -506,7 +516,23 @@
 
   marcar('[data-n]', 'n', estado.n);
   marcar('[data-modo]', 'modo', estado.modo);
-  cargarCorpus('hechos');
+
+  (async () => {
+    try {
+      await cargarTextos();
+    } catch (err) {
+      console.error(err);
+    }
+    Object.entries(CORPUS).forEach(([id, c]) => $('corpusSel').add(new Option(c.nombre, id)));
+    $('corpusSel').add(new Option('Texto propio', 'propio'));
+    const primero = Object.keys(CORPUS)[0];
+    if (primero) {
+      cargarCorpus(primero);
+    } else {
+      cargarCorpus('propio');
+      $('corpusHint').textContent = 'No se pudieron cargar los textos de ejemplo. Pegá un texto propio y tocá «Entrenar con este texto».';
+    }
+  })();
 })();
 </script>
 </body>

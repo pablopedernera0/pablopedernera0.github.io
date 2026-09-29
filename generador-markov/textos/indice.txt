@@ -1,0 +1,8 @@
+# Textos que aparecen en el selector, en este orden.
+# Para agregar uno: crear un .txt en esta carpeta (copiar el formato de otro) y sumar su nombre acá.
+# Las líneas que empiezan con # se ignoran.
+hechos.txt
+oficios.txt
+recetas.txt
+mezcla.txt
+didactica.txt
