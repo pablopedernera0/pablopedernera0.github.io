@@ -185,11 +185,12 @@
     return tabla
 
 
-def generar(tabla, n, largo=40):
+def generar(tabla, n, largo=25):
     """Usar el modelo es sortear: mirar las últimas n palabras y elegir una de las que vinieron después."""
     comienzos = [c for c in tabla if c[0] == "."] or list(tabla)
     salida = list(random.choice(comienzos))
-    for _ in range(largo):
+    # Termina en el primer punto después de `largo` palabras (con un tope, por si no llega nunca).
+    while not (len(salida) > largo and salida[-1] == ".") and len(salida) < 3 * largo:
         contexto = tuple(salida[-n:])
         if contexto not in tabla:        # el modelo nunca vio este contexto: se traba
             break
@@ -227,7 +228,7 @@ python3 markov.py textos/oficios.txt 2 tabla     # muestra el modelo entero
 pip install markovify
 python3 con_markovify.py                         # una estrofa del Martín Fierro
 python3 con_markovify.py textos/martin-fierro.txt 3 copias</code></pre>
-    <p>Para probarlo sin instalar nada, en el navegador, va a haber un escenario de Killercoda. Está en preparación.</p>
+    <p>Para probarlo sin instalar nada, en el navegador: el escenario de Killercoda <a href="https://killercoda.com/pablop22/scenario/generador-markov">generador-markov</a> clona el repositorio, instala markovify y guía los mismos experimentos paso a paso en una terminal.</p>
   </section>
 
   <h2>Fuentes</h2>
