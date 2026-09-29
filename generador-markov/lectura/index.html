@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predecir la palabra siguiente</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f6f2;
+    --panel: #ffffff;
+    --ink: #1f2328;
+    --muted: #5d646d;
+    --line: #d9d6cc;
+    --accent: #1f5fa8;
+    --accent-soft: #e3edf8;
+    --mark: #fbe7a1;
+    --code-bg: #f0eee8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15181c;
+      --panel: #1d2126;
+      --ink: #e6e8eb;
+      --muted: #9aa2ab;
+      --line: #343a42;
+      --accent: #7fb0ea;
+      --accent-soft: #23344a;
+      --mark: #5a4a12;
+      --code-bg: #111418;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15181c;
+    --panel: #1d2126;
+    --ink: #e6e8eb;
+    --muted: #9aa2ab;
+    --line: #343a42;
+    --accent: #7fb0ea;
+    --accent-soft: #23344a;
+    --mark: #5a4a12;
+    --code-bg: #111418;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.65 Georgia, "Iowan Old Style", "Times New Roman", serif;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 16px 80px; }
+  h1, h2, h3, .ui { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 8px; }
+  h2 { font-size: 1.3rem; margin: 44px 0 12px; }
+  h3 { font-size: 1.05rem; margin: 28px 0 8px; }
+  .bajada { color: var(--muted); font-size: 1.1rem; margin: 0 0 8px; }
+  .meta { color: var(--muted); font-size: .85rem; margin: 0 0 32px; }
+  a { color: var(--accent); }
+  p { margin: 0 0 16px; }
+  strong { font-weight: 700; }
+  .etiqueta {
+    display: inline-block; font-size: .75rem; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--accent); border: 1px solid var(--accent); border-radius: 4px; padding: 1px 6px;
+    margin-bottom: 8px;
+  }
+
+  table { border-collapse: collapse; margin: 8px 0 20px; font-family: system-ui, sans-serif; font-size: .92rem; width: 100%; }
+  th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; }
+  th { color: var(--muted); font-weight: 600; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .tabla-scroll { overflow-x: auto; }
+
+  .caja {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 16px; margin: 20px 0;
+  }
+  .caja p:last-child { margin-bottom: 0; }
+  .semana { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; font-family: system-ui, sans-serif; font-size: .9rem; }
+  .dia { border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; background: var(--bg); }
+  button {
+    font: 600 .92rem system-ui, sans-serif; color: var(--panel); background: var(--accent);
+    border: 0; border-radius: 6px; padding: 7px 14px; cursor: pointer;
+  }
+  .ctx { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .88em; background: var(--accent-soft); padding: 0 4px; border-radius: 3px; }
+  code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .88em; background: var(--code-bg); padding: 1px 4px; border-radius: 3px; }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px;
+    padding: 12px 14px; overflow-x: auto; font-size: .85rem; line-height: 1.5; margin: 8px 0 20px;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  ol li, ul li { margin-bottom: 8px; }
+  .optativa { border-top: 2px dashed var(--line); margin-top: 48px; padding-top: 8px; }
+  .fuentes { font-size: .9rem; color: var(--muted); }
+  .fuentes li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<main>
+  <span class="etiqueta ui">Lectura complementaria</span>
+  <h1>Predecir la palabra siguiente</h1>
+  <p class="bajada">Cadenas de Markov: la idea más simple detrás de un generador de texto, y lo que muestra sobre los modelos de lenguaje actuales.</p>
+  <p class="meta ui">Acompaña al <a href="../">generador de Markov</a>. Unos 15 minutos de lectura; la última sección, con código, es optativa.</p>
+
+  <p>Un asistente conversacional produce texto de a un fragmento por vez: mira lo que ya está escrito y elige cómo seguir. Esa tarea, predecir lo que sigue, se puede hacer de maneras muy sofisticadas o de una manera tan simple que entra en una tabla. Esta lectura trata de la manera simple. No porque sea la que usan los sistemas actuales, que no lo es, sino porque en ella todo está a la vista: los datos, el entrenamiento, el modelo y el momento de generar.</p>
+
+  <h2>Una idea con más de cien años</h2>
+  <p>En 1913, el matemático ruso Andréi Márkov tomó unas veinte mil letras de <em>Eugenio Oneguin</em>, la novela en verso de Pushkin, y contó con qué frecuencia a una vocal le seguía otra vocal y con qué frecuencia le seguía una consonante. Quería mostrar que se podía estudiar con probabilidades una sucesión de hechos en la que cada uno depende del anterior. Ese tipo de sucesión hoy lleva su nombre: una <strong>cadena de Markov</strong>.</p>
+  <p>En 1948, Claude Shannon usó la misma idea en el artículo que fundó la teoría de la información. Para mostrar cómo la estadística captura algo de un idioma, generó a mano frases en inglés: abría un libro en una página cualquiera, buscaba una palabra, anotaba la que venía después, y repetía el procedimiento desde esa palabra nueva. El resultado se parecía al inglés sin decir nada.</p>
+  <p>Es decir que la idea de producir lenguaje prediciendo lo que sigue no nació con los asistentes actuales. Tiene más de un siglo.</p>
+
+  <h2>Una cadena de Markov sin palabras</h2>
+  <p>Antes de ir al texto, conviene ver el mecanismo con algo más simple: el tiempo que hace cada día. Supongamos que, mirando los registros de muchos años, contamos qué tiempo hizo el día siguiente a un día soleado, a uno nublado y a uno lluvioso. Los números de esta tabla son inventados para el ejemplo:</p>
+  <div class="tabla-scroll">
+  <table>
+    <thead><tr><th>Si hoy está…</th><th>mañana soleado</th><th>mañana nublado</th><th>mañana lluvioso</th></tr></thead>
+    <tbody>
+      <tr><td>Soleado</td><td class="num">70 %</td><td class="num">20 %</td><td class="num">10 %</td></tr>
+      <tr><td>Nublado</td><td class="num">30 %</td><td class="num">40 %</td><td class="num">30 %</td></tr>
+      <tr><td>Lluvioso</td><td class="num">20 %</td><td class="num">40 %</td><td class="num">40 %</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Esa tabla es el modelo entero. Para "pronosticar" una semana, se parte de un día y se sortea el siguiente según la fila que corresponde; después se sortea el otro a partir del que salió, y así. Cada día depende solo del anterior: el modelo no recuerda nada más.</p>
+  <div class="caja">
+    <p class="ui" style="font-size:.95rem">Probalo. Cada vez sale una semana distinta, pero siempre respetando la tabla: después de un día soleado casi siempre viene otro soleado.</p>
+    <button id="btnSemana">Sortear una semana desde un lunes soleado</button>
+    <div class="semana" id="semana" aria-live="polite"></div>
+  </div>
+  <p>Dos cosas para retener. La tabla se armó <strong>contando</strong> lo que pasó: eso es el entrenamiento. Y usarla es <strong>sortear</strong> según lo contado: eso es generar. Nada en la tabla "sabe" meteorología.</p>
+
+  <h2>Del tiempo a las palabras</h2>
+  <p>Con el texto se hace lo mismo, cambiando días por palabras. En lugar de "qué tiempo hizo hoy", el estado es "cuáles fueron las últimas palabras". Tomemos un texto de partida de apenas tres oraciones, todas verdaderas:</p>
+  <div class="caja">
+    <p>Rosario está en la provincia de Santa Fe. Ushuaia está en la provincia de Tierra del Fuego. El Aconcagua está en la provincia de Mendoza.</p>
+  </div>
+  <p>Mirando dos palabras hacia atrás y contando qué vino después, salen, entre otras, estas filas:</p>
+  <div class="tabla-scroll">
+  <table>
+    <thead><tr><th>Últimas dos palabras</th><th>Lo que vino después</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ctx">está en</span></td><td>la (3 veces)</td></tr>
+      <tr><td><span class="ctx">en la</span></td><td>provincia (3 veces)</td></tr>
+      <tr><td><span class="ctx">la provincia</span></td><td>de (3 veces)</td></tr>
+      <tr><td><span class="ctx">provincia de</span></td><td>Santa (1 vez) · Tierra (1 vez) · Mendoza (1 vez)</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Ahora generemos empezando por "Rosario está". Las cuatro primeras filas tienen una sola opción, así que no hay nada que sortear: sale "Rosario está en la provincia de". Recién en la última fila hay un sorteo entre tres opciones, y si sale "Mendoza", el resultado es:</p>
+  <div class="caja"><p><strong>Rosario está en la provincia de Mendoza.</strong></p></div>
+  <p>La frase es gramatical, suena segura y es falsa. Y cada paso fue legítimo: cada par de palabras estaba en el texto de partida, que era todo verdadero. Nadie programó un error. El modelo hizo exactamente lo que hace, que es continuar de manera plausible según lo que vio, y lo plausible no tiene por qué ser verdadero.</p>
+  <p>Esto es, en miniatura, lo que se suele llamar "alucinación" de un modelo de lenguaje. No es una falla del mecanismo: es su funcionamiento normal, aplicado a un caso en el que lo plausible y lo verdadero no coinciden.</p>
+
+  <h2>Probalo en el generador</h2>
+  <p>El <a href="../">generador de Markov</a> hace esto mismo con textos más largos y muestra cada paso: la tabla, la decisión de cada palabra y de qué frases del texto salió. Algunos experimentos que vale la pena hacer:</p>
+  <ol>
+    <li><strong>Una frase falsa hecha de partes verdaderas.</strong> Con el texto «Hechos de geografía», generá hasta encontrar una frase gramatical y falsa. Tocá sus palabras para ver de qué frases del texto salió cada tramo.</li>
+    <li><strong>Lo que no está en los datos, no existe.</strong> Con «Oficios», escribí «La ingeniera» en «Empezar con». El generador se traba: ninguna frase del texto dice que no haya ingenieras, simplemente no aparecen. Es el sesgo heredado de los datos en su forma más desnuda.</li>
+    <li><strong>Más contexto, más copia.</strong> Pasá de 2 a 3 palabras de contexto y mirá el contador debajo del texto generado: casi ninguna palabra tiene alternativa, y el generador reproduce el texto original. Con pocos datos y mucho contexto, el modelo memoriza.</li>
+    <li><strong>Sin sorteo, en círculos.</strong> Elegí «Siempre la más frecuente». El generador cae en un bucle y repite. Por eso los asistentes sortean, y por eso la misma pregunta da respuestas distintas.</li>
+    <li><strong>Lo que inventa y lo que hereda.</strong> Con «Didáctica con ruido», el texto de partida incluye algunas frases falsas a propósito. Frente a una frase dudosa en lo generado, decidí si la armó el modelo recombinando o si ya estaba en los datos. Las dos se ven igual de seguras.</li>
+  </ol>
+
+  <h2>Lo que esto no es</h2>
+  <p>Un modelo de lenguaje actual hace <strong>la misma tarea</strong> —predecir lo que sigue— con <strong>otra maquinaria</strong>. Las diferencias importan:</p>
+  <ul>
+    <li>Trabaja con fragmentos de palabras, no con palabras enteras.</li>
+    <li>Mira miles de fragmentos hacia atrás, no dos o tres palabras.</li>
+    <li>No busca el contexto exacto en una tabla. Una red neuronal le permite responder ante contextos que nunca vio, parecidos a otros que sí vio. La tabla de Markov, en cambio, se traba: esa es la razón por la que no alcanza con agrandarla.</li>
+    <li>Después de aprender a predecir texto, tiene un segundo entrenamiento que lo ajusta para conversar y seguir instrucciones.</li>
+  </ul>
+  <p>Con todo eso, lo que produce es muchísimo más coherente que cualquier cadena de Markov. Si además comprende algo, o si produce texto plausible a una escala en la que ya no se distingue de comprender, es una pregunta abierta. El texto base de la unidad, de Carlos Gómez-Rodríguez, hace este mismo recorrido —de las cadenas de Markov a GPT-2— y presenta las dos posiciones del debate.</p>
+
+  <!-- Optativa -->
+  <section class="optativa">
+    <span class="etiqueta ui">Optativa · para quien programa</span>
+    <h2 style="margin-top:8px">El generador en Python</h2>
+    <p>El generador completo entra en unas treinta líneas de Python sin bibliotecas. El código está en el repositorio <a href="https://github.com/pablopedernera0/generador-markov-python">generador-markov-python</a>, con los mismos textos de la página y <em>El gaucho Martín Fierro</em>. Las dos funciones que importan:</p>
+<pre><code>def entrenar(tokens, n):
+    """Entrenar es contar: para cada secuencia de n palabras, qué palabra vino después."""
+    tabla = defaultdict(list)
+    for i in range(len(tokens) - n):
+        contexto = tuple(tokens[i:i + n])
+        tabla[contexto].append(tokens[i + n])
+    return tabla
+
+
+def generar(tabla, n, largo=40):
+    """Usar el modelo es sortear: mirar las últimas n palabras y elegir una de las que vinieron después."""
+    comienzos = [c for c in tabla if c[0] == "."] or list(tabla)
+    salida = list(random.choice(comienzos))
+    for _ in range(largo):
+        contexto = tuple(salida[-n:])
+        if contexto not in tabla:        # el modelo nunca vio este contexto: se traba
+            break
+        # La lista guarda cada aparición, con repetidos: lo que vino más veces sale más seguido.
+        salida.append(random.choice(tabla[contexto]))
+    return unir(salida[1:] if salida[0] == "." else salida)</code></pre>
+    <p>El detalle está en la lista con repetidos: si después de <span class="ctx">provincia de</span> vino «Santa» dos veces y «Mendoza» una, la lista es <code>["Santa", "Mendoza", "Santa"]</code>, y <code>random.choice</code> ya sortea con esas proporciones.</p>
+
+    <h3>Con markovify</h3>
+    <p><a href="https://github.com/jsvine/markovify">markovify</a> es una biblioteca de Python que hace lo mismo con más cuidado: separa oraciones, arranca y termina donde corresponde, y ofrece un control que el generador casero no tiene. El repositorio incluye <code>con_markovify.py</code>, que genera estrofas del <em>Martín Fierro</em> tratando cada verso como una oración:</p>
+<pre><code>import markovify
+
+modelo = markovify.NewlineText(texto_del_poema, state_size=2)
+for _ in range(6):
+    print(modelo.make_sentence(tries=100))</code></pre>
+
+    <h3>El control que evita copiar</h3>
+    <p>En el generador web se ve que, con pocos datos y mucho contexto, lo generado es copia del original. Los autores de markovify se encontraron con el mismo problema y lo resolvieron con un filtro: por defecto, descartan toda oración generada que repita textualmente un tramo del original de más del 70 % de su largo, o de más de 15 palabras (valores de la versión 0.9.4). Con el modo <code>copias</code> del script se puede medir qué pasaría sin ese filtro. Generando 300 versos del <em>Martín Fierro</em>:</p>
+    <div class="tabla-scroll">
+    <table>
+      <thead><tr><th>Contexto</th><th>Sin el filtro: versos que son copia textual del poema</th><th>Con el filtro</th></tr></thead>
+      <tbody>
+        <tr><td>2 palabras</td><td class="num">171 de 300</td><td class="num">0 copias; 293 intentos dieron un verso</td></tr>
+        <tr><td>3 palabras</td><td class="num">288 de 300</td><td class="num">0 copias; solo 26 intentos dieron un verso</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>Con 3 palabras de contexto, casi todo lo que el modelo sabe hacer es repetir el poema, y cuando se le prohíbe copiar casi no encuentra nada que decir. Los modelos grandes tienen una versión de este mismo problema: a veces reproducen textualmente fragmentos de lo que vieron al entrenarse.</p>
+
+    <h3>Para correrlo</h3>
+<pre><code>git clone https://github.com/pablopedernera0/generador-markov-python
+cd generador-markov-python
+python3 markov.py textos/hechos.txt              # genera con 2 palabras de contexto
+python3 markov.py textos/oficios.txt 2 tabla     # muestra el modelo entero
+pip install markovify
+python3 con_markovify.py                         # una estrofa del Martín Fierro
+python3 con_markovify.py textos/martin-fierro.txt 3 copias</code></pre>
+    <p>Para probarlo sin instalar nada, en el navegador, va a haber un escenario de Killercoda. Está en preparación.</p>
+  </section>
+
+  <h2>Fuentes</h2>
+  <ul class="fuentes">
+    <li>Gómez-Rodríguez, C. (2024). Grandes modelos de lenguaje: ¿de la predicción de palabras a la comprensión? En <em>La inteligencia artificial hoy y sus aplicaciones con Big Data</em> (cap. IV). Madrid: Funcas. <a href="https://www.funcas.es/articulos/grandes-modelos-de-lenguaje-de-la-prediccion-de-palabras-a-la-compresion/">Acceso libre</a>.</li>
+    <li>Shannon, C. E. (1948). A Mathematical Theory of Communication. <em>Bell System Technical Journal</em>, 27.</li>
+    <li>Hernández, J. (1872). <em>El gaucho Martín Fierro</em>. Edición digital de la Biblioteca Digital Argentina en <a href="https://www.gutenberg.org/ebooks/14765">Proyecto Gutenberg</a>.</li>
+    <li>La estructura de esta lectura toma como modelo el artículo de G. Pernicano, <a href="https://towardsdatascience.com/text-generation-with-markov-chains-an-introduction-to-using-markovify-742e6680dc33/">Text Generation with Markov Chains</a> (Towards Data Science, 2021).</li>
+  </ul>
+</main>
+
+<script>
+(() => {
+  const T = {
+    Soleado:  [['Soleado', .7], ['Nublado', .2], ['Lluvioso', .1]],
+    Nublado:  [['Soleado', .3], ['Nublado', .4], ['Lluvioso', .3]],
+    Lluvioso: [['Soleado', .2], ['Nublado', .4], ['Lluvioso', .4]],
+  };
+  const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+  const sortear = (fila) => {
+    let r = Math.random();
+    for (const [estado, p] of fila) if ((r -= p) < 0) return estado;
+    return fila[fila.length - 1][0];
+  };
+  document.getElementById('btnSemana').addEventListener('click', () => {
+    let hoy = 'Soleado';
+    const semana = [hoy];
+    for (let i = 1; i < 7; i++) semana.push(hoy = sortear(T[hoy]));
+    document.getElementById('semana').innerHTML =
+      semana.map((e, i) => `<span class="dia">${DIAS[i]}: ${e.toLowerCase()}</span>`).join('');
+  });
+})();
+</script>
+</body>
+</html>
