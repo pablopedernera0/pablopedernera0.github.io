@@ -6,3 +6,4 @@ oficios.txt
 recetas.txt
 mezcla.txt
 didactica.txt
+didactica-ruido.txt
