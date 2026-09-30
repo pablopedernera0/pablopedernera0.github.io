@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caso BiciRío</title>
+<style>
+    :root {
+        --bg: #05070a;
+        --bg2: #0d1117;
+        --panel: rgba(255, 255, 255, 0.04);
+        --line: rgba(255, 255, 255, 0.10);
+        --text: #c9d1d9;
+        --muted: #8b949e;
+        --blue: #58a6ff;
+        --green: #3fb950;
+        --red: #f85149;
+        --orange: #f0883e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: linear-gradient(135deg, var(--bg), var(--bg2)) fixed;
+        background-color: var(--bg);
+        color: var(--text);
+        font-size: 17px;
+        line-height: 1.55;
+    }
+
+    .wrap { max-width: 760px; margin: 0 auto; padding: 0 16px 120px; }
+
+    nav.top {
+        position: sticky; top: 0; z-index: 20;
+        background: rgba(5, 7, 10, 0.92);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid var(--line);
+    }
+    nav.top .inner {
+        max-width: 760px; margin: 0 auto; padding: 10px 16px;
+        display: flex; gap: 8px; align-items: center;
+    }
+    nav.top a {
+        color: var(--muted); text-decoration: none; font-size: 0.95rem;
+        padding: 6px 12px; border-radius: 16px; border: 1px solid var(--line);
+    }
+    nav.top a.go { color: var(--bg); background: var(--green); border-color: var(--green); font-weight: bold; }
+    nav.top .progress { margin-left: auto; font-size: 0.9rem; color: var(--muted); white-space: nowrap; }
+
+    header { padding: 32px 0 8px; }
+    .eyebrow {
+        display: inline-block; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase;
+        color: var(--blue); border: 1px solid var(--blue); background: rgba(88, 166, 255, 0.12);
+        padding: 4px 12px; border-radius: 20px; margin-bottom: 14px;
+    }
+    h1 { font-size: 2rem; color: var(--blue); line-height: 1.2; margin-bottom: 10px; }
+    h2 { font-size: 1.45rem; color: var(--blue); margin: 36px 0 12px; }
+    h3 { font-size: 1.1rem; color: var(--green); margin-bottom: 6px; }
+    p { margin-bottom: 12px; }
+    .lead { color: var(--muted); font-size: 1.05rem; }
+    strong { color: var(--green); }
+    a { color: var(--blue); }
+
+    .card {
+        background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+        padding: 16px; margin-bottom: 12px;
+    }
+    .card p:last-child, .card ul:last-child { margin-bottom: 0; }
+    .card ul { padding-left: 20px; margin-bottom: 12px; }
+    .card li { margin-bottom: 6px; }
+
+    .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    @media (min-width: 640px) { .grid { grid-template-columns: 1fr 1fr; } }
+    .grid .card { margin-bottom: 0; }
+
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0; }
+    .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 6px; text-align: center; }
+    .stat b { display: block; font-size: 1.5rem; color: var(--green); }
+    .stat span { font-size: 0.8rem; color: var(--muted); }
+
+    .steps { list-style: none; counter-reset: s; }
+    .steps li {
+        counter-increment: s; position: relative; padding: 10px 12px 10px 48px; margin-bottom: 8px;
+        background: var(--panel); border-left: 4px solid var(--green); border-radius: 8px;
+    }
+    .steps li::before {
+        content: counter(s); position: absolute; left: 14px; top: 10px;
+        font-weight: bold; color: var(--green);
+    }
+
+    .note {
+        border: 1px solid var(--orange); background: rgba(240, 136, 62, 0.10);
+        border-radius: 10px; padding: 12px 14px; margin: 12px 0;
+    }
+
+    /* Cuestionario */
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 0.95rem; color: var(--muted); margin-bottom: 6px; }
+    input[type=text], select {
+        width: 100%; font-size: 1rem; padding: 12px; border-radius: 8px;
+        border: 1px solid var(--line); background: #0b0f14; color: var(--text);
+    }
+
+    .q { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    .q .meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 6px; }
+    .q .enun { font-weight: 600; margin-bottom: 12px; }
+    .opt {
+        display: flex; gap: 10px; align-items: flex-start; padding: 12px; min-height: 48px;
+        border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; cursor: pointer;
+    }
+    .opt input { margin-top: 4px; width: 20px; height: 20px; flex: none; accent-color: var(--blue); }
+    .opt .l { font-weight: bold; color: var(--blue); flex: none; }
+    .opt:has(input:checked) { border-color: var(--blue); background: rgba(88, 166, 255, 0.10); }
+    .locked .opt { cursor: default; }
+    .opt.ok { border-color: var(--green); background: rgba(63, 185, 80, 0.12); }
+    .opt.bad { border-color: var(--red); background: rgba(248, 81, 73, 0.12); }
+    .porque { font-size: 0.95rem; color: var(--text); border-left: 3px solid var(--green); padding: 6px 10px; margin-top: 8px; }
+    .verdict { font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; }
+    .verdict.ok { color: var(--green); }
+    .verdict.bad { color: var(--red); }
+
+    .btn {
+        display: block; width: 100%; font-size: 1.05rem; font-weight: bold; padding: 14px;
+        border-radius: 10px; border: none; cursor: pointer; margin-bottom: 10px;
+        background: var(--green); color: var(--bg);
+    }
+    .btn.sec { background: transparent; color: var(--blue); border: 1px solid var(--blue); }
+    .btn.warn { background: var(--orange); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .msg { font-size: 0.95rem; color: var(--muted); margin-bottom: 10px; }
+    .msg.err { color: var(--red); }
+    .score { font-size: 2.2rem; font-weight: bold; color: var(--green); text-align: center; }
+    .hidden { display: none; }
+    footer { color: var(--muted); font-size: 0.85rem; margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<nav class="top">
+    <div class="inner">
+        <a href="#caso">El caso</a>
+        <a href="#cuestionario" class="go">Cuestionario</a>
+        <span class="progress" id="progreso"></span>
+    </div>
+</nav>
+
+<div class="wrap">
+
+<header>
+    <span class="eyebrow">Diseño de Sistemas Web · Simulacro 2° parcial</span>
+    <h1>Caso BiciRío</h1>
+    <p class="lead">Leé el caso completo antes de empezar. Las 20 preguntas son sobre este sistema, y podés volver a mirarlo mientras respondés.</p>
+</header>
+
+<section id="caso">
+    <h2>El sistema</h2>
+    <p><strong>BiciRío</strong> es el sistema de bicicletas públicas de la ciudad. Lo gestiona la <strong>Secretaría de Movilidad</strong> del municipio, que quiere reemplazar el sistema actual (tarjetas magnéticas y planillas) por uno nuevo con app para el celular.</p>
+
+    <div class="stats">
+        <div class="stat"><b>40</b><span>estaciones</span></div>
+        <div class="stat"><b>12 a 20</b><span>anclajes por estación</span></div>
+        <div class="stat"><b>60 min</b><span>incluidos por viaje</span></div>
+    </div>
+
+    <div class="card">
+        <h3>Estaciones y anclajes</h3>
+        <p>Cada estación tiene entre 12 y 20 <strong>anclajes</strong>, numerados desde el 1 dentro de cada estación: el "anclaje 7" existe en muchas estaciones. Cada anclaje tiene un <strong>sensor</strong> que avisa cuándo una bicicleta quedó trabada y cuándo se liberó, y un código QR pegado.</p>
+        <p>Si una estación pierde la conexión, sigue aceptando devoluciones y sincroniza los datos cuando vuelve.</p>
+    </div>
+
+    <h2>Quiénes están involucrados</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>Abonado anual</h3>
+            <p>Residente de la ciudad. Se registra con DNI y paga un abono por año. Usa la bici para ir a trabajar o a estudiar.</p>
+        </div>
+        <div class="card">
+            <h3>Usuario con pase diario</h3>
+            <p>Visitante o usuario ocasional. Compra un pase por día desde la app y paga con tarjeta.</p>
+        </div>
+        <div class="card">
+            <h3>Operador de logística</h3>
+            <p>Recorre la ciudad con una camioneta llevando bicicletas de las estaciones llenas a las vacías. Hoy decide a ojo, llamando por radio.</p>
+        </div>
+        <div class="card">
+            <h3>Técnico del taller</h3>
+            <p>Revisa y repara las bicicletas con fallas. Es quien las vuelve a habilitar.</p>
+        </div>
+        <div class="card">
+            <h3>Secretaría de Movilidad</h3>
+            <p>Dueña del sistema. Fija las tarifas por ordenanza (cambian varias veces al año) y publica estadísticas de uso.</p>
+        </div>
+        <div class="card">
+            <h3>Pasarela de pagos</h3>
+            <p>Empresa externa que procesa los cobros con tarjeta: pases diarios y excedentes. El sistema se conecta con ella.</p>
+        </div>
+    </div>
+
+    <h2>Cómo es un viaje</h2>
+    <ol class="steps">
+        <li>El usuario abre la app y mira en el mapa qué estaciones tienen bicicletas.</li>
+        <li>En la estación, escanea el QR del anclaje. Si tiene una deuda pendiente, no puede retirar.</li>
+        <li>El anclaje libera la bicicleta y empieza a correr el tiempo del viaje.</li>
+        <li>A los 50 minutos, la app le avisa que se acerca al límite.</li>
+        <li>Devuelve la bici en cualquier estación: la engancha en un anclaje libre y el sensor confirma la traba.</li>
+        <li>El viaje se cierra. Si pasó los 60 minutos, se cobra el excedente.</li>
+    </ol>
+
+    <h2>Reglas</h2>
+    <div class="card">
+        <ul>
+            <li>Cada viaje incluye <strong>60 minutos</strong>. Pasado ese tiempo se cobra <strong>cada 15 minutos o fracción</strong>, según la tarifa vigente en ese momento.</li>
+            <li>Si el excedente no se puede cobrar, queda como <strong>deuda</strong> y el usuario no puede retirar otra bici hasta pagarla.</li>
+            <li>Si la estación donde quiere devolver está <strong>llena</strong>, la app le suma <strong>15 minutos sin cargo</strong> y le muestra las estaciones cercanas con lugar.</li>
+            <li>Cualquier usuario puede <strong>reportar una falla</strong> desde la app. La bicicleta queda bloqueada hasta que un técnico del taller la revisa.</li>
+        </ul>
+    </div>
+
+    <h2>Lo que pidió la Secretaría</h2>
+    <div class="card">
+        <ul>
+            <li>El mapa tiene que mostrar la ocupación de las estaciones con un <strong>desfase máximo de 10 segundos</strong> respecto de la realidad.</li>
+            <li>Todos los meses se publican <strong>estadísticas de viajes como datos abiertos</strong> (por ejemplo, de qué estación a qué estación viaja la gente y a qué hora), sin que se pueda identificar a ninguna persona, como exige la <strong>Ley 25.326</strong> de protección de datos personales.</li>
+            <li>La app se usa en la calle: parado junto a la estación, muchas veces con una sola mano y a pleno sol.</li>
+            <li>Los operadores de logística necesitan saber rápido cuál es la próxima estación que conviene atender.</li>
+        </ul>
+    </div>
+
+    <div class="note">
+        <p style="margin:0">Cuando termines de leer, pasá al cuestionario. Individual, sin apuntes, <strong>20 preguntas y 30 puntos</strong> (algunas valen 2 y otras 1). No lleva nota.</p>
+    </div>
+</section>
+
+<section id="cuestionario">
+    <h2>Cuestionario</h2>
+
+    <div id="datos-alumno" class="card">
+        <div class="field">
+            <label for="nombre">Nombre y apellido</label>
+            <input type="text" id="nombre" autocomplete="name">
+        </div>
+        <div class="field" style="margin-bottom:0">
+            <label for="comision">Comisión</label>
+            <select id="comision">
+                <option value="">Elegí tu comisión</option>
+                <option value="3°1°">3°1°</option>
+                <option value="3°2°">3°2°</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="preguntas"></div>
+
+    <div id="cierre">
+        <p class="msg" id="msg-final"></p>
+        <button class="btn" id="btn-finalizar">Finalizar</button>
+    </div>
+
+    <div id="resultado" class="hidden">
+        <div class="card">
+            <h3>Listo, respuestas guardadas</h3>
+            <p>Mandale el archivo al profesor por WhatsApp o por mail, y guardate una copia.</p>
+            <button class="btn" id="btn-enviar">Enviar archivo</button>
+            <div class="row">
+                <button class="btn sec" id="btn-descargar">Descargar</button>
+                <button class="btn sec" id="btn-copiar">Copiar texto</button>
+            </div>
+            <p class="msg" id="msg-envio"></p>
+        </div>
+        <div class="card" id="correccion-pendiente">
+            <h3>Corrección</h3>
+            <p>La corrección se habilita cuando el profesor la publique. Tus respuestas quedan guardadas en este celular: volvé a esta página y tocá el botón.</p>
+            <button class="btn sec" id="btn-correccion">Ver si ya está la corrección</button>
+            <p class="msg" id="msg-correccion"></p>
+        </div>
+        <div class="card hidden" id="correccion-lista">
+            <h3>Tu resultado</h3>
+            <div class="score" id="puntaje"></div>
+            <p class="msg" style="text-align:center">Subí para ver cada pregunta marcada, con la explicación.</p>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>Terciario Urquiza · Diseño de Sistemas Web · Caso ficticio armado para la materia.</p>
+</footer>
+
+</div>
+
+<script src="preguntas.js"></script>
+<script>
+(function () {
+    const Q = window.CUESTIONARIO;
+    const KEY = 'cuestionario:' + Q.id;
+    const $ = (id) => document.getElementById(id);
+
+    let estado = { nombre: '', comision: '', r: {}, fin: null };
+
+    function cargar() {
+        try {
+            const s = JSON.parse(localStorage.getItem(KEY) || 'null');
+            if (s && typeof s === 'object') estado = Object.assign(estado, s);
+        } catch (e) { /* sin almacenamiento: se trabaja en memoria */ }
+    }
+    function guardar() {
+        try { localStorage.setItem(KEY, JSON.stringify(estado)); } catch (e) { }
+    }
+
+    function esc(t) {
+        return String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    }
+
+    function render() {
+        const cont = $('preguntas');
+        cont.innerHTML = Q.preguntas.map((p) => `
+            <div class="q" id="q${p.num}">
+                <div class="meta">Pregunta ${p.num} de ${Q.preguntas.length} · ${p.puntos} ${p.puntos === 1 ? 'punto' : 'puntos'}</div>
+                <div class="verdict hidden"></div>
+                <div class="enun">${esc(p.enunciado)}</div>
+                ${p.opciones.map((o) => `
+                    <label class="opt" data-l="${o.letra}">
+                        <input type="radio" name="p${p.num}" value="${o.letra}" ${estado.r[p.num] === o.letra ? 'checked' : ''}>
+                        <span class="l">${o.letra})</span>
+                        <span>${esc(o.texto)}</span>
+                    </label>`).join('')}
+                <div class="porque hidden"></div>
+            </div>`).join('');
+        cont.addEventListener('change', (e) => {
+            if (estado.fin || e.target.type !== 'radio') return;
+            estado.r[e.target.name.slice(1)] = e.target.value;
+            guardar();
+            progreso();
+        });
+        $('nombre').value = estado.nombre;
+        $('comision').value = estado.comision;
+        $('nombre').addEventListener('input', () => { estado.nombre = $('nombre').value; guardar(); });
+        $('comision').addEventListener('change', () => { estado.comision = $('comision').value; guardar(); });
+    }
+
+    function respondidas() {
+        return Q.preguntas.filter((p) => estado.r[p.num]).length;
+    }
+
+    function progreso() {
+        $('progreso').textContent = estado.fin ? 'Finalizado' : `${respondidas()} / ${Q.preguntas.length}`;
+    }
+
+    function bloquear() {
+        document.querySelectorAll('#cuestionario input, #cuestionario select').forEach((el) => { el.disabled = true; });
+        $('preguntas').classList.add('locked');
+        $('cierre').classList.add('hidden');
+        $('resultado').classList.remove('hidden');
+        progreso();
+    }
+
+    let confirmando = false;
+    $('btn-finalizar').addEventListener('click', () => {
+        const msg = $('msg-final');
+        msg.classList.remove('err');
+        if (!estado.nombre.trim() || !estado.comision) {
+            msg.textContent = 'Completá tu nombre y tu comisión arriba de todo antes de finalizar.';
+            msg.classList.add('err');
+            $('datos-alumno').scrollIntoView();
+            return;
+        }
+        const faltan = Q.preguntas.length - respondidas();
+        if (!confirmando) {
+            confirmando = true;
+            msg.textContent = (faltan ? `Te quedan ${faltan} preguntas sin responder. ` : '')
+                + 'Después de finalizar no vas a poder cambiar las respuestas. Tocá de nuevo para confirmar.';
+            $('btn-finalizar').textContent = 'Confirmar y finalizar';
+            $('btn-finalizar').classList.add('warn');
+            return;
+        }
+        estado.fin = new Date().toISOString();
+        guardar();
+        bloquear();
+        $('resultado').scrollIntoView();
+    });
+
+    function fechaLocal(iso) {
+        const d = new Date(iso);
+        const p = (n) => String(n).padStart(2, '0');
+        return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+
+    function textoArchivo() {
+        const lineas = [
+            Q.titulo,
+            `Nombre: ${estado.nombre.trim()}`,
+            `Comisión: ${estado.comision}`,
+            `Finalizado: ${fechaLocal(estado.fin)}`,
+            `Respondidas: ${respondidas()} de ${Q.preguntas.length}`,
+            '',
+        ];
+        Q.preguntas.forEach((p) => {
+            const l = estado.r[p.num];
+            const o = p.opciones.find((x) => x.letra === l);
+            lineas.push(`${p.num}) ${l ? l + ' - ' + o.texto : '(sin responder)'}`);
+        });
+        const datos = { id: Q.id, nombre: estado.nombre.trim(), comision: estado.comision, fin: estado.fin, r: estado.r };
+        lineas.push('', 'DATOS: ' + JSON.stringify(datos), '');
+        return lineas.join('\n');
+    }
+
+    function nombreArchivo() {
+        const base = estado.nombre.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+            .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'alumno';
+        return `${Q.id}-${base}.txt`;
+    }
+
+    function descargar() {
+        const blob = new Blob([textoArchivo()], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = nombreArchivo();
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+        $('msg-envio').textContent = 'Archivo descargado: ' + nombreArchivo();
+    }
+
+    $('btn-descargar').addEventListener('click', descargar);
+
+    $('btn-enviar').addEventListener('click', async () => {
+        const archivo = new File([textoArchivo()], nombreArchivo(), { type: 'text/plain' });
+        try {
+            if (navigator.canShare && navigator.canShare({ files: [archivo] })) {
+                await navigator.share({ files: [archivo], title: Q.titulo });
+                $('msg-envio').textContent = 'Enviado.';
+                return;
+            }
+        } catch (e) {
+            if (e && e.name === 'AbortError') return;
+        }
+        descargar();
+        $('msg-envio').textContent = 'Este navegador no permite compartir el archivo directamente: se descargó '
+            + nombreArchivo() + '. Adjuntalo en WhatsApp o en un mail.';
+    });
+
+    $('btn-copiar').addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(textoArchivo());
+            $('msg-envio').textContent = 'Texto copiado. Pegalo en un mensaje al profesor.';
+        } catch (e) {
+            $('msg-envio').textContent = 'No se pudo copiar. Usá "Descargar".';
+        }
+    });
+
+    // La clave no está en el sitio mientras dura el cuestionario: se sube después.
+    function buscarClave(avisar) {
+        const s = document.createElement('script');
+        s.src = 'clave.js?t=' + Date.now();
+        s.onload = () => {
+            if (window.CLAVE && window.CLAVE.id === Q.id) mostrarCorreccion();
+            else if (avisar) $('msg-correccion').textContent = 'Todavía no está publicada.';
+            s.remove();
+        };
+        s.onerror = () => {
+            if (avisar) $('msg-correccion').textContent = 'Todavía no está publicada. Probá de nuevo en un rato.';
+            s.remove();
+        };
+        document.body.appendChild(s);
+    }
+
+    function mostrarCorreccion() {
+        const C = window.CLAVE.respuestas;
+        let puntos = 0;
+        Q.preguntas.forEach((p) => {
+            const c = C[p.num];
+            const dada = estado.r[p.num];
+            const bien = dada === c.correcta;
+            if (bien) puntos += p.puntos;
+            const q = $('q' + p.num);
+            q.querySelectorAll('.opt').forEach((op) => {
+                if (op.dataset.l === c.correcta) op.classList.add('ok');
+                else if (op.dataset.l === dada) op.classList.add('bad');
+            });
+            const v = q.querySelector('.verdict');
+            v.textContent = bien ? 'Correcta' : (dada ? 'Incorrecta' : 'Sin responder');
+            v.classList.add(bien ? 'ok' : 'bad');
+            v.classList.remove('hidden');
+            const pq = q.querySelector('.porque');
+            pq.textContent = 'Por qué: ' + c.porque;
+            pq.classList.remove('hidden');
+        });
+        $('puntaje').textContent = `${puntos} / ${Q.total}`;
+        $('progreso').textContent = `Resultado: ${puntos} / ${Q.total}`;
+        $('correccion-pendiente').classList.add('hidden');
+        $('correccion-lista').classList.remove('hidden');
+    }
+
+    $('btn-correccion').addEventListener('click', () => {
+        $('msg-correccion').textContent = 'Buscando...';
+        buscarClave(true);
+    });
+
+    cargar();
+    render();
+    progreso();
+    if (estado.fin) {
+        bloquear();
+        buscarClave(false);
+    }
+})();
+</script>
+</body>
+</html>
