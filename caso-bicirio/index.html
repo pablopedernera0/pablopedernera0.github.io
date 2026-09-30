@@ -474,11 +474,12 @@
         Q.preguntas.forEach((p) => {
             const c = C[p.num];
             const dada = estado.r[p.num];
-            const bien = dada === c.correcta;
+            const buenas = c.correctas || [c.correcta];
+            const bien = buenas.includes(dada);
             if (bien) puntos += p.puntos;
             const q = $('q' + p.num);
             q.querySelectorAll('.opt').forEach((op) => {
-                if (op.dataset.l === c.correcta) op.classList.add('ok');
+                if (buenas.includes(op.dataset.l)) op.classList.add('ok');
                 else if (op.dataset.l === dada) op.classList.add('bad');
             });
             const v = q.querySelector('.verdict');
