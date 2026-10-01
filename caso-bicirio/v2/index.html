@@ -41,7 +41,7 @@
     }
     nav.top .inner {
         max-width: 760px; margin: 0 auto; padding: 10px 16px;
-        display: flex; gap: 8px; align-items: center;
+        display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
     }
     nav.top a {
         color: var(--muted); text-decoration: none; font-size: 0.95rem;
@@ -238,6 +238,25 @@
 
 </div>
 
+<!-- ===== CLAVE MAESTRA ===== -->
+<div id="login-docente" class="hidden">
+
+<header>
+    <span class="docente-badge">Modo docente</span>
+    <h1>Clave maestra</h1>
+</header>
+
+<div class="card">
+    <div class="field">
+        <label for="clave-maestra">Clave</label>
+        <input type="password" id="clave-maestra" autocomplete="current-password">
+    </div>
+    <button class="btn" id="btn-entrar">Entrar</button>
+    <p class="msg" id="msg-login">Queda recordada en este dispositivo hasta que toques "Salir".</p>
+</div>
+
+</div>
+
 <!-- ===== VISTA DOCENTE ===== -->
 <div id="vista-docente" class="hidden">
 
@@ -302,6 +321,10 @@
     const docente = params.get('modo') === 'docente';
     const qid = params.get('cuestionario') || '';
 
+    // SHA-256 de "docente|<clave maestra>". Para cambiar la clave, ver
+    // sistema-eidas-datos/cuestionarios/README.md.
+    const HASH_DOCENTE = '237762792bfa7ef3918aa547e6b27f94a7ddb4a17d463268b1b7f127d9286202';
+
     function esc(t) {
         return String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     }
@@ -364,7 +387,7 @@
         return p.correctas.includes(dada) ? p.puntos : 0;
     }
 
-    if (docente) iniciarDocente();
+    if (docente) pedirClaveDocente();
     else iniciarAlumno();
 
     // ============================================================
@@ -671,6 +694,46 @@
     }
 
     // ============================================================
+    // DOCENTE — clave maestra
+    // ============================================================
+    async function sha256(texto) {
+        const h = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(texto)));
+        return Array.from(h, (b) => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function pedirClaveDocente() {
+        let recordada = null;
+        try { recordada = localStorage.getItem('docente:clave'); } catch (e) { }
+        if (HASH_DOCENTE && recordada === HASH_DOCENTE) { iniciarDocente(); return; }
+
+        document.title = 'Docente · ' + Q.titulo;
+        $('login-docente').classList.remove('hidden');
+        const msg = $('msg-login');
+        if (!HASH_DOCENTE) {
+            msg.textContent = 'Todavía no hay una clave maestra configurada en la página.';
+            msg.classList.add('err');
+            $('clave-maestra').disabled = true;
+            $('btn-entrar').disabled = true;
+            return;
+        }
+        async function entrar() {
+            const h = await sha256('docente|' + $('clave-maestra').value);
+            if (h !== HASH_DOCENTE) {
+                msg.textContent = 'Clave incorrecta.';
+                msg.classList.add('err');
+                return;
+            }
+            try { localStorage.setItem('docente:clave', h); } catch (e) { }
+            $('clave-maestra').value = '';
+            $('login-docente').classList.add('hidden');
+            iniciarDocente();
+        }
+        $('btn-entrar').addEventListener('click', entrar);
+        $('clave-maestra').addEventListener('keydown', (e) => { if (e.key === 'Enter') entrar(); });
+        $('clave-maestra').focus();
+    }
+
+    // ============================================================
     // DOCENTE
     // ============================================================
     function iniciarDocente() {
@@ -679,7 +742,14 @@
             <a href="#codigos" class="go">Código</a>
             <a href="#corrector">Corrector</a>
             <a href="#clave">Clave</a>
-            <a class="progress" style="border:none" href="?cuestionario=${encodeURIComponent(Q.id)}">Vista alumno</a>`;
+            <span class="progress"></span>
+            <a href="?cuestionario=${encodeURIComponent(Q.id)}">Vista alumno</a>
+            <a href="#" id="salir">Salir</a>`;
+        $('salir').addEventListener('click', (e) => {
+            e.preventDefault();
+            try { localStorage.removeItem('docente:clave'); } catch (err) { }
+            location.reload();
+        });
         $('titulo-docente').textContent = Q.titulo;
 
         // Código por comisión para la fecha elegida
