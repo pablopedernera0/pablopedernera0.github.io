@@ -1,0 +1,551 @@
+{
+ "id": "simulacro-2p-bicirio-b",
+ "titulo": "Simulacro 2° parcial (versión B) — Diseño de Sistemas Web — Caso BiciRío",
+ "caso": "bicirio",
+ "comisiones": [
+  "3°1°"
+ ],
+ "total": 30,
+ "preguntas": [
+  {
+   "num": 1,
+   "puntos": 2,
+   "enunciado": "La Secretaría de Movilidad fija las tarifas por ordenanza y hay que cargar cada tarifa nueva en el sistema. ¿Qué es la Secretaría en el análisis?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Un stakeholder y, además, el actor principal del caso de uso \"Actualizar tarifa\"."
+    },
+    {
+     "letra": "b",
+     "texto": "Ni actor ni stakeholder: es quien paga el desarrollo, no alguien que usa el sistema."
+    },
+    {
+     "letra": "c",
+     "texto": "Solo un stakeholder: una organización no puede ser actor de un caso de uso."
+    },
+    {
+     "letra": "d",
+     "texto": "El actor principal de todos los casos de uso, porque es la dueña del sistema."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "es stakeholder porque tiene interés en el sistema (es la dueña), y es actor de los casos de uso donde interactúa con él, como cargar una tarifa. Una organización puede ser actor (igual que la pasarela de pagos). Ser dueña no la convierte en actor de los casos donde no participa, como retirar una bici."
+  },
+  {
+   "num": 2,
+   "puntos": 1,
+   "enunciado": "¿Cuál de estos es un requisito no funcional bien escrito?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "\"El sistema bloquea la bicicleta apenas un usuario reporta una falla desde la app.\""
+    },
+    {
+     "letra": "b",
+     "texto": "\"El 95 % de los retiros se completa en menos de 30 s desde que se escanea el QR.\""
+    },
+    {
+     "letra": "c",
+     "texto": "\"La app tiene que ser rápida y cómoda de usar en la calle, con una sola mano.\""
+    },
+    {
+     "letra": "d",
+     "texto": "\"La app tiene que funcionar bien a pleno sol y en cualquier modelo de celular.\""
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "un RNF bien escrito pone una condición de calidad que se puede medir. \"Rápida\", \"cómoda\" y \"funcionar bien\" no se pueden comprobar. Bloquear la bicicleta es comportamiento, así que es un requisito funcional."
+  },
+  {
+   "num": 3,
+   "puntos": 1,
+   "enunciado": "¿Cuál es la mejor historia de usuario para el reporte de fallas?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Como Secretaría de Movilidad, quiero que las bicicletas estén siempre en buen estado, para cuidar el servicio."
+    },
+    {
+     "letra": "b",
+     "texto": "Como sistema, quiero bloquear automáticamente las bicicletas con falla, para evitar accidentes en la calle."
+    },
+    {
+     "letra": "c",
+     "texto": "Como técnico del taller, quiero una tabla FALLA en la base de datos, para registrar las reparaciones."
+    },
+    {
+     "letra": "d",
+     "texto": "Como usuario, quiero reportar desde la app una falla de la bici, para que nadie la retire hasta que la revisen."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "tiene un rol real, una acción que se puede observar y un para qué concreto. \"El sistema\" no es un rol. La tabla FALLA es una solución técnica, no una necesidad. La de la Secretaría es un deseo sin ninguna acción que se pueda verificar."
+  },
+  {
+   "num": 4,
+   "puntos": 2,
+   "enunciado": "HU: \"Como usuario, quiero que la app me avise antes de que se terminen los 60 minutos, para no pagar excedente\". ¿Cuál es el mejor criterio de aceptación?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Al llegar a los 60 minutos, la app avisa que el viaje ya empezó a cobrar el excedente por fracción."
+    },
+    {
+     "letra": "b",
+     "texto": "La app avisa con tiempo suficiente para que el usuario pueda devolver la bici sin pagar excedente."
+    },
+    {
+     "letra": "c",
+     "texto": "Al cumplir 50 minutos de viaje, la app envía una notificación que indica que quedan 10 minutos incluidos."
+    },
+    {
+     "letra": "d",
+     "texto": "La notificación de aviso se ve clara y llamativa en cualquier celular, aunque la app esté cerrada."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "un criterio de aceptación tiene que poder comprobarse con un momento y un contenido concretos. \"Con tiempo suficiente\" solo repite el objetivo. \"Clara y llamativa\" no se puede verificar. Avisar a los 60 minutos contradice el caso: el aviso es a los 50, justamente para que todavía se pueda evitar el cobro."
+  },
+  {
+   "num": 5,
+   "puntos": 1,
+   "enunciado": "HU: \"Como abonado anual, quiero registrarme con mi DNI, pagar el abono, retirar y devolver bicis y ver mi historial de viajes, para usar BiciRío\". Según INVEST, ¿qué falla principalmente?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Pequeña: es una épica entera y hay que partirla en varias historias."
+    },
+    {
+     "letra": "b",
+     "texto": "Negociable: dice cómo hay que implementar cada parte."
+    },
+    {
+     "letra": "c",
+     "texto": "Valiosa: no queda claro qué gana el abonado con todo eso."
+    },
+    {
+     "letra": "d",
+     "texto": "Verificable: no hay forma de probar ninguna de esas acciones."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "cada una de esas acciones por separado ya es una historia que entrega valor. Juntas no entran en una iteración ni se pueden estimar con confianza. Cada parte sí se puede verificar, y la historia no dice nada sobre cómo implementarla."
+  },
+  {
+   "num": 6,
+   "puntos": 1,
+   "enunciado": "Para que la historia \"Pagar deuda pendiente\" pase el DoR, ¿qué pregunta tiene que estar respondida?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Cuántos usuarios tienen deuda hoy en el sistema actual de tarjetas magnéticas."
+    },
+    {
+     "letra": "b",
+     "texto": "Si después de pagar puede retirar en el acto o tiene que esperar que la pasarela confirme el cobro."
+    },
+    {
+     "letra": "c",
+     "texto": "De qué color y tamaño va a ser el botón \"Pagar\" en la pantalla principal de la app."
+    },
+    {
+     "letra": "d",
+     "texto": "Con qué lenguaje de programación se va a hacer la integración con la pasarela de pagos."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "el DoR pide que estén decididas las reglas de negocio que cambian lo que se construye. El lenguaje y el color del botón se resuelven durante el desarrollo. La cantidad de deudores de hoy es un dato interesante, pero no cambia qué hay que hacer."
+  },
+  {
+   "num": 7,
+   "puntos": 1,
+   "enunciado": "La historia \"Comprar pase diario\" depende de que la pasarela de pagos mande sus credenciales de prueba, y todavía no las mandó. ¿Pasa el DoR?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "No: tiene una dependencia externa sin resolver. Queda lista para cuando llegue y el equipo toma otra historia."
+    },
+    {
+     "letra": "b",
+     "texto": "Sí: la dependencia es de la pasarela y no del equipo, así que no cuenta para el DoR."
+    },
+    {
+     "letra": "c",
+     "texto": "Sí, porque los criterios de aceptación ya están escritos y eso es lo único que pide el DoR."
+    },
+    {
+     "letra": "d",
+     "texto": "Depende de la urgencia: si la Secretaría la necesita ya, se saltea ese ítem por esta vez."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "una dependencia sin resolver es justamente lo que el DoR tiene que detectar antes de empezar, sea del equipo o de afuera. El DoR no se negocia historia por historia según la urgencia."
+  },
+  {
+   "num": 8,
+   "puntos": 2,
+   "enunciado": "Épica: \"Fallas de bicicletas\". ¿Cuál de estos cortes es slicing vertical?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Todo lo que hace el usuario / Todo lo que hace el técnico del taller / Todo lo que ve la Secretaría."
+    },
+    {
+     "letra": "b",
+     "texto": "Formulario de reporte en la app / Servicio de bloqueo en el backend / Tabla FALLA en la base / Aviso al taller."
+    },
+    {
+     "letra": "c",
+     "texto": "Reportar una falla y bloquear la bici / Ver las bicis bloqueadas en el taller / Habilitar una bici reparada."
+    },
+    {
+     "letra": "d",
+     "texto": "Diseñar las pantallas / Programar la lógica del bloqueo / Probar con usuarios reales / Publicar la versión."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "cada historia del corte correcto entrega algo que se puede usar de punta a punta. La primera opción corta por capas técnicas. La segunda arma bloques enormes por rol. La cuarta son etapas del proyecto, no funcionalidades."
+  },
+  {
+   "num": 9,
+   "puntos": 1,
+   "enunciado": "En \"Reportar una falla y bloquear la bici\", dos usuarios reportan la misma bicicleta con segundos de diferencia. ¿Quién decide qué hace el sistema?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "El analista, junto con la Secretaría o el taller: es una regla de negocio (¿se guarda un reporte o dos?)."
+    },
+    {
+     "letra": "b",
+     "texto": "El programador, porque es un problema de concurrencia que se resuelve en la base de datos."
+    },
+    {
+     "letra": "c",
+     "texto": "Nadie todavía: es tan poco frecuente que conviene decidirlo cuando pase por primera vez."
+    },
+    {
+     "letra": "d",
+     "texto": "El técnico del taller, cuando llega a revisar la bicicleta y ve que tiene dos reportes."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "lo que el sistema hace con los dos reportes es una decisión de negocio, porque cambia lo que ve el taller y lo que queda registrado. La parte técnica es cómo se implementa esa decisión. Dejarla para cuando pase es lo que el slicing busca evitar."
+  },
+  {
+   "num": 10,
+   "puntos": 2,
+   "enunciado": "Requisito: \"Si una estación pierde la conexión, sigue aceptando devoluciones y sincroniza los datos cuando vuelve\". ¿Cómo se traza en los demás artefactos?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "No se traza: es un tema de infraestructura que se resuelve en la implementación, no en el análisis."
+    },
+    {
+     "letra": "b",
+     "texto": "Con una historia propia: \"Como estación, quiero sincronizar mis datos al volver la conexión, para no perderlos\"."
+    },
+    {
+     "letra": "c",
+     "texto": "Como excepción de \"Devolver bicicleta\" (estación sin conexión) y como criterio de aceptación de la historia de devolución."
+    },
+    {
+     "letra": "d",
+     "texto": "Con una entidad CONEXION en el modelo ER que registre la fecha y la hora de cada corte de cada estación."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "describe qué pasa con una devolución en una situación especial, así que entra en el caso de uso y en la historia que ya existen. \"Estación\" no es un rol de usuario. Registrar los cortes no es lo que pide el requisito. Si no se traza, nadie lo va a construir."
+  },
+  {
+   "num": 11,
+   "puntos": 2,
+   "enunciado": "La historia \"Pagar deuda pendiente\" dice \"Requisito relacionado: RF-12\", pero RF-12 es \"Reportar falla de una bicicleta\". ¿Qué indica?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Que hay que cambiar el texto de RF-12 para que coincida con lo que pide la historia."
+    },
+    {
+     "letra": "b",
+     "texto": "Que la historia está mal planteada y hay que reescribirla desde cero con otro rol."
+    },
+    {
+     "letra": "c",
+     "texto": "Nada grave: lo importante es que la historia exista, el número de requisito es un detalle."
+    },
+    {
+     "letra": "d",
+     "texto": "Una referencia cruzada rota: hay que corregir el ID para que apunte al requisito de deudas."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "la trazabilidad es justamente esa cadena de IDs. Si apunta mal, se pierde el origen de la historia. Pasa mucho después de renumerar requisitos: hay que actualizar todos los documentos que los citan. Cambiar RF-12 rompería el requisito de fallas, que está bien."
+  },
+  {
+   "num": 12,
+   "puntos": 2,
+   "enunciado": "\"Retirar bicicleta\" siempre verifica que el usuario no tenga deuda. Si tiene, puede pagarla en ese momento desde la app y seguir con el retiro. ¿Qué modelado es correcto?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "\"Verificar deuda\" <<include>> \"Retirar bicicleta\" y \"Pagar deuda\" <<extend>> \"Verificar deuda\"."
+    },
+    {
+     "letra": "b",
+     "texto": "\"Retirar bicicleta\" <<extend>> \"Verificar deuda\" y \"Retirar bicicleta\" <<include>> \"Pagar deuda\"."
+    },
+    {
+     "letra": "c",
+     "texto": "\"Retirar bicicleta\" <<include>> \"Verificar deuda\" y \"Pagar deuda\" <<extend>> \"Retirar bicicleta\"."
+    },
+    {
+     "letra": "d",
+     "texto": "\"Retirar bicicleta\" <<include>> \"Pagar deuda\" y \"Verificar deuda\" <<extend>> \"Retirar bicicleta\"."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "la verificación ocurre siempre, así que es <<include>> y va del caso base al incluido. El pago ocurre solo si hay deuda, así que es <<extend>> y la flecha sale del caso que extiende hacia el caso base."
+  },
+  {
+   "num": 13,
+   "puntos": 1,
+   "enunciado": "En el caso de uso \"Habilitar bicicleta reparada\", ¿quiénes son los actores?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Principal: el sistema, que desbloquea la bici. Secundario: el técnico del taller."
+    },
+    {
+     "letra": "b",
+     "texto": "Principal: el técnico del taller. No hay actores secundarios."
+    },
+    {
+     "letra": "c",
+     "texto": "Principal: el técnico del taller. Secundario: el usuario que reportó la falla."
+    },
+    {
+     "letra": "d",
+     "texto": "Principal: la Secretaría de Movilidad. Secundario: el técnico del taller."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "el técnico es quien inicia el caso para lograr su objetivo. El usuario que reportó no participa de la habilitación. El sistema no es actor de sus propios casos de uso. La Secretaría es stakeholder, pero no habilita bicicletas."
+  },
+  {
+   "num": 14,
+   "puntos": 2,
+   "enunciado": "En \"Retirar bicicleta\", el usuario escanea el QR de un anclaje cuya bici está bloqueada por una falla. ¿Cuál es la excepción mejor resuelta?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "El sistema muestra \"Error: no se puede retirar la bicicleta\" y vuelve a la pantalla principal de la app."
+    },
+    {
+     "letra": "b",
+     "texto": "El sistema libera la bicicleta igual y le muestra al usuario un aviso para que la use con cuidado."
+    },
+    {
+     "letra": "c",
+     "texto": "El sistema no libera la bici ni abre un viaje, avisa \"Bicicleta en revisión\" y muestra otras bicis disponibles en esa estación."
+    },
+    {
+     "letra": "d",
+     "texto": "El sistema abre el viaje y lo cierra enseguida, para que quede registrado el intento de retiro."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "una buena excepción dice la condición, qué hace el sistema y en qué estado queda todo, y le ofrece al usuario una salida. Un \"Error\" genérico no lo orienta. Liberarla rompe la regla del caso. Abrir y cerrar un viaje ensucia los datos de viajes y de estadísticas."
+  },
+  {
+   "num": 15,
+   "puntos": 2,
+   "enunciado": "¿Cuál es la mejor postcondición de éxito de \"Reportar falla\"?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Se verificó que el usuario estuviera usando esa bicicleta antes de permitirle el reporte."
+    },
+    {
+     "letra": "b",
+     "texto": "El usuario ve un mensaje que le agradece por colaborar con el mantenimiento de BiciRío."
+    },
+    {
+     "letra": "c",
+     "texto": "El técnico del taller reparó la bicicleta y la dejó otra vez disponible en una estación."
+    },
+    {
+     "letra": "d",
+     "texto": "La bici queda bloqueada, con el reporte registrado (quién, cuándo y qué falla), hasta que la habilite un técnico."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "una postcondición describe qué queda cierto en el sistema al terminar ese caso de uso. Un mensaje en pantalla no es estado. Verificar que la estuviera usando es una condición previa. La reparación es el resultado de otro caso de uso, \"Habilitar bicicleta reparada\"."
+  },
+  {
+   "num": 16,
+   "puntos": 2,
+   "enunciado": "La tarifa del excedente la fija la Secretaría por ordenanza y cambia varias veces al año. ¿Cómo se modela?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Una entidad TARIFA con el importe, la ordenanza y las fechas de vigencia, para saber cuál regía en cada momento."
+    },
+    {
+     "letra": "b",
+     "texto": "Un atributo \"tarifa\" en ESTACION, que se actualiza en todas las estaciones cuando sale una ordenanza nueva."
+    },
+    {
+     "letra": "c",
+     "texto": "Un atributo \"tarifa_actual\" en VIAJE, que se actualiza en todos los viajes cada vez que cambia la ordenanza."
+    },
+    {
+     "letra": "d",
+     "texto": "Una constante en el código de la app, que se cambia en cada actualización que se publica en la tienda."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "la tarifa tiene datos propios y una historia, así que es una entidad, y con las fechas de vigencia se sabe cuál correspondía a cada viaje. En ESTACION no tiene sentido: la tarifa es la misma en toda la ciudad. En el código obliga a publicar una versión de la app por cada ordenanza. Pisarla en los viajes viejos falsea lo que se cobró."
+  },
+  {
+   "num": 17,
+   "puntos": 2,
+   "enunciado": "Si el excedente no se puede cobrar, queda como deuda y el usuario no puede retirar hasta pagarla. ¿Cómo se modela la deuda?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Un atributo \"tiene_deuda\" (sí/no) en USUARIO, que se pone en sí o en no según corresponda."
+    },
+    {
+     "letra": "b",
+     "texto": "Un atributo \"importe_deuda\" en USUARIO, al que se le suma y se le resta con cada movimiento."
+    },
+    {
+     "letra": "c",
+     "texto": "No se guarda: se calcula cada vez recorriendo los viajes del usuario que pasaron los 60 minutos."
+    },
+    {
+     "letra": "d",
+     "texto": "Una entidad DEUDA ligada al VIAJE que la generó, con importe, estado (pendiente o pagada) y fecha de pago."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "hay que saber cuánto se debe, por qué viaje y si ya se pagó. Un sí/no pierde el importe y el origen. Un importe acumulado pierde el detalle de cada deuda y de cada pago. Calcularla desde los viajes no distingue los excedentes que se cobraron de los que quedaron debiendo."
+  },
+  {
+   "num": 18,
+   "puntos": 1,
+   "enunciado": "Hay que saber si una bicicleta está bloqueada, quién reportó cada falla y cuándo la habilitó el técnico. ¿Qué conviene en el modelo?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Una entidad BICICLETA_BLOQUEADA aparte, a la que se pasa la bici mientras está en el taller."
+    },
+    {
+     "letra": "b",
+     "texto": "Un atributo \"estado\" en BICICLETA y una entidad REPORTE_FALLA con usuario, fecha, descripción y fecha de habilitación."
+    },
+    {
+     "letra": "c",
+     "texto": "Un atributo multivaluado \"fallas\" en BICICLETA, con la lista de textos de todos los reportes."
+    },
+    {
+     "letra": "d",
+     "texto": "Solo un atributo \"bloqueada\" (sí/no) en BICICLETA: alcanza para saber si se puede retirar."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "el estado responde \"¿se puede retirar ya?\" y el reporte guarda el historial que pide el enunciado. El sí/no pierde quién reportó y cuándo. Mover la bici a otra entidad parte un mismo objeto en dos. La lista de textos no permite guardar quién reportó ni las fechas."
+  },
+  {
+   "num": 19,
+   "puntos": 1,
+   "enunciado": "Para la pantalla \"Reportar falla\", ¿cuál es la decisión de UI mejor justificada?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Un formulario con varios campos de texto para describir la falla en detalle, así el técnico tiene toda la información."
+    },
+    {
+     "letra": "b",
+     "texto": "Un formulario por pasos (Wizard) de cinco pantallas, porque es el patrón recomendado para cargar datos."
+    },
+    {
+     "letra": "c",
+     "texto": "Un chat en vivo con un operador del taller, porque es más cercano y humano que llenar un formulario."
+    },
+    {
+     "letra": "d",
+     "texto": "Botones con las fallas comunes (frenos, cadena, rueda, otra) y foto opcional: se completa en segundos, parado junto a la estación."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "la decisión se justifica por la situación real del usuario: está en la calle, muchas veces con una sola mano, y quiere terminar rápido. Escribir mucho texto o recorrer cinco pantallas hace que no reporte. El chat necesita operadores que el caso no menciona. \"Recomendado\" no dice para qué tarea."
+  },
+  {
+   "num": 20,
+   "puntos": 1,
+   "enunciado": "¿Cuál es la mejor consideración de accesibilidad para el aviso de los 50 minutos?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "El aviso aparece como un banner chico y discreto arriba, para no molestar al usuario."
+    },
+    {
+     "letra": "b",
+     "texto": "El aviso suena y vibra, además de verse: el usuario va pedaleando y no mira el celular."
+    },
+    {
+     "letra": "c",
+     "texto": "El aviso usa una tipografía moderna y los colores institucionales de BiciRío."
+    },
+    {
+     "letra": "d",
+     "texto": "El aviso cumple con las pautas WCAG 2.1 nivel AA de contraste y tamaño de texto."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "la consideración se ata al usuario y a su situación real. Mientras pedalea no puede mirar la pantalla, así que un aviso que solo se ve no le llega. Citar la norma sin decir qué se hizo sirve para cualquier sistema. Un banner discreto justamente no se nota."
+  }
+ ]
+}

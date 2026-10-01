@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuestionario</title>
+<style>
+    :root {
+        --bg: #05070a;
+        --bg2: #0d1117;
+        --panel: rgba(255, 255, 255, 0.04);
+        --line: rgba(255, 255, 255, 0.10);
+        --text: #c9d1d9;
+        --muted: #8b949e;
+        --blue: #58a6ff;
+        --green: #3fb950;
+        --red: #f85149;
+        --orange: #f0883e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: linear-gradient(135deg, var(--bg), var(--bg2)) fixed;
+        background-color: var(--bg);
+        color: var(--text);
+        font-size: 17px;
+        line-height: 1.55;
+    }
+
+    .wrap { max-width: 760px; margin: 0 auto; padding: 0 16px 120px; }
+
+    nav.top {
+        position: sticky; top: 0; z-index: 20;
+        background: rgba(5, 7, 10, 0.92);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid var(--line);
+    }
+    nav.top .inner {
+        max-width: 760px; margin: 0 auto; padding: 10px 16px;
+        display: flex; gap: 8px; align-items: center;
+    }
+    nav.top a {
+        color: var(--muted); text-decoration: none; font-size: 0.95rem;
+        padding: 6px 12px; border-radius: 16px; border: 1px solid var(--line);
+    }
+    nav.top a.go { color: var(--bg); background: var(--green); border-color: var(--green); font-weight: bold; }
+    nav.top .progress { margin-left: auto; font-size: 0.9rem; color: var(--muted); white-space: nowrap; }
+
+    header { padding: 32px 0 8px; }
+    .eyebrow {
+        display: inline-block; font-size: 0.8rem; letter-spacing: 0.02em;
+        color: var(--blue); border: 1px solid var(--blue); background: rgba(88, 166, 255, 0.12);
+        padding: 4px 12px; border-radius: 20px; margin-bottom: 14px;
+    }
+    h1 { font-size: 2rem; color: var(--blue); line-height: 1.2; margin-bottom: 10px; }
+    h2 { font-size: 1.45rem; color: var(--blue); margin: 36px 0 12px; }
+    h3 { font-size: 1.1rem; color: var(--green); margin-bottom: 6px; }
+    p { margin-bottom: 12px; }
+    .lead { color: var(--muted); font-size: 1.05rem; }
+    strong { color: var(--green); }
+    a { color: var(--blue); }
+
+    .card {
+        background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+        padding: 16px; margin-bottom: 12px;
+    }
+    .card p:last-child, .card ul:last-child { margin-bottom: 0; }
+    #caso ul, .card ul { padding-left: 20px; margin-bottom: 12px; }
+    #caso li, .card li { margin-bottom: 6px; }
+    #caso > ul { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 16px 10px 36px; }
+
+    .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    @media (min-width: 640px) { .grid { grid-template-columns: 1fr 1fr; } }
+    .grid .card { margin-bottom: 0; }
+
+    #caso ol { list-style: none; counter-reset: s; margin-bottom: 12px; }
+    #caso ol li {
+        counter-increment: s; position: relative; padding: 10px 12px 10px 48px; margin-bottom: 8px;
+        background: var(--panel); border-left: 4px solid var(--green); border-radius: 8px;
+    }
+    #caso ol li::before {
+        content: counter(s); position: absolute; left: 14px; top: 10px;
+        font-weight: bold; color: var(--green);
+    }
+
+    .note, #caso blockquote {
+        border: 1px solid var(--orange); background: rgba(240, 136, 62, 0.10);
+        border-radius: 10px; padding: 12px 14px; margin: 12px 0;
+    }
+    .note p:last-child, #caso blockquote p:last-child { margin-bottom: 0; }
+
+    /* Cuestionario */
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 0.95rem; color: var(--muted); margin-bottom: 6px; }
+    input[type=text], input[type=date], select, textarea {
+        width: 100%; font-size: 1rem; padding: 12px; border-radius: 8px;
+        border: 1px solid var(--line); background: #0b0f14; color: var(--text); font-family: inherit;
+    }
+    input[type=date] { color-scheme: dark; }
+    input.codigo-in { font-family: Consolas, monospace; font-size: 1.4rem; letter-spacing: 0.2em; text-transform: uppercase; text-align: center; }
+
+    .q { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    .q .meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 6px; }
+    .q .enun { font-weight: 600; margin-bottom: 12px; }
+    .opt {
+        display: flex; gap: 10px; align-items: flex-start; padding: 12px; min-height: 48px;
+        border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; cursor: pointer;
+    }
+    .opt input { margin-top: 4px; width: 20px; height: 20px; flex: none; accent-color: var(--blue); }
+    .opt .l { font-weight: bold; color: var(--blue); flex: none; }
+    .opt:has(input:checked) { border-color: var(--blue); background: rgba(88, 166, 255, 0.10); }
+    .locked .opt { cursor: default; }
+    .opt.ok { border-color: var(--green); background: rgba(63, 185, 80, 0.12); }
+    .opt.bad { border-color: var(--red); background: rgba(248, 81, 73, 0.12); }
+    .porque { font-size: 0.95rem; color: var(--text); border-left: 3px solid var(--green); padding: 6px 10px; margin-top: 8px; }
+    .verdict { font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; }
+    .verdict.ok { color: var(--green); }
+    .verdict.bad { color: var(--red); }
+
+    .btn {
+        display: block; width: 100%; font-size: 1.05rem; font-weight: bold; padding: 14px;
+        border-radius: 10px; border: none; cursor: pointer; margin-bottom: 10px;
+        background: var(--green); color: var(--bg);
+    }
+    .btn.sec { background: transparent; color: var(--blue); border: 1px solid var(--blue); }
+    .btn.warn { background: var(--orange); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .msg { font-size: 0.95rem; color: var(--muted); margin-bottom: 10px; }
+    .msg.err { color: var(--red); }
+    .score { font-size: 2.2rem; font-weight: bold; color: var(--green); text-align: center; }
+    .hidden { display: none; }
+    footer { color: var(--muted); font-size: 0.85rem; margin-top: 40px; }
+
+    /* Modo docente */
+    .docente-badge {
+        display: inline-block; font-size: 0.8rem; color: var(--bg); background: var(--orange);
+        padding: 4px 12px; border-radius: 20px; font-weight: bold; margin-bottom: 14px;
+    }
+    .codigos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 12px; }
+    .codigo { background: #0b0f14; border: 1px solid var(--line); border-radius: 12px; padding: 14px; text-align: center; }
+    .codigo span { display: block; font-size: 0.9rem; color: var(--muted); }
+    .codigo b { display: block; font-family: Consolas, monospace; font-size: 2.6rem; letter-spacing: 0.15em; color: var(--green); }
+    .drop {
+        display: block; border: 2px dashed var(--line); border-radius: 12px; padding: 22px 14px; text-align: center;
+        color: var(--muted); margin-bottom: 12px; cursor: pointer;
+    }
+    .drop.over { border-color: var(--blue); background: rgba(88, 166, 255, 0.08); color: var(--text); }
+    textarea { min-height: 90px; resize: vertical; margin-bottom: 10px; font-size: 0.9rem; }
+    .tabla { overflow-x: auto; margin-bottom: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { color: var(--muted); font-weight: normal; font-size: 0.85rem; }
+    td.num, th.num { text-align: right; white-space: nowrap; }
+    td.fallas { font-size: 0.85rem; color: var(--muted); }
+    .barra { display: grid; grid-template-columns: 44px 1fr 92px; gap: 8px; align-items: center; font-size: 0.9rem; margin-bottom: 6px; }
+    .barra .b { height: 10px; border-radius: 5px; background: var(--line); overflow: hidden; }
+    .barra .b i { display: block; height: 100%; background: var(--green); }
+    .barra .b i.bajo { background: var(--red); }
+    .barra .b i.medio { background: var(--orange); }
+    details summary { cursor: pointer; color: var(--blue); font-weight: bold; padding: 6px 0; }
+</style>
+</head>
+<body>
+
+<nav class="top">
+    <div class="inner" id="nav"></div>
+</nav>
+
+<div class="wrap">
+
+<div id="error" class="card hidden" style="margin-top:32px"></div>
+
+<!-- ===== VISTA ALUMNO ===== -->
+<div id="vista-alumno" class="hidden">
+
+<header>
+    <span class="eyebrow" id="eyebrow"></span>
+</header>
+
+<section id="caso"></section>
+
+<div class="note" id="nota-caso"></div>
+
+<section id="cuestionario">
+    <h2>Cuestionario</h2>
+
+    <div id="datos-alumno" class="card">
+        <div class="field">
+            <label for="nombre">Nombre y apellido</label>
+            <input type="text" id="nombre" autocomplete="name">
+        </div>
+        <div class="field" style="margin-bottom:0">
+            <label for="comision">Comisión</label>
+            <select id="comision"></select>
+        </div>
+    </div>
+
+    <div id="preguntas"></div>
+
+    <div id="cierre">
+        <p class="msg" id="msg-final"></p>
+        <button class="btn" id="btn-finalizar">Finalizar</button>
+    </div>
+
+    <div id="resultado" class="hidden">
+        <div class="card">
+            <h3>Listo, respuestas guardadas</h3>
+            <p>Mandale el archivo al profesor por WhatsApp o por mail, y guardate una copia.</p>
+            <button class="btn" id="btn-enviar">Enviar archivo</button>
+            <div class="row">
+                <button class="btn sec" id="btn-descargar">Descargar</button>
+                <button class="btn sec" id="btn-copiar">Copiar texto</button>
+            </div>
+            <p class="msg" id="msg-envio"></p>
+        </div>
+        <div class="card" id="correccion-pendiente">
+            <h3>Corrección</h3>
+            <p>Cuando el profesor lo indique, escribí el código que te da y vas a ver tu resultado. Tus respuestas quedan guardadas en este celular: si cerrás la página, volvé a abrirla con el mismo link.</p>
+            <div class="field">
+                <label for="codigo">Código de corrección</label>
+                <input type="text" id="codigo" class="codigo-in" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false">
+            </div>
+            <button class="btn sec" id="btn-correccion">Ver corrección</button>
+            <p class="msg" id="msg-correccion"></p>
+        </div>
+        <div class="card hidden" id="correccion-lista">
+            <h3>Tu resultado</h3>
+            <div class="score" id="puntaje"></div>
+            <p class="msg" style="text-align:center">Subí para ver cada pregunta marcada, con la explicación.</p>
+        </div>
+    </div>
+</section>
+
+</div>
+
+<!-- ===== VISTA DOCENTE ===== -->
+<div id="vista-docente" class="hidden">
+
+<header>
+    <span class="docente-badge">Modo docente</span>
+    <h1 id="titulo-docente"></h1>
+    <p class="lead">Los alumnos ven su corrección cuando escriben el código de su comisión. Cambia todos los días a las 0 h; quien ya la desbloqueó la sigue viendo.</p>
+</header>
+
+<h2 id="codigos">Código de corrección</h2>
+<div class="card">
+    <div class="field" style="margin-bottom:0">
+        <label for="fecha-codigo">Fecha</label>
+        <input type="date" id="fecha-codigo">
+    </div>
+    <div class="codigos" id="lista-codigos"></div>
+</div>
+
+<h2 id="corrector">Corrector</h2>
+<div class="card">
+    <p>Arrastrá los .txt que te mandaron (o tocá para elegirlos). También podés pegar el texto que copian con "Copiar texto": puede ir más de uno junto.</p>
+    <label class="drop" id="drop" for="archivos">Soltá los archivos acá o tocá para elegirlos</label>
+    <input type="file" id="archivos" accept=".txt,text/plain" multiple class="hidden">
+    <textarea id="pegado" placeholder="Pegá acá el texto de una o más respuestas"></textarea>
+    <div class="row">
+        <button class="btn sec" id="btn-pegado">Agregar texto pegado</button>
+        <button class="btn sec" id="btn-limpiar">Vaciar</button>
+    </div>
+    <p class="msg" id="msg-corrector"></p>
+</div>
+
+<div id="resultados" class="hidden">
+    <div class="card">
+        <h3 id="resumen"></h3>
+        <div class="tabla"><table id="tabla"></table></div>
+        <button class="btn" id="btn-csv">Descargar planilla (CSV)</button>
+    </div>
+    <div class="card">
+        <h3>Preguntas, de la que más falló a la que menos</h3>
+        <div id="barras"></div>
+    </div>
+</div>
+
+<h2 id="clave">Clave</h2>
+<details class="card">
+    <summary>Ver las preguntas con la respuesta correcta y la explicación</summary>
+    <div id="lista-clave" style="margin-top:12px"></div>
+</details>
+
+</div>
+
+<footer>
+    <p>Terciario Urquiza · Diseño de Sistemas Web · Caso ficticio armado para la materia.</p>
+</footer>
+
+</div>
+
+<script>
+(async function () {
+    const $ = (id) => document.getElementById(id);
+    const params = new URLSearchParams(location.search);
+    const docente = params.get('modo') === 'docente';
+    const qid = params.get('cuestionario') || '';
+
+    function esc(t) {
+        return String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    }
+
+    function fallar(html) {
+        $('error').innerHTML = html;
+        $('error').classList.remove('hidden');
+    }
+
+    // ============================================================
+    // Carga: cuestionarios/<id>.json y casos/<caso>/caso.md
+    // ============================================================
+    if (!/^[a-z0-9-]+$/.test(qid)) {
+        fallar('<h3>Falta el cuestionario</h3><p style="margin:0">El link tiene que terminar en <code>?cuestionario=</code> y el nombre que te pasó el profesor.</p>');
+        return;
+    }
+
+    let Q, casoMd;
+    try {
+        const r = await fetch(`cuestionarios/${qid}.json`, { cache: 'no-cache' });
+        if (!r.ok) throw new Error(r.status);
+        Q = await r.json();
+    } catch (e) {
+        fallar(`<h3>No encontré el cuestionario</h3><p style="margin:0">No existe "${esc(qid)}". Revisá el link que te pasó el profesor.</p>`);
+        return;
+    }
+    try {
+        const r = await fetch(`casos/${encodeURIComponent(Q.caso)}/caso.md`, { cache: 'no-cache' });
+        if (!r.ok) throw new Error(r.status);
+        casoMd = await r.text();
+    } catch (e) {
+        casoMd = null;
+    }
+
+    // ============================================================
+    // Código del día: SHA-256 de cuestionario|comisión|fecha
+    // ============================================================
+    const ALFABETO = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+
+    async function codigoDe(comision, fecha) {
+        const datos = new TextEncoder().encode(`${Q.id}|${comision}|${fecha}`);
+        const h = new Uint8Array(await crypto.subtle.digest('SHA-256', datos));
+        let s = '';
+        for (let i = 0; i < 5; i++) s += ALFABETO[h[i] % 32];
+        return s;
+    }
+
+    function fechaISO(d) {
+        const p = (n) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+    }
+
+    function fechaLocal(iso) {
+        const d = new Date(iso);
+        const p = (n) => String(n).padStart(2, '0');
+        return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+
+    function puntosDe(p, dada) {
+        return p.correctas.includes(dada) ? p.puntos : 0;
+    }
+
+    if (docente) iniciarDocente();
+    else iniciarAlumno();
+
+    // ============================================================
+    // Markdown mínimo para el caso: títulos, párrafos, listas,
+    // citas, negrita, cursiva, código y links.
+    // ============================================================
+    function inline(t) {
+        return esc(t)
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+            .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    }
+
+    function markdown(md) {
+        const out = [];
+        let parrafo = [], lista = null, cita = [];
+        const cerrarParrafo = () => { if (parrafo.length) out.push(`<p>${inline(parrafo.join(' '))}</p>`); parrafo = []; };
+        const cerrarLista = () => { if (lista) out.push(`<${lista.tipo}>${lista.items.map((i) => `<li>${inline(i)}</li>`).join('')}</${lista.tipo}>`); lista = null; };
+        const cerrarCita = () => { if (cita.length) out.push(`<blockquote><p>${inline(cita.join(' '))}</p></blockquote>`); cita = []; };
+        const cerrar = () => { cerrarParrafo(); cerrarLista(); cerrarCita(); };
+        md.split('\n').forEach((linea) => {
+            let m;
+            if (!linea.trim()) { cerrar(); return; }
+            if ((m = linea.match(/^(#{1,3}) (.*)/))) { cerrar(); out.push(`<h${m[1].length}>${inline(m[2])}</h${m[1].length}>`); return; }
+            if ((m = linea.match(/^> ?(.*)/))) { cerrarParrafo(); cerrarLista(); cita.push(m[1]); return; }
+            if ((m = linea.match(/^(-|\d+\.) (.*)/))) {
+                const tipo = m[1] === '-' ? 'ul' : 'ol';
+                cerrarParrafo(); cerrarCita();
+                if (lista && lista.tipo !== tipo) cerrarLista();
+                if (!lista) lista = { tipo, items: [] };
+                lista.items.push(m[2]);
+                return;
+            }
+            if (lista && /^\s+/.test(linea)) { lista.items[lista.items.length - 1] += ' ' + linea.trim(); return; }
+            cerrarLista(); cerrarCita();
+            parrafo.push(linea.trim());
+        });
+        cerrar();
+        return out.join('\n');
+    }
+
+    // Cada ### y lo que sigue hasta el próximo título va en una tarjeta;
+    // si quedan varias tarjetas seguidas, van en grilla.
+    function armarTarjetas(cont) {
+        const nodos = Array.from(cont.children);
+        const nuevo = [];
+        let tarjeta = null;
+        nodos.forEach((n) => {
+            if (n.tagName === 'H3') {
+                tarjeta = document.createElement('div');
+                tarjeta.className = 'card';
+                tarjeta.appendChild(n);
+                nuevo.push(tarjeta);
+            } else if (tarjeta && !/^H[12]$/.test(n.tagName)) {
+                tarjeta.appendChild(n);
+            } else {
+                tarjeta = null;
+                nuevo.push(n);
+            }
+        });
+        cont.innerHTML = '';
+        let grilla = null;
+        nuevo.forEach((n, i) => {
+            const esCard = n.classList && n.classList.contains('card');
+            const siguienteCard = nuevo[i + 1] && nuevo[i + 1].classList && nuevo[i + 1].classList.contains('card');
+            if (esCard && (grilla || siguienteCard)) {
+                if (!grilla) { grilla = document.createElement('div'); grilla.className = 'grid'; cont.appendChild(grilla); }
+                grilla.appendChild(n);
+            } else {
+                grilla = null;
+                cont.appendChild(n);
+            }
+        });
+        const h1 = cont.querySelector('h1');
+        if (h1 && h1.nextElementSibling && h1.nextElementSibling.tagName === 'P') h1.nextElementSibling.classList.add('lead');
+    }
+
+    // ============================================================
+    // ALUMNO
+    // ============================================================
+    function iniciarAlumno() {
+        const KEY = 'cuestionario:' + Q.id;
+        let estado = { nombre: '', comision: '', r: {}, fin: null, corregido: false };
+
+        try {
+            const s = JSON.parse(localStorage.getItem(KEY) || 'null');
+            if (s && typeof s === 'object') estado = Object.assign(estado, s);
+        } catch (e) { /* sin almacenamiento: se trabaja en memoria */ }
+        function guardar() {
+            try { localStorage.setItem(KEY, JSON.stringify(estado)); } catch (e) { }
+        }
+
+        $('nav').innerHTML = `
+            <a href="#caso">El caso</a>
+            <a href="#cuestionario" class="go">Cuestionario</a>
+            <span class="progress" id="progreso"></span>`;
+        $('eyebrow').textContent = Q.titulo;
+
+        if (casoMd) {
+            $('caso').innerHTML = markdown(casoMd);
+            armarTarjetas($('caso'));
+            const h1 = $('caso').querySelector('h1');
+            if (h1) document.title = h1.textContent;
+        } else {
+            $('caso').innerHTML = '<p class="msg err">No se pudo cargar el texto del caso. Recargá la página.</p>';
+        }
+        const n = Q.preguntas.length;
+        const mixto = new Set(Q.preguntas.map((p) => p.puntos)).size > 1;
+        $('nota-caso').innerHTML = `<p>Cuando termines de leer, pasá al cuestionario. Individual, sin apuntes, <strong>${n} preguntas y ${Q.total} puntos</strong>${mixto ? ' (no todas valen lo mismo: el valor figura en cada una)' : ''}. Podés volver a mirar el caso mientras respondés.</p>`;
+
+        $('comision').innerHTML = (Q.comisiones.length > 1 ? '<option value="">Elegí tu comisión</option>' : '')
+            + Q.comisiones.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+        if (Q.comisiones.length === 1 && !estado.comision) { estado.comision = Q.comisiones[0]; guardar(); }
+
+        $('preguntas').innerHTML = Q.preguntas.map((p) => `
+            <div class="q" id="q${p.num}">
+                <div class="meta">Pregunta ${p.num} de ${n} · ${p.puntos} ${p.puntos === 1 ? 'punto' : 'puntos'}</div>
+                <div class="verdict hidden"></div>
+                <div class="enun">${esc(p.enunciado)}</div>
+                ${p.opciones.map((o) => `
+                    <label class="opt" data-l="${o.letra}">
+                        <input type="radio" name="p${p.num}" value="${o.letra}" ${estado.r[p.num] === o.letra ? 'checked' : ''}>
+                        <span class="l">${o.letra})</span>
+                        <span>${esc(o.texto)}</span>
+                    </label>`).join('')}
+                <div class="porque hidden"></div>
+            </div>`).join('');
+        $('preguntas').addEventListener('change', (e) => {
+            if (estado.fin || e.target.type !== 'radio') return;
+            estado.r[e.target.name.slice(1)] = e.target.value;
+            guardar();
+            progreso();
+        });
+        $('nombre').value = estado.nombre;
+        $('comision').value = estado.comision;
+        $('nombre').addEventListener('input', () => { estado.nombre = $('nombre').value; guardar(); });
+        $('comision').addEventListener('change', () => { estado.comision = $('comision').value; guardar(); });
+
+        function respondidas() {
+            return Q.preguntas.filter((p) => estado.r[p.num]).length;
+        }
+
+        function progreso() {
+            $('progreso').textContent = estado.fin ? 'Finalizado' : `${respondidas()} / ${n}`;
+        }
+
+        function bloquear() {
+            document.querySelectorAll('#cuestionario input:not(#codigo), #cuestionario select').forEach((el) => { el.disabled = true; });
+            $('preguntas').classList.add('locked');
+            $('cierre').classList.add('hidden');
+            $('resultado').classList.remove('hidden');
+            progreso();
+        }
+
+        let confirmando = false;
+        $('btn-finalizar').addEventListener('click', () => {
+            const msg = $('msg-final');
+            msg.classList.remove('err');
+            if (!estado.nombre.trim() || !estado.comision) {
+                msg.textContent = 'Completá tu nombre y tu comisión arriba de todo antes de finalizar.';
+                msg.classList.add('err');
+                $('datos-alumno').scrollIntoView();
+                return;
+            }
+            const faltan = n - respondidas();
+            if (!confirmando) {
+                confirmando = true;
+                msg.textContent = (faltan ? `Te quedan ${faltan} preguntas sin responder. ` : '')
+                    + 'Después de finalizar no vas a poder cambiar las respuestas. Tocá de nuevo para confirmar.';
+                $('btn-finalizar').textContent = 'Confirmar y finalizar';
+                $('btn-finalizar').classList.add('warn');
+                return;
+            }
+            estado.fin = new Date().toISOString();
+            guardar();
+            bloquear();
+            $('resultado').scrollIntoView();
+        });
+
+        // Mismo formato que lee sistema-eidas/scripts/cuestionario.py corregir.
+        function textoArchivo() {
+            const lineas = [
+                Q.titulo,
+                `Nombre: ${estado.nombre.trim()}`,
+                `Comisión: ${estado.comision}`,
+                `Finalizado: ${fechaLocal(estado.fin)}`,
+                `Respondidas: ${respondidas()} de ${n}`,
+                '',
+            ];
+            Q.preguntas.forEach((p) => {
+                const l = estado.r[p.num];
+                const o = p.opciones.find((x) => x.letra === l);
+                lineas.push(`${p.num}) ${l ? l + ' - ' + o.texto : '(sin responder)'}`);
+            });
+            const datos = { id: Q.id, nombre: estado.nombre.trim(), comision: estado.comision, fin: estado.fin, r: estado.r };
+            lineas.push('', 'DATOS: ' + JSON.stringify(datos), '');
+            return lineas.join('\n');
+        }
+
+        function nombreArchivo() {
+            const base = estado.nombre.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+                .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'alumno';
+            return `${Q.id}-${base}.txt`;
+        }
+
+        function descargar() {
+            const blob = new Blob([textoArchivo()], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = nombreArchivo();
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+            $('msg-envio').textContent = 'Archivo descargado: ' + nombreArchivo();
+        }
+
+        $('btn-descargar').addEventListener('click', descargar);
+
+        $('btn-enviar').addEventListener('click', async () => {
+            const archivo = new File([textoArchivo()], nombreArchivo(), { type: 'text/plain' });
+            try {
+                if (navigator.canShare && navigator.canShare({ files: [archivo] })) {
+                    await navigator.share({ files: [archivo], title: Q.titulo });
+                    $('msg-envio').textContent = 'Enviado.';
+                    return;
+                }
+            } catch (e) {
+                if (e && e.name === 'AbortError') return;
+            }
+            descargar();
+            $('msg-envio').textContent = 'Este navegador no permite compartir el archivo directamente: se descargó '
+                + nombreArchivo() + '. Adjuntalo en WhatsApp o en un mail.';
+        });
+
+        $('btn-copiar').addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(textoArchivo());
+                $('msg-envio').textContent = 'Texto copiado. Pegalo en un mensaje al profesor.';
+            } catch (e) {
+                $('msg-envio').textContent = 'No se pudo copiar. Usá "Descargar".';
+            }
+        });
+
+        // Vale el código de hoy y el del día en que finalizó.
+        async function probarCodigo() {
+            const dado = $('codigo').value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            const msg = $('msg-correccion');
+            msg.classList.remove('err');
+            if (dado.length !== 5) {
+                msg.textContent = 'El código tiene 5 caracteres.';
+                msg.classList.add('err');
+                return;
+            }
+            const fechas = new Set([fechaISO(new Date()), fechaISO(new Date(estado.fin))]);
+            for (const f of fechas) {
+                if (await codigoDe(estado.comision, f) === dado) {
+                    estado.corregido = true;
+                    guardar();
+                    mostrarCorreccion();
+                    $('correccion-lista').scrollIntoView();
+                    return;
+                }
+            }
+            msg.textContent = `Ese no es el código de hoy para ${estado.comision}. Revisalo con el profesor.`;
+            msg.classList.add('err');
+        }
+
+        $('btn-correccion').addEventListener('click', probarCodigo);
+        $('codigo').addEventListener('keydown', (e) => { if (e.key === 'Enter') probarCodigo(); });
+
+        function mostrarCorreccion() {
+            let puntos = 0;
+            Q.preguntas.forEach((p) => {
+                const dada = estado.r[p.num];
+                const bien = p.correctas.includes(dada);
+                puntos += puntosDe(p, dada);
+                const q = $('q' + p.num);
+                q.querySelectorAll('.opt').forEach((op) => {
+                    if (p.correctas.includes(op.dataset.l)) op.classList.add('ok');
+                    else if (op.dataset.l === dada) op.classList.add('bad');
+                });
+                const v = q.querySelector('.verdict');
+                v.textContent = bien ? 'Correcta' : (dada ? 'Incorrecta' : 'Sin responder');
+                v.classList.add(bien ? 'ok' : 'bad');
+                v.classList.remove('hidden');
+                const pq = q.querySelector('.porque');
+                pq.textContent = 'Por qué: ' + p.porque;
+                pq.classList.remove('hidden');
+            });
+            $('puntaje').textContent = `${puntos} / ${Q.total}`;
+            $('progreso').textContent = `Resultado: ${puntos} / ${Q.total}`;
+            $('correccion-pendiente').classList.add('hidden');
+            $('correccion-lista').classList.remove('hidden');
+        }
+
+        $('vista-alumno').classList.remove('hidden');
+        progreso();
+        if (estado.fin) {
+            bloquear();
+            if (estado.corregido) mostrarCorreccion();
+        }
+    }
+
+    // ============================================================
+    // DOCENTE
+    // ============================================================
+    function iniciarDocente() {
+        document.title = 'Docente · ' + Q.titulo;
+        $('nav').innerHTML = `
+            <a href="#codigos" class="go">Código</a>
+            <a href="#corrector">Corrector</a>
+            <a href="#clave">Clave</a>
+            <a class="progress" style="border:none" href="?cuestionario=${encodeURIComponent(Q.id)}">Vista alumno</a>`;
+        $('titulo-docente').textContent = Q.titulo;
+
+        // Código por comisión para la fecha elegida
+        $('fecha-codigo').value = fechaISO(new Date());
+        async function mostrarCodigos() {
+            const f = $('fecha-codigo').value;
+            if (!f) return;
+            const items = await Promise.all(Q.comisiones.map(async (c) => `
+                <div class="codigo"><span>${esc(c)}</span><b>${await codigoDe(c, f)}</b></div>`));
+            $('lista-codigos').innerHTML = items.join('');
+        }
+        $('fecha-codigo').addEventListener('change', mostrarCodigos);
+        mostrarCodigos();
+
+        // Clave completa
+        $('lista-clave').innerHTML = Q.preguntas.map((p) => `
+            <div class="q">
+                <div class="meta">Pregunta ${p.num} · ${p.puntos} ${p.puntos === 1 ? 'punto' : 'puntos'}</div>
+                <div class="enun">${esc(p.enunciado)}</div>
+                ${p.opciones.map((o) => `
+                    <div class="opt ${p.correctas.includes(o.letra) ? 'ok' : ''}">
+                        <span class="l">${o.letra})</span><span>${esc(o.texto)}</span>
+                    </div>`).join('')}
+                <div class="porque">Por qué: ${esc(p.porque)}</div>
+            </div>`).join('');
+
+        // Corrector: mismas reglas que cuestionario.py corregir
+        const entregas = new Map();
+        let avisos = [];
+
+        function agregarTexto(texto, origen) {
+            const lineas = texto.match(/^DATOS: \{.*\}\s*$/gm) || [];
+            if (!lineas.length) { avisos.push(`${origen}: no tiene la línea DATOS`); return; }
+            lineas.forEach((l) => {
+                let d;
+                try { d = JSON.parse(l.slice(7)); } catch (e) { avisos.push(`${origen}: la línea DATOS está cortada`); return; }
+                if (d.id !== Q.id) { avisos.push(`${origen}: es de otro cuestionario (${d.id})`); return; }
+                const clave = (d.nombre || '').trim().toLowerCase() + '|' + d.fin;
+                if (!entregas.has(clave)) entregas.set(clave, d);
+            });
+        }
+
+        async function agregarArchivos(lista) {
+            for (const f of lista) agregarTexto(await f.text(), f.name);
+            mostrarResultados();
+        }
+
+        const drop = $('drop');
+        drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('over'); });
+        drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+        drop.addEventListener('drop', (e) => {
+            e.preventDefault();
+            drop.classList.remove('over');
+            agregarArchivos(e.dataTransfer.files);
+        });
+        $('archivos').addEventListener('change', (e) => { agregarArchivos(e.target.files); e.target.value = ''; });
+        $('btn-pegado').addEventListener('click', () => {
+            if (!$('pegado').value.trim()) return;
+            agregarTexto($('pegado').value, 'Texto pegado');
+            $('pegado').value = '';
+            mostrarResultados();
+        });
+        $('btn-limpiar').addEventListener('click', () => {
+            entregas.clear();
+            avisos = [];
+            mostrarResultados();
+        });
+
+        function filas() {
+            return Array.from(entregas.values()).map((d) => {
+                const r = d.r || {};
+                let puntos = 0;
+                const marcas = Q.preguntas.map((p) => {
+                    const dada = r[p.num] || '';
+                    const ok = p.correctas.includes(dada);
+                    puntos += ok ? p.puntos : 0;
+                    return ok ? 'ok' : (dada || '-');
+                });
+                return { nombre: d.nombre || '?', comision: d.comision || '', fin: d.fin || '', puntos, marcas };
+            }).sort((a, b) => a.comision.localeCompare(b.comision) || a.nombre.localeCompare(b.nombre, 'es'));
+        }
+
+        function mostrarResultados() {
+            $('msg-corrector').innerHTML = avisos.map((a) => `Salteado: ${esc(a)}`).join('<br>');
+            $('msg-corrector').classList.toggle('err', avisos.length > 0);
+            const fs = filas();
+            $('resultados').classList.toggle('hidden', !fs.length);
+            if (!fs.length) return;
+            const prom = fs.reduce((s, f) => s + f.puntos, 0) / fs.length;
+            $('resumen').textContent = `${fs.length} ${fs.length === 1 ? 'respuesta' : 'respuestas'} · promedio ${prom.toFixed(1)} / ${Q.total}`;
+            $('tabla').innerHTML = `
+                <tr><th>Nombre</th><th>Com.</th><th>Falló</th><th class="num">Puntaje</th></tr>
+                ${fs.map((f) => `
+                    <tr>
+                        <td>${esc(f.nombre)}<br><span class="msg">${f.fin ? fechaLocal(f.fin) : ''}</span></td>
+                        <td>${esc(f.comision)}</td>
+                        <td class="fallas">${f.marcas.map((m, i) => m === 'ok' ? '' : `P${Q.preguntas[i].num}`).filter(Boolean).join(' ') || '—'}</td>
+                        <td class="num"><b>${f.puntos}</b> / ${Q.total}</td>
+                    </tr>`).join('')}`;
+            const stats = Q.preguntas.map((p, i) => ({ num: p.num, bien: fs.filter((f) => f.marcas[i] === 'ok').length }))
+                .sort((a, b) => a.bien - b.bien || a.num - b.num);
+            $('barras').innerHTML = stats.map((s) => {
+                const pct = Math.round(100 * s.bien / fs.length);
+                const tono = pct < 50 ? 'bajo' : (pct < 75 ? 'medio' : '');
+                return `<div class="barra"><span>P${s.num}</span><span class="b"><i class="${tono}" style="width:${pct}%"></i></span><span class="num">${s.bien}/${fs.length} (${pct}%)</span></div>`;
+            }).join('');
+        }
+
+        $('btn-csv').addEventListener('click', () => {
+            const celda = (v) => /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v);
+            const lineas = [['nombre', 'comision', 'finalizado', `puntaje/${Q.total}`].concat(Q.preguntas.map((p) => 'P' + p.num))]
+                .concat(filas().map((f) => [f.nombre, f.comision, f.fin, f.puntos].concat(f.marcas)));
+            const csv = '﻿' + lineas.map((l) => l.map(celda).join(',')).join('\n') + '\n';
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+            a.download = `${Q.id}-resultados.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+        });
+
+        $('vista-docente').classList.remove('hidden');
+    }
+})();
+</script>
+</body>
+</html>
