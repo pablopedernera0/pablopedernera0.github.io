@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anatomía de un docker-compose.yml — clase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 2.6rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.1rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #3fb950;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 0.7rem;
+            max-width: 900px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .slide ul, .slide ol {
+            max-width: 900px;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.3rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+        }
+
+        .card.bad {
+            border-color: rgba(248, 81, 73, 0.45);
+        }
+
+        .card h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            font-size: 0.96rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: bold;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 0.6rem;
+        }
+
+        .tag.ok {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .tag.no {
+            background: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+        }
+
+        .pair-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.9rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .idea-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.35);
+            border-radius: 12px;
+            padding: 1.4rem 1.6rem;
+            text-align: center;
+        }
+
+        .idea-card .idea-label {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #58a6ff;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .idea-card p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .quote-box {
+            background: rgba(88, 166, 255, 0.08);
+            border-left: 4px solid #58a6ff;
+            border-radius: 0 10px 10px 0;
+            padding: 1.1rem 1.5rem;
+            max-width: 850px;
+            margin: 1rem 0;
+            font-style: italic;
+            font-size: 1.15rem;
+        }
+
+        .quote-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        pre {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            max-width: 900px;
+            width: 100%;
+            overflow-x: auto;
+            margin: 0.8rem 0;
+            text-align: left;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: #79c0ff;
+            font-size: 0.92rem;
+        }
+
+        a {
+            color: #58a6ff;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 850px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.05rem;
+            min-width: 2.2rem;
+        }
+
+        .step-item p {
+            font-size: 0.98rem;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.1rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.4rem 1rem;
+            text-align: center;
+        }
+
+        .stat-card .stat-number {
+            display: block;
+            font-size: 1.9rem;
+            font-weight: bold;
+            color: #58a6ff;
+            margin-bottom: 0.4rem;
+        }
+
+        .stat-card p {
+            font-size: 0.92rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+            text-align: center;
+        }
+
+        .mirror-table, .flags-table {
+            width: 100%;
+            max-width: 950px;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+        }
+
+        .mirror-table th, .mirror-table td,
+        .flags-table th, .flags-table td {
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.7rem 1rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .mirror-table th:first-child {
+            background: rgba(240, 136, 62, 0.12);
+            color: #f0883e;
+        }
+
+        .mirror-table th:last-child {
+            background: rgba(63, 185, 80, 0.12);
+            color: #3fb950;
+        }
+
+        .flags-table th {
+            background: rgba(88, 166, 255, 0.12);
+            color: #58a6ff;
+        }
+
+        .flags-table code {
+            white-space: nowrap;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+        }
+
+        .series-nav a:hover {
+            color: #58a6ff;
+        }
+
+        .series-nav span.current {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        .btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+            background: #3fb950;
+        }
+
+        @media (max-width: 800px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.6rem; }
+            .series-nav { display: none; }
+            .pair-grid { grid-template-columns: 1fr; }
+        }
+
+        .slide-diagram {
+            padding-bottom: 5rem;
+        }
+
+        .slide-diagram h2 {
+            margin-bottom: 0.4rem;
+        }
+
+        .diagram {
+            width: 100%;
+            max-width: 880px;
+            margin: 0.5rem 0;
+        }
+
+        .diagram svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .diagram text {
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1.6rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            color: #8b949e;
+            margin-top: 0.4rem;
+        }
+
+        .legend span::before {
+            content: '';
+            display: inline-block;
+            width: 28px;
+            height: 0;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .legend .l-scrape::before { border-top: 2px dashed #3fb950; }
+        .legend .l-query::before { border-top: 2px solid #58a6ff; }
+        .legend .l-traffic::before { border-top: 2px solid #f0883e; }
+
+        .flow-row {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .flow-box {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.35);
+            border-radius: 10px;
+            padding: 0.9rem 0.8rem;
+            text-align: center;
+        }
+
+        .flow-box .flow-num {
+            display: block;
+            font-size: 0.75rem;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.3rem;
+        }
+
+        .flow-box h4 {
+            font-size: 1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .flow-box p {
+            font-size: 0.85rem;
+            color: #b8c0c9;
+            margin-bottom: 0;
+            text-align: center;
+        }
+
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            padding: 0 0.35rem;
+            color: #3fb950;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .timing {
+            font-weight: bold;
+            color: #f0883e;
+            min-width: 5.5rem;
+        }
+
+        @media (max-width: 800px) {
+            .flow-row { flex-direction: column; }
+            .flow-arrow { justify-content: center; transform: rotate(90deg); padding: 0.2rem 0; }
+        }
+        .slide .pair-grid pre { max-width: none; font-size: 0.85rem; }
+        .slide.slide-dense { justify-content: flex-start; padding-top: 4.2rem; padding-bottom: 6rem; }
+        .slide-dense h2 { margin-bottom: 0.6rem; }
+        .code-grid { max-width: 1200px; grid-template-columns: 1.15fr 1fr; align-items: start; }
+        .code-grid pre { margin: 0; font-size: 0.78rem; line-height: 1.32; }
+        .code-grid pre code { font-size: inherit; }
+        .code-grid.three { max-width: 1320px; grid-template-columns: 1fr 1.2fr 1fr; }
+        @media (max-width: 800px) { .code-grid, .code-grid.three { grid-template-columns: 1fr; } }
+        .slide .card pre { margin: 0.5rem 0; }
+    </style>
+</head>
+<body>
+
+<div class="series-nav">
+    <a href="../index.html">← Hilo conductor</a>
+    <span class="current">Clase: docker-compose.yml</span>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Infraestructura de Redes · Etapa 6 · docker-compose.yml</div>
+        <h1>Anatomía de un docker-compose.yml</h1>
+        <p class="subtitle">De dónde salió, cómo cambió desde 2013 hasta hoy, y qué significa cada línea del archivo que levanta nuestro stack de monitoreo: <code>mysql</code>, <code>dbexporter</code>, <code>cadvisor</code>, <code>prometheus</code> y <code>grafana</code>.</p>
+    </div>
+
+    <!-- Slide 2: Agenda -->
+    <div class="slide">
+        <h2>Plan de la clase</h2>
+        <div class="steps-list">
+            <div class="step-item"><span class="timing">0 – 5'</span><p>El problema: levantar cinco contenedores a mano con <code>docker run</code>.</p></div>
+            <div class="step-item"><span class="timing">5 – 15'</span><p>La historia: Fig, Compose, las versiones 1, 2 y 3 del formato, la Compose Specification y el <code>docker compose</code> de hoy.</p></div>
+            <div class="step-item"><span class="timing">15 – 25'</span><p>YAML: lo mínimo para leer el archivo sin miedo, y sus trampas clásicas.</p></div>
+            <div class="step-item"><span class="timing">25 – 45'</span><p>Anatomía del archivo de la práctica, clave por clave.</p></div>
+            <div class="step-item"><span class="timing">45 – 52'</span><p>El mismo archivo escrito como se escribiría hoy, y los comandos del día a día.</p></div>
+            <div class="step-item"><span class="timing">52 – 60'</span><p>Ejercicio: encontrar los errores. Cierre y conexión con el informe grupal.</p></div>
+        </div>
+    </div>
+
+    <!-- Slide 3: El problema -->
+    <div class="slide">
+        <h2>El problema: cinco contenedores a mano</h2>
+        <p>Sin Compose, nuestro stack se levanta así (resumido):</p>
+<pre><code>docker network create mynetwork
+
+docker run -d --name mysql --restart always --network mynetwork \
+  -e MYSQL_ROOT_PASSWORD=mysecretpassword mysql:latest
+
+docker run -d --name dbexporter --restart always --network mynetwork \
+  -v $(pwd)/my.cnf:/.my.cnf:ro prom/mysqld-exporter:latest --config.my-cnf=/.my.cnf
+
+docker run -d --name cadvisor --restart always --network mynetwork \
+  -v /:/rootfs:ro -v /var/run:/var/run:ro -v /sys:/sys:ro \
+  -v /var/lib/docker/:/var/lib/docker:ro -v /dev/disk/:/dev/disk:ro \
+  gcr.io/cadvisor/cadvisor:v0.47.2
+
+docker run -d --name prometheus --restart always --network mynetwork -p 9090:9090 \
+  -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml \
+  --add-host host.docker.internal:host-gateway prom/prometheus:latest
+
+docker run -d --name grafana --restart always --network mynetwork -p 3000:3000 \
+  -e GF_SECURITY_ADMIN_PASSWORD=admin grafana/grafana:13.2.2</code></pre>
+        <div class="quote-box">
+            <p>¿Quién se acuerda de esto dentro de un mes? ¿En qué orden van? ¿Cómo se lo pasás a un compañero? ¿Cómo lo bajás todo?</p>
+        </div>
+    </div>
+
+    <!-- Slide 4: Imperativo vs declarativo -->
+    <div class="slide">
+        <h2>La idea de Compose: describir, no ordenar</h2>
+        <div class="pair-grid">
+            <div class="idea-card">
+                <span class="idea-label">Imperativo</span>
+                <p><code>docker run</code>: le das <strong>órdenes</strong>, una por una, en el orden correcto. El estado final queda en tu cabeza (o en tu historial de bash).</p>
+            </div>
+            <div class="idea-card">
+                <span class="idea-label">Declarativo</span>
+                <p><code>docker-compose.yml</code>: <strong>describís</strong> cómo tiene que quedar todo. La herramienta calcula qué crear, en qué orden, y qué cambiar si editás el archivo.</p>
+            </div>
+        </div>
+        <div class="card-grid">
+            <div class="card"><h4>Un archivo</h4><p>Toda la infraestructura de la app en un solo lugar, legible.</p></div>
+            <div class="card"><h4>Versionable</h4><p>Va a Git como el código: hay historial, diffs y revisiones.</p></div>
+            <div class="card"><h4>Un comando</h4><p><code>up</code> para levantar todo, <code>down</code> para bajarlo todo.</p></div>
+        </div>
+        <div class="warning-box">
+            <p>Es la misma idea que vamos a ver en Terraform o Kubernetes: se escribe la <em>infraestructura como código</em>.</p>
+        </div>
+    </div>
+
+    <!-- Slide 5: Línea de tiempo -->
+    <div class="slide">
+        <h2>Línea de tiempo</h2>
+        <div class="steps-list">
+            <div class="step-item"><span class="timing">2013</span><p>Se publica <strong>Docker</strong> (marzo). A fin de año, la empresa Orchard publica <strong>Fig</strong>: un <code>fig.yml</code> para describir varios contenedores.</p></div>
+            <div class="step-item"><span class="timing">2014</span><p>Docker compra Orchard (julio). Fig se convierte en la herramienta oficial.</p></div>
+            <div class="step-item"><span class="timing">2015</span><p>Fig pasa a llamarse <strong>Docker Compose</strong>. Nace el <code>docker-compose.yml</code> (el formato que hoy llamamos "versión 1").</p></div>
+            <div class="step-item"><span class="timing">2016</span><p><strong>Formato 2</strong>: aparecen <code>version:</code>, <code>services:</code>, <code>networks:</code> y <code>volumes:</code>.</p></div>
+            <div class="step-item"><span class="timing">2017</span><p><strong>Formato 3</strong>: pensado también para Docker Swarm (clave <code>deploy:</code>).</p></div>
+            <div class="step-item"><span class="timing">2020</span><p><strong>Compose Specification</strong>: un estándar abierto que unifica los formatos 2 y 3.</p></div>
+            <div class="step-item"><span class="timing">2022–23</span><p><strong>Compose V2</strong>, reescrito en Go: el comando pasa a ser <code>docker compose</code> (con espacio). El viejo <code>docker-compose</code> (Python) deja de actualizarse.</p></div>
+            <div class="step-item"><span class="timing">Hoy</span><p><code>version:</code> es obsoleta, el nombre preferido es <code>compose.yaml</code>, y siguen sumándose funciones.</p></div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Fig y formato 1 -->
+    <div class="slide">
+        <h2>2013–2015: Fig y el formato 1</h2>
+        <div class="pair-grid">
+            <div>
+<pre><code># fig.yml (y después docker-compose.yml, formato 1)
+web:
+  build: .
+  ports:
+    - "5000:5000"
+  links:
+    - db
+db:
+  image: postgres</code></pre>
+            </div>
+            <div class="card">
+                <h4>Qué tenía de particular</h4>
+                <p>Los servicios iban <strong>directo en la raíz</strong>: no había <code>services:</code>, ni redes, ni volúmenes con nombre.</p>
+                <p style="margin-top:0.6rem;">Para que <code>web</code> llegara a <code>db</code> había que declararlo con <code>links:</code>, que escribía la IP del otro contenedor en <code>/etc/hosts</code>.</p>
+            </div>
+        </div>
+        <div class="warning-box">
+            <p>Si en Internet encontrás un tutorial con <code>links:</code>, es de esta época. Hoy no hace falta: la red resuelve los nombres sola (lo vemos más adelante).</p>
+        </div>
+    </div>
+
+    <!-- Slide 7: Formatos 2 y 3 -->
+    <div class="slide">
+        <h2>2016–2017: los formatos 2 y 3</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="tag ok">Formato 2 · 2016</span>
+                <h4>Aparece la estructura actual</h4>
+                <p>Primera línea <code>version: '2'</code>. Los servicios pasan a vivir bajo <code>services:</code>, y se suman las claves de primer nivel <code>networks:</code> y <code>volumes:</code>. Cada proyecto tiene su propia red y los servicios se encuentran <strong>por nombre</strong>.</p>
+            </div>
+            <div class="card">
+                <span class="tag ok">Formato 3 · 2017</span>
+                <h4>Pensado para clusters</h4>
+                <p><code>version: '3'</code> agrega <code>deploy:</code> (réplicas y recursos) para usar el mismo archivo en Docker Swarm con <code>docker stack deploy</code>. A cambio, quitó opciones útiles en una sola máquina.</p>
+            </div>
+        </div>
+        <div class="quote-box">
+            <p>La confusión de esos años: el 3 <em>no</em> era "mejor" que el 2. Eran dos ramas para casos de uso distintos, y había que elegir. Nuestro archivo dice <code>version: '3'</code>.</p>
+        </div>
+    </div>
+
+    <!-- Slide 8: Compose Spec y V2 -->
+    <div class="slide">
+        <h2>2020 en adelante: un estándar y un comando nuevo</h2>
+        <table class="mirror-table">
+            <tr><th>Antes</th><th>Hoy</th></tr>
+            <tr><td>Formatos <code>2.x</code> y <code>3.x</code>, cada uno con sus claves</td><td><strong>Compose Specification</strong> (compose-spec.io): un solo formato abierto que unifica los dos</td></tr>
+            <tr><td><code>docker-compose</code> (con guion): un programa aparte, escrito en Python</td><td><code>docker compose</code> (con espacio): un plugin de Docker, escrito en Go</td></tr>
+            <tr><td><code>version: '3'</code> obligatoria en la primera línea</td><td><code>version</code> se ignora y avisa: <em>the attribute `version` is obsolete</em></td></tr>
+            <tr><td><code>docker-compose.yml</code></td><td><code>compose.yaml</code> (se sigue aceptando el nombre viejo)</td></tr>
+        </table>
+        <div class="warning-box">
+            <p>Dato real de nuestra práctica: el <code>setup.sh</code> instala el paquete <code>docker-compose</code> de <code>apt</code> (la versión 1, en Python) y el archivo arranca con <code>version: '3'</code>. Funciona, pero es <strong>un fósil</strong>: así se escribía en 2017.</p>
+        </div>
+    </div>
+
+    <!-- Slide 9: YAML básico -->
+    <div class="slide">
+        <h2>YAML en diez minutos</h2>
+        <p>YAML nació en 2001 como <em>Yet Another Markup Language</em> y después se rebautizó como <em>YAML Ain't Markup Language</em>: no es un lenguaje de marcado, es un formato de <strong>datos</strong>. Todo lo que hay en un archivo Compose es una combinación de tres cosas:</p>
+        <div class="card-grid">
+            <div class="card">
+                <h4>Mapa (clave: valor)</h4>
+<pre><code>environment:
+  MYSQL_ROOT_PASSWORD: mysecretpassword</code></pre>
+                <p>Como un diccionario de Python o un objeto JSON.</p>
+            </div>
+            <div class="card">
+                <h4>Lista (guion)</h4>
+<pre><code>networks:
+  - mynetwork</code></pre>
+                <p>Cada <code>-</code> es un elemento. Como un array.</p>
+            </div>
+            <div class="card">
+                <h4>Escalar</h4>
+<pre><code>image: mysql:latest
+restart: always</code></pre>
+                <p>Texto, número, booleano o nulo.</p>
+            </div>
+        </div>
+        <div class="warning-box">
+            <p>La <strong>indentación</strong> define quién es hijo de quién. Se usan siempre espacios (por convención, 2), <strong>nunca tabs</strong>: YAML no los acepta para indentar.</p>
+        </div>
+    </div>
+
+    <!-- Slide 10: Trampas de YAML -->
+    <div class="slide">
+        <h2>Las trampas clásicas de YAML</h2>
+        <table class="flags-table">
+            <tr><th>Escribís</th><th>YAML entiende</th><th>Por eso</th></tr>
+            <tr><td><code>ports:</code><br><code>&nbsp;&nbsp;- 22:22</code></td><td>Un número en base 60: <code>1342</code> (en parsers YAML 1.1)</td><td>Los puertos van <strong>siempre entre comillas</strong>: <code>"9090:9090"</code></td></tr>
+            <tr><td><code>DEBUG: yes</code></td><td>Según el parser: el booleano <code>true</code> (YAML 1.1, el <code>docker-compose</code> viejo, que además lo rechaza) o el texto <code>"yes"</code> (YAML 1.2)</td><td>Si el resultado depende de quién lo lea, comillas: <code>"yes"</code></td></tr>
+            <tr><td><code>version: 3.10</code></td><td>El número <code>3.1</code></td><td>Por eso se escribía <code>'3.10'</code> con comillas</td></tr>
+            <tr><td>Un tab al principio de la línea</td><td>Error de sintaxis</td><td>Configurar el editor para insertar espacios</td></tr>
+            <tr><td>Un espacio de más o de menos</td><td>Otra estructura (o un error)</td><td>Validar con <code>docker compose config</code></td></tr>
+        </table>
+        <div class="quote-box">
+            <p>Ante la duda, comillas. Un texto entre comillas nunca se convierte en otra cosa.</p>
+        </div>
+    </div>
+
+    <!-- Slide 11: Claves de primer nivel -->
+    <div class="slide">
+        <h2>El esqueleto: claves de primer nivel</h2>
+        <table class="flags-table">
+            <tr><th>Clave</th><th>Qué declara</th><th>¿En nuestro archivo?</th></tr>
+            <tr><td><code>services</code></td><td>Los contenedores: imagen, puertos, volúmenes, variables… Es la única obligatoria.</td><td>Sí, los cinco</td></tr>
+            <tr><td><code>networks</code></td><td>Redes propias que los servicios comparten</td><td>Sí: <code>mynetwork</code></td></tr>
+            <tr><td><code>volumes</code></td><td>Volúmenes con nombre, administrados por Docker, que sobreviven a los contenedores</td><td>No (ver más adelante)</td></tr>
+            <tr><td><code>configs</code> / <code>secrets</code></td><td>Archivos de configuración y datos sensibles montados en los contenedores</td><td>No</td></tr>
+            <tr><td><code>name</code></td><td>Nombre del proyecto (por defecto, el nombre de la carpeta)</td><td>No: el proyecto se llama <code>monitoreo</code></td></tr>
+            <tr><td><code>version</code></td><td>Obsoleta. Hoy se ignora.</td><td>Sí: <code>'3'</code></td></tr>
+        </table>
+    </div>
+
+    <!-- Slide 12: El archivo completo -->
+    <div class="slide slide-dense">
+        <h2>Nuestro archivo, completo</h2>
+        <div class="pair-grid code-grid three">
+<pre><code>version: '3'
+services:
+
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mysecretpassword
+    networks:
+      - mynetwork
+
+  dbexporter:
+    image: prom/mysqld-exporter:latest
+    restart: always
+    volumes:
+      - ./my.cnf:/.my.cnf:ro
+    command:
+      - --config.my-cnf=/.my.cnf
+    depends_on:
+      - mysql
+    networks:
+      - mynetwork</code></pre>
+<pre><code>  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    restart: always
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - mynetwork
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - mynetwork</code></pre>
+<pre><code>  grafana:
+    image: grafana/grafana:13.2.2
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:</code></pre>
+        </div>
+        <p>Lo genera el <code>setup.sh</code> de la práctica en <code>/root/monitoreo/</code>. Vamos clave por clave.</p>
+    </div>
+
+    <!-- Slide 13: image, restart, command -->
+    <div class="slide">
+        <h2>image, restart y command</h2>
+        <div class="card-grid">
+            <div class="card">
+                <h4><code>image</code></h4>
+                <p><code>registro/usuario/nombre:etiqueta</code>. Sin registro se usa Docker Hub; <code>gcr.io/...</code> es el de Google. La etiqueta <code>latest</code> cambia sola con el tiempo: por eso <code>grafana</code> está fijada en <code>13.2.2</code>, para que la guía coincida con lo que ven en pantalla.</p>
+            </div>
+            <div class="card">
+                <h4><code>restart</code></h4>
+                <p>Qué hace Docker si el contenedor se cae: <code>no</code> (por defecto), <code>always</code>, <code>on-failure</code> o <code>unless-stopped</code>. Con <code>always</code> también vuelve a arrancar cuando se reinicia la máquina.</p>
+            </div>
+            <div class="card">
+                <h4><code>command</code></h4>
+                <p>Reemplaza el comando por defecto de la imagen. En <code>dbexporter</code> se pasa como <strong>lista</strong>: cada elemento es un argumento, y así no hay problemas con espacios ni comillas.</p>
+            </div>
+            <div class="card">
+                <h4><code>build</code> (no aparece)</h4>
+                <p>La alternativa a <code>image</code>: construir la imagen desde un <code>Dockerfile</code>. Es lo que van a usar en el Trabajo n°7 si dockerizan la app Flask.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 14: environment -->
+    <div class="slide">
+        <h2>environment: dos sintaxis en el mismo archivo</h2>
+        <div class="pair-grid">
+            <div class="card">
+                <span class="tag ok">Como mapa · mysql</span>
+<pre><code>environment:
+  MYSQL_ROOT_PASSWORD: mysecretpassword</code></pre>
+                <p>Clave y valor separados por <code>:</code>.</p>
+            </div>
+            <div class="card">
+                <span class="tag ok">Como lista · grafana</span>
+<pre><code>environment:
+  - GF_SECURITY_ADMIN_PASSWORD=admin</code></pre>
+                <p>Cada elemento es un texto <code>VARIABLE=valor</code>.</p>
+            </div>
+        </div>
+        <p>Las dos son válidas y hacen exactamente lo mismo. Que convivan en el mismo archivo es un buen ejemplo de por qué conviene <strong>elegir un estilo y respetarlo</strong>.</p>
+        <div class="warning-box">
+            <p>¿Por qué la contraseña va por variable de entorno? Porque la imagen oficial de MySQL la lee al arrancar por primera vez para crear el usuario <code>root</code>. Escribirla en el archivo, igual, la deja en Git a la vista de todos: hoy se usa un archivo <code>.env</code> que no se sube, o <code>secrets:</code>.</p>
+        </div>
+    </div>
+
+    <!-- Slide 15: ports -->
+    <div class="slide">
+        <h2>ports: publicado vs. interno</h2>
+        <div class="flow-row">
+            <div class="flow-box"><span class="flow-num">Tu navegador</span><h4>localhost:9090</h4><p>puerto del host</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">"9090:9090"</span><h4>HOST : CONTENEDOR</h4><p>el de la izquierda es del host, el de la derecha del contenedor</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><span class="flow-num">Contenedor</span><h4>prometheus:9090</h4><p>donde escucha el proceso</p></div>
+        </div>
+        <div class="card-grid">
+            <div class="card"><span class="tag ok">Publicados</span><h4><code>prometheus</code> y <code>grafana</code></h4><p>Tienen <code>ports:</code> porque nosotros entramos desde el navegador.</p></div>
+            <div class="card bad"><span class="tag no">Sin publicar</span><h4><code>mysql</code>, <code>dbexporter</code>, <code>cadvisor</code></h4><p>No tienen <code>ports:</code>. Prometheus llega igual a <code>cadvisor:8080</code> porque están <strong>en la misma red</strong>. Desde afuera no se puede entrar.</p></div>
+        </div>
+        <div class="quote-box">
+            <p>Regla de seguridad: publicar solo lo que un humano (o algo fuera de Docker) necesita ver. La base de datos no se publica.</p>
+        </div>
+    </div>
+
+    <!-- Slide 16: volumes -->
+    <div class="slide">
+        <h2>volumes: montar archivos y guardar datos</h2>
+        <table class="flags-table">
+            <tr><th>Tipo</th><th>Ejemplo</th><th>Para qué</th></tr>
+            <tr><td><strong>Bind mount</strong> (ruta del host)</td><td><code>./prometheus.yml:/etc/prometheus/prometheus.yml</code></td><td>Pasarle al contenedor un archivo de configuración que editamos nosotros</td></tr>
+            <tr><td>Bind mount de solo lectura</td><td><code>./my.cnf:/.my.cnf:ro</code><br><code>/sys:/sys:ro</code></td><td><code>:ro</code> = <em>read only</em>. El contenedor puede leer pero no modificar: <code>cadvisor</code> mira el host sin poder tocarlo</td></tr>
+            <tr><td><strong>Volumen con nombre</strong></td><td><code>mysql-data:/var/lib/mysql</code></td><td>Datos que tienen que sobrevivir aunque se borre el contenedor</td></tr>
+        </table>
+        <div class="warning-box">
+            <p>Pregunta para la clase: <code>mysql</code> no tiene <code>volumes:</code>. ¿Qué pasa con la base <code>alumnos</code> si hacemos <code>docker compose down</code> y después <code>up</code>? <em>(Se pierde: los datos vivían dentro del contenedor, y <code>down</code> lo borra.)</em></p>
+        </div>
+    </div>
+
+    <!-- Slide 17: depends_on -->
+    <div class="slide">
+        <h2>depends_on: orden de arranque, no "está listo"</h2>
+        <div class="pair-grid">
+            <div class="card">
+                <span class="tag no">Sintaxis corta (la nuestra)</span>
+<pre><code>depends_on:
+  - mysql</code></pre>
+                <p>Garantiza que el contenedor de <code>mysql</code> <strong>arranque</strong> antes. No espera a que MySQL acepte conexiones, y eso tarda varios segundos.</p>
+            </div>
+            <div class="card">
+                <span class="tag ok">Sintaxis larga + healthcheck</span>
+<pre><code>depends_on:
+  mysql:
+    condition: service_healthy</code></pre>
+                <p>Espera a que el <code>healthcheck</code> de <code>mysql</code> dé OK. Eso sí es "está listo".</p>
+            </div>
+        </div>
+        <div class="warning-box">
+            <p>Por eso el <code>setup.sh</code> tiene un bucle que repite <code>mysqladmin ping</code> hasta 30 veces antes de crear las tablas: <code>depends_on</code> solo no alcanza. Y <code>dbexporter</code> tiene <code>restart: always</code>, que lo vuelve a levantar si arrancó antes de tiempo.</p>
+        </div>
+    </div>
+
+    <!-- Slide 18: networks y extra_hosts -->
+    <div class="slide">
+        <h2>networks y extra_hosts: cómo se encuentran</h2>
+        <div class="card-grid">
+            <div class="card">
+                <h4><code>networks: mynetwork</code></h4>
+                <p>Los cinco servicios están en la misma red. Docker les da un <strong>DNS interno</strong>: el nombre del servicio es su nombre de host. Por eso <code>my.cnf</code> dice <code>host=mysql</code> y <code>prometheus.yml</code> apunta a <code>dbexporter:9104</code>, sin una sola IP.</p>
+            </div>
+            <div class="card">
+                <h4>¿Hacía falta declararla?</h4>
+                <p>No. Compose crea una red por defecto para el proyecto (<code>monitoreo_default</code>) y mete ahí a todos. Declararla tiene sentido cuando se necesitan varias redes, por ejemplo para aislar la base del resto.</p>
+            </div>
+            <div class="card">
+                <h4><code>extra_hosts</code></h4>
+                <p>Agrega una línea al <code>/etc/hosts</code> del contenedor. <code>host-gateway</code> es un valor especial que significa "la IP del host". La app Flask corre <strong>afuera</strong> de Compose, en el host, y así Prometheus llega a <code>host.docker.internal:8888/metrics</code>.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 19: Versión 2026 -->
+    <div class="slide slide-dense">
+        <h2>El mismo stack, escrito hoy</h2>
+        <div class="pair-grid code-grid">
+<pre><code># compose.yaml (sin "version")
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: mysqladmin ping -uroot -p$$MYSQL_ROOT_PASSWORD
+      interval: 5s
+      retries: 20
+
+  dbexporter:
+    image: prom/mysqld-exporter:latest  # fijar
+    volumes:
+      - ./my.cnf:/.my.cnf:ro
+    command: ["--config.my-cnf=/.my.cnf"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # cadvisor, prometheus y grafana: igual que antes
+
+volumes:
+  mysql-data:</code></pre>
+            <div>
+                <div class="steps-list">
+                    <div class="step-item"><span class="num">1</span><p>Sin <code>version:</code>, y el archivo se llama <code>compose.yaml</code>.</p></div>
+                    <div class="step-item"><span class="num">2</span><p>Versiones fijas (<code>mysql:8.4</code>), no <code>latest</code>.</p></div>
+                    <div class="step-item"><span class="num">3</span><p>La contraseña sale de un <code>.env</code> que no se sube a Git. <code>$$</code> evita que Compose la reemplace: la resuelve el contenedor.</p></div>
+                    <div class="step-item"><span class="num">4</span><p>Volumen con nombre: los datos sobreviven a un <code>down</code>.</p></div>
+                    <div class="step-item"><span class="num">5</span><p><code>healthcheck</code> + <code>condition: service_healthy</code>: el exporter espera a que MySQL esté listo de verdad.</p></div>
+                    <div class="step-item"><span class="num">6</span><p>Sin <code>networks:</code>: la red por defecto alcanza.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 20: Comandos -->
+    <div class="slide">
+        <h2>Los comandos del día a día</h2>
+        <table class="flags-table">
+            <tr><th>Comando</th><th>Qué hace</th></tr>
+            <tr><td><code>docker compose up -d</code></td><td>Crea la red, los volúmenes y los contenedores, en segundo plano. Si cambiaste el archivo, recrea solo lo que cambió.</td></tr>
+            <tr><td><code>docker compose ps</code></td><td>Estado de los servicios de este proyecto</td></tr>
+            <tr><td><code>docker compose logs -f grafana</code></td><td>Logs de un servicio, en vivo (lo de la Etapa 5, pero de contenedores)</td></tr>
+            <tr><td><code>docker compose exec mysql bash</code></td><td>Abre una terminal dentro de un servicio que está corriendo</td></tr>
+            <tr><td><code>docker compose config</code></td><td>Valida el archivo y lo muestra tal como lo entendió Compose, con las variables ya reemplazadas. <strong>El mejor detector de errores de YAML.</strong></td></tr>
+            <tr><td><code>docker compose down</code></td><td>Para y borra contenedores y redes. Los volúmenes con nombre se quedan.</td></tr>
+            <tr><td><code>docker compose down -v</code></td><td>Lo mismo, y además borra los volúmenes: <strong>se pierden los datos</strong></td></tr>
+        </table>
+        <p>En Killercoda usamos <code>docker-compose</code> (con guion), la versión vieja. Las opciones son las mismas.</p>
+    </div>
+
+    <!-- Slide 21: Ejercicio -->
+    <div class="slide" id="ejercicio">
+        <h2>Ejercicio: encontrá los 5 errores</h2>
+        <p>En grupos, 5 minutos. Este archivo no levanta, o levanta pero no hace lo que se quiere:</p>
+<pre><code>services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: secreta
+	networks:
+      - backend
+
+  grafana:
+    image: grafana/grafana:13.2.2
+    ports:
+      - 3000
+    depends_on:
+      - prometeus
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prom-data:/prometheus</code></pre>
+        <div class="quote-box">
+            <p>Pista: solo uno es un error de YAML. Los demás son de Compose, y uno ni siquiera da error: levanta, pero no como se esperaba.</p>
+        </div>
+    </div>
+
+    <!-- Slide 22: Respuestas -->
+    <div class="slide">
+        <h2>Los 5 errores</h2>
+        <div class="steps-list">
+            <div class="step-item"><span class="num">1</span><p>Hay un <strong>tab</strong> antes de <code>networks:</code> en <code>mysql</code>. YAML no acepta tabs para indentar.</p></div>
+            <div class="step-item"><span class="num">2</span><p>La red <code>backend</code> se usa pero <strong>nunca se declara</strong> en <code>networks:</code> de primer nivel. Compose da error.</p></div>
+            <div class="step-item"><span class="num">3</span><p><code>- 3000</code> publica el puerto 3000 del contenedor en un puerto <strong>aleatorio</strong> del host. Para entrar por <code>localhost:3000</code> va <code>"3000:3000"</code>.</p></div>
+            <div class="step-item"><span class="num">4</span><p><code>depends_on: prometeus</code>: el servicio se llama <code>prometheus</code>. Compose da error: depende de un servicio que no existe.</p></div>
+            <div class="step-item"><span class="num">5</span><p>El volumen con nombre <code>prom-data</code> se usa pero <strong>no se declara</strong> en <code>volumes:</code> de primer nivel. Mismo error que el 2, con volúmenes.</p></div>
+        </div>
+        <div class="warning-box">
+            <p>Bonus: <code>mysql</code> queda en <code>backend</code> y los otros en la red por defecto. Aunque se arreglara todo lo anterior, Grafana y Prometheus no verían a MySQL por nombre. Y <code>docker compose config</code> habría encontrado los errores 1, 2, 4 y 5 sin levantar nada; el 3 no es un error de sintaxis, solo hace otra cosa.</p>
+        </div>
+    </div>
+
+    <!-- Slide 23: Cierre -->
+    <div class="slide">
+        <h2>Cierre</h2>
+        <div class="card-grid">
+            <div class="card"><h4>Lo que cambió</h4><p>De <code>fig.yml</code> a <code>compose.yaml</code>, de <code>links</code> a redes con DNS, de <code>version: '3'</code> a una especificación sin versión, de <code>docker-compose</code> a <code>docker compose</code>.</p></div>
+            <div class="card"><h4>Lo que no cambió</h4><p>La idea: describir la infraestructura en un archivo de texto, versionarlo en Git y levantarla con un solo comando.</p></div>
+            <div class="card"><h4>Lo que sigue</h4><p>El <strong>informe grupal</strong> de la Etapa 6: cada integrante explica una parte de este mismo archivo (servicios y sintaxis YAML), con su aporte visible en los commits.</p></div>
+        </div>
+        <p><a href="etapa6-informe-grupal-guia-estudiantes.html">Guía del informe grupal</a> · Referencia oficial: <a href="https://docs.docker.com/reference/compose-file/" target="_blank">docs.docker.com/reference/compose-file</a></p>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">23</span>
+</div>
+
+<div class="controls">
+    <button class="btn prev" onclick="previousSlide()">← Anterior</button>
+    <button class="btn next" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const prevBtn = document.querySelector('.btn.prev');
+    const nextBtn = document.querySelector('.btn.next');
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function updateControls() {
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide === totalSlides - 1;
+        nextBtn.textContent = currentSlide === totalSlides - 1 ? 'Fin de la clase' : 'Siguiente →';
+    }
+
+    function showSlide(n) {
+        const target = Math.max(0, Math.min(n, totalSlides - 1));
+        if (target === currentSlide) return;
+        slides[currentSlide].classList.remove('active');
+        currentSlide = target;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+        updateControls();
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    if (location.hash) {
+        const target = document.querySelector(location.hash);
+        const idx = target ? Array.from(slides).indexOf(target) : -1;
+        if (idx >= 0) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = idx;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+    }
+
+    updateControls();
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+</script>
+</body>
+</html>
