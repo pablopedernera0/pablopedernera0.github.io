@@ -33,7 +33,7 @@
         a.addEventListener('click', function () { mostrarMateria('inicio'); });
     });
 
-    // Deep link directo (ej. pablopedernera0.github.io/#infraestructura): filtra al cargar
+    // Deep link directo (ej. pablopedernera0.github.io/terciario/#infraestructura): filtra al cargar
     // y también si el hash cambia sin recarga completa (URL bar, atrás/adelante).
     function aplicarFiltroDesdeHash() {
         const hash = window.location.hash.slice(1);

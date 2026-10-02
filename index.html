@@ -1,101 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recursos de Clases - Prof. Pablo Pedernera</title>
-    <link rel="stylesheet" href="css/styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pablo Pedernera</title>
+<script>
+  // La portada anterior filtraba por materia con #infraestructura, #desarrollo o #redes.
+  // Esos links siguen andando: se reenvían al índice del terciario.
+  (function () {
+    var h = location.hash.slice(1);
+    if (['infraestructura', 'desarrollo', 'redes', 'inicio', 'contacto'].indexOf(h) !== -1) {
+      location.replace('terciario/' + location.hash);
+    }
+  })();
+</script>
+<link rel="stylesheet" href="css/lectura.css">
 </head>
 <body>
-<header class="header">
-    <div class="container">
-        <div class="header-content">
-            <h1>Recursos de Clases</h1>
-            <p class="subtitle">Material educativo y recursos para estudiantes</p>
-            <div class="institution">Terciario Urquiza</div>
-        </div>
-    </div>
-</header>
+<main>
+  <h1>Pablo Pedernera</h1>
+  <p class="bajada">Docente en el Terciario Urquiza. Redes, infraestructura y desarrollo de sistemas web.</p>
 
-<nav class="nav">
-    <div class="container">
-        <div class="nav-container">
-            <ul class="nav-links">
-                <li><a href="#inicio">Inicio</a></li>
-                <li><a href="#infraestructura">Infraestructura de Redes</a></li>
-                <li><a href="#desarrollo">Desarrollo Web</a></li>
-                <li><a href="#redes">Redes y Comunicaciones</a></li>
-                <li><a href="#contacto">Contacto</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+  <nav class="puertas ui">
+    <a class="puerta" href="terciario/">
+      <span class="puerta-titulo">Recursos para estudiantes</span>
+      <span class="puerta-desc">Clases, prácticas y material de las materias del Terciario Urquiza.</span>
+    </a>
+    <a class="puerta" href="notas/">
+      <span class="puerta-titulo">Notas</span>
+      <span class="puerta-desc">Textos sobre tecnología, educación e inteligencia artificial.</span>
+    </a>
+  </nav>
 
-<main class="main">
-    <div class="container">
-        <section id="inicio" class="intro">
-            <h2>Bienvenidos</h2>
-            <p>En este sitio encontrarás todos los recursos, materiales y contenidos de las materias que dicto.
-                Mantente actualizado con las últimas clases, ejercicios prácticos, bibliografía recomendada y proyectos.</p>
-        </section>
-
-        <section class="courses-grid">
-            <div class="course-card" id="infraestructura">
-                <div class="course-header">
-                    <h3>Infraestructura de Redes</h3>
-                    <span class="course-type">ITI</span>
-                </div>
-                <div class="course-content">
-                    <div class="resources-list" data-categoria="infraestructura"></div>
-                </div>
-            </div>
-
-            <div class="course-card" id="desarrollo">
-                <div class="course-header">
-                    <h3>Desarrollo de Sistemas Web</h3>
-                    <span class="course-type">AF</span>
-                </div>
-                <div class="course-content">
-                    <div class="resources-list" data-categoria="desarrollo"></div>
-                </div>
-            </div>
-
-            <div class="course-card" id="redes">
-                <div class="course-header">
-                    <h3>Redes y Comunicaciones</h3>
-                    <span class="course-type">AF</span>
-                </div>
-                <div class="course-content">
-                    <div class="resources-list" data-categoria="redes"></div>
-                </div>
-            </div>
-        </section>
-    </div>
+  <p class="meta ui">Contacto: pedernera.pablo@terciariourquiza.edu.ar</p>
 </main>
-
-<footer class="footer" id="contacto">
-    <div class="container">
-        <div class="footer-content">
-            <h4>Profesor Pablo Pedernera</h4>
-            <div class="contact-info">
-                <div class="contact-item">
-                    <span>🏫</span>
-                    <span>Terciario Urquiza</span>
-                </div>
-                <div class="contact-item">
-                    <span>📧</span>
-                    <span>Contacto: pedernera.pablo@terciariourquiza.edu.ar</span>
-                </div>
-            </div>
-            <p style="opacity: 0.8; margin-top: 1rem;">
-                © 2025 - Material educativo para uso académico
-            </p>
-        </div>
-    </div>
-</footer>
-
-<script src="js/recursos-data.js"></script>
-<script src="js/render-recursos.js"></script>
-<script src="js/functions.js"></script>
 </body>
 </html>

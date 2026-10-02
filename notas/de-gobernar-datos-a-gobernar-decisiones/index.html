@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>De gobernar datos a gobernar decisiones</title>
+<meta name="description" content="Cuando la IA deja de sugerir y empieza a ejecutar: trazabilidad de datos, flujos y resultados, y supervisión humana significativa.">
+<meta name="author" content="Pablo Pedernera">
+<link rel="stylesheet" href="../../css/lectura.css">
+</head>
+<body>
+<main>
+  <p class="migas ui"><a href="../">← Notas</a></p>
+  <article>
+  <h1>De gobernar datos a gobernar decisiones</h1>
+  <p class="bajada"><em>Cuando la IA deja de sugerir y empieza a ejecutar. Borrador, 2 de octubre de 2026.</em></p>
+  <p class="meta ui">Pablo Pedernera · <time datetime="2026-10-02">2 de octubre de 2026</time></p>
+  <ul class="etiquetas ui">
+    <li>gobernanza</li>
+    <li>inteligencia artificial</li>
+    <li>trazabilidad</li>
+    <li>agentes</li>
+    <li>supervisión humana</li>
+  </ul>
+
+  <div class="resumen">
+    <p><strong>Resumen.</strong> La gobernanza de datos responde bien a la pregunta de qué datos se tienen, quién responde por ellos y cómo se protegen. Deja sin responder otra pregunta que aparece cuando un sistema con IA pasa de sugerir a ejecutar: qué se decidió, cómo, con qué intervención humana y con qué efecto. Esta nota propone ordenar el problema en tres capas (datos, flujos y resultados), pedir trazabilidad en cada una, y revisar qué significa que la supervisión humana sea "significativa y competente" y no solo nominal.</p>
+  </div>
+
+  <h2>1. Lo que la gobernanza de datos ya cubre</h2>
+  <p>La Ley provincial 14.256 de Santa Fe define la gobernanza de datos como el conjunto de políticas, normas, procedimientos y prácticas que regulan la obtención, gestión, protección, disposición y uso de los datos del Estado (art. 39). Entre sus principios incluye la gestión de extremo a extremo, con no repudio (art. 40). Es un marco amplio sobre la vida del dato.</p>
+  <p>Lo que no regula, porque no era su objeto, es qué se decide con esos datos, quién lo decide y qué efecto tiene lo decidido. Mientras un sistema calculaba, clasificaba o recomendaba, esa omisión era tolerable, porque entre el sistema y el mundo había una persona que actuaba. El problema aparece cuando esa persona deja de estar en el medio.</p>
+
+  <h2>2. De sugerir a ejecutar</h2>
+  <p>Una publicación editorial sobre qué se contrata cuando una organización contrata IA formula la diferencia con precisión: un asistente sugiere y una persona ejecuta, mientras que un agente ejecuta y "la persona valida, o ni siquiera". Más que dos categorías, es una escala, y a lo largo de ella cambian cuatro cosas:</p>
+  <ul>
+    <li><strong>Dónde está la persona.</strong> Antes de la acción, después de la acción o en ningún punto del flujo.</li>
+    <li><strong>Qué es la salida.</strong> Una propuesta es un texto que se lee y se puede descartar. Un acto (una compra, un mensaje a un cliente, un cambio en un sistema) hay que explicarlo, deshacerlo o repararlo.</li>
+    <li><strong>Qué tan reversible es el efecto.</strong> Un borrador mal redactado no cuesta lo mismo que una comunicación enviada o un cambio aplicado.</li>
+    <li><strong>Quién responde.</strong> Lo que hace el agente lo hace la organización. Sin un registro que permita reconstruirlo, la organización no puede explicar su propia conducta ante un cliente, un auditor o un juez.</li>
+  </ul>
+  <p class="pendiente">[Espacio para un caso propio: un flujo real donde el sistema propone y una persona valida, y qué se registra hoy de esa validación.]</p>
+
+  <h2>3. Tres capas y la trazabilidad de cada una</h2>
+  <p>Una forma de ordenar el problema es distinguir tres capas, cada una con su pregunta y su traza:</p>
+  <div class="tabla-scroll">
+    <table>
+      <thead>
+        <tr><th>Capa</th><th>Pregunta</th><th>Qué se debería poder reconstruir</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Datos</td><td>Qué datos intervinieron, de dónde vienen y con qué calidad</td><td>Origen, versión, transformaciones, retención</td></tr>
+        <tr><td>Flujos</td><td>Cómo se decidió, con qué intervención humana y de qué depende</td><td>Entrada, versión del prompt y del modelo, herramientas usadas, pasos, proveedor, quién intervino y cuándo</td></tr>
+        <tr><td>Resultados</td><td>Qué estatus tuvo lo que salió y qué efecto produjo</td><td>Salida cruda y salida final, validación (quién, cuándo, qué cambió), efecto producido, corrección o reclamo</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>La separación no pretende ser una teoría nueva sino una forma de ordenar marcos que ya existen. La capa de datos es la más desarrollada. La de flujos empieza a tener estándares técnicos (por ejemplo, las convenciones semánticas de OpenTelemetry para trazas de agentes y flujos, todavía marcadas como en desarrollo). La de resultados es la menos elaborada como eje propio y es la que esta nota propone explorar.</p>
+  <p>Un registro tradicional de auditoría dice qué pasó y cuándo, pero no por qué. Un agente que bloquea una dirección o envía un mensaje deja una línea en un log que no revela si la decisión se apoyó en una memoria desactualizada, en la salida errónea de una herramienta o en un razonamiento defectuoso. Esa brecha entre rendición de cuentas y explicabilidad es uno de los argumentos centrales del trabajo reciente sobre gobernanza agéntica (ver FAIR-A4 en las referencias).</p>
+
+  <h2>4. Qué dicen los marcos</h2>
+  <p><strong>Santa Fe.</strong> El Decreto 2726/2025 aprueba un protocolo para el uso de IA generativa en la administración pública. Establece que la producción de la IA es siempre un insumo o propuesta preliminar no vinculante, que requiere validación expresa del agente para adquirir eficacia jurídica (art. 2 del Anexo). Define la supervisión humana significativa y competente (art. 2, inc. 8) y declara la responsabilidad final del agente como individual e indelegable (art. 6 del Anexo). Alcanza también a herramientas agénticas y plataformas de bajo código que permiten diseñar flujos de decisión y acción, y exige identificar qué pasos del flujo requieren intervención humana sustantiva (art. 8 del Anexo). Excluye de su alcance el diseño, desarrollo y adquisición de sistemas institucionales o de alto riesgo y las obligaciones técnicas y contractuales de los proveedores, que remite a marcos específicos aún por definir (art. 3). Los considerandos citan además el art. 29 de la Constitución provincial, que pide sistemas algorítmicos transparentes y auditables.</p>
+  <p><strong>Singapur.</strong> En enero de 2026 se presentó el Model AI Governance Framework for Agentic AI, planteado como el primero específico para IA agéntica. Sostiene que la responsabilidad sigue siendo humana, propone puntos de control donde se exige aprobación humana, advierte sobre el sesgo de automatización y recomienda auditar periódicamente la eficacia de la supervisión.</p>
+  <p><strong>Unión Europea.</strong> El AI Act exige que los sistemas de alto riesgo permitan el registro automático de eventos durante su vida útil (art. 12). Las obligaciones para los sistemas independientes de alto riesgo se postergaron a diciembre de 2027 mediante el Digital Omnibus, sin modificar su contenido. <span class="pendiente">[Verificar el texto final publicado.]</span></p>
+  <p><strong>FAIR-A4.</strong> Un trabajo de agosto de 2026 en Balsillie Papers propone extender los principios FAIR de la gestión de datos a la gestión de decisiones: memorias, herramientas, acciones y responsabilidades de un agente deberían poder encontrarse, auditarse, atribuirse y reproducirse. Es una propuesta reciente de un grupo de investigación, pensada para ciberdefensa e infraestructura crítica, y no un estándar.</p>
+
+  <h2>5. Supervisión humana: nominal y significativa</h2>
+  <p>Que haya una persona que valida no alcanza. Una validación que se aprueba sin mirar, sin evidencia a la vista, sin tiempo y sin margen real para discrepar es un trámite, y su única función es trasladar la responsabilidad. El decreto santafesino lo reconoce al exigir tres capacidades: comprender las capacidades y límites del sistema, interpretar su salida con conciencia del sesgo de automatización, y tener autoridad y competencia para anular, corregir o decidir no usar el resultado.</p>
+  <p>El decreto no fija un umbral cuantitativo. La intensidad de la supervisión depende, en la práctica, de cuatro variables que conviene explicitar:</p>
+  <ol>
+    <li><strong>Reversibilidad del efecto.</strong> Cuanto menos reversible, más supervisión previa a la acción.</li>
+    <li><strong>Quién resulta afectado.</strong> Los efectos sobre terceros y sobre sus derechos exigen más que los efectos internos.</li>
+    <li><strong>Velocidad y volumen.</strong> Si el sistema actúa más rápido de lo que una persona puede revisar, la supervisión debe incorporarse al diseño (umbrales, límites de tasa, frenos, auditoría por muestreo) y no depender solo de la revisión caso a caso.</li>
+    <li><strong>Desempeño medido.</strong> La confianza en un sistema debería depender de su tasa de error observada, no de su reputación.</li>
+  </ol>
+  <p>Y la supervisión se puede evaluar con evidencia: cuánto tiempo toma cada validación, con qué frecuencia el humano modifica o rechaza la propuesta, y qué encuentra una auditoría por muestreo sobre lo aprobado. Una tasa de aprobación cercana al cien por ciento con revisiones de segundos es una señal de supervisión nominal.</p>
+  <p>Hay además una consecuencia de diseño. Si la responsabilidad recae en la persona que valida, esa persona necesita la traza para poder supervisar: ver qué evidencia usó el sistema, qué cambió y qué no pudo verificar. Exigir supervisión humana sin dar trazabilidad pone a la persona en una posición imposible.</p>
+
+  <h2>6. Qué queda abierto</h2>
+  <ul>
+    <li><strong>Resultados como eje propio.</strong> En la búsqueda realizada para esta nota, la trazabilidad de los resultados suele quedar absorbida dentro de la procedencia de la decisión. Conviene una revisión más sistemática antes de presentarlo como aporte.</li>
+    <li><strong>El lado del proveedor.</strong> Portabilidad, cláusulas de auditoría y responsabilidad contractual son la parte menos regulada. El decreto santafesino la deja expresamente afuera.</li>
+    <li><strong>Alcance de esta nota.</strong> Es un trabajo conceptual. No constituye asesoramiento legal, y las referencias normativas deben verificarse contra el texto vigente antes de aplicarse a un caso concreto.</li>
+  </ul>
+
+  <h2>Referencias</h2>
+  <ul class="fuentes">
+    <li>Panel Editorial, Corpus de Gobernanza IA Agéntica. "La inteligencia por suscripción: qué se alquila cuando una empresa contrata IA", 30 de septiembre de 2026. Publicación editorial independiente. <a href="https://corpus-gobernanza-agentica-zoe-ia-s-projects.vercel.app/inteligencia-por-suscripcion-que-se-alquila-cuando-una-empresa-contrata-ia-2026.html">https://corpus-gobernanza-agentica-zoe-ia-s-projects.vercel.app/inteligencia-por-suscripcion-que-se-alquila-cuando-una-empresa-contrata-ia-2026.html</a></li>
+    <li>Provincia de Santa Fe. Ley 14.256, de Gobernanza de Datos y Acceso a la Información Pública (promulgada el 12 de abril de 2024). <a href="https://www.santafe.gob.ar/ms/innovacion-publica/wp-content/uploads/sites/18/2025/08/Ley-No-14.256-.pdf">https://www.santafe.gob.ar/ms/innovacion-publica/wp-content/uploads/sites/18/2025/08/Ley-No-14.256-.pdf</a></li>
+    <li>Provincia de Santa Fe. Decreto 2726/2025, Protocolo para la Adopción y Uso de Tecnologías de Inteligencia Artificial Generativa en el ámbito de la Administración Pública (3 de noviembre de 2025). <a href="https://www.santafe.gov.ar/boletinoficial/ver.php?seccion=2025/2025-11-03decreto2726.html">https://www.santafe.gov.ar/boletinoficial/ver.php?seccion=2025/2025-11-03decreto2726.html</a></li>
+    <li>Yazdinejad, A., Karimipour, H. y Fitz-Gerald, A. "FAIR-A4: A Governance Model for Auditable, Accountable, Actionable and Attributable Agentic AI". Balsillie Papers, vol. 11, n.º 1, 31 de agosto de 2026. <a href="https://balsilliepapers.ca/bsia-paper/fair-a4-a-governance-model-for-auditable-accountable-actionable-and-attributable-agentic-ai/">https://balsilliepapers.ca/bsia-paper/fair-a4-a-governance-model-for-auditable-accountable-actionable-and-attributable-agentic-ai/</a></li>
+    <li>IMDA (Singapur). Model AI Governance Framework for Agentic AI, enero de 2026. Resumen consultado: <a href="https://cm.twobirds.com/en/insights/2026/singapore/singapore-introduces-new-model-ai-governance-framework-for-agentic-ai">https://cm.twobirds.com/en/insights/2026/singapore/singapore-introduces-new-model-ai-governance-framework-for-agentic-ai</a> <span class="pendiente">[completar con la fuente primaria de IMDA]</span>.</li>
+    <li>Unión Europea. Reglamento de IA (AI Act), art. 12, y Digital Omnibus on AI. Resumen consultado: <a href="https://datamatters.sidley.com/2026/06/22/eu-lawmakers-reach-provisional-agreement-to-delay-key-eu-ai-act-obligations/">https://datamatters.sidley.com/2026/06/22/eu-lawmakers-reach-provisional-agreement-to-delay-key-eu-ai-act-obligations/</a> <span class="pendiente">[completar con el texto oficial]</span>.</li>
+    <li>OpenTelemetry. Convenciones semánticas para GenAI. <a href="https://github.com/open-telemetry/semantic-conventions-genai">https://github.com/open-telemetry/semantic-conventions-genai</a></li>
+  </ul>
+  </article>
+</main>
+</body>
+</html>

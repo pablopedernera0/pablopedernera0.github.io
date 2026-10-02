@@ -1,7 +1,10 @@
 // Renderiza RECURSOS (js/recursos-data.js) dentro de cada
-// <div class="resources-list" data-categoria="..."> de index.html.
+// <div class="resources-list" data-categoria="..."> de terciario/index.html.
+// <body data-base="../"> indica dónde están las carpetas respecto de la página.
 document.addEventListener('DOMContentLoaded', function () {
     if (typeof RECURSOS === 'undefined') return;
+
+    const base = document.body.dataset.base || '';
 
     const contenedores = document.querySelectorAll('.resources-list[data-categoria]');
 
@@ -22,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         contenedor.innerHTML = recursos.map(function (r) {
             return '' +
-                '<a class="resource-item" href="' + r.carpeta + '/' + (r.archivo || 'index.html') + '">' +
+                '<a class="resource-item" href="' + base + r.carpeta + '/' + (r.archivo || 'index.html') + '">' +
                     '<span class="resource-item-icon">' + r.icono + '</span>' +
                     '<span class="resource-item-body">' +
                         '<span class="resource-item-title">' + r.titulo + '</span>' +

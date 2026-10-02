@@ -12,3 +12,13 @@ para estudiantes.
 (cuentas de GitHub, incidente Killercoda, hábito de dos máquinas). La memoria de Claude
 Code es por proyecto; ese repo es el complemento manual para lo que es transversal a
 varios.
+
+## Estructura de la portada
+
+- `index.html` (raíz): portada neutra con dos entradas, `terciario/` y `notas/`. Reenvía los
+  deep links viejos (`/#infraestructura`, `/#desarrollo`, `/#redes`) a `terciario/`.
+- `terciario/index.html`: índice de recursos del terciario. Se arma desde
+  `js/recursos-data.js`; para publicar un recurso se agrega una entrada ahí. Las carpetas de
+  los recursos siguen en la raíz (no se mueven: hay links en el Classroom que apuntan a ellas).
+- `notas/`: textos propios, una carpeta por nota, y una entrada a mano en `notas/index.html`.
+  Comparten `css/lectura.css` con la portada.

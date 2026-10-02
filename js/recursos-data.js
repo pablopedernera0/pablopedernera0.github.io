@@ -1,8 +1,9 @@
 // Índice de recursos del sitio. Última actualización: 2026-09-24 ART.
-// Cada entrada agrega una carpeta al índice de la home (ver render-recursos.js).
-// Para publicar un recurso nuevo: agregar un objeto acá, no tocar index.html.
+// Cada entrada agrega una carpeta al índice del terciario, terciario/index.html
+// (ver render-recursos.js). Para publicar un recurso nuevo: agregar un objeto acá,
+// no tocar terciario/index.html.
 //
-// categoria: debe coincidir con el id de la course-card en index.html
+// categoria: debe coincidir con el id de la course-card en terciario/index.html
 //   'infraestructura' | 'desarrollo' | 'redes'
 // archivo (opcional): página dentro de la carpeta, si no es index.html
 const RECURSOS = [
