@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caso SIGA — el lunes de las inscripciones</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        main {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem 4rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.25rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        h1 { font-size: 1.9rem; color: #58a6ff; line-height: 1.2; margin-bottom: 0.6rem; }
+        h2 { font-size: 1.3rem; color: #58a6ff; margin: 2rem 0 0.7rem; }
+        h3 { font-size: 1.05rem; color: #3fb950; margin: 1.2rem 0 0.4rem; }
+        p, li { margin-bottom: 0.7rem; }
+        ul, ol { padding-left: 1.3rem; }
+        strong { color: #3fb950; }
+
+        .subtitle { color: #8b949e; font-size: 1.05rem; }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.1rem 0.35rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+            font-size: 0.92em;
+        }
+
+        pre {
+            background: #05070a;
+            border: 1px solid #232b34;
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #d8dee4;
+            margin: 0.6rem 0 1rem;
+            line-height: 1.45;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 10px;
+            padding: 1rem 1.1rem;
+            margin: 0.8rem 0;
+        }
+        .card p:last-child, .card ul:last-child { margin-bottom: 0; }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 0.9rem 1.1rem;
+            margin: 1rem 0;
+        }
+        .warning-box p:last-child { margin-bottom: 0; }
+
+        .board {
+            background: rgba(88, 166, 255, 0.08);
+            border-left: 4px solid #58a6ff;
+            border-radius: 0 10px 10px 0;
+            padding: 0.9rem 1.1rem;
+            margin: 1rem 0;
+        }
+        .board p:last-child { margin-bottom: 0; }
+
+        table { width: 100%; border-collapse: collapse; margin: 0.6rem 0 1rem; font-size: 0.95rem; }
+        th, td { text-align: left; padding: 0.45rem 0.5rem; border-bottom: 1px solid #232b34; vertical-align: top; }
+        th { color: #8b949e; font-weight: 600; }
+
+        a { color: #58a6ff; }
+        .back { font-size: 0.9rem; margin-bottom: 1.2rem; display: inline-block; }
+    </style>
+</head>
+<body>
+<main>
+    <a class="back" href="../terciario/#redes">← Redes y Comunicaciones</a><br>
+    <div class="eyebrow">Redes y Comunicaciones · AF · caso de estudio</div>
+    <h1>Caso SIGA: el lunes de las inscripciones</h1>
+    <p class="subtitle">Leelo completo antes de empezar la planilla. Los números de lo que pasó ese lunes están en el pizarrón.</p>
+
+    <h2>La institución</h2>
+    <p>El <strong>Instituto Superior Ribera</strong> es un terciario público con unos <strong>2.400 estudiantes</strong>. Cada cuatrimestre, la inscripción a materias se hace por <strong>SIGA</strong>, un sistema web propio. La inscripción abre un <strong>lunes a las 8:00</strong> y dura 48 horas. Los cupos de cada comisión se asignan por orden de llegada, así que a las 8:00 entra casi todo el mundo a la vez.</p>
+    <p>Hay un solo administrador de sistemas, que trabaja medio tiempo.</p>
+
+    <h2>Cómo está armado SIGA hoy</h2>
+    <p>Todo corre en <strong>un solo servidor virtual</strong> de la sala de servidores del instituto: <strong>4 vCPU, 8 GB de RAM</strong>. Adentro hay estas piezas:</p>
+    <table>
+        <tr><th>Pieza</th><th>Qué hace</th><th>Puerto abierto a internet</th></tr>
+        <tr><td>Servidor web (Nginx)</td><td>Recibe los pedidos y se los pasa a la app. También manda las imágenes.</td><td>80</td></tr>
+        <tr><td>La app SIGA</td><td>Arma las páginas. Está levantada en modo de desarrollo, con <strong>1 solo worker</strong>.</td><td>ninguno</td></tr>
+        <tr><td>Base de datos (MySQL)</td><td>Estudiantes, materias e inscripciones.</td><td>3306 (para que Secretaría use un cliente de escritorio)</td></tr>
+        <tr><td>phpMyAdmin</td><td>Panel web para administrar la base.</td><td>8080</td></tr>
+    </table>
+
+    <div class="card">
+        <h3 style="margin-top:0">Datos que midió el administrador</h3>
+        <ul>
+            <li>Con un solo usuario, cada pedido a SIGA tarda <strong>unos 45 ms</strong>. Casi todo ese tiempo la app está esperando la respuesta de MySQL.</li>
+            <li>Cada página de SIGA pesa <strong>unos 250 KB</strong>: 30 KB de HTML, 20 KB entre logo y estilos, y una <strong>foto del edificio de 200 KB</strong> en el encabezado. El servidor no le dice al navegador que guarde las imágenes (no hay caché), así que cada recarga la vuelve a descargar.</li>
+            <li>La sala de servidores sale a internet por el <strong>enlace del edificio: 100 Mbps</strong>, el mismo que usan el wifi, los laboratorios y la administración.</li>
+        </ul>
+    </div>
+
+    <h2>Qué pasó el lunes pasado</h2>
+    <p>A las 8:00 SIGA dejó de responder. La página quedaba cargando y después mostraba <code>504 Gateway Time-out</code>. Los estudiantes apretaban F5 una y otra vez. En el edificio, el wifi también andaba lento, porque mucha gente estaba intentando inscribirse desde ahí y desde los laboratorios.</p>
+    <p>Recién a la tarde el sistema volvió a andar normal. Secretaría tuvo que extender la inscripción un día y recibió decenas de reclamos por cupos perdidos.</p>
+    <p>No había monitoreo instalado. Los números que tenés en el pizarrón el administrador los reconstruyó después, a partir de los registros (logs) del servidor web y de lo que fue anotando del uso de CPU durante la mañana.</p>
+
+    <div class="board">
+        <p><strong>Mirá el pizarrón.</strong> Ahí están las métricas de tres momentos del lunes: antes de abrir, en el pico y a la tarde.</p>
+    </div>
+
+    <h2>Lo que encontró después, revisando</h2>
+    <p>Mientras buscaba qué había pasado, el administrador encontró otras dos cosas.</p>
+
+    <h3>1. Puertos abiertos</h3>
+    <p>Desde su casa, revisó qué puertos responden en la IP pública del instituto (con una herramienta llamada <code>nmap</code>):</p>
+<pre>PORT     STATE SERVICE
+80/tcp   open  http
+3306/tcp open  mysql
+8080/tcp open  http-proxy</pre>
+    <p>El usuario <code>root</code> de MySQL todavía tiene la contraseña del ejemplo de instalación que se usó para armar el sistema, que está publicado en internet.</p>
+
+    <h3>2. Algo raro en los logs del servidor web</h3>
+    <p>El domingo a la noche, la noche anterior a la inscripción, hubo <strong>3.200 pedidos <code>POST /login</code> desde la misma IP en 20 minutos</strong>. Casi todos devolvieron <code>200</code> (el formulario de login otra vez, con el mensaje de error). Un <code>302</code> es una redirección: el servidor manda al navegador a otra página. Los últimos fueron así:</p>
+<pre>203.0.113.77 - - [23:41:02] "POST /login HTTP/1.1" 200 1843
+203.0.113.77 - - [23:41:02] "POST /login HTTP/1.1" 200 1843
+203.0.113.77 - - [23:41:03] "POST /login HTTP/1.1" 302 0
+203.0.113.77 - - [23:41:03] "GET /panel HTTP/1.1" 200 9120</pre>
+    <p>El usuario administrador de SIGA es <code>admin</code>.</p>
+
+    <h2>Lo que pide la Dirección</h2>
+    <p>La próxima inscripción es en <strong>cuatro semanas</strong>. La Dirección quiere una propuesta concreta, por escrito, que responda:</p>
+    <ul>
+        <li>que el lunes a las 8:00 el sistema <strong>aguante</strong>, y que no se pierdan inscripciones;</li>
+        <li>que el administrador pueda <strong>ver en vivo</strong> cómo está el sistema y enterarse antes que los estudiantes si algo se rompe;</li>
+        <li>que la base de datos <strong>deje de estar expuesta</strong> y que lo del domingo no vuelva a pasar.</li>
+    </ul>
+
+    <div class="warning-box">
+        <p><strong>Presupuesto:</strong> alcanza para <em>una sola</em> de estas dos opciones, no las dos:</p>
+        <ul style="margin-top:0.5rem; margin-bottom:0;">
+            <li>alquilar una máquina en la nube (8 vCPU, 16 GB, enlace propio de 1 Gbps) durante las 48 horas de inscripción, o</li>
+            <li>ampliar el enlace del edificio a 300 Mbps durante todo un año.</li>
+        </ul>
+    </div>
+    <p>Además, hay cosas que no cuestan nada: subir la cantidad de workers de la app, activar el caché de imágenes y estilos en el servidor web, achicar la página, cerrar puertos e instalar un monitoreo gratuito. Para pensarlo, tienen a mano lo que vimos en <a href="../dimensionamiento-servidores/">Dimensionamiento de servidores</a>, el <a href="../simulador-capacidad-servidor/">simulador de capacidad</a> y los <a href="../casos-fallidos-dimensionamiento/">casos fallidos</a>.</p>
+
+    <h2>Tu trabajo</h2>
+    <p>En grupo, con la planilla en papel: primero <strong>diagnosticar</strong> con los números del pizarrón, después hacer <strong>una cuenta</strong> de ancho de banda y, al final, escribir la <strong>propuesta</strong>. No hay una única respuesta correcta para la propuesta. Lo que se evalúa es que cada decisión esté justificada con un número o con un hecho del caso.</p>
+</main>
+</body>
+</html>

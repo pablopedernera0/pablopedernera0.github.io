@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caso SIGA — guía docente</title>
+    <style>
+        @page { size: A4; margin: 11mm 13mm; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 9.6pt; line-height: 1.4; color: #000; background: #fff; }
+        .sheet { max-width: 184mm; margin: 0 auto; }
+        header { border-bottom: 1.5pt solid #000; padding-bottom: 2mm; margin-bottom: 3mm; display: flex; justify-content: space-between; align-items: baseline; }
+        header h1 { font-size: 13pt; }
+        header span { font-size: 8.5pt; }
+        h2 { font-size: 10.5pt; background: #000; color: #fff; padding: 1mm 2mm; margin: 4mm 0 2mm; }
+        p { margin-bottom: 1.5mm; }
+        ol, ul { padding-left: 5mm; margin-bottom: 1.5mm; }
+        li { margin-bottom: 1.2mm; }
+        table { border-collapse: collapse; margin: 1mm 0 2mm; }
+        th, td { border: 0.8pt solid #000; padding: 1.2mm 3mm; text-align: left; }
+        th { background: #e6e6e6; }
+        table.board td, table.board th { font-size: 11pt; text-align: center; }
+        table.board td:first-child { text-align: left; font-weight: bold; }
+        code { font-family: 'Courier New', monospace; }
+        .note { font-size: 8.6pt; color: #333; }
+        .two { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+        a { color: #000; }
+        @media screen {
+            body { background: #ccc; }
+            .sheet { background: #fff; padding: 12mm 13mm; margin: 8mm auto; box-shadow: 0 0 6px rgba(0,0,0,.3); max-width: 210mm; }
+        }
+    </style>
+</head>
+<body>
+<div class="sheet">
+    <header>
+        <h1>Caso SIGA: guía docente</h1>
+        <span>Redes y Comunicaciones (AF) · no es material para el alumno</span>
+    </header>
+
+    <p><b>Qué es:</b> un caso de cierre de la unidad de dimensionamiento. Usa lo de las tres clases de Dimensionamiento de servidores (de bytes a Mbps, HTML contra JSON, nube contra servidor propio), el simulador de capacidad (workers, latencia alta contra fallas directas, RNF de capacidad) y los casos fallidos (Healthcare.gov, Prime Day). La parte de seguridad es introductoria: se entiende con la idea de puerto abierto y leyendo un log.
+    Los estudiantes leen el caso en el celular (<code>pablopedernera0.github.io/caso-siga-af/</code>) y completan la planilla impresa en grupos de 2 o 3.</p>
+
+    <div class="two">
+        <div>
+            <h2>Para copiar en el pizarrón</h2>
+            <table class="board">
+                <tr><th>Lunes</th><th>07:50</th><th>08:15</th><th>14:00</th></tr>
+                <tr><td>Pedidos/s que llegan</td><td>4</td><td>180</td><td>9</td></tr>
+                <tr><td>Pedidos/s atendidos</td><td>4</td><td>22</td><td>9</td></tr>
+                <tr><td>Latencia p95</td><td>0,3 s</td><td>14 s</td><td>0,4 s</td></tr>
+                <tr><td>CPU del servidor</td><td>12 %</td><td>28 %</td><td>14 %</td></tr>
+                <tr><td>Conexiones a la base</td><td>3</td><td>3</td><td>3</td></tr>
+                <tr><td>Enlace (de 100)</td><td>30 Mbps</td><td>74 Mbps</td><td>33 Mbps</td></tr>
+            </table>
+            <p class="note">El enlace incluye el resto del edificio: unos 30 Mbps en el pico. La tasa de error no va en el pizarrón porque la calculan ellos en la pregunta 1.</p>
+        </div>
+        <div>
+            <h2>Tiempos (60 min)</h2>
+            <ul>
+                <li><b>5'</b>: pizarrón, consigna, armar grupos y pasar el link.</li>
+                <li><b>10'</b>: lectura del caso.</li>
+                <li><b>15'</b>: partes 1 y 2 (diagnóstico y cuenta).</li>
+                <li><b>20'</b>: partes 3 y 4 (seguridad y propuesta).</li>
+                <li><b>10'</b>: puesta en común. Que dos grupos que eligieron opciones distintas en la pregunta 10 (nube o enlace) las defiendan.</li>
+            </ul>
+            <p class="note">Si falta tiempo, la 11, la 12 y la 13 se pueden terminar en casa. Las partes 1 a 3 tienen respuesta cerrada; la parte 4 es abierta y se evalúa por la justificación.</p>
+        </div>
+    </div>
+
+    <h2>Respuestas esperadas</h2>
+    <ol>
+        <li>Llegan 180 y se atienden 22: (180 − 22) / 180 ≈ <b>88 %</b> sin atender.</li>
+        <li><b>Los workers de la app.</b> Los atendidos quedan clavados en 22 mientras llegan 180, y el p95 sube a 14 s porque se arma una cola. No era la CPU (28 %, lejos del 100), tampoco la base (siempre 3 conexiones, estaba tranquila) ni el enlace (74 de 100, no estaba lleno).</li>
+        <li>La app tiene <b>1 solo worker</b>: atiende <b>un pedido a la vez</b>. Es el síntoma de "latencia alta" del simulador: faltan procesos, no memoria. Con 4 vCPU, un solo proceso usa como mucho un núcleo, o sea el 25 %. Encima pasa la mayor parte del tiempo esperando a MySQL, así que ni siquiera ese núcleo se llena. <b>La máquina estaba ociosa: comprar hardware no lo arreglaba.</b></li>
+        <li>1 ÷ 0,045 ≈ <b>22 pedidos/s</b>, que coincide con el pizarrón. Es el techo de un worker que atiende de a uno.</li>
+        <li><b>Empeoraba.</b> Cada F5 es un pedido nuevo que se suma a la cola, y además vuelve a bajar la foto de 200 KB. Es lo mismo que pasó con Healthcare.gov en los casos fallidos.</li>
+        <li>180 × 250 = 45.000 KB/s = 45 MB/s → <b>360 Mbps</b>, + 30 = <b>390 Mbps</b>. No alcanzan ni 100 ni 300. <b>Si arreglan solo la app, el cuello de botella pasa al enlace.</b></li>
+        <li>180 × 30 = 5.400 KB/s → 43,2 Mbps + 30 ≈ <b>73 Mbps: entra en 100.</b> Conclusión: achicar lo que se manda (caché de imágenes y estilos) no cuesta nada y rinde más que pagar un enlace más grande. Conecta con la clase de HTML contra JSON.</li>
+        <li><b>3306:</b> cualquiera desde internet puede probar la base, y con la contraseña del ejemplo (que es pública) entra como <code>root</code> y lee, cambia o borra todo. Para cerrarlo: cerrar el 3306 a internet (que solo la app llegue a la base), poner una contraseña fuerte y que Secretaría entre por VPN.
+            <b>8080:</b> es el panel de administración de la base, abierto a internet. Hay que cerrarlo a internet y dejarlo accesible solo desde la red interna o por VPN.
+            <b>Domingo:</b> un ataque de fuerza bruta (probar contraseñas una tras otra), y <b>funcionó</b>: el <code>302</code> seguido de <code>GET /panel</code> es un login correcto, o sea que alguien entró como <code>admin</code> la noche anterior a la inscripción. Esto es un incidente: hay que cambiar la contraseña ya, revisar en los logs qué hizo en <code>/panel</code> y si tocó cupos o inscripciones, y limitar los intentos (bloquear la IP o la cuenta después de N fallos). Si nadie se da cuenta de que el login funcionó, marcarlo en la puesta en común.</li>
+        <li><b>Arquitectura (9):</b> internet → servidor web (80/443, lo único abierto a internet) → app con varios workers → base de datos, cerrada a internet. Un monitoreo que mida pedidos/s, latencia, errores, CPU y enlace, con su panel no expuesto o detrás de un login. Si nombran Prometheus/Grafana, bien, pero no hace falta.</li>
+        <li><b>Decisiones (10):</b> 180 ÷ 22 ≈ 8,2, así que <b>9 workers</b>. Si alguien conoce la regla habitual de 2 × núcleos + 1, también da 9 con 4 núcleos. Es lo mismo que hicieron con <code>sumar_cpu.sh</code> en el simulador, pero con una cuenta.
+            <b>Nube o enlace:</b> las dos opciones se pueden defender. Si aplican el caché, el enlace de 100 alcanza y la plata puede ir a la nube por 48 h: más CPU para los workers, un enlace de 1 Gbps y SIGA deja de competir con el wifi del edificio (el riesgo es migrar la base antes y traerla de vuelta después). El enlace de 300 le sirve al edificio todo el año, pero <b>sin caché no alcanza</b> (390). Si eligen sin dar un número, no cuenta.
+            <b>Peso:</b> caché de imágenes y estilos en el servidor web, comprimir o achicar la foto, compresión (gzip) como en la clase 3. Si alguien propone mandar JSON y armar la página en el navegador, conectarlo con HTML contra JSON.</li>
+        <li><b>Alertas (11), por ejemplo:</b> p95 &gt; 1 s durante 2 min; errores 5xx &gt; 1 %; CPU &gt; 80 %; enlace &gt; 80 Mbps; conexiones a la base cerca del máximo; más de 20 logins fallidos por minuto desde una misma IP. Lo importante es que la tercera columna diga <b>qué hace</b> el administrador cuando salta.</li>
+        <li><b>RNF (12), por ejemplo:</b> 200 pedidos/s (180 más un margen), p95 &lt; 1 s, errores &lt; 1 %. Si se supera, una página liviana de "sala de espera" o una portada reducida, como el fallback de Prime Day.</li>
+        <li><b>Prueba (13):</b> una prueba de carga contra una copia del sistema (no contra el real): mandarle muchos pedidos simultáneos, como el <code>subir_carga.sh</code> del simulador, e ir subiendo hasta 200 pedidos/s mientras miran latencia, errores y uso del enlace. Medir el tiempo de respuesta con <code>curl</code> como en la práctica de Killercoda. Herramientas reales: <code>ab</code>, JMeter, k6.</li>
+    </ol>
+</div>
+</body>
+</html>

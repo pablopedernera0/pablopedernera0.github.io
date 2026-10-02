@@ -1,4 +1,4 @@
-// Índice de recursos del sitio. Última actualización: 2026-09-24 ART.
+// Índice de recursos del sitio. Última actualización: 2026-10-02 ART.
 // Cada entrada agrega una carpeta al índice del terciario, terciario/index.html
 // (ver render-recursos.js). Para publicar un recurso nuevo: agregar un objeto acá,
 // no tocar terciario/index.html.
@@ -7,6 +7,14 @@
 //   'infraestructura' | 'desarrollo' | 'redes'
 // archivo (opcional): página dentro de la carpeta, si no es index.html
 const RECURSOS = [
+    {
+        titulo: "Caso SIGA: el lunes de las inscripciones",
+        categoria: "redes",
+        carpeta: "caso-siga-af",
+        icono: "🧾",
+        descripcion: "Caso de estudio presencial, en papel (60 min): el sistema de inscripciones de un instituto colapsa a las 8:00. Con las métricas del pizarrón, los grupos diagnostican el cuello de botella, hacen la cuenta de ancho de banda, revisan dos problemas de seguridad y escriben una propuesta con su RNF de capacidad. Planilla para imprimir: caso-siga-af/planilla.pdf.",
+        fecha: "2026-10-02"
+    },
     {
         titulo: "Monitoreo en tiempo real: Prometheus y Grafana",
         categoria: "infraestructura",
