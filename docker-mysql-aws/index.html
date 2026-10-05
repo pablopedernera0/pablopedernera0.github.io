@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker y MySQL en AWS — Práctica</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { background: #131a22; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #131a22, #232f3e) fixed;
+            color: #e8edf2;
+            line-height: 1.65;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 260px minmax(0, 1fr);
+            gap: 2.5rem;
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* Índice lateral */
+        nav.toc {
+            position: sticky;
+            top: 1.5rem;
+            align-self: start;
+            max-height: calc(100vh - 3rem);
+            overflow-y: auto;
+            font-size: 0.9rem;
+            border-left: 2px solid rgba(255, 153, 0, 0.35);
+            padding-left: 1rem;
+        }
+        nav.toc .toc-title {
+            color: #ff9900;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.8rem;
+            margin-bottom: 0.6rem;
+        }
+        nav.toc a {
+            display: block;
+            color: #b8c4d0;
+            text-decoration: none;
+            padding: 0.2rem 0;
+        }
+        nav.toc a:hover, nav.toc a.active { color: #ff9900; }
+
+        main { min-width: 0; }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(255, 153, 0, 0.15);
+            border: 1px solid #ff9900;
+            color: #ff9900;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            line-height: 1.2;
+            color: #ff9900;
+            margin-bottom: 0.8rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        h2 {
+            font-size: 1.6rem;
+            color: #ff9900;
+            margin: 2.8rem 0 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            scroll-margin-top: 1rem;
+        }
+        h3 { font-size: 1.2rem; color: #7dd3fc; margin: 1.5rem 0 0.6rem; }
+
+        p, ul, ol, table, pre, blockquote { margin-bottom: 1rem; }
+        ul, ol { padding-left: 1.5rem; }
+        li { margin-bottom: 0.4rem; }
+        li > ul, li > ol, li > pre { margin-top: 0.5rem; }
+        strong { color: #fff; }
+        a { color: #7dd3fc; }
+        hr { border: none; }
+
+        code {
+            font-family: Consolas, 'Courier New', monospace;
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffd9a0;
+            padding: 0.1rem 0.35rem;
+            border-radius: 4px;
+            font-size: 0.92em;
+        }
+
+        pre {
+            position: relative;
+            background: #0d1117;
+            border: 1px solid rgba(255, 153, 0, 0.3);
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            overflow-x: auto;
+        }
+        pre code {
+            background: none;
+            color: #c9f2c7;
+            padding: 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 153, 0, 0.15);
+            border: 1px solid #ff9900;
+            color: #ff9900;
+            border-radius: 6px;
+            padding: 0.2rem 0.7rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .copy-btn:hover { background: rgba(255, 153, 0, 0.3); }
+
+        blockquote {
+            background: rgba(125, 211, 252, 0.08);
+            border-left: 4px solid #7dd3fc;
+            border-radius: 0 8px 8px 0;
+            padding: 0.8rem 1.2rem;
+        }
+        blockquote p:last-child { margin-bottom: 0; }
+
+        .check {
+            background: rgba(74, 222, 128, 0.1);
+            border-left: 4px solid #4ade80;
+            border-radius: 0 8px 8px 0;
+            padding: 0.8rem 1.2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            display: block;
+            overflow-x: auto;
+        }
+        th, td {
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 0.5rem 0.8rem;
+            text-align: left;
+            vertical-align: top;
+        }
+        th { background: rgba(255, 153, 0, 0.18); color: #ffb84d; }
+        tr:nth-child(even) td { background: rgba(255,255,255,0.03); }
+
+        @media (max-width: 900px) {
+            .layout { grid-template-columns: 1fr; }
+            nav.toc { display: none; }
+            h1 { font-size: 1.9rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="Índice"><div class="toc-title">En esta práctica</div></nav>
+<main>
+<span class="eyebrow">Práctica · AWS Academy Learner Lab</span>
+<h1 id="nginx-mysql-phpmyadmin-y-flask-con-docker-en-aws">Nginx, MySQL, phpMyAdmin y Flask con Docker, en AWS</h1>
+<p><strong>Autor:</strong> Pablo Pedernera · <strong>Nivel:</strong> intermedio · <strong>Tiempo estimado:</strong> 90 minutos</p>
+<blockquote>
+<p>Esta práctica es la versión AWS de &quot;Nginx, MySQL, PhpMyAdmin y Flask con Docker&quot; de
+Killercoda. Los servicios son los mismos; lo nuevo es que <strong>la máquina la creás vos</strong>,
+en la nube de Amazon Web Services, y la vas a ver desde tu PC como cualquier servidor
+de Internet.</p>
+</blockquote>
+<h2 id="antes-de-empezar">Antes de empezar</h2>
+<ul>
+<li>Hacela <strong>desde tu PC</strong> (Windows, Linux o Mac), con un navegador actualizado
+(Chrome, Firefox o Edge). No se puede hacer desde el celular.</li>
+<li>Necesitás estar inscripto en la clase de <strong>AWS Academy Learner Lab</strong> de tu materia. Si
+no te llegó la invitación de <code>notifications@instructure.com</code>, revisá spam y avisale al
+docente.</li>
+<li>Cada paso termina con un <strong>✔ Verificación</strong>. No sigas al paso siguiente si la
+verificación no te da lo esperado: andá a <a href="#problemas-comunes">Problemas comunes</a>.</li>
+<li>Tenés crédito limitado. <strong>Al terminar, hacé el <a href="#paso-11--apagar-todo">Paso 11</a>
+(apagar todo)</strong>, aunque vayas a seguir otro día.</li>
+</ul>
+<h2 id="qué-cambia-respecto-de-killercoda">Qué cambia respecto de Killercoda</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Killercoda</th>
+<th>AWS Learner Lab</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>La máquina</td>
+<td>Ya está creada</td>
+<td>La creás vos: una <strong>instancia EC2</strong></td>
+</tr>
+<tr>
+<td>Sistema operativo</td>
+<td>Ya está</td>
+<td>Lo elegís al crear la instancia (una <strong>AMI</strong>)</td>
+</tr>
+<tr>
+<td>Red</td>
+<td>Invisible</td>
+<td>Tu instancia vive en una <strong>VPC</strong>, con una <strong>IP pública</strong></td>
+</tr>
+<tr>
+<td>Puertos</td>
+<td>Se abren solos (&quot;Traffic / Ports&quot;)</td>
+<td>Los abrís vos en un <strong>security group</strong> (un firewall)</td>
+</tr>
+<tr>
+<td>Usuario</td>
+<td><code>root</code></td>
+<td><code>ubuntu</code>, con <code>sudo</code></td>
+</tr>
+<tr>
+<td>Duración</td>
+<td>60 minutos y se borra todo</td>
+<td>Sesiones de 4 horas; la instancia <strong>se conserva</strong> entre sesiones</td>
+</tr>
+</tbody></table>
+<h2 id="de-floci-a-aws-real">De Floci a AWS real</h2>
+<p>En <a href="../aws-cloud-intro/">AWS y Cloud Computing — Introducción</a> y en
+<a href="../s3-iam-avanzado/">S3 + IAM en profundidad</a> trabajamos con <strong>Floci</strong>, un emulador de
+AWS que corre en Docker dentro de Killercoda: imita la API de S3 e IAM, pero no hay
+servidores, redes ni IPs de Amazon detrás.</p>
+<p>Esta práctica es en <strong>AWS de verdad</strong>, a través del <strong>AWS Academy Learner Lab</strong>: la misma
+consola que usan las empresas, en los centros de datos de Amazon, con un crédito que da
+el Terciario y <strong>sin tarjeta de crédito</strong>.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Floci (prácticas anteriores)</th>
+<th>AWS Learner Lab (esta práctica)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Qué es</td>
+<td>Un emulador en un contenedor</td>
+<td>AWS real</td>
+</tr>
+<tr>
+<td>Dónde corre</td>
+<td>Killercoda</td>
+<td>Centros de datos de Amazon (región <code>us-east-1</code>)</td>
+</tr>
+<tr>
+<td>Cómo se maneja AWS</td>
+<td>AWS CLI, con <code>--endpoint-url http://localhost:4566</code></td>
+<td><strong>Consola web</strong> de AWS, desde el navegador</td>
+</tr>
+<tr>
+<td>Servidores, redes, IPs públicas</td>
+<td>No hay</td>
+<td>Sí: EC2, VPC, security groups</td>
+</tr>
+<tr>
+<td>Costo</td>
+<td>Ninguno</td>
+<td>Descuenta de tu crédito: <strong>apagá lo que no uses</strong></td>
+</tr>
+<tr>
+<td>Exposición</td>
+<td>Solo dentro de Killercoda</td>
+<td>Tu servidor queda <strong>en Internet</strong>: abrí solo lo necesario</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>En esta práctica no usamos AWS CLI.</strong> Todo lo de AWS (la VPC, el security
+group, la instancia, apagarla) se hace con clics en la consola web, para que veas cada
+pieza en pantalla. Los comandos que vas a escribir en la terminal (Pasos 6 a 10) no son de
+AWS: son de Linux y Docker, <strong>dentro de tu servidor</strong>, como en Killercoda.</p>
+</blockquote>
+<h2 id="qué-vamos-a-tener-al-final">Qué vamos a tener al final</h2>
+<p>Una máquina Ubuntu en AWS con cuatro servicios en Docker, accesibles desde tu navegador:</p>
+<ul>
+<li><strong>Nginx</strong> sirviendo una página web en el puerto <strong>80</strong></li>
+<li><strong>MySQL</strong> como motor de base de datos (sin puerto expuesto a Internet)</li>
+<li><strong>phpMyAdmin</strong> para administrar MySQL en el puerto <strong>8080</strong></li>
+<li><strong>Una aplicación Flask</strong> con un CRUD conectado a MySQL en el puerto <strong>8888</strong></li>
+</ul>
+<hr>
+<h2 id="paso-1--entrar-al-learner-lab">Paso 1 — Entrar al Learner Lab</h2>
+<ol>
+<li>Entrá al link del mail de invitación (o a <a href="https://www.awsacademy.com/">https://www.awsacademy.com/</a>, <strong>Iniciar
+sesión</strong> → <strong>Student Login</strong>) con la cuenta que creaste al aceptarla.</li>
+<li>Abrí el curso <strong>AWS Academy Learner Lab</strong> → <strong>Modules</strong> → <strong>Launch AWS Academy
+Learner Lab</strong>. Aceptá los términos si te los pide.</li>
+<li>Arriba a la derecha, hacé clic en <strong>Start Lab</strong>. El círculo al lado de <strong>AWS</strong> pasa
+de rojo a amarillo y después a <strong>verde</strong> (tarda unos minutos la primera vez).</li>
+<li>Con el círculo en verde, hacé clic en <strong>AWS</strong>: se abre la consola de AWS en otra
+pestaña.</li>
+<li>Arriba a la derecha de la consola, verificá que la región sea <strong>N. Virginia
+(us-east-1)</strong>. El Learner Lab solo permite EC2 en <code>us-east-1</code> y <code>us-west-2</code>.</li>
+</ol>
+<p>En el panel del lab también ves el <strong>crédito usado</strong> y el <strong>tiempo restante</strong> de la
+sesión (4 horas). Si se termina, volvé a hacer clic en <strong>Start Lab</strong>.</p>
+<p><strong>✔ Verificación:</strong> estás en la consola de AWS, región <code>us-east-1</code>.</p>
+<h2 id="paso-2--conocer-la-red-la-vpc-por-defecto">Paso 2 — Conocer la red: la VPC por defecto</h2>
+<p>Toda instancia EC2 vive dentro de una <strong>VPC</strong> (<em>Virtual Private Cloud</em>): una red privada
+tuya dentro de AWS. <strong>No hace falta crear una</strong>: cada cuenta trae una <strong>VPC por defecto</strong>,
+ya preparada para tener máquinas con salida a Internet. La vamos a usar tal cual, pero
+veamos qué tiene.</p>
+<ol>
+<li>En el buscador de la consola escribí <strong>VPC</strong> y entrá.</li>
+<li>Abrí <strong>Your VPCs</strong>: vas a ver una con <strong>Default VPC = Yes</strong> y un bloque de
+direcciones como <code>172.31.0.0/16</code>.</li>
+<li>Abrí <strong>Subnets</strong>: hay una subred por cada zona de disponibilidad (<code>us-east-1a</code>,
+<code>us-east-1b</code>, …), cada una un pedazo del <code>/16</code> (por ejemplo <code>172.31.0.0/20</code>).</li>
+<li>Abrí <strong>Internet gateways</strong>: hay uno conectado (<em>attached</em>) a la VPC por defecto. Es la
+&quot;puerta&quot; de la VPC hacia Internet.</li>
+<li>Abrí <strong>Route tables</strong>, elegí la de la VPC por defecto y mirá la pestaña <strong>Routes</strong>:<ul>
+<li><code>172.31.0.0/16 → local</code>: el tráfico dentro de la VPC se queda adentro.</li>
+<li><code>0.0.0.0/0 → igw-…</code>: todo lo demás sale por el Internet gateway.</li>
+</ul>
+</li>
+</ol>
+<p>Es lo mismo que en una red de casa: una red privada, un router con una ruta por defecto
+hacia Internet. Acá cada pieza tiene nombre propio.</p>
+<p><strong>✔ Verificación:</strong> anotá el bloque de la VPC por defecto y el ID del Internet gateway.</p>
+<h2 id="paso-3--crear-el-security-group-el-firewall">Paso 3 — Crear el security group (el firewall)</h2>
+<p>Un <strong>security group</strong> es un firewall que se aplica a la instancia: por defecto <strong>bloquea
+todo lo que entra</strong> y solo deja pasar lo que vos autorices.</p>
+<ol>
+<li><p>En la consola, buscá <strong>EC2</strong> → menú izquierdo <strong>Security Groups</strong> → <strong>Create security
+group</strong>.</p>
+</li>
+<li><p><strong>Security group name:</strong> <code>sg-docker-mysql</code>. <strong>Description:</strong> <code>Practica docker-mysql</code>.
+<strong>VPC:</strong> la VPC por defecto.</p>
+</li>
+<li><p>En <strong>Inbound rules</strong>, agregá estas cinco reglas. <strong>My IP</strong> hace que AWS complete sola
+la IP pública de tu conexión.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Puerto</th>
+<th>Source</th>
+<th>Para qué</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SSH</td>
+<td>22</td>
+<td>My IP</td>
+<td>SSH desde tu PC (Paso 5, opción B)</td>
+</tr>
+<tr>
+<td>SSH</td>
+<td>22</td>
+<td>Custom → <code>com.amazonaws.us-east-1.ec2-instance-connect</code></td>
+<td>Terminal en el navegador (Paso 5, opción A)</td>
+</tr>
+<tr>
+<td>HTTP</td>
+<td>80</td>
+<td>My IP</td>
+<td>Nginx</td>
+</tr>
+<tr>
+<td>Custom TCP</td>
+<td>8080</td>
+<td>My IP</td>
+<td>phpMyAdmin</td>
+</tr>
+<tr>
+<td>Custom TCP</td>
+<td>8888</td>
+<td>My IP</td>
+<td>CRUD Flask</td>
+</tr>
+</tbody></table>
+<p>La segunda regla usa una <em>prefix list</em>: en <strong>Source</strong> elegí <strong>Custom</strong> y empezá a
+escribir <code>ec2-instance-connect</code> hasta que aparezca. Es la lista de IPs de los
+servidores de AWS desde los que se conecta la terminal del navegador; no es tu IP.</p>
+</li>
+<li><p><strong>Outbound rules:</strong> dejá la que viene (todo permitido hacia afuera; la instancia
+necesita descargar paquetes e imágenes).</p>
+</li>
+<li><p><strong>Create security group</strong>.</p>
+</li>
+</ol>
+<blockquote>
+<p>¿Por qué <strong>My IP</strong> y no <code>0.0.0.0/0</code> (cualquiera)? Porque phpMyAdmin entra a MySQL como
+root sin pedir contraseña. Abierto a todo Internet, cualquiera podría borrar tu base en
+minutos: hay robots escaneando IPs de AWS todo el tiempo. Si mañana te conectás desde
+otra red, vas a tener que actualizar estas reglas (ver <a href="#problemas-comunes">Problemas comunes</a>).</p>
+</blockquote>
+<p><strong>✔ Verificación:</strong> <code>sg-docker-mysql</code> aparece en la lista con 5 reglas de entrada.</p>
+<h2 id="paso-4--crear-la-instancia-ec2-y-su-sistema-operativo">Paso 4 — Crear la instancia EC2 y &quot;su sistema operativo&quot;</h2>
+<p>En la nube no se instala el sistema operativo desde un pendrive: se elige una <strong>AMI</strong>
+(<em>Amazon Machine Image</em>), una imagen de disco con el sistema ya instalado, y AWS crea la
+máquina a partir de ella.</p>
+<ol>
+<li>En <strong>EC2</strong> → <strong>Instances</strong> → <strong>Launch instances</strong>.</li>
+<li><strong>Name:</strong> <code>docker-mysql-&lt;tu-apellido&gt;</code>.</li>
+<li><strong>Application and OS Images (AMI):</strong> elegí <strong>Ubuntu</strong> → <strong>Ubuntu Server 24.04 LTS</strong>
+(64-bit x86).</li>
+<li><strong>Instance type:</strong> <code>t3.micro</code> (2 vCPU, 1 GB de RAM). Alcanza para esta práctica.</li>
+<li><strong>Key pair (login):</strong> elegí <strong>vockey</strong>. Es el par de claves que el Learner Lab ya
+creó para vos (no crees uno nuevo).</li>
+<li><strong>Network settings</strong> → <strong>Edit</strong>:<ul>
+<li><strong>VPC:</strong> la VPC por defecto.</li>
+<li><strong>Subnet:</strong> <em>No preference</em> (o cualquiera de las subredes del Paso 2).</li>
+<li><strong>Auto-assign public IP:</strong> <strong>Enable</strong>. Sin IP pública no podrías verla desde tu PC.</li>
+<li><strong>Firewall (security groups):</strong> <strong>Select existing security group</strong> →
+<code>sg-docker-mysql</code>.</li>
+</ul>
+</li>
+<li><strong>Configure storage:</strong> cambiá a <strong>16 GiB</strong>, tipo <strong>gp3</strong> (las imágenes de Docker
+ocupan lugar; 8 GiB queda justo).</li>
+<li>Revisá el resumen de la derecha y hacé clic en <strong>Launch instance</strong>.</li>
+<li>Volvé a <strong>Instances</strong> y esperá a que la instancia esté <strong>Running</strong> y que <strong>Status
+check</strong> diga <em>checks passed</em> (un par de minutos).</li>
+<li>Seleccioná la instancia y anotá su <strong>Public IPv4 address</strong> y su <strong>Private IPv4
+address</strong>.</li>
+</ol>
+<p><strong>✔ Verificación:</strong> la instancia está <em>Running</em>, con los checks pasados, y tenés anotadas las dos
+IPs. La privada está dentro del bloque de la VPC del Paso 2 (<code>172.31.x.x</code>); la pública
+no. ¿Por qué tiene dos?</p>
+<h2 id="paso-5--conectarte-a-la-instancia">Paso 5 — Conectarte a la instancia</h2>
+<p><strong>Opción A, recomendada: terminal en el navegador (EC2 Instance Connect).</strong></p>
+<ol>
+<li>Seleccioná la instancia → <strong>Connect</strong> → pestaña <strong>EC2 Instance Connect</strong>.</li>
+<li><strong>Username:</strong> <code>ubuntu</code> → <strong>Connect</strong>. Se abre una terminal en una pestaña nueva.</li>
+</ol>
+<p><strong>Opción B: SSH desde tu PC.</strong> Es como se trabaja en la realidad.</p>
+<ol>
+<li>En el panel del Learner Lab: <strong>AWS Details</strong> → <strong>Download PEM</strong> (baja <code>labsuser.pem</code>).</li>
+<li>Desde una terminal en la carpeta donde quedó el archivo:<ul>
+<li><strong>Linux / Mac:</strong><pre><code class="language-bash">chmod 400 labsuser.pem
+ssh -i labsuser.pem ubuntu@&lt;IP-PUBLICA&gt;
+</code></pre>
+</li>
+<li><strong>Windows (PowerShell):</strong><pre><code class="language-powershell">icacls labsuser.pem /inheritance:r /grant:r &quot;$($env:USERNAME):R&quot;
+ssh -i labsuser.pem ubuntu@&lt;IP-PUBLICA&gt;
+</code></pre>
+</li>
+</ul>
+</li>
+<li>La primera vez pregunta si confiás en el equipo: escribí <code>yes</code>.</li>
+</ol>
+<p><strong>✔ Verificación:</strong> en la terminal ves algo como <code>ubuntu@ip-172-31-x-x:~$</code>. Ejecutá
+<code>hostname -I</code> y comparalo con la IP privada del Paso 4.</p>
+<h2 id="paso-6--instalar-docker">Paso 6 — Instalar Docker</h2>
+<p>La AMI trae Ubuntu limpio: Docker lo instalamos nosotros.</p>
+<pre><code class="language-bash">sudo apt update
+sudo apt install -y docker.io docker-compose-v2 git python3-pip
+sudo usermod -aG docker ubuntu
+</code></pre>
+<p>El último comando agrega tu usuario al grupo <code>docker</code>, para no tener que poner <code>sudo</code>
+delante de cada comando de Docker. Para que tome efecto, <strong>cerrá la terminal y volvé a
+conectarte</strong> (Paso 5).</p>
+<p><strong>✔ Verificación:</strong></p>
+<pre><code class="language-bash">docker run --rm hello-world
+docker compose version
+</code></pre>
+<p>El primero muestra <em>Hello from Docker!</em>; el segundo, la versión de Docker Compose.</p>
+<h2 id="paso-7--levantar-mysql-phpmyadmin-y-nginx-con-docker-compose">Paso 7 — Levantar MySQL, phpMyAdmin y Nginx con Docker Compose</h2>
+<pre><code class="language-bash">mkdir -p ~/practica/web
+cd ~/practica
+nano docker-compose.yml
+</code></pre>
+<p>Pegá este contenido, guardá con <code>Ctrl+O</code>, <code>Enter</code>, y salí con <code>Ctrl+X</code>:</p>
+<pre><code class="language-yaml">services:
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mysecretpassword
+    networks:
+      - mynetwork
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: mysecretpassword
+    depends_on:
+      - mysql
+    networks:
+      - mynetwork
+
+  web:
+    image: nginx
+    restart: always
+    volumes:
+      - ./web:/usr/share/nginx/html
+    ports:
+      - &quot;80:80&quot;
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+</code></pre>
+<blockquote>
+<p>En Killercoda el archivo empezaba con <code>version: &#39;3&#39;</code>. Las versiones nuevas de Docker
+Compose ya no lo usan (si lo ponés, avisa que es obsoleto y lo ignora).</p>
+</blockquote>
+<pre><code class="language-bash">docker compose up -d
+</code></pre>
+<p><strong>✔ Verificación:</strong> <code>docker ps</code> muestra tres contenedores (<code>mysql</code>, <code>phpmyadmin</code>, <code>web</code>)
+en estado <em>Up</em>.</p>
+<h2 id="paso-8--ejecutar-sql-desde-phpmyadmin">Paso 8 — Ejecutar SQL desde phpMyAdmin</h2>
+<ol>
+<li>En el navegador de tu PC, abrí <code>http://&lt;IP-PUBLICA&gt;:8080</code> (con <code>http</code>, no <code>https</code>).</li>
+<li>Vas a ver la pantalla principal de phpMyAdmin.</li>
+<li>Andá a la pestaña <strong>SQL</strong>, pegá estas sentencias y hacé clic en <strong>Continuar</strong>:</li>
+</ol>
+<pre><code class="language-sql">CREATE DATABASE alumnos;
+USE alumnos;
+
+CREATE TABLE alumnos (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(50) NOT NULL,
+  apellido VARCHAR(50) NOT NULL,
+  fecha_nacimiento DATE NOT NULL
+);
+
+CREATE TABLE materias (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(50) NOT NULL,
+  calificacion FLOAT NOT NULL,
+  alumno_id INT,
+  FOREIGN KEY (alumno_id) REFERENCES alumnos(id)
+);
+
+INSERT INTO alumnos (nombre, apellido, fecha_nacimiento) VALUES
+  (&#39;Juan&#39;, &#39;Perez&#39;, &#39;2000-01-01&#39;),
+  (&#39;María&#39;, &#39;Gómez&#39;, &#39;1999-05-15&#39;),
+  (&#39;Pedro&#39;, &#39;López&#39;, &#39;2001-10-20&#39;),
+  (&#39;Ana&#39;, &#39;Martínez&#39;, &#39;1998-03-08&#39;),
+  (&#39;Luis&#39;, &#39;Rodríguez&#39;, &#39;2002-07-12&#39;);
+
+INSERT INTO materias (nombre, calificacion, alumno_id) VALUES
+  (&#39;Matemáticas&#39;, 8.5, 1),
+  (&#39;Historia&#39;, 7.2, 2),
+  (&#39;Ciencias&#39;, 9.0, 3),
+  (&#39;Literatura&#39;, 6.8, 4),
+  (&#39;Inglés&#39;, 8.9, 5);
+
+SELECT nombre, apellido FROM alumnos;
+</code></pre>
+<p><strong>✔ Verificación:</strong> a la izquierda aparece la base <code>alumnos</code> con las tablas <code>alumnos</code> y
+<code>materias</code>, y el <code>SELECT</code> muestra los cinco nombres.</p>
+<h2 id="paso-9--publicar-una-página-con-nginx">Paso 9 — Publicar una página con Nginx</h2>
+<pre><code class="language-bash">nano ~/practica/web/index.html
+</code></pre>
+<p>Pegá este contenido:</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;es&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;title&gt;Mi servidor en AWS&lt;/title&gt;
+  &lt;script&gt;
+    window.onload = async function () {
+      // La IP del servidor es la que escribiste en la barra de direcciones
+      document.getElementById(&#39;servidor&#39;).textContent = window.location.hostname;
+      try {
+        // ipify devuelve la IP pública de quien hace la consulta: tu navegador
+        const r = await fetch(&#39;https://api.ipify.org?format=json&#39;);
+        document.getElementById(&#39;visitante&#39;).textContent = (await r.json()).ip;
+      } catch (e) {
+        document.getElementById(&#39;visitante&#39;).textContent = &#39;No se pudo obtener&#39;;
+      }
+    };
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Hola desde EC2&lt;/h1&gt;
+  &lt;p&gt;IP pública del servidor: &lt;strong id=&quot;servidor&quot;&gt;...&lt;/strong&gt;&lt;/p&gt;
+  &lt;p&gt;Tu IP pública (visitante): &lt;strong id=&quot;visitante&quot;&gt;...&lt;/strong&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>Abrí <code>http://&lt;IP-PUBLICA&gt;</code> en el navegador de tu PC.</p>
+<p><strong>✔ Verificación:</strong> la página muestra dos IPs distintas. Comparalas con lo que viste
+antes:</p>
+<ul>
+<li>La del servidor, ¿es la <em>Public IPv4</em> del Paso 4?</li>
+<li>La del visitante, ¿es la que AWS puso como <strong>My IP</strong> en el security group (Paso 3)?</li>
+</ul>
+<h2 id="paso-10--desplegar-el-crud-con-python-y-flask">Paso 10 — Desplegar el CRUD con Python y Flask</h2>
+<pre><code class="language-bash">cd ~
+git clone https://github.com/pablopedernera0/crud-python.git
+cd crud-python
+pip install flask mysql-connector-python --break-system-packages
+</code></pre>
+<p>La aplicación tiene que conectarse a MySQL, que <strong>no</strong> expone su puerto: solo es
+accesible por su IP dentro de la red de Docker.</p>
+<pre><code class="language-bash">MYSQL_IP=$(docker inspect $(docker ps --filter &quot;ancestor=mysql:latest&quot; -q) \
+  --format &#39;{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}&#39;)
+echo &quot;IP del servidor MySQL: $MYSQL_IP&quot;
+sed -i &quot;s/172.18.0.2/$MYSQL_IP/&quot; app.py
+</code></pre>
+<p>Iniciá la aplicación con <code>nohup</code>, para que siga corriendo aunque cierres la terminal:</p>
+<pre><code class="language-bash">nohup python3 app.py &gt; app.log 2&gt;&amp;1 &amp;
+sleep 3 &amp;&amp; curl -s -o /dev/null -w &quot;%{http_code}\n&quot; http://127.0.0.1:8888/
+</code></pre>
+<p><strong>✔ Verificación:</strong> el <code>curl</code> devuelve <code>200</code>. Abrí <code>http://&lt;IP-PUBLICA&gt;:8888</code> en tu
+navegador: aparece el listado de alumnos que cargaste en el Paso 8. Probá crear, editar y
+borrar un registro, y fijate en phpMyAdmin que los cambios se ven también ahí.</p>
+<p>Ya tenés tres IPs distintas en juego: la <strong>pública</strong> de la instancia (la que usás desde tu
+PC), la <strong>privada</strong> en la VPC (<code>172.31.x.x</code>) y la del contenedor de MySQL en la red de
+Docker (<code>172.18.x.x</code>). Las tres son de la misma máquina, vistas desde lugares distintos.</p>
+<h2 id="paso-11--apagar-todo">Paso 11 — Apagar todo</h2>
+<p>Una instancia prendida consume crédito aunque no la estés usando.</p>
+<ol>
+<li>En <strong>EC2</strong> → <strong>Instances</strong>, seleccioná tu instancia → <strong>Instance state</strong> → <strong>Stop
+instance</strong>.</li>
+<li>En el panel del Learner Lab, hacé clic en <strong>End Lab</strong>.</li>
+</ol>
+<p>Si te olvidás, el Learner Lab detiene las instancias solo cuando se terminan las 4 horas
+de sesión, y las vuelve a arrancar la próxima vez que hagas <strong>Start Lab</strong>.</p>
+<p><strong>Si la volvés a prender otro día:</strong></p>
+<ul>
+<li>La <strong>IP pública cambia</strong> cada vez que la instancia se detiene y arranca: usá la nueva.</li>
+<li>Los contenedores vuelven solos (<code>restart: always</code>), y la base <code>alumnos</code> sigue ahí.</li>
+<li>El CRUD no vuelve solo: repetí desde <code>MYSQL_IP=...</code> del Paso 10 (la IP del contenedor
+puede cambiar).</li>
+<li>Si estás en otra red, actualizá <strong>My IP</strong> en el security group.</li>
+</ul>
+<p><strong>Para borrarla del todo</strong> (cuando el docente lo indique): <strong>Instance state →
+Terminate instance</strong>. Se pierde todo lo que tenía.</p>
+<h2 id="revisión-final">Revisión final</h2>
+<p>Hiciste lo mismo que en Killercoda, pero además:</p>
+<ol>
+<li>Recorriste una <strong>VPC</strong> real: subredes, Internet gateway y tabla de rutas.</li>
+<li>Configuraste un <strong>firewall</strong> (security group) abriendo solo los puertos necesarios y
+solo para tu IP.</li>
+<li>Creaste un servidor a partir de una <strong>AMI</strong>, eligiendo tipo de instancia, disco y red.</li>
+<li>Te conectaste por <strong>SSH</strong> o desde el navegador.</li>
+<li>Instalaste Docker y levantaste MySQL, phpMyAdmin, Nginx y una app Flask.</li>
+<li>Viste las diferencias entre IP pública, IP privada de la VPC e IP de la red de Docker.</li>
+</ol>
+<h2 id="problemas-comunes">Problemas comunes</h2>
+<table>
+<thead>
+<tr>
+<th>Síntoma</th>
+<th>Causa probable</th>
+<th>Qué hacer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>El navegador queda cargando y da <em>timeout</em></td>
+<td>Falta la regla del puerto en el security group, o tu IP cambió</td>
+<td>EC2 → Security Groups → <code>sg-docker-mysql</code> → <strong>Edit inbound rules</strong>: revisá el puerto y volvé a elegir <strong>My IP</strong></td>
+</tr>
+<tr>
+<td><em>ERR_SSL</em> o &quot;conexión no segura&quot;</td>
+<td>Escribiste <code>https://</code></td>
+<td>Usá <code>http://&lt;IP-PUBLICA&gt;</code></td>
+</tr>
+<tr>
+<td>La IP de ayer ya no anda</td>
+<td>La instancia se detuvo y arrancó: cambió la IP pública</td>
+<td>Mirá la nueva <em>Public IPv4</em> en EC2 → Instances</td>
+</tr>
+<tr>
+<td>EC2 Instance Connect da error</td>
+<td>Falta la regla de SSH con la prefix list <code>ec2-instance-connect</code></td>
+<td>Agregala (Paso 3), o usá la opción B (SSH desde tu PC)</td>
+</tr>
+<tr>
+<td><code>permission denied ... docker.sock</code></td>
+<td>No volviste a conectarte después del <code>usermod</code></td>
+<td>Cerrá la terminal y volvé a conectarte</td>
+</tr>
+<tr>
+<td><code>UNPROTECTED PRIVATE KEY FILE</code> al hacer SSH</td>
+<td>Permisos de <code>labsuser.pem</code> muy abiertos</td>
+<td>Repetí el <code>chmod 400</code> o el <code>icacls</code> del Paso 5</td>
+</tr>
+<tr>
+<td>phpMyAdmin dice que no puede conectar</td>
+<td>MySQL todavía está arrancando</td>
+<td>Esperá un minuto y recargá</td>
+</tr>
+<tr>
+<td>El CRUD no responde en el 8888</td>
+<td>Se cortó la app o cambió la IP de MySQL</td>
+<td><code>cat ~/crud-python/app.log</code>; repetí el Paso 10 desde <code>MYSQL_IP=...</code></td>
+</tr>
+<tr>
+<td>La consola dice que no tenés permiso para algo</td>
+<td>El Learner Lab tiene permisos limitados</td>
+<td>Verificá estar en <code>us-east-1</code> y usar un tipo de instancia chico</td>
+</tr>
+<tr>
+<td>El círculo del lab está rojo</td>
+<td>Terminó la sesión</td>
+<td><strong>Start Lab</strong> de nuevo</td>
+</tr>
+</tbody></table>
+</main>
+</div>
+<script>
+    // Índice lateral a partir de los h2
+    const toc = document.querySelector('nav.toc');
+    const headings = [...document.querySelectorAll('main h2')];
+    headings.forEach(h => {
+        const a = document.createElement('a');
+        a.href = '#' + h.id;
+        a.textContent = h.textContent;
+        toc.appendChild(a);
+    });
+    const links = [...toc.querySelectorAll('a')];
+    window.addEventListener('scroll', () => {
+        let actual = headings[0];
+        headings.forEach(h => { if (h.getBoundingClientRect().top < 120) actual = h; });
+        links.forEach(a => a.classList.toggle('active', a.hash === '#' + actual.id));
+    });
+
+    // Resaltar las verificaciones
+    document.querySelectorAll('main p').forEach(p => {
+        if (p.textContent.trim().startsWith('✔')) p.classList.add('check');
+    });
+
+    // Botón para copiar cada bloque de código
+    document.querySelectorAll('pre').forEach(pre => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.textContent = 'Copiar';
+        btn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(pre.querySelector('code').innerText);
+                btn.textContent = '¡Copiado!';
+            } catch (e) {
+                btn.textContent = 'Seleccioná y copiá';
+            }
+            setTimeout(() => btn.textContent = 'Copiar', 1500);
+        });
+        pre.appendChild(btn);
+    });
+</script>
+</body>
+</html>
