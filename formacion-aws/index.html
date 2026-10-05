@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formación AWS — de Floci a AWS real</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { background: #131a22; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #131a22, #232f3e) fixed;
+            color: #e8edf2;
+            line-height: 1.6;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(255, 153, 0, 0.15);
+            border: 1px solid #ff9900;
+            color: #ff9900;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            line-height: 1.2;
+            color: #ff9900;
+            margin-bottom: 0.8rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .intro {
+            max-width: 850px;
+            color: #b8c4d0;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+        .intro strong { color: #fff; }
+
+        .leyenda {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            font-size: 0.9rem;
+            color: #b8c4d0;
+            margin-bottom: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.9rem 1rem;
+            font-size: 0.95rem;
+            color: #131a22;
+            background: #ff9900;
+        }
+        th:first-child { border-radius: 10px 0 0 0; }
+        th:last-child { border-radius: 0 10px 0 0; }
+        th.floci { background: #7dd3fc; }
+        th.real { background: #ff9900; }
+        th small { display: block; font-weight: normal; opacity: 0.8; }
+
+        td {
+            padding: 1rem;
+            vertical-align: top;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.03);
+        }
+        tr:nth-child(even) td { background: rgba(255,255,255,0.06); }
+
+        td.tema { width: 34%; }
+        .num {
+            display: inline-block;
+            width: 1.8rem;
+            height: 1.8rem;
+            line-height: 1.8rem;
+            text-align: center;
+            border-radius: 50%;
+            background: rgba(255, 153, 0, 0.2);
+            border: 1px solid #ff9900;
+            color: #ff9900;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        .tema h2 {
+            display: inline;
+            font-size: 1.15rem;
+            color: #fff;
+        }
+        .tema ul {
+            margin: 0.6rem 0 0 2.3rem;
+            color: #b8c4d0;
+            font-size: 0.92rem;
+        }
+
+        .practica {
+            display: block;
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            margin-bottom: 0.6rem;
+            text-decoration: none;
+            color: #e8edf2;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.04);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        a.practica:hover { transform: translateY(-2px); }
+        a.practica.floci { border-color: rgba(125, 211, 252, 0.6); }
+        a.practica.floci:hover { background: rgba(125, 211, 252, 0.12); }
+        a.practica.real { border-color: rgba(255, 153, 0, 0.6); }
+        a.practica.real:hover { background: rgba(255, 153, 0, 0.12); }
+        .practica strong { display: block; }
+        .practica span { font-size: 0.85rem; color: #b8c4d0; }
+
+        .pendiente {
+            border-style: dashed;
+            color: #8a96a3;
+        }
+        .no-aplica {
+            font-size: 0.9rem;
+            color: #8a96a3;
+            font-style: italic;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.1rem 0.5rem;
+            border-radius: 10px;
+            margin-left: 0.3rem;
+            vertical-align: middle;
+        }
+        .badge.prueba { background: rgba(250, 204, 21, 0.2); color: #facc15; }
+        .badge.pronto { background: rgba(255,255,255,0.1); color: #b8c4d0; }
+
+        .notas {
+            margin-top: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.2rem;
+        }
+        .nota {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 1.2rem;
+            border-left: 4px solid #7dd3fc;
+        }
+        .nota.real { border-left-color: #ff9900; }
+        .nota h3 { font-size: 1.05rem; margin-bottom: 0.4rem; }
+        .nota p { font-size: 0.95rem; color: #b8c4d0; }
+
+        @media (max-width: 800px) {
+            h1 { font-size: 1.9rem; }
+            thead { display: none; }
+            table, tbody, tr, td { display: block; width: 100%; }
+            td.tema { width: 100%; }
+            tr { margin-bottom: 1.2rem; border-radius: 10px; overflow: hidden; }
+            td[data-col]::before {
+                content: attr(data-col);
+                display: block;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #8a96a3;
+                margin-bottom: 0.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<main>
+    <span class="eyebrow">Infraestructura · Cloud</span>
+    <h1>Formación AWS: de Floci a AWS real</h1>
+    <p class="intro">
+        El recorrido completo, en orden. Cada tema se practica primero <strong>sin AWS</strong>,
+        con el emulador Floci o en Killercoda, y después en <strong>AWS de verdad</strong>, con el
+        AWS Academy Learner Lab del Terciario (sin tarjeta de crédito).
+    </p>
+
+    <div class="leyenda">
+        <span><span class="badge prueba">En prueba</span> escrita, se está probando en el Learner Lab</span>
+        <span><span class="badge pronto">Próximamente</span> planificada</span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Tema y contenidos</th>
+                <th class="floci">Práctica sin AWS<small>Floci / Killercoda</small></th>
+                <th class="real">Práctica en AWS real<small>AWS Academy Learner Lab</small></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="tema">
+                    <span class="num">1</span><h2>Introducción a la nube y AWS</h2>
+                    <ul>
+                        <li>Qué es la computación en la nube</li>
+                        <li>Modelos de servicio: IaaS, PaaS, SaaS</li>
+                        <li>AWS y sus categorías de servicios</li>
+                        <li>Primer vistazo a S3 e IAM</li>
+                    </ul>
+                </td>
+                <td data-col="Práctica sin AWS">
+                    <a class="practica floci" href="../aws-cloud-intro-floci/">
+                        <strong>AWS y Cloud Computing — Introducción</strong>
+                        <span>Presentación de la clase</span>
+                    </a>
+                    <a class="practica floci" href="https://killercoda.com/pablop22/scenario/cloud-storage-101" target="_blank" rel="noopener">
+                        <strong>Cloud Storage 101 — S3 con Floci</strong>
+                        <span>Killercoda · usuario IAM, API keys y subida de fotos desde un CRUD</span>
+                    </a>
+                </td>
+                <td data-col="Práctica en AWS real">
+                    <p class="no-aplica">El primer contacto con la consola real es el Paso 1 de la práctica del tema 3.</p>
+                </td>
+            </tr>
+            <tr>
+                <td class="tema">
+                    <span class="num">2</span><h2>S3 + IAM en profundidad</h2>
+                    <ul>
+                        <li>Buckets y objetos</li>
+                        <li>Usuarios, grupos y políticas</li>
+                        <li>Consola web vs. AWS CLI</li>
+                        <li>Buenas prácticas de seguridad</li>
+                    </ul>
+                </td>
+                <td data-col="Práctica sin AWS">
+                    <a class="practica floci" href="../s3-iam-avanzado/">
+                        <strong>S3 + IAM en profundidad</strong>
+                        <span>Consola web y AWS CLI en paralelo, contra Floci</span>
+                    </a>
+                </td>
+                <td data-col="Práctica en AWS real">
+                    <div class="practica pendiente">
+                        <strong>S3 en el Learner Lab <span class="badge pronto">Próximamente</span></strong>
+                        <span>La misma consigna contra S3 real. IAM viene limitado en el Learner Lab.</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="tema">
+                    <span class="num">3</span><h2>Servidores en la nube: EC2</h2>
+                    <ul>
+                        <li>Instancias EC2 y AMIs</li>
+                        <li>Security groups (firewall)</li>
+                        <li>IP pública e IP privada, conexión por SSH</li>
+                        <li>Docker con MySQL, phpMyAdmin, Nginx y Flask</li>
+                    </ul>
+                </td>
+                <td data-col="Práctica sin AWS">
+                    <a class="practica floci" href="https://killercoda.com/pablop22/scenario/docker-mysql" target="_blank" rel="noopener">
+                        <strong>Nginx, MySQL, phpMyAdmin y Flask con Docker</strong>
+                        <span>Killercoda · los mismos servicios, en una máquina ya creada</span>
+                    </a>
+                </td>
+                <td data-col="Práctica en AWS real">
+                    <a class="practica real" href="../docker-mysql-aws/">
+                        <strong>Docker y MySQL en AWS <span class="badge prueba">En prueba</span></strong>
+                        <span>Creás la instancia, el security group y la levantás, todo desde la consola web</span>
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td class="tema">
+                    <span class="num">4</span><h2>Redes en la nube: VPC</h2>
+                    <ul>
+                        <li>VPC y subredes</li>
+                        <li>Internet gateway y tablas de ruta</li>
+                        <li>Redes públicas y privadas</li>
+                    </ul>
+                </td>
+                <td data-col="Práctica sin AWS">
+                    <p class="no-aplica">No aplica: las prácticas con Floci cubren S3 e IAM.</p>
+                </td>
+                <td data-col="Práctica en AWS real">
+                    <a class="practica real" href="../docker-mysql-aws/#paso-2--conocer-la-red-la-vpc-por-defecto">
+                        <strong>Recorrido por la VPC por defecto</strong>
+                        <span>Paso 2 de la práctica del tema 3</span>
+                    </a>
+                    <div class="practica pendiente">
+                        <strong>Armar una VPC propia <span class="badge pronto">Próximamente</span></strong>
+                        <span>Subredes pública y privada, rutas y gateway</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="tema">
+                    <span class="num">5</span><h2>Monitoreo: Prometheus y Grafana</h2>
+                    <ul>
+                        <li>Métricas vs. logs</li>
+                        <li>Prometheus, exporters y PromQL</li>
+                        <li>Dashboards en Grafana</li>
+                        <li>Stress test observado en vivo</li>
+                    </ul>
+                </td>
+                <td data-col="Práctica sin AWS">
+                    <a class="practica floci" href="../hilo-conductor-redes/documentacion/crud-monitoreo-prometheus-grafana-clase.html">
+                        <strong>Monitoreo en tiempo real</strong>
+                        <span>Clase de conceptos</span>
+                    </a>
+                    <a class="practica floci" href="https://killercoda.com/pablop22/scenario/crud-monitoreo-prometheus-grafana" target="_blank" rel="noopener">
+                        <strong>Monitoreo en vivo con Prometheus y Grafana</strong>
+                        <span>Killercoda</span>
+                    </a>
+                </td>
+                <td data-col="Práctica en AWS real">
+                    <div class="practica pendiente">
+                        <strong>Prometheus y Grafana en EC2 <span class="badge pronto">Próximamente</span></strong>
+                        <span>El mismo stack en una instancia más grande (t3.medium)</span>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="notas">
+        <div class="nota">
+            <h3>¿Por qué empezar con Floci?</h3>
+            <p>Es un emulador de AWS que corre en Docker: misma API que AWS para S3 e IAM, sin
+            cuenta, sin costo y sin riesgo. Sirve para aprender los conceptos y los comandos
+            antes de tocar la nube real.</p>
+        </div>
+        <div class="nota real">
+            <h3>¿Y después, por qué AWS real?</h3>
+            <p>Porque hay cosas que un emulador no tiene: servidores, redes, IPs públicas,
+            costos y la exposición a Internet. El Learner Lab da un entorno real con crédito
+            y sin tarjeta, desde tu PC.</p>
+        </div>
+    </div>
+</main>
+</body>
+</html>

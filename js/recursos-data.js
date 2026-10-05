@@ -1,4 +1,4 @@
-// Índice de recursos del sitio. Última actualización: 2026-10-02 ART.
+// Índice de recursos del sitio. Última actualización: 2026-10-05 ART.
 // Cada entrada agrega una carpeta al índice del terciario, terciario/index.html
 // (ver render-recursos.js). Para publicar un recurso nuevo: agregar un objeto acá,
 // no tocar terciario/index.html.
@@ -7,6 +7,14 @@
 //   'infraestructura' | 'desarrollo' | 'redes'
 // archivo (opcional): página dentro de la carpeta, si no es index.html
 const RECURSOS = [
+    {
+        titulo: "Formación AWS: de Floci a AWS real",
+        categoria: "infraestructura",
+        carpeta: "formacion-aws",
+        icono: "🧭",
+        descripcion: "El recorrido completo de AWS en orden: cada tema con su práctica sin AWS (Floci / Killercoda) y su práctica en AWS real (AWS Academy Learner Lab).",
+        fecha: "2026-10-05"
+    },
     {
         titulo: "Caso SIGA: el lunes de las inscripciones",
         categoria: "redes",
@@ -129,19 +137,19 @@ const RECURSOS = [
         fecha: "2026-09-23"
     },
     {
-        titulo: "S3 + IAM en profundidad",
+        titulo: "S3 + IAM en profundidad (con Floci)",
         categoria: "infraestructura",
         carpeta: "s3-iam-avanzado",
         icono: "🔐",
-        descripcion: "Almacenamiento de objetos y control de acceso: consola web y AWS CLI en paralelo.",
+        descripcion: "Almacenamiento de objetos y control de acceso: consola web y AWS CLI en paralelo, contra Floci.",
         fecha: "2026-08-06"
     },
     {
-        titulo: "AWS y Cloud Computing — Introducción",
+        titulo: "AWS y Cloud Computing — Introducción (con Floci)",
         categoria: "infraestructura",
-        carpeta: "aws-cloud-intro",
+        carpeta: "aws-cloud-intro-floci",
         icono: "☁️",
-        descripcion: "Qué es la nube, modelos de servicio y las categorías principales de AWS.",
+        descripcion: "Qué es la nube, modelos de servicio y las categorías principales de AWS. Práctica con Floci, el emulador de AWS.",
         fecha: "2026-08-04"
     },
     {
