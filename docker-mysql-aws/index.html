@@ -174,7 +174,7 @@
 <main>
 <span class="eyebrow">Práctica · AWS Academy Learner Lab</span>
 <h1 id="nginx-mysql-phpmyadmin-y-flask-con-docker-en-aws">Nginx, MySQL, phpMyAdmin y Flask con Docker, en AWS</h1>
-<p><strong>Autor:</strong> Pablo Pedernera · <strong>Nivel:</strong> intermedio · <strong>Tiempo estimado:</strong> 90 minutos</p>
+<p><strong>Autor:</strong> Pablo Pedernera · <strong>Nivel:</strong> intermedio · <strong>Tiempo estimado:</strong> dos partes de unos 60 minutos cada una</p>
 <blockquote>
 <p>Esta práctica es la versión AWS de &quot;Nginx, MySQL, PhpMyAdmin y Flask con Docker&quot; de
 Killercoda. Los servicios son los mismos; lo nuevo es que <strong>la máquina la creás vos</strong>,
@@ -293,6 +293,11 @@ AWS: son de Linux y Docker, <strong>dentro de tu servidor</strong>, como en Kill
 <li><strong>MySQL</strong> como motor de base de datos (sin puerto expuesto a Internet)</li>
 <li><strong>phpMyAdmin</strong> para administrar MySQL en el puerto <strong>8080</strong></li>
 <li><strong>Una aplicación Flask</strong> con un CRUD conectado a MySQL en el puerto <strong>8888</strong></li>
+</ul>
+<p>La práctica tiene <strong>dos partes</strong>, que podés hacer en días distintos:</p>
+<ul>
+<li><strong>Parte 1 (Pasos 1 a 5):</strong> la red, el firewall y el servidor. Es lo propio de AWS.</li>
+<li><strong>Parte 2 (Pasos 6 a 11):</strong> Docker y los servicios, más un <a href="#desafío-final">desafío final</a>.</li>
 </ul>
 <hr>
 <h2 id="paso-1--entrar-al-learner-lab">Paso 1 — Entrar al Learner Lab</h2>
@@ -457,6 +462,10 @@ ssh -i labsuser.pem ubuntu@&lt;IP-PUBLICA&gt;
 </ol>
 <p><strong>✔ Verificación:</strong> en la terminal ves algo como <code>ubuntu@ip-172-31-x-x:~$</code>. Ejecutá
 <code>hostname -I</code> y comparalo con la IP privada del Paso 4.</p>
+<blockquote>
+<p><strong>Fin de la Parte 1.</strong> Si seguís otro día, apagá la instancia (<a href="#paso-11--apagar-todo">Paso 11</a>)
+y al volver leé <a href="#paso-11--apagar-todo">"Si la volvés a prender otro día"</a>: la IP pública va a ser otra.</p>
+</blockquote>
 <h2 id="paso-6--instalar-docker">Paso 6 — Instalar Docker</h2>
 <p>La AMI trae Ubuntu limpio: Docker lo instalamos nosotros.</p>
 <pre><code class="language-bash">sudo apt update
@@ -479,7 +488,7 @@ nano docker-compose.yml
 <p>Pegá este contenido, guardá con <code>Ctrl+O</code>, <code>Enter</code>, y salí con <code>Ctrl+X</code>:</p>
 <pre><code class="language-yaml">services:
   mysql:
-    image: mysql:latest
+    image: mysql:8.4
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: mysecretpassword
@@ -487,7 +496,7 @@ nano docker-compose.yml
       - mynetwork
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
+    image: phpmyadmin/phpmyadmin:5.2
     restart: always
     ports:
       - 8080:80
@@ -501,7 +510,7 @@ nano docker-compose.yml
       - mynetwork
 
   web:
-    image: nginx
+    image: nginx:1.28
     restart: always
     volumes:
       - ./web:/usr/share/nginx/html
@@ -516,6 +525,9 @@ networks:
 <blockquote>
 <p>En Killercoda el archivo empezaba con <code>version: &#39;3&#39;</code>. Las versiones nuevas de Docker
 Compose ya no lo usan (si lo ponés, avisa que es obsoleto y lo ignora).</p>
+<p>Las imágenes tienen <strong>versión fija</strong> (<code>mysql:8.4</code>, no <code>mysql:latest</code>). Con
+<code>latest</code>, si sale una versión nueva que cambia algo, la práctica deja de andar de un día
+para el otro sin que hayas tocado nada.</p>
 </blockquote>
 <pre><code class="language-bash">docker compose up -d
 </code></pre>
@@ -608,11 +620,17 @@ pip install flask mysql-connector-python --break-system-packages
 </code></pre>
 <p>La aplicación tiene que conectarse a MySQL, que <strong>no</strong> expone su puerto: solo es
 accesible por su IP dentro de la red de Docker.</p>
-<pre><code class="language-bash">MYSQL_IP=$(docker inspect $(docker ps --filter &quot;ancestor=mysql:latest&quot; -q) \
+<pre><code class="language-bash">cd ~/practica
+MYSQL_IP=$(docker inspect $(docker compose ps -q mysql) \
   --format &#39;{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}&#39;)
 echo &quot;IP del servidor MySQL: $MYSQL_IP&quot;
-sed -i &quot;s/172.18.0.2/$MYSQL_IP/&quot; app.py
+cd ~/crud-python
+sed -i -E &quot;s/172\.18\.[0-9]+\.[0-9]+/$MYSQL_IP/&quot; app.py
+grep -n &quot;172.18&quot; app.py
 </code></pre>
+<p>El <code>sed</code> reemplaza en <code>app.py</code> cualquier IP <code>172.18.x.x</code> por la IP actual de MySQL, así
+que lo podés repetir las veces que haga falta. El <code>grep</code> te muestra la línea que quedó:
+tiene que tener la misma IP que imprimió el <code>echo</code>.</p>
 <p>Iniciá la aplicación con <code>nohup</code>, para que siga corriendo aunque cierres la terminal:</p>
 <pre><code class="language-bash">nohup python3 app.py &gt; app.log 2&gt;&amp;1 &amp;
 sleep 3 &amp;&amp; curl -s -o /dev/null -w &quot;%{http_code}\n&quot; http://127.0.0.1:8888/
@@ -623,6 +641,19 @@ borrar un registro, y fijate en phpMyAdmin que los cambios se ven también ahí.
 <p>Ya tenés tres IPs distintas en juego: la <strong>pública</strong> de la instancia (la que usás desde tu
 PC), la <strong>privada</strong> en la VPC (<code>172.31.x.x</code>) y la del contenedor de MySQL en la red de
 Docker (<code>172.18.x.x</code>). Las tres son de la misma máquina, vistas desde lugares distintos.</p>
+<h2 id="desafío-final">Desafío final</h2>
+<p>Esta parte no está resuelta en la guía: la tenés que pensar vos. Va en la entrega. Hacelo antes de apagar la instancia.</p>
+<ol>
+<li><strong>Explicá por escrito</strong> por qué MySQL no necesita una regla de entrada en el
+security group ni una línea <code>ports:</code> en <code>docker-compose.yml</code>, y aun así phpMyAdmin
+y el CRUD llegan a él. ¿Por qué camino entra cada uno?</li>
+<li><strong>Demostralo.</strong> Con el CRUD andando, editá la
+regla del puerto <strong>8888</strong> para que permita solo la IP <code>203.0.113.10/32</code> (una IP
+reservada para ejemplos, que no es la tuya), y sacá una captura del navegador cuando
+intentás entrar al CRUD. Después volvé a dejar la regla en <strong>My IP</strong> y comprobá que
+vuelve a andar. ¿Por qué el navegador se queda esperando hasta dar <em>timeout</em> en lugar de
+mostrar enseguida &quot;conexión rechazada&quot;?</li>
+</ol>
 <h2 id="paso-11--apagar-todo">Paso 11 — Apagar todo</h2>
 <p>Una instancia prendida consume crédito aunque no la estés usando.</p>
 <ol>
@@ -636,7 +667,7 @@ de sesión, y las vuelve a arrancar la próxima vez que hagas <strong>Start Lab<
 <ul>
 <li>La <strong>IP pública cambia</strong> cada vez que la instancia se detiene y arranca: usá la nueva.</li>
 <li>Los contenedores vuelven solos (<code>restart: always</code>), y la base <code>alumnos</code> sigue ahí.</li>
-<li>El CRUD no vuelve solo: repetí desde <code>MYSQL_IP=...</code> del Paso 10 (la IP del contenedor
+<li>El CRUD no vuelve solo: repetí el Paso 10 desde <code>cd ~/practica</code> (la IP del contenedor
 puede cambiar).</li>
 <li>Si estás en otra red, actualizá <strong>My IP</strong> en el security group.</li>
 </ul>
@@ -700,7 +731,7 @@ solo para tu IP.</li>
 <tr>
 <td>El CRUD no responde en el 8888</td>
 <td>Se cortó la app o cambió la IP de MySQL</td>
-<td><code>cat ~/crud-python/app.log</code>; repetí el Paso 10 desde <code>MYSQL_IP=...</code></td>
+<td><code>cat ~/crud-python/app.log</code>; repetí el Paso 10 desde <code>cd ~/practica</code></td>
 </tr>
 <tr>
 <td>La consola dice que no tenés permiso para algo</td>
