@@ -924,6 +924,13 @@ código, <strong>sin probar nada contra tu servidor</strong>.</li>
         links.forEach(a => a.classList.toggle('active', a.hash === '#' + actual.id));
     });
 
+    // Los links a otras páginas abren en una pestaña nueva: la guía se ve embebida en
+    // Canvas, y muchos sitios (GitHub, AWS) no se dejan mostrar dentro de un iframe
+    document.querySelectorAll('main a[href]:not([href^="#"])').forEach(a => {
+        a.target = '_blank';
+        a.rel = 'noopener';
+    });
+
     // Resaltar las verificaciones
     document.querySelectorAll('main p').forEach(p => {
         if (p.textContent.trim().startsWith('✔')) p.classList.add('check');
