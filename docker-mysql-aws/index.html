@@ -300,21 +300,33 @@ AWS: son de Linux y Docker, <strong>dentro de tu servidor</strong>, como en Kill
 <li><strong>Parte 2 (Pasos 6 a 11):</strong> Docker y los servicios, más un <a href="#desafío-final">desafío final</a>.</li>
 </ul>
 <hr>
+<blockquote>
+<p><strong>Los nombres de la consola.</strong> La consola de AWS aparece en el idioma de tu
+navegador. En la guía va el nombre en español y, entre paréntesis, en inglés: por ejemplo
+<strong>Reglas de entrada (Inbound rules)</strong>. Si alguna palabra no coincide exacto, guiate por la
+otra versión o por la ubicación en la pantalla.</p>
+</blockquote>
 <h2 id="paso-1--entrar-al-learner-lab">Paso 1 — Entrar al Learner Lab</h2>
 <ol>
 <li>Entrá al link del mail de invitación (o a <a href="https://www.awsacademy.com/">https://www.awsacademy.com/</a>, <strong>Iniciar
 sesión</strong> → <strong>Student Login</strong>) con la cuenta que creaste al aceptarla.</li>
-<li>Abrí el curso <strong>AWS Academy Learner Lab</strong> → <strong>Modules</strong> → <strong>Launch AWS Academy
-Learner Lab</strong>. Aceptá los términos si te los pide.</li>
-<li>Arriba a la derecha, hacé clic en <strong>Start Lab</strong>. El círculo al lado de <strong>AWS</strong> pasa
+<li>Abrí el curso <strong>AWS Academy Learner Lab</strong> → <strong>Módulos (Modules)</strong> → <strong>Iniciar el
+Laboratorio de aprendizaje de AWS Academy (Launch AWS Academy Learner Lab)</strong>. Aceptá los
+términos si te los pide.</li>
+<li>Arriba, hacé clic en <strong>Start Lab</strong>. El círculo al lado de <strong>AWS</strong> pasa
 de rojo a amarillo y después a <strong>verde</strong> (tarda unos minutos la primera vez).</li>
 <li>Con el círculo en verde, hacé clic en <strong>AWS</strong>: se abre la consola de AWS en otra
-pestaña.</li>
-<li>Arriba a la derecha de la consola, verificá que la región sea <strong>N. Virginia
-(us-east-1)</strong>. El Learner Lab solo permite EC2 en <code>us-east-1</code> y <code>us-west-2</code>.</li>
+pestaña. Si el navegador bloquea la ventana emergente, permitila.</li>
+<li>Arriba a la derecha de la consola, verificá que la región sea <strong>EE. UU. Este (Norte de
+Virginia) / N. Virginia (us-east-1)</strong>. El Learner Lab solo permite EC2 en <code>us-east-1</code> y
+<code>us-west-2</code>.</li>
 </ol>
-<p>En el panel del lab también ves el <strong>crédito usado</strong> y el <strong>tiempo restante</strong> de la
-sesión (4 horas). Si se termina, volvé a hacer clic en <strong>Start Lab</strong>.</p>
+<p>En el panel del lab también ves el <strong>crédito usado</strong> (<em>Used $0 of $50</em>) y el <strong>tiempo
+restante</strong> de la sesión (4 horas). Si se termina, volvé a hacer clic en <strong>Start Lab</strong>.
+Las horas que muestra <strong>AWS Details</strong> están en hora del Pacífico, no de Argentina: guiate
+por el tiempo restante.</p>
+<p>La terminal que aparece a la izquierda del panel del lab <strong>no es tu PC ni tu
+servidor</strong>: es una máquina del Learner Lab. En esta práctica no la usamos.</p>
 <p><strong>✔ Verificación:</strong> estás en la consola de AWS, región <code>us-east-1</code>.</p>
 <h2 id="paso-2--conocer-la-red-la-vpc-por-defecto">Paso 2 — Conocer la red: la VPC por defecto</h2>
 <p>Toda instancia EC2 vive dentro de una <strong>VPC</strong> (<em>Virtual Private Cloud</em>): una red privada
@@ -323,130 +335,154 @@ ya preparada para tener máquinas con salida a Internet. La vamos a usar tal cua
 veamos qué tiene.</p>
 <ol>
 <li>En el buscador de la consola escribí <strong>VPC</strong> y entrá.</li>
-<li>Abrí <strong>Your VPCs</strong>: vas a ver una con <strong>Default VPC = Yes</strong> y un bloque de
-direcciones como <code>172.31.0.0/16</code>.</li>
-<li>Abrí <strong>Subnets</strong>: hay una subred por cada zona de disponibilidad (<code>us-east-1a</code>,
-<code>us-east-1b</code>, …), cada una un pedazo del <code>/16</code> (por ejemplo <code>172.31.0.0/20</code>).</li>
-<li>Abrí <strong>Internet gateways</strong>: hay uno conectado (<em>attached</em>) a la VPC por defecto. Es la
-&quot;puerta&quot; de la VPC hacia Internet.</li>
-<li>Abrí <strong>Route tables</strong>, elegí la de la VPC por defecto y mirá la pestaña <strong>Routes</strong>:<ul>
+<li>Abrí <strong>Sus VPC (Your VPCs)</strong>: vas a ver una con <strong>VPC predeterminada (Default VPC) = Sí
+(Yes)</strong> y un bloque de direcciones como <code>172.31.0.0/16</code>.</li>
+<li>Abrí <strong>Subredes (Subnets)</strong>: hay una subred por cada zona de disponibilidad
+(<code>us-east-1a</code>, <code>us-east-1b</code>, …), cada una un pedazo del <code>/16</code> (por ejemplo
+<code>172.31.0.0/20</code>).</li>
+<li>Abrí <strong>Puertas de enlace de Internet (Internet gateways)</strong>: hay una conectada
+(<em>Attached</em>) a la VPC por defecto. Es la &quot;puerta&quot; de la VPC hacia Internet.</li>
+<li>Abrí <strong>Tablas de enrutamiento (Route tables)</strong>, elegí la de la VPC por defecto y mirá
+la pestaña <strong>Rutas (Routes)</strong>:<ul>
 <li><code>172.31.0.0/16 → local</code>: el tráfico dentro de la VPC se queda adentro.</li>
-<li><code>0.0.0.0/0 → igw-…</code>: todo lo demás sale por el Internet gateway.</li>
+<li><code>0.0.0.0/0 → igw-…</code>: todo lo demás sale por la puerta de enlace de Internet.</li>
 </ul>
 </li>
 </ol>
 <p>Es lo mismo que en una red de casa: una red privada, un router con una ruta por defecto
 hacia Internet. Acá cada pieza tiene nombre propio.</p>
-<p><strong>✔ Verificación:</strong> anotá el bloque de la VPC por defecto y el ID del Internet gateway.</p>
+<p><strong>✔ Verificación:</strong> anotá el bloque de la VPC por defecto y el ID de la puerta de enlace de Internet (<code>igw-…</code>).</p>
 <h2 id="paso-3--crear-el-security-group-el-firewall">Paso 3 — Crear el security group (el firewall)</h2>
-<p>Un <strong>security group</strong> es un firewall que se aplica a la instancia: por defecto <strong>bloquea
-todo lo que entra</strong> y solo deja pasar lo que vos autorices.</p>
+<p>Un <strong>security group</strong> (en la consola en español, <strong>grupo de seguridad</strong>) es un firewall que
+se aplica a la instancia: por defecto <strong>bloquea todo lo que entra</strong> y solo deja pasar lo
+que vos autorices.</p>
 <ol>
-<li><p>En la consola, buscá <strong>EC2</strong> → menú izquierdo <strong>Security Groups</strong> → <strong>Create security
-group</strong>.</p>
+<li><p>En la consola, buscá <strong>EC2</strong> → menú izquierdo <strong>Grupos de seguridad (Security
+Groups)</strong> → <strong>Crear grupo de seguridad (Create security group)</strong>.</p>
 </li>
-<li><p><strong>Security group name:</strong> <code>sg-docker-mysql</code>. <strong>Description:</strong> <code>Practica docker-mysql</code>.
-<strong>VPC:</strong> la VPC por defecto.</p>
+<li><p><strong>Nombre del grupo de seguridad (Security group name):</strong> <code>sg-docker-mysql</code>.
+<strong>Descripción (Description):</strong> <code>Practica docker-mysql</code>. <strong>VPC:</strong> la VPC por defecto.</p>
 </li>
-<li><p>En <strong>Inbound rules</strong>, agregá estas cinco reglas. <strong>My IP</strong> hace que AWS complete sola
-la IP pública de tu conexión.</p>
+<li><p>En <strong>Reglas de entrada (Inbound rules)</strong>, agregá estas cinco reglas. <strong>Mi IP (My IP)</strong>
+hace que AWS complete sola la IP pública de tu conexión.</p>
 <table>
 <thead>
 <tr>
-<th>Type</th>
+<th>Tipo (Type)</th>
 <th>Puerto</th>
-<th>Source</th>
+<th>Origen (Source)</th>
 <th>Para qué</th>
 </tr>
 </thead>
 <tbody><tr>
 <td>SSH</td>
 <td>22</td>
-<td>My IP</td>
+<td>Mi IP (My IP)</td>
 <td>SSH desde tu PC (Paso 5, opción B)</td>
 </tr>
 <tr>
 <td>SSH</td>
 <td>22</td>
-<td>Custom → <code>com.amazonaws.us-east-1.ec2-instance-connect</code></td>
+<td>Personalizada (Custom) → <code>com.amazonaws.us-east-1.ec2-instance-connect</code></td>
 <td>Terminal en el navegador (Paso 5, opción A)</td>
 </tr>
 <tr>
 <td>HTTP</td>
 <td>80</td>
-<td>My IP</td>
+<td>Mi IP (My IP)</td>
 <td>Nginx</td>
 </tr>
 <tr>
-<td>Custom TCP</td>
+<td>TCP personalizado (Custom TCP)</td>
 <td>8080</td>
-<td>My IP</td>
+<td>Mi IP (My IP)</td>
 <td>phpMyAdmin</td>
 </tr>
 <tr>
-<td>Custom TCP</td>
+<td>TCP personalizado (Custom TCP)</td>
 <td>8888</td>
-<td>My IP</td>
+<td>Mi IP (My IP)</td>
 <td>CRUD Flask</td>
 </tr>
 </tbody></table>
-<p>La segunda regla usa una <em>prefix list</em>: en <strong>Source</strong> elegí <strong>Custom</strong> y empezá a
-escribir <code>ec2-instance-connect</code> hasta que aparezca. Es la lista de IPs de los
-servidores de AWS desde los que se conecta la terminal del navegador; no es tu IP.</p>
+<p>La segunda regla usa una <em>prefix list</em> (lista de prefijos): en <strong>Origen</strong> elegí
+<strong>Personalizada</strong> y empezá a escribir <code>ec2-instance-connect</code> hasta que aparezca. Es la
+lista de IPs de los servidores de AWS desde los que se conecta la terminal del navegador;
+no es tu IP.</p>
 </li>
-<li><p><strong>Outbound rules:</strong> dejá la que viene (todo permitido hacia afuera; la instancia
-necesita descargar paquetes e imágenes).</p>
+<li><p><strong>Reglas de salida (Outbound rules):</strong> dejá la que viene (todo permitido hacia afuera;
+la instancia necesita descargar paquetes e imágenes).</p>
 </li>
-<li><p><strong>Create security group</strong>.</p>
+<li><p><strong>Crear grupo de seguridad (Create security group)</strong>.</p>
 </li>
 </ol>
 <blockquote>
-<p>¿Por qué <strong>My IP</strong> y no <code>0.0.0.0/0</code> (cualquiera)? Porque phpMyAdmin entra a MySQL como
+<p>¿Por qué <strong>Mi IP</strong> y no <code>0.0.0.0/0</code> (cualquiera)? Porque phpMyAdmin entra a MySQL como
 root sin pedir contraseña. Abierto a todo Internet, cualquiera podría borrar tu base en
 minutos: hay robots escaneando IPs de AWS todo el tiempo. Si mañana te conectás desde
 otra red, vas a tener que actualizar estas reglas (ver <a href="#problemas-comunes">Problemas comunes</a>).</p>
+<p>Por eso mismo, desde el celular u otra red <strong>no vas a poder entrar</strong> a tus servicios:
+el firewall solo deja pasar tu IP.</p>
 </blockquote>
-<p><strong>✔ Verificación:</strong> <code>sg-docker-mysql</code> aparece en la lista con 5 reglas de entrada.</p>
+<p><strong>✔ Verificación:</strong> <code>sg-docker-mysql</code> aparece en la lista con 5 reglas de entrada.
+Si le pusiste otro nombre, no pasa nada: acordate cuál es, porque más adelante lo vas a
+buscar.</p>
 <h2 id="paso-4--crear-la-instancia-ec2-y-su-sistema-operativo">Paso 4 — Crear la instancia EC2 y &quot;su sistema operativo&quot;</h2>
 <p>En la nube no se instala el sistema operativo desde un pendrive: se elige una <strong>AMI</strong>
 (<em>Amazon Machine Image</em>), una imagen de disco con el sistema ya instalado, y AWS crea la
 máquina a partir de ella.</p>
 <ol>
-<li>En <strong>EC2</strong> → <strong>Instances</strong> → <strong>Launch instances</strong>.</li>
-<li><strong>Name:</strong> <code>docker-mysql-&lt;tu-apellido&gt;</code>.</li>
-<li><strong>Application and OS Images (AMI):</strong> elegí <strong>Ubuntu</strong> → <strong>Ubuntu Server 24.04 LTS</strong>
-(64-bit x86).</li>
-<li><strong>Instance type:</strong> <code>t3.micro</code> (2 vCPU, 1 GB de RAM). Alcanza para esta práctica.</li>
-<li><strong>Key pair (login):</strong> elegí <strong>vockey</strong>. Es el par de claves que el Learner Lab ya
-creó para vos (no crees uno nuevo).</li>
-<li><strong>Network settings</strong> → <strong>Edit</strong>:<ul>
+<li>En <strong>EC2</strong> → <strong>Instancias (Instances)</strong> → <strong>Lanzar instancias (Launch instances)</strong>.</li>
+<li><strong>Nombre (Name):</strong> <code>docker-mysql-&lt;tu-apellido&gt;</code>.</li>
+<li><strong>Imágenes de aplicaciones y sistemas operativos (Application and OS Images):</strong>
+elegí <strong>Ubuntu</strong>, y en la lista de abajo <strong>Ubuntu Server 24.04 LTS (HVM), SSD Volume
+Type</strong>, la que dice <strong>Apto para la capa gratuita (Free tier eligible)</strong>, arquitectura
+<strong>64 bits (x86)</strong>. &quot;SSD Volume Type&quot; es parte del nombre: es la correcta. <strong>No elijas
+las variantes que dicen &quot;SQL Server&quot;</strong>: no andan con una instancia chica.</li>
+<li><strong>Tipo de instancia (Instance type):</strong> <code>t3.micro</code> (2 vCPU, 1 GB de RAM). Alcanza
+para esta práctica, con el ajuste de memoria del Paso 6.</li>
+<li><strong>Par de claves (inicio de sesión) (Key pair (login)):</strong> elegí <strong>vockey</strong>. Es el par
+de claves que el Learner Lab ya creó para vos (no crees uno nuevo).</li>
+<li><strong>Configuración de red (Network settings)</strong> → <strong>Editar (Edit)</strong>:<ul>
 <li><strong>VPC:</strong> la VPC por defecto.</li>
-<li><strong>Subnet:</strong> <em>No preference</em> (o cualquiera de las subredes del Paso 2).</li>
-<li><strong>Auto-assign public IP:</strong> <strong>Enable</strong>. Sin IP pública no podrías verla desde tu PC.</li>
-<li><strong>Firewall (security groups):</strong> <strong>Select existing security group</strong> →
-<code>sg-docker-mysql</code>.</li>
+<li><strong>Subred (Subnet):</strong> <em>Sin preferencia (No preference)</em> (o cualquiera de las subredes
+del Paso 2).</li>
+<li><strong>Asignar automáticamente la IP pública (Auto-assign public IP):</strong> <strong>Habilitar
+(Enable)</strong>. Sin IP pública no podrías verla desde tu PC.</li>
+<li><strong>Firewall (grupos de seguridad):</strong> <strong>Seleccionar un grupo de seguridad existente
+(Select existing security group)</strong> → <code>sg-docker-mysql</code>.</li>
 </ul>
 </li>
-<li><strong>Configure storage:</strong> cambiá a <strong>16 GiB</strong>, tipo <strong>gp3</strong> (las imágenes de Docker
-ocupan lugar; 8 GiB queda justo).</li>
-<li>Revisá el resumen de la derecha y hacé clic en <strong>Launch instance</strong>.</li>
-<li>Volvé a <strong>Instances</strong> y esperá a que la instancia esté <strong>Running</strong> y que <strong>Status
-check</strong> diga <em>checks passed</em> (un par de minutos).</li>
-<li>Seleccioná la instancia y anotá su <strong>Public IPv4 address</strong> y su <strong>Private IPv4
-address</strong>.</li>
+<li><strong>Configurar almacenamiento (Configure storage):</strong> cambiá a <strong>16 GiB</strong>, tipo
+<strong>gp3</strong> (las imágenes de Docker ocupan lugar; 8 GiB queda justo). En <strong>Sistemas de
+archivos (File systems)</strong> dejá <strong>Ninguno (None)</strong>: S3, EFS y FSx son discos compartidos en
+red que esta práctica no usa y gastan crédito aparte.</li>
+<li>Revisá el resumen de la derecha (imagen Ubuntu sin SQL Server, <code>t3.micro</code>, <code>vockey</code>,
+tu security group, 16 GiB) y hacé clic en <strong>Lanzar instancia (Launch instance)</strong>. Si
+cambiaste la imagen después de completar lo demás, revisá que no se hayan reiniciado
+el par de claves o el security group.</li>
+<li>Volvé a <strong>Instancias</strong> y esperá a que la instancia esté <strong>En ejecución (Running)</strong> y
+que <strong>Comprobación de estado (Status check)</strong> diga que pasaron las comprobaciones
+(<em>checks passed</em>) (un par de minutos).</li>
+<li>Seleccioná la instancia y anotá su <strong>Dirección IPv4 pública (Public IPv4 address)</strong> y
+su <strong>Dirección IPv4 privada (Private IPv4 address)</strong>.</li>
 </ol>
-<p><strong>✔ Verificación:</strong> la instancia está <em>Running</em>, con los checks pasados, y tenés anotadas las dos
-IPs. La privada está dentro del bloque de la VPC del Paso 2 (<code>172.31.x.x</code>); la pública
-no. ¿Por qué tiene dos?</p>
+<p><strong>✔ Verificación:</strong> la instancia está <em>En ejecución</em>, con las comprobaciones pasadas, y
+tenés anotadas las dos IPs. La privada está dentro del bloque de la VPC del Paso 2
+(<code>172.31.x.x</code>); la pública no. ¿Por qué tiene dos?</p>
 <h2 id="paso-5--conectarte-a-la-instancia">Paso 5 — Conectarte a la instancia</h2>
 <p><strong>Opción A, recomendada: terminal en el navegador (EC2 Instance Connect).</strong></p>
 <ol>
-<li>Seleccioná la instancia → <strong>Connect</strong> → pestaña <strong>EC2 Instance Connect</strong>.</li>
-<li><strong>Username:</strong> <code>ubuntu</code> → <strong>Connect</strong>. Se abre una terminal en una pestaña nueva.</li>
+<li>Seleccioná la instancia → <strong>Conectar (Connect)</strong> → pestaña <strong>EC2 Instance Connect</strong>.</li>
+<li><strong>Nombre de usuario (Username):</strong> <code>ubuntu</code> → <strong>Conectar (Connect)</strong>. Se abre una
+terminal en una pestaña nueva. Al pie de esa ventana figuran el ID de la instancia y sus
+IPs pública y privada.</li>
 </ol>
-<p><strong>Opción B: SSH desde tu PC.</strong> Es como se trabaja en la realidad.</p>
+<p><strong>Opción B: SSH desde tu PC.</strong> Es como se trabaja en la realidad. Puede no andar desde
+redes con proxy (como algunas redes de trabajo); en ese caso usá la opción A.</p>
 <ol>
-<li>En el panel del Learner Lab: <strong>AWS Details</strong> → <strong>Download PEM</strong> (baja <code>labsuser.pem</code>).</li>
+<li>En el panel del Learner Lab: <strong>AWS Details</strong> → <strong>Download PEM</strong> (baja <code>labsuser.pem</code>;
+el <em>PPK</em> es la misma clave para PuTTY, no lo necesitás).</li>
 <li>Desde una terminal en la carpeta donde quedó el archivo:<ul>
 <li><strong>Linux / Mac:</strong><pre><code class="language-bash">chmod 400 labsuser.pem
 ssh -i labsuser.pem ubuntu@&lt;IP-PUBLICA&gt;
@@ -462,6 +498,11 @@ ssh -i labsuser.pem ubuntu@&lt;IP-PUBLICA&gt;
 </ol>
 <p><strong>✔ Verificación:</strong> en la terminal ves algo como <code>ubuntu@ip-172-31-x-x:~$</code>. Ejecutá
 <code>hostname -I</code> y comparalo con la IP privada del Paso 4.</p>
+<p>Pensá lo que acabás de hacer: en unos minutos, y sin tocar un solo cable, tenés una
+<strong>computadora virtualizada completa, con un sistema operativo totalmente funcional</strong>,
+corriendo en un centro de datos de Amazon y con una IP pública en Internet. Eso es la
+<strong>infraestructura como servicio</strong> (IaaS): alquilar la máquina, no comprarla. En la Parte 2
+le instalamos Docker y los servicios, igual que harías con un servidor propio.</p>
 <blockquote>
 <p><strong>Fin de la Parte 1.</strong> Si seguís otro día, apagá la instancia (<a href="#paso-11--apagar-todo">Paso 11</a>)
 y al volver leé <a href="#paso-11--apagar-todo">"Si la volvés a prender otro día"</a>: la IP pública va a ser otra.</p>
@@ -471,15 +512,28 @@ y al volver leé <a href="#paso-11--apagar-todo">"Si la volvés a prender otro d
 <pre><code class="language-bash">sudo apt update
 sudo apt install -y docker.io docker-compose-v2 git python3-pip
 sudo usermod -aG docker ubuntu
+newgrp docker
 </code></pre>
-<p>El último comando agrega tu usuario al grupo <code>docker</code>, para no tener que poner <code>sudo</code>
-delante de cada comando de Docker. Para que tome efecto, <strong>cerrá la terminal y volvé a
-conectarte</strong> (Paso 5).</p>
+<p>El <code>usermod</code> agrega tu usuario al grupo <code>docker</code>, para no tener que poner <code>sudo</code>
+delante de cada comando de Docker. El <code>newgrp docker</code> hace que tome efecto en esta
+terminal sin tener que desconectarte; las próximas veces que te conectes ya lo toma solo.</p>
+<p><strong>Memoria de reserva (swap).</strong> La <code>t3.micro</code> tiene 1 GB de RAM y MySQL usa buena parte:
+sin más margen, phpMyAdmin se queda colgado. Creá un archivo de <em>swap</em> de 1 GB en el disco,
+que funciona como memoria de reserva (más lenta, pero evita que se cuelgue):</p>
+<pre><code class="language-bash">sudo fallocate -l 1G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo &#39;/swapfile none swap sw 0 0&#39; | sudo tee -a /etc/fstab
+</code></pre>
+<p>La última línea hace que el swap siga activo cuando apagues y vuelvas a prender la instancia.</p>
 <p><strong>✔ Verificación:</strong></p>
 <pre><code class="language-bash">docker run --rm hello-world
 docker compose version
+free -m
 </code></pre>
-<p>El primero muestra <em>Hello from Docker!</em>; el segundo, la versión de Docker Compose.</p>
+<p>El primero muestra <em>Hello from Docker!</em>; el segundo, la versión de Docker Compose; en
+el tercero, la fila <em>Swap</em> dice unos <code>1023</code> de total.</p>
 <h2 id="paso-7--levantar-mysql-phpmyadmin-y-nginx-con-docker-compose">Paso 7 — Levantar MySQL, phpMyAdmin y Nginx con Docker Compose</h2>
 <pre><code class="language-bash">mkdir -p ~/practica/web
 cd ~/practica
@@ -533,7 +587,19 @@ para el otro sin que hayas tocado nada.</p>
 </code></pre>
 <p><strong>✔ Verificación:</strong> <code>docker ps</code> muestra tres contenedores (<code>mysql</code>, <code>phpmyadmin</code>, <code>web</code>)
 en estado <em>Up</em>.</p>
+<p>Si ahora abrís <code>http://&lt;IP-PUBLICA&gt;</code> y ves <strong><code>403 Forbidden</code></strong>, es lo esperado: Nginx
+ya anda, pero la carpeta <code>web/</code> está vacía y no tiene nada para mostrar. La página la
+creás en el Paso 9.</p>
 <h2 id="paso-8--ejecutar-sql-desde-phpmyadmin">Paso 8 — Ejecutar SQL desde phpMyAdmin</h2>
+<blockquote>
+<p><strong>¿Cuál es la <code>&lt;IP-PUBLICA&gt;</code>?</strong> La de tu instancia, que anotaste en el Paso 4. Si no
+la tenés a mano: está <strong>al pie de la ventana</strong> de EC2 Instance Connect; o en <strong>EC2 →
+Instancias</strong> → seleccioná la instancia → <strong>Dirección IPv4 pública (Public IPv4
+address)</strong>; o desde la terminal de la instancia:</p>
+<pre><code class="language-bash">curl -s https://checkip.amazonaws.com
+</code></pre>
+<p>Ojo: <strong>cambia cada vez que la instancia se detiene y vuelve a arrancar</strong>.</p>
+</blockquote>
 <ol>
 <li>En el navegador de tu PC, abrí <code>http://&lt;IP-PUBLICA&gt;:8080</code> (con <code>http</code>, no <code>https</code>).</li>
 <li>Vas a ver la pantalla principal de phpMyAdmin.</li>
@@ -610,7 +676,9 @@ SELECT nombre, apellido FROM alumnos;
 antes:</p>
 <ul>
 <li>La del servidor, ¿es la <em>Public IPv4</em> del Paso 4?</li>
-<li>La del visitante, ¿es la que AWS puso como <strong>My IP</strong> en el security group (Paso 3)?</li>
+<li>La del visitante, ¿es la que AWS puso como <strong>Mi IP</strong> en el security group (Paso 3)? (En
+redes con más de una IP de salida, como algunas redes de trabajo, puede cambiar al
+recargar: ver <a href="#problemas-comunes">Problemas comunes</a>.)</li>
 </ul>
 <h2 id="paso-10--desplegar-el-crud-con-python-y-flask">Paso 10 — Desplegar el CRUD con Python y Flask</h2>
 <pre><code class="language-bash">cd ~
@@ -650,15 +718,15 @@ y el CRUD llegan a él. ¿Por qué camino entra cada uno?</li>
 <li><strong>Demostralo.</strong> Con el CRUD andando, editá la
 regla del puerto <strong>8888</strong> para que permita solo la IP <code>203.0.113.10/32</code> (una IP
 reservada para ejemplos, que no es la tuya), y sacá una captura del navegador cuando
-intentás entrar al CRUD. Después volvé a dejar la regla en <strong>My IP</strong> y comprobá que
+intentás entrar al CRUD. Después volvé a dejar la regla en <strong>Mi IP (My IP)</strong> y comprobá que
 vuelve a andar. ¿Por qué el navegador se queda esperando hasta dar <em>timeout</em> en lugar de
 mostrar enseguida &quot;conexión rechazada&quot;?</li>
 </ol>
 <h2 id="paso-11--apagar-todo">Paso 11 — Apagar todo</h2>
 <p>Una instancia prendida consume crédito aunque no la estés usando.</p>
 <ol>
-<li>En <strong>EC2</strong> → <strong>Instances</strong>, seleccioná tu instancia → <strong>Instance state</strong> → <strong>Stop
-instance</strong>.</li>
+<li>En <strong>EC2</strong> → <strong>Instancias (Instances)</strong>, seleccioná tu instancia → <strong>Estado de la
+instancia (Instance state)</strong> → <strong>Detener instancia (Stop instance)</strong>.</li>
 <li>En el panel del Learner Lab, hacé clic en <strong>End Lab</strong>.</li>
 </ol>
 <p>Si te olvidás, el Learner Lab detiene las instancias solo cuando se terminan las 4 horas
@@ -666,13 +734,14 @@ de sesión, y las vuelve a arrancar la próxima vez que hagas <strong>Start Lab<
 <p><strong>Si la volvés a prender otro día:</strong></p>
 <ul>
 <li>La <strong>IP pública cambia</strong> cada vez que la instancia se detiene y arranca: usá la nueva.</li>
-<li>Los contenedores vuelven solos (<code>restart: always</code>), y la base <code>alumnos</code> sigue ahí.</li>
+<li>Los contenedores vuelven solos (<code>restart: always</code>), la base <code>alumnos</code> sigue ahí y el swap
+también.</li>
 <li>El CRUD no vuelve solo: repetí el Paso 10 desde <code>cd ~/practica</code> (la IP del contenedor
 puede cambiar).</li>
-<li>Si estás en otra red, actualizá <strong>My IP</strong> en el security group.</li>
+<li>Si estás en otra red, actualizá <strong>Mi IP</strong> en el security group.</li>
 </ul>
-<p><strong>Para borrarla del todo</strong> (cuando el docente lo indique): <strong>Instance state →
-Terminate instance</strong>. Se pierde todo lo que tenía.</p>
+<p><strong>Para borrarla del todo</strong> (cuando el docente lo indique): <strong>Estado de la instancia →
+Terminar instancia (Instance state → Terminate instance)</strong>. Se pierde todo lo que tenía.</p>
 <h2 id="revisión-final">Revisión final</h2>
 <p>Hiciste lo mismo que en Killercoda, pero además:</p>
 <ol>
@@ -683,6 +752,68 @@ solo para tu IP.</li>
 <li>Te conectaste por <strong>SSH</strong> o desde el navegador.</li>
 <li>Instalaste Docker y levantaste MySQL, phpMyAdmin, Nginx y una app Flask.</li>
 <li>Viste las diferencias entre IP pública, IP privada de la VPC e IP de la red de Docker.</li>
+</ol>
+<h2 id="tarea-extra-login">Tarea extra: el CRUD con login</h2>
+<p>El Learner Lab queda disponible <strong>hasta el 31/12</strong>. Esta tarea se hace otro día, con la
+misma instancia: es la continuación de la práctica.</p>
+<p>En Killercoda, la práctica <a href="https://killercoda.com/pablop22/scenario/crud-auth-login">crud-auth-login</a>
+le sumaba al CRUD una pantalla de <strong>login</strong> con sesiones. Si no la hiciste, o no te acordás,
+revisala antes de empezar. Acá vas a desplegar ese mismo login en tu servidor de AWS, desde
+la branch <code>feature-login-aws</code> del repo <code>crud-python</code>.</p>
+<ol>
+<li><p>Prendé el lab y la instancia, y conectate (Pasos 1 y 5). Recordá: la IP pública es
+otra, y si estás en otra red, actualizá <strong>Mi IP</strong> en el security group.</p>
+</li>
+<li><p>En phpMyAdmin, entrá a la base <code>alumnos</code> → pestaña <strong>SQL</strong>, y creá la tabla de usuarios:</p>
+<pre><code class="language-sql">USE alumnos;
+
+CREATE TABLE usuarios (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  usuario VARCHAR(50) NOT NULL UNIQUE,
+  password VARCHAR(50) NOT NULL
+);
+
+INSERT INTO usuarios (usuario, password) VALUES (&#39;admin&#39;, &#39;admin123&#39;);
+</code></pre>
+</li>
+<li><p>En la terminal de la instancia, cambiá el CRUD a la branch con login. El <code>git restore</code>
+descarta el cambio que hizo el <code>sed</code> en <code>app.py</code> (si no, Git no te deja cambiar de
+branch); por eso después se repite el <code>sed</code>:</p>
+<pre><code class="language-bash">pkill -f &quot;python3 app.py&quot;
+cd ~/crud-python
+git restore app.py
+git fetch
+git switch feature-login-aws
+
+cd ~/practica
+MYSQL_IP=$(docker inspect $(docker compose ps -q mysql) \
+  --format &#39;{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}&#39;)
+cd ~/crud-python
+sed -i -E &quot;s/172\.18\.[0-9]+\.[0-9]+/$MYSQL_IP/&quot; app.py
+nohup python3 app.py &gt; app.log 2&gt;&amp;1 &amp;
+sleep 3 &amp;&amp; curl -s -o /dev/null -w &quot;%{http_code}\n&quot; http://127.0.0.1:8888/
+</code></pre>
+</li>
+</ol>
+<p><strong>✔ Verificación:</strong> el <code>curl</code> devuelve <code>302</code> (ya no <code>200</code>): la app te redirige al
+login. En el navegador, <code>http://&lt;IP-PUBLICA&gt;:8888</code> te lleva a <strong>Iniciar sesión</strong>; con
+<code>admin</code> / <code>admin123</code> entrás al listado, y <strong>Salir</strong> te devuelve al login. Probá también
+escribir <code>http://&lt;IP-PUBLICA&gt;:8888/</code> después de salir: ¿te deja ver el listado?</p>
+<p><strong>Para la entrega</strong>, además de las capturas del login y del listado, respondé:</p>
+<ol>
+<li>Después de iniciar sesión, ¿dónde queda guardado que ya entraste? Buscá en <code>app.py</code>
+qué es <code>session</code> y qué papel cumple <code>secret_key</code>. ¿Qué problema tiene que esa clave esté
+escrita en el código?</li>
+<li>Mirá la tabla <code>usuarios</code> en phpMyAdmin. ¿Por qué está mal guardar las contraseñas así?
+¿Cómo se guardan en un sistema real?</li>
+<li>El CRUD ahora pide usuario y contraseña. ¿Eso protege los datos? Pensá en phpMyAdmin,
+que sigue en el puerto 8080 entrando como root sin contraseña. ¿Qué es lo único que hoy
+impide que cualquiera en Internet entre a tu base?</li>
+<li>Compará la línea que arma la consulta del login en esta branch con la de la versión de
+Killercoda
+(<a href="https://github.com/pablopedernera0/crud-python/compare/feature-login...feature-login-aws">ver la diferencia en GitHub</a>).
+¿Qué cambia? ¿Por qué te parece que para AWS se usa esta versión? Respondelo leyendo el
+código, <strong>sin probar nada contra tu servidor</strong>.</li>
 </ol>
 <h2 id="problemas-comunes">Problemas comunes</h2>
 <table>
@@ -696,7 +827,17 @@ solo para tu IP.</li>
 <tbody><tr>
 <td>El navegador queda cargando y da <em>timeout</em></td>
 <td>Falta la regla del puerto en el security group, o tu IP cambió</td>
-<td>EC2 → Security Groups → <code>sg-docker-mysql</code> → <strong>Edit inbound rules</strong>: revisá el puerto y volvé a elegir <strong>My IP</strong></td>
+<td>EC2 → Grupos de seguridad → tu security group (<code>sg-docker-mysql</code>) → <strong>Editar reglas de entrada (Edit inbound rules)</strong>: revisá el puerto y volvé a elegir <strong>Mi IP (My IP)</strong></td>
+</tr>
+<tr>
+<td>Carga a medias o muy lento; a veces anda y a veces se queda esperando</td>
+<td>Tu red sale a Internet por <strong>más de una IP</strong> (pasa en algunas redes de trabajo, con proxy) y <strong>Mi IP</strong> cargó solo una: los pedidos que salen por la otra se descartan</td>
+<td>Abrí <a href="https://api.ipify.org">api.ipify.org</a> varias veces: si ves más de una IP, agregá cada una con <code>/32</code> en las reglas de entrada. O hacé la práctica desde tu casa</td>
+</tr>
+<tr>
+<td>Desde el celular no entra</td>
+<td>El celular sale con otra IP, que no está en las reglas</td>
+<td>Es lo esperado: la práctica se hace desde la PC</td>
 </tr>
 <tr>
 <td><em>ERR_SSL</em> o &quot;conexión no segura&quot;</td>
@@ -706,7 +847,17 @@ solo para tu IP.</li>
 <tr>
 <td>La IP de ayer ya no anda</td>
 <td>La instancia se detuvo y arrancó: cambió la IP pública</td>
-<td>Mirá la nueva <em>Public IPv4</em> en EC2 → Instances</td>
+<td>Mirá la nueva <strong>Dirección IPv4 pública</strong> en EC2 → Instancias, o al pie de la ventana de EC2 Instance Connect</td>
+</tr>
+<tr>
+<td><em>Microsoft SQL Server is not supported for the instance type 't3.micro'</em></td>
+<td>Elegiste una imagen de Ubuntu con SQL Server</td>
+<td>Volvé a elegir <strong>Ubuntu Server 24.04 LTS (HVM), SSD Volume Type</strong> (Paso 4)</td>
+</tr>
+<tr>
+<td><code>403 Forbidden</code> en <code>http://&lt;IP-PUBLICA&gt;</code></td>
+<td>Todavía no creaste la página del Paso 9</td>
+<td>Es lo esperado hasta el Paso 9</td>
 </tr>
 <tr>
 <td>EC2 Instance Connect da error</td>
@@ -715,8 +866,8 @@ solo para tu IP.</li>
 </tr>
 <tr>
 <td><code>permission denied ... docker.sock</code></td>
-<td>No volviste a conectarte después del <code>usermod</code></td>
-<td>Cerrá la terminal y volvé a conectarte</td>
+<td>No tomó efecto el <code>usermod</code> del Paso 6</td>
+<td>Ejecutá <code>newgrp docker</code>, o cerrá la terminal y volvé a conectarte</td>
 </tr>
 <tr>
 <td><code>UNPROTECTED PRIVATE KEY FILE</code> al hacer SSH</td>
@@ -727,6 +878,16 @@ solo para tu IP.</li>
 <td>phpMyAdmin dice que no puede conectar</td>
 <td>MySQL todavía está arrancando</td>
 <td>Esperá un minuto y recargá</td>
+</tr>
+<tr>
+<td>phpMyAdmin muestra el ícono pero la página no termina de cargar</td>
+<td>Falta memoria: sin swap, la <code>t3.micro</code> queda casi sin RAM</td>
+<td>Revisá con <code>free -m</code> que haya swap; si no, creá el del Paso 6 y hacé <code>docker compose restart phpmyadmin</code></td>
+</tr>
+<tr>
+<td><code>git switch</code> dice que tus cambios locales se sobrescribirían</td>
+<td>El <code>sed</code> del Paso 10 modificó <code>app.py</code></td>
+<td><code>git restore app.py</code> y repetí el <code>git switch</code> (Tarea extra)</td>
 </tr>
 <tr>
 <td>El CRUD no responde en el 8888</td>
