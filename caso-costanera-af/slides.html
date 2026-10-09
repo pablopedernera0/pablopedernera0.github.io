@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caso Costanera Deportes</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&amp;family=Public+Sans:wght@400;600;700&amp;display=swap">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; background: #0b0f14; overflow: hidden; }
+#escenario { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+#escenario > section { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; }
+#escenario > section:not(.activa) { display: none !important; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 0.35em 0.6em; border-bottom: 1px solid rgba(128, 128, 128, 0.35); vertical-align: top; }
+th { font-weight: 700; }
+#barra { position: fixed; right: 12px; bottom: 10px; font: 14px system-ui, sans-serif; color: #8b949e; display: flex; gap: 10px; align-items: center; }
+#barra button { background: #161b22; color: #c9d1d9; border: 1px solid #30363d; border-radius: 6px; padding: 4px 10px; cursor: pointer; font: inherit; }
+</style>
+</head>
+<body>
+<div id="escenario">
+<section id="cover" data-transition="fade" style="background:#13202B;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<p style="font-size:28px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#F7883A">Redes y Comunicaciones · Caso de estudio</p>
+<div style="display:flex;flex-direction:column;gap:32px">
+<h1 style="font-family:'Oswald', Arial, sans-serif;font-size:160px;font-weight:700;line-height:1;text-transform:uppercase">La medianoche<br>del Hot Sale</h1>
+<p style="font-size:44px;color:#C9D3DC">Caso Costanera Deportes: una tienda online que se cae en su mejor noche del año</p>
+</div>
+<p style="font-size:28px;color:#C9D3DC">Terciario Urquiza · Analista Funcional · 3°1°</p>
+
+</section>
+<section id="tienda" data-transition="fade" style="background:#F4F1EA;color:#13202B;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:64px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#B4470E">La tienda</p>
+<h2 style="font-family:'Oswald', Arial, sans-serif;font-size:80px;font-weight:600;line-height:1.1">Costanera Deportes, Rosario</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:16px;background:#FFFDF8;padding:40px;border:1px solid #DDD6C8;border-radius:16px">
+<p style="font-family:'Oswald', Arial, sans-serif;font-size:96px;font-weight:600;line-height:1;color:#B4470E">600</p>
+<p style="font-size:32px;line-height:1.35">productos, cada uno con sus talles y colores</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#FFFDF8;padding:40px;border:1px solid #DDD6C8;border-radius:16px">
+<p style="font-family:'Oswald', Arial, sans-serif;font-size:96px;font-weight:600;line-height:1;color:#B4470E">1</p>
+<p style="font-size:32px;line-height:1.35">solo stock para el local y la web: lo que se vende en el mostrador desaparece de la web</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#FFFDF8;padding:40px;border:1px solid #DDD6C8;border-radius:16px">
+<p style="font-family:'Oswald', Arial, sans-serif;font-size:96px;font-weight:600;line-height:1;color:#B4470E">1 año</p>
+<p style="font-size:32px;line-height:1.35">de tienda online, cobrando con Mercado Pago</p>
+</div>
+</div>
+<p style="font-size:32px;color:#4A5563">La hizo una consultora. La mantiene un programador freelance que pasa una vez por semana.</p>
+</section>
+<section id="rnf" data-transition="fade" style="background:#F4F1EA;color:#13202B;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#B4470E">Los requisitos con los que se construyó</p>
+<h2 style="font-family:'Oswald', Arial, sans-serif;font-size:72px;font-weight:600;line-height:1.1">Cinco RNF, todos cumplidos en la entrega</h2>
+</div>
+<table style="font-size:32px;color:#13202B">
+<tr><th style="width:16%">RNF</th><th style="width:84%">Qué pide</th></tr>
+<tr><td>RNF-01</td><td>Catálogo, carrito y "Mi cuenta" en 3 s o menos, probado con <b>50 usuarios simultáneos</b></td></tr>
+<tr><td>RNF-02</td><td>Checkout en 5 s o menos, <b>sin contar la respuesta de Mercado Pago</b></td></tr>
+<tr><td>RNF-03</td><td>Al menos 10 pedidos por minuto en hora pico</td></tr>
+<tr><td>RNF-04</td><td>Disponible el <b>95 % del tiempo de 9:00 a 20:00</b></td></tr>
+<tr><td>RNF-14</td><td>Cada imagen de producto pesa <b>menos de 300 KB</b></td></tr>
+</table>
+</section>
+<section id="arquitectura" data-transition="fade" style="background:#F4F1EA;color:#13202B;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#B4470E">Cómo está armada</p>
+<h2 style="font-family:'Oswald', Arial, sans-serif;font-size:72px;font-weight:600;line-height:1.1">Un solo VPS: 2 vCPU, 4 GB, enlace de 100 Mbps</h2>
+</div>
+<div style="display:flex;align-items:center;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFDF8;padding:32px;border:1px solid #DDD6C8;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700">Navegador</h3>
+<p style="font-size:26px;line-height:1.35;color:#4A5563">del cliente</p>
+</div>
+<svg viewBox="0 0 100 50" preserveAspectRatio="none" style="flex:none;width:64px;height:32px" aria-hidden="true"><polygon points="0,15 60,15 60,0 100,25 60,50 60,35 0,35" fill="#B4470E"/></svg>
+<div style="flex:1.3;display:flex;flex-direction:column;gap:12px;background:#FFFDF8;padding:32px;border:2px solid #13202B;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700">Nginx</h3>
+<p style="font-size:26px;line-height:1.35;color:#4A5563">Manda él mismo las imágenes y los estilos. Las páginas se las pide a la app.</p>
+</div>
+<svg viewBox="0 0 100 50" preserveAspectRatio="none" style="flex:none;width:64px;height:32px" aria-hidden="true"><polygon points="0,15 60,15 60,0 100,25 60,50 60,35 0,35" fill="#B4470E"/></svg>
+<div style="flex:1.3;display:flex;flex-direction:column;gap:12px;background:#FFFDF8;padding:32px;border:2px solid #13202B;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700">App · 8 workers</h3>
+<p style="font-size:26px;line-height:1.35;color:#4A5563">Arma las páginas (100 ms cada una) y hace el checkout.</p>
+</div>
+<svg viewBox="0 0 100 50" preserveAspectRatio="none" style="flex:none;width:64px;height:32px" aria-hidden="true"><polygon points="0,15 60,15 60,0 100,25 60,50 60,35 0,35" fill="#B4470E"/></svg>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFDF8;padding:32px;border:2px solid #13202B;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700">MySQL</h3>
+<p style="font-size:26px;line-height:1.35;color:#4A5563">Productos, stock, pedidos, cupones</p>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#13202B;color:#F4F1EA;padding:32px 40px;border-radius:16px">
+<svg viewBox="0 0 24 24" fill="none" stroke="#F7883A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;width:56px;height:56px" aria-label="Lock"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+<p style="font-size:30px;line-height:1.35">En el checkout, la app le pide el cobro a <b>Mercado Pago</b> y <b>espera su respuesta</b>. Mientras espera, ese worker no atiende a nadie más.</p>
+</div>
+</section>
+<section id="datos" data-transition="fade" style="background:#F4F1EA;color:#13202B;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#B4470E">Lo que midió el programador</p>
+<h2 style="font-family:'Oswald', Arial, sans-serif;font-size:72px;font-weight:600;line-height:1.1">Cuatro datos para tener a mano</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFDF8;padding:40px;border:1px solid #DDD6C8;border-radius:16px">
+<p style="font-family:'Oswald', Arial, sans-serif;font-size:72px;font-weight:600;line-height:1;color:#B4470E">1.100 KB</p>
+<p style="font-size:30px;line-height:1.35">por página de producto: 40 de HTML, 60 de estilos y logo, 4 fotos de 250</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFDF8;padding:40px;border:1px solid #DDD6C8;border-radius:16px">
+<p style="font-family:'Oswald', Arial, sans-serif;font-size:72px;font-weight:600;line-height:1;color:#B4470E">1 s</p>
+<p style="font-size:30px;line-height:1.35">tarda Mercado Pago en contestar un día normal</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFDF8;padding:40px;border:1px solid #DDD6C8;border-radius:16px">
+<p style="font-family:'Oswald', Arial, sans-serif;font-size:72px;font-weight:600;line-height:1;color:#B4470E">30 s → 504</p>
+<p style="font-size:30px;line-height:1.35">Nginx corta la espera y la app abandona ese checkout: no guarda el pedido</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFDF8;padding:40px;border:1px solid #DDD6C8;border-radius:16px">
+<p style="font-family:'Oswald', Arial, sans-serif;font-size:72px;font-weight:600;line-height:1;color:#B4470E">Aviso</p>
+<p style="font-size:30px;line-height:1.35">Mercado Pago puede notificar a la tienda cuando un pago se aprueba</p>
+</div>
+</div>
+</section>
+<section id="medianoche" data-transition="fade" style="background:#13202B;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<p style="font-size:28px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#F7883A">Lunes, 00:00 · arranca el Hot Sale</p>
+<div style="display:flex;flex-direction:column;gap:40px">
+<h2 style="font-family:'Oswald', Arial, sans-serif;font-size:120px;font-weight:700;line-height:1.05;text-transform:uppercase">A las 00:02 la tienda<br>dejó de responder</h2>
+<p style="font-size:40px;line-height:1.4;color:#C9D3DC">40 % en zapatillas y un cupón <b style="color:#F7883A">HOT100</b> para los primeros 100 compradores. El catálogo quedaba cargando, las fotos aparecían a medias y muchos checkouts terminaban en 504.</p>
+</div>
+<p style="font-size:32px;color:#C9D3DC">Se normalizó recién a la mañana.</p>
+</section>
+<section id="reclamos" data-transition="fade" style="background:#13202B;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:64px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#F7883A">El martes, en el local</p>
+<h2 style="font-family:'Oswald', Arial, sans-serif;font-size:80px;font-weight:600;line-height:1.1">Tres tipos de reclamos</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:20px;background:#1E3040;padding:48px 40px;border-radius:16px">
+<p style="font-family:'Oswald', Arial, sans-serif;font-size:120px;font-weight:700;line-height:1;color:#F7883A">37</p>
+<p style="font-size:34px;line-height:1.35">clientes con el cobro hecho en Mercado Pago y <b>ningún pedido</b> en la tienda</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px;background:#1E3040;padding:48px 40px;border-radius:16px">
+<p style="font-family:'Oswald', Arial, sans-serif;font-size:120px;font-weight:700;line-height:1;color:#F7883A">3 → 11</p>
+<p style="font-size:34px;line-height:1.35">pares de zapatillas talle 42: quedaban 3 y se vendieron 11</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px;background:#1E3040;padding:48px 40px;border-radius:16px">
+<p style="font-family:'Oswald', Arial, sans-serif;font-size:120px;font-weight:700;line-height:1;color:#F7883A">140</p>
+<p style="font-size:34px;line-height:1.35">usos del cupón HOT100, pensado para 100 compradores</p>
+</div>
+</div>
+</section>
+<section id="pizarron" data-transition="fade" style="background:#F4F1EA;color:#13202B;font-family:'Public Sans', Arial, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:28px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#B4470E">El pizarrón</p>
+<h2 style="font-family:'Oswald', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1">Tres momentos de esa noche</h2>
+</div>
+<table style="font-size:28px;color:#13202B">
+<tr><th style="width:40%">Métrica</th><th style="width:20%;text-align:right">Dom 23:00</th><th style="width:20%;text-align:right">Lun 00:05</th><th style="width:20%;text-align:right">Lun 10:00</th></tr>
+<tr><td>Usuarios conectados a la vez</td><td style="text-align:right">120</td><td style="text-align:right"><b>1.800</b></td><td style="text-align:right">300</td></tr>
+<tr><td>Páginas/s que llegan</td><td style="text-align:right">4</td><td style="text-align:right"><b>60</b></td><td style="text-align:right">10</td></tr>
+<tr><td>Páginas/s atendidas</td><td style="text-align:right">4</td><td style="text-align:right"><b>11</b></td><td style="text-align:right">10</td></tr>
+<tr><td>Latencia p95</td><td style="text-align:right">0,3 s</td><td style="text-align:right"><b>25 s</b></td><td style="text-align:right">0,6 s</td></tr>
+<tr><td>Workers ocupados</td><td style="text-align:right">2 de 8</td><td style="text-align:right"><b>8 de 8</b></td><td style="text-align:right">4 de 8</td></tr>
+<tr><td>CPU del servidor</td><td style="text-align:right">15 %</td><td style="text-align:right"><b>35 %</b></td><td style="text-align:right">20 %</td></tr>
+<tr><td>Enlace (de 100)</td><td style="text-align:right">35 Mbps</td><td style="text-align:right"><b>100 Mbps</b></td><td style="text-align:right">88 Mbps</td></tr>
+<tr><td>Respuesta de Mercado Pago</td><td style="text-align:right">1 s</td><td style="text-align:right"><b>8 s</b></td><td style="text-align:right">2 s</td></tr>
+<tr><td>Checkouts por segundo</td><td style="text-align:right">—</td><td style="text-align:right"><b>5</b></td><td style="text-align:right">—</td></tr>
+</table>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:26px;color:#4A5563">En la apertura, cada usuario conectado pedía en promedio una página cada 30 segundos.</p>
+</section>
+<section id="codigo" data-transition="fade" style="background:#F4F1EA;color:#13202B;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#B4470E">Lo que encontró en el código</p>
+<h2 style="font-family:'Oswald', Arial, sans-serif;font-size:72px;font-weight:600;line-height:1.1">Para vender, tres pasos separados</h2>
+</div>
+<div style="display:flex;align-items:center;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFDF8;padding:40px;border:1px solid #DDD6C8;border-radius:16px">
+<p style="font-family:'Oswald', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1;color:#B4470E">1</p>
+<p style="font-size:34px;line-height:1.35">Lee de la base cuántas unidades quedan</p>
+</div>
+<svg viewBox="0 0 100 50" preserveAspectRatio="none" style="flex:none;width:64px;height:32px" aria-hidden="true"><polygon points="0,15 60,15 60,0 100,25 60,50 60,35 0,35" fill="#B4470E"/></svg>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFDF8;padding:40px;border:1px solid #DDD6C8;border-radius:16px">
+<p style="font-family:'Oswald', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1;color:#B4470E">2</p>
+<p style="font-size:34px;line-height:1.35">Si hay, sigue con el pago</p>
+</div>
+<svg viewBox="0 0 100 50" preserveAspectRatio="none" style="flex:none;width:64px;height:32px" aria-hidden="true"><polygon points="0,15 60,15 60,0 100,25 60,50 60,35 0,35" fill="#B4470E"/></svg>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFDF8;padding:40px;border:1px solid #DDD6C8;border-radius:16px">
+<p style="font-family:'Oswald', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1;color:#B4470E">3</p>
+<p style="font-size:34px;line-height:1.35">Al final, descuenta la unidad vendida</p>
+</div>
+</div>
+<p style="font-size:34px;line-height:1.4;color:#4A5563">El cupón funciona igual: lee cuántas veces se usó, deja pasar la compra si son menos de 100 y recién después suma uno.</p>
+</section>
+<section id="viene" data-transition="fade" style="background:#F4F1EA;color:#13202B;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#B4470E">En seis semanas: Cyber Monday</p>
+<h2 style="font-family:'Oswald', Arial, sans-serif;font-size:72px;font-weight:600;line-height:1.1">La plata alcanza para una sola de estas dos</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:16px;background:#FFFDF8;padding:40px;border:2px solid #13202B;border-radius:16px">
+<h3 style="font-size:40px;font-weight:700">Un VPS 4 veces más grande</h3>
+<p style="font-size:30px;line-height:1.4;color:#4A5563">8 vCPU y 16 GB. Se paga todos los meses del año.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#FFFDF8;padding:40px;border:2px solid #13202B;border-radius:16px">
+<h3 style="font-size:40px;font-weight:700">La nube con autoescalado</h3>
+<p style="font-size:30px;line-height:1.4;color:#4A5563">Se suman servidores solos cuando sube la carga. Se paga por hora. Hay 3 eventos por año, de unos 3 días.</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#13202B;color:#F4F1EA;padding:36px 40px;border-radius:16px">
+<h3 style="font-size:34px;font-weight:700;color:#F7883A">Y lo que cuesta poco o nada</h3>
+<p style="font-size:30px;line-height:1.4">Un <b>CDN</b> para imágenes y estilos · la <b>notificación de Mercado Pago</b> · cambiar cómo se descuentan el stock y el cupón</p>
+</div>
+</section>
+<section id="ustedes" data-transition="fade" style="background:#B4470E;color:#FFF8F0;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<p style="font-size:28px;font-weight:600;letter-spacing:4px;text-transform:uppercase">El cuestionario</p>
+<div style="display:flex;flex-direction:column;gap:40px">
+<h2 style="font-family:'Oswald', Arial, sans-serif;font-size:120px;font-weight:700;line-height:1.05;text-transform:uppercase">20 preguntas sobre el caso</h2>
+<p style="font-size:40px;line-height:1.4">Individual. El caso completo y el pizarrón están en la misma página. Al finalizar, se envía por mail desde el botón del final.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:36px;font-weight:700">pablopedernera0.github.io/caso-bicirio/v2/?cuestionario=caso-costanera-af</p></div>
+</section>
+</div>
+<div id="barra"><button id="ant" aria-label="Anterior">←</button><span id="num"></span><button id="sig" aria-label="Siguiente">→</button><button id="full" title="Pantalla completa (F)">Pantalla completa</button></div>
+<script>
+const slides = [...document.querySelectorAll('#escenario > section')];
+let i = Math.max(0, Math.min(slides.length - 1, (parseInt(location.hash.slice(1)) || 1) - 1));
+function ajustar() {
+  const e = document.getElementById('escenario');
+  const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+  e.style.transform = `translate(${(innerWidth - 1920 * s) / 2}px, ${(innerHeight - 1080 * s) / 2}px) scale(${s})`;
+}
+function ir(n) {
+  i = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((s, k) => s.classList.toggle('activa', k === i));
+  document.getElementById('num').textContent = `${i + 1} / ${slides.length}`;
+  history.replaceState(null, '', '#' + (i + 1));
+}
+function pantalla() { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}); }
+addEventListener('keydown', (e) => {
+  if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); ir(i + 1); }
+  else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); ir(i - 1); }
+  else if (e.key === 'Home') ir(0);
+  else if (e.key === 'End') ir(slides.length - 1);
+  else if (e.key === 'f' || e.key === 'F') pantalla();
+});
+document.getElementById('ant').onclick = () => ir(i - 1);
+document.getElementById('sig').onclick = () => ir(i + 1);
+document.getElementById('full').onclick = pantalla;
+document.getElementById('escenario').addEventListener('click', () => ir(i + 1));
+addEventListener('resize', ajustar);
+ajustar(); ir(i);
+</script>
+</body>
+</html>

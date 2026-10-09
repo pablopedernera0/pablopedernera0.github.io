@@ -22,3 +22,9 @@ varios.
   los recursos siguen en la raíz (no se mueven: hay links en el Classroom que apuntan a ellas).
 - `notas/`: textos propios, una carpeta por nota, y una entrada a mano en `notas/index.html`.
   Comparten `css/lectura.css` con la portada.
+
+## Slides hechas con Claude
+
+Las presentaciones se publican acá como HTML autónomo con `_herramientas/slides-a-html.py`
+(fuentes en `_herramientas/decks/`, ver `_herramientas/README.md`). Jekyll no publica
+`_herramientas/`: el script y las fuentes viajan por git pero no quedan en el sitio.

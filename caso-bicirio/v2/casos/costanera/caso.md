@@ -107,3 +107,5 @@ Además, hay cambios que cuestan poco o nada:
 - Un **CDN** para las imágenes y los estilos: un servicio que guarda copias en servidores repartidos por el país y se las entrega al navegador en lugar del VPS de la tienda. El plan gratuito alcanza.
 - Usar la **notificación de Mercado Pago**: el pedido queda "pago pendiente", el worker se libera enseguida y el pedido se confirma cuando llega el aviso.
 - Cambiar cómo se descuenta el stock y cómo se cuentan los usos del cupón.
+
+Las slides con las que se presentó el caso: [ver slides](https://pablopedernera0.github.io/caso-costanera-af/slides.html).
