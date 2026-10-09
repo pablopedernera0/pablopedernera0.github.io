@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El cliente cambió de idea</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+        main { max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.25rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        h1 { font-size: 1.9rem; color: #58a6ff; line-height: 1.2; margin-bottom: 0.6rem; }
+        h2 { font-size: 1.3rem; color: #58a6ff; margin: 2.2rem 0 0.7rem; }
+        h3 { font-size: 1.05rem; color: #3fb950; margin: 0 0 0.4rem; }
+        p, li { margin-bottom: 0.7rem; }
+        ul, ol { padding-left: 1.3rem; }
+        strong { color: #3fb950; }
+        .subtitle { color: #8b949e; font-size: 1.05rem; }
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.1rem 0.35rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+            font-size: 0.92em;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 10px;
+            padding: 1rem 1.1rem;
+            margin: 0.8rem 0;
+        }
+        .card p:last-child, .card ul:last-child, .card ol:last-child { margin-bottom: 0; }
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 0.9rem 1.1rem;
+            margin: 1rem 0;
+        }
+        .warning-box p:last-child { margin-bottom: 0; }
+        .fechas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+        .fechas .card { margin: 0; }
+        .fecha { color: #f0883e; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; }
+        .grupo { color: #8b949e; font-size: 0.85rem; margin-bottom: 0.3rem; }
+        nav.indice { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.6rem 0 0; }
+        nav.indice a {
+            font-size: 0.85rem; padding: 0.2rem 0.6rem; border: 1px solid #30363d;
+            border-radius: 14px; color: #58a6ff; text-decoration: none;
+        }
+        a { color: #58a6ff; }
+        footer { color: #8b949e; font-size: 0.85rem; margin-top: 3rem; }
+        @media (max-width: 560px) { .fechas { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<main>
+    <span class="eyebrow">Diseño de Sistemas Web · 3°1° · actividad formativa</span>
+    <h1>El cliente cambió de idea</h1>
+    <p class="subtitle">Cada grupo recibe un pedido de cambio de su comitente. El trabajo es rastrear a qué partes del análisis afecta y llevar el cambio a los documentos, en una branch aparte.</p>
+
+    <h2>Fechas</h2>
+    <div class="fechas">
+        <div class="card">
+            <p class="fecha">Hoy, viernes 09/10 · al terminar la clase</p>
+            <p>La branch <code>cambios-20261009</code> existe en el repo del grupo y tiene <strong>al menos 2 archivos modificados</strong> (o nuevos) respecto de <code>main</code>.</p>
+        </div>
+        <div class="card">
+            <p class="fecha">Miércoles 14/10 · en clase</p>
+            <p>Cada grupo presenta su cambio completo en <strong>5 minutos</strong>, mostrando la comparación de su branch contra <code>main</code>.</p>
+        </div>
+    </div>
+    <p>Es obligatoria para todos los grupos y no lleva nota: la devolución es para que vean qué se les escapó.</p>
+
+    <h2>Qué hay que hacer</h2>
+    <ol>
+        <li>Leer el pedido de su grupo (más abajo).</li>
+        <li>Rastrear el impacto, archivo por archivo: ¿aparece un stakeholder nuevo? ¿qué requisitos se agregan o cambian? ¿qué historias de usuario y criterios de aceptación? ¿qué casos de uso? ¿qué entidades y atributos del modelo ER? ¿qué pantallas?</li>
+        <li>Llevar esos cambios a los documentos en la branch <code>cambios-20261009</code>.</li>
+        <li>Pensar en los bordes, no solo en el camino feliz: ¿qué pasa con el pedido número 19 si el mínimo es 20? ¿qué pasa si el pago se rechaza?</li>
+    </ol>
+
+    <h2>Por qué una branch aparte</h2>
+    <div class="card">
+        <p><code>main</code> es la versión que presentaron hoy, y queda como está. La branch es <strong>la propuesta de cambio</strong>: se trabaja al lado, sin tocar lo entregado.</p>
+        <p>La ventaja se ve al final: GitHub compara la branch con <code>main</code> y muestra en una sola pantalla cada archivo y cada línea que cambió. Esa comparación es el rastreo del impacto, y es lo que van a mostrar el miércoles. Para verla: <code>https://github.com/&lt;usuario&gt;/&lt;repo&gt;/compare/main...cambios-20261009</code>.</p>
+    </div>
+    <div class="warning-box">
+        <p><strong>No la mezclen con main</strong> (no hagan "merge" ni acepten un pull request). Si GitHub les ofrece abrir un pull request, pueden abrirlo para ver los cambios, pero no lo acepten.</p>
+    </div>
+
+    <h2>Paso a paso, desde la web de GitHub</h2>
+    <p>No hace falta instalar nada. Cada archivo que editen en la web es un commit.</p>
+    <div class="card">
+        <h3>El primer archivo (lo hace una sola persona del grupo)</h3>
+        <ol>
+            <li>Entrar al repo del grupo en GitHub y abrir el archivo, por ejemplo <code>docs/requisitos.md</code>.</li>
+            <li>Tocar el lápiz (<em>Edit this file</em>) y hacer el cambio.</li>
+            <li>Tocar <strong>Commit changes…</strong>. En la ventana, elegir <strong>Create a new branch for this commit</strong> y escribir el nombre <code>cambios-20261009</code> (exacto, sin espacios).</li>
+            <li>Tocar <strong>Propose changes</strong>. Si después aparece la pantalla de pull request, no hace falta crearlo.</li>
+        </ol>
+    </div>
+    <div class="card">
+        <h3>Los demás archivos (cualquier integrante)</h3>
+        <ol>
+            <li>En la página principal del repo, abrir el selector de branch (arriba a la izquierda, dice <code>main</code>) y elegir <code>cambios-20261009</code>.</li>
+            <li>Abrir el archivo, tocar el lápiz y hacer el cambio.</li>
+            <li>En <strong>Commit changes…</strong>, dejar marcado <strong>Commit directly to the cambios-20261009 branch</strong>.</li>
+        </ol>
+        <p>Antes de editar, fíjense que el selector diga <code>cambios-20261009</code> y no <code>main</code>.</p>
+    </div>
+    <div class="card">
+        <h3>Si no sale la branch</h3>
+        <p>Abran una issue en el repo (pestaña <strong>Issues</strong> → <strong>New issue</strong>) con el título <code>Cambios 2026-10-09</code> y escriban qué cambiarían en cada archivo. Cuenta como entregado, pero intenten la branch primero.</p>
+    </div>
+
+    <h2 id="pedidos">Los pedidos</h2>
+    <nav class="indice">
+        <a href="#aberturas">Aberturas Los Pampas</a>
+        <a href="#easy-core">Easy Core Computación</a>
+        <a href="#mundo-sport">Mundo Sport</a>
+        <a href="#gimnasio">Gimnasio</a>
+        <a href="#glpi">Logística y Minería (GLPI)</a>
+        <a href="#pos">POS del bar</a>
+        <a href="#turnos">Sistema de Turnos</a>
+    </nav>
+
+    <div class="card" id="aberturas">
+        <p class="grupo">Aberturas Los Pampas</p>
+        <h3>Aprobar el presupuesto online y pagar una seña</h3>
+        <p>Los presupuestos a medida tardan en cerrarse porque se negocian por WhatsApp. Aberturas Los Pampas quiere que el cliente <strong>apruebe el presupuesto online y pague una seña del 50 %</strong> con Mercado Pago: recién con la seña acreditada el pedido pasa a fabricación. El saldo se cobra el día de la instalación. Un presupuesto no aprobado vence a los 15 días, porque los precios del aluminio cambian.</p>
+    </div>
+
+    <div class="card" id="easy-core">
+        <p class="grupo">Easy Core Computación</p>
+        <h3>Guardar y compartir el armado como presupuesto</h3>
+        <p>Los clientes arman su PC con el armador, pero muchos no compran en el momento: consultan primero por WhatsApp. Easy Core quiere que el armado se pueda <strong>guardar como presupuesto</strong>, con un link para compartir. Como los precios cambian con el dólar, el presupuesto mantiene los precios por <strong>48 horas</strong>. Pasado ese plazo, al abrirlo se recalcula con los precios del día y se avisa qué cambió.</p>
+    </div>
+
+    <div class="card" id="mundo-sport">
+        <p class="grupo">Mundo Sport</p>
+        <h3>Venta mayorista a clubes y escuelas</h3>
+        <p>El dueño de Mundo Sport quiere <strong>vender por mayor a clubes y escuelas</strong> de la zona. Una cuenta mayorista la tiene que aprobar el dueño antes de poder comprar. Los mayoristas ven un precio distinto según la cantidad (por ejemplo, de 20 a 49 unidades un 15 % menos y desde 50 un 25 % menos), el pedido mínimo es de 20 unidades y pueden pagar por transferencia a 30 días.</p>
+    </div>
+
+    <div class="card" id="gimnasio">
+        <p class="grupo">Gimnasio</p>
+        <h3>Reservar lugar en las clases</h3>
+        <p>El gimnasio quiere que los socios <strong>reserven su lugar en las clases</strong> desde el celular. Cada clase tiene un cupo máximo. Solo pueden reservar los socios con la cuota al día. Se puede cancelar hasta 2 horas antes de la clase. Si la clase está llena, el socio queda en lista de espera y, si alguien cancela, el primero de la lista recibe el lugar y un aviso.</p>
+    </div>
+
+    <div class="card" id="glpi">
+        <p class="grupo">Logística y Minería S.A. (GLPI)</p>
+        <h3>Los choferes también reportan</h3>
+        <p>La Dirección quiere sumar a la mesa de ayuda <strong>a los choferes</strong>: que puedan reportar desde el celular, en ruta, las fallas de los camiones (no solo las de las computadoras). Esos reportes los atiende el <strong>Área de Mantenimiento</strong>, no Sistemas. Una falla que deja un camión parado tiene que atenderse en menos de 4 horas.</p>
+        <p>Como su trabajo está en el README y el diagrama, para los 2 archivos de hoy vale el README más un archivo nuevo (por ejemplo <code>cambios.md</code>) o el diagrama actualizado.</p>
+    </div>
+
+    <div class="card" id="pos">
+        <p class="grupo">POS del bar</p>
+        <h3>Pedir desde la mesa con un QR</h3>
+        <p>El bar quiere que los clientes <strong>pidan desde la mesa con el celular</strong>: cada mesa tiene un código QR. El cliente lo escanea, ve la carta, arma su pedido y lo envía, sin registrarse. El pedido no va directo a cocina: la encargada tiene que <strong>confirmarlo</strong> antes, y puede rechazarlo si falta algún producto. La moza sigue tomando pedidos como siempre para quienes no usan el QR.</p>
+    </div>
+
+    <div class="card" id="turnos">
+        <p class="grupo">Sistema de Turnos</p>
+        <h3>Seña para reservar</h3>
+        <p>Las empresas se quejan del ausentismo. Ahora cada empresa puede decidir que algunos de sus servicios <strong>exijan una seña al reservar</strong>, pagada con tarjeta. Si el cliente cancela con más de 24 horas de anticipación, la seña se le devuelve. Si cancela después o no se presenta, la seña queda para la empresa.</p>
+    </div>
+
+    <footer>Terciario Urquiza · Diseño de Sistemas Web · Analista Funcional de Sistemas · 2.° cuatrimestre 2026</footer>
+</main>
+</body>
+</html>
