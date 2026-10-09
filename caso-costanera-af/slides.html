@@ -216,7 +216,7 @@ th { font-weight: 700; }
 <p style="font-size:40px;line-height:1.4">Individual. El caso completo y el pizarrón están en la misma página. Al finalizar, se envía por mail desde el botón del final.</p>
 </div>
 <div style="display:flex;flex-direction:column;gap:12px">
-<p style="font-size:36px;font-weight:700">pablopedernera0.github.io/caso-bicirio/v2/?cuestionario=caso-costanera-af</p></div>
+<p style="font-size:36px;font-weight:700"><a href="https://pablopedernera0.github.io/caso-bicirio/v2/?cuestionario=caso-costanera-af" style="color:#FFF8F0">pablopedernera0.github.io/caso-bicirio/v2/?cuestionario=caso-costanera-af</a></p></div>
 </section>
 </div>
 <div id="barra"><button id="ant" aria-label="Anterior">←</button><span id="num"></span><button id="sig" aria-label="Siguiente">→</button><button id="full" title="Pantalla completa (F)">Pantalla completa</button></div>
@@ -245,7 +245,7 @@ addEventListener('keydown', (e) => {
 document.getElementById('ant').onclick = () => ir(i - 1);
 document.getElementById('sig').onclick = () => ir(i + 1);
 document.getElementById('full').onclick = pantalla;
-document.getElementById('escenario').addEventListener('click', () => ir(i + 1));
+document.getElementById('escenario').addEventListener('click', (e) => { if (!e.target.closest('a')) ir(i + 1); });
 addEventListener('resize', ajustar);
 ajustar(); ir(i);
 </script>

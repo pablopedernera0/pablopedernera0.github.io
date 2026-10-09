@@ -233,7 +233,7 @@ addEventListener('keydown', (e) => {
 document.getElementById('ant').onclick = () => ir(i - 1);
 document.getElementById('sig').onclick = () => ir(i + 1);
 document.getElementById('full').onclick = pantalla;
-document.getElementById('escenario').addEventListener('click', () => ir(i + 1));
+document.getElementById('escenario').addEventListener('click', (e) => { if (!e.target.closest('a')) ir(i + 1); });
 addEventListener('resize', ajustar);
 ajustar(); ir(i);
 </script>
