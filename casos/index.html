@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casos y cuestionarios</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+        main { max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.25rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        h1 { font-size: 1.9rem; color: #58a6ff; line-height: 1.2; margin-bottom: 0.6rem; }
+        h2 { font-size: 1.3rem; color: #58a6ff; margin: 2rem 0 0.7rem; }
+        .subtitle { color: #8b949e; }
+        a.caso {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 0.9rem 1.1rem;
+            margin: 0.7rem 0;
+        }
+        a.caso:hover { border-color: #58a6ff; }
+        a.caso h3 { color: #3fb950; font-size: 1.05rem; margin-bottom: 0.2rem; }
+        .meta { color: #8b949e; font-size: 0.9rem; }
+        .err { color: #f85149; }
+        footer { color: #8b949e; font-size: 0.85rem; margin-top: 3rem; }
+    </style>
+</head>
+<body>
+<main>
+    <span class="eyebrow">Terciario Urquiza</span>
+    <h1>Casos y cuestionarios</h1>
+    <p class="subtitle">Cada caso tiene su texto y un cuestionario. Entrá al que te indicó el profesor.</p>
+    <div id="lista"><p class="meta">Cargando…</p></div>
+    <footer>Terciario Urquiza · Casos de estudio</footer>
+</main>
+<script>
+// La lista la arma sistema-eidas/scripts/cuestionario.py generar, junto con cada cuestionario.
+const BASE = '../caso-bicirio/v2/';
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+fetch(BASE + 'cuestionarios/index.json', { cache: 'no-cache' })
+    .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then((lista) => {
+        const materias = [...new Set(lista.map((q) => q.materia))];
+        document.getElementById('lista').innerHTML = materias.map((m) => `
+            <h2>${esc(m)}</h2>
+            ${lista.filter((q) => q.materia === m).map((q) => `
+                <a class="caso" href="${BASE}?cuestionario=${encodeURIComponent(q.id)}">
+                    <h3>${esc(q.titulo)}</h3>
+                    <p class="meta">${q.preguntas} preguntas · ${q.total} puntos · ${esc(q.comisiones.join(', '))}</p>
+                </a>`).join('')}`).join('');
+    })
+    .catch(() => {
+        document.getElementById('lista').innerHTML = '<p class="err">No se pudo cargar la lista de casos. Recargá la página.</p>';
+    });
+</script>
+</body>
+</html>

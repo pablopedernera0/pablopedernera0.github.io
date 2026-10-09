@@ -10,7 +10,7 @@ const RECURSOS = [
     {
         titulo: "Casos y cuestionarios",
         categoria: "redes",
-        carpeta: "caso-bicirio/v2",
+        carpeta: "casos",
         icono: "📋",
         descripcion: "Índice de los casos de estudio con cuestionario en línea: Caso Costanera Deportes (la medianoche del Hot Sale) y Caso SIGA, más los simulacros de Diseño de Sistemas Web. Al finalizar, las respuestas se envían por mail.",
         fecha: "2026-10-09"
