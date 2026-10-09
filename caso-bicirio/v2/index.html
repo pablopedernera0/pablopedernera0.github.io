@@ -126,6 +126,9 @@
         border-radius: 10px; border: none; cursor: pointer; margin-bottom: 10px;
         background: var(--green); color: var(--bg);
     }
+    a.indice-item { display: block; text-decoration: none; color: inherit; }
+    a.indice-item:hover { border-color: var(--blue); }
+    a.indice-item h3 { margin-bottom: 4px; }
     a.btn { text-align: center; text-decoration: none; box-sizing: border-box; }
     .mail-manual { margin: 4px 0 12px; }
     .btn.sec { background: transparent; color: var(--blue); border: 1px solid var(--blue); }
@@ -176,6 +179,16 @@
 <div class="wrap">
 
 <div id="error" class="card hidden" style="margin-top:32px"></div>
+
+<!-- ===== ÍNDICE (sin ?cuestionario=) ===== -->
+<div id="indice" class="hidden">
+<header>
+    <span class="eyebrow">Terciario Urquiza</span>
+    <h1>Casos y cuestionarios</h1>
+    <p class="lead">Cada caso tiene su texto y un cuestionario. Entrá al que te indicó el profesor.</p>
+</header>
+<div id="lista-indice"></div>
+</div>
 
 <!-- ===== VISTA ALUMNO ===== -->
 <div id="vista-alumno" class="hidden">
@@ -356,6 +369,30 @@
     // ============================================================
     // Carga: cuestionarios/<id>.json y casos/<caso>/caso.md
     // ============================================================
+    // Sin cuestionario: índice armado con cuestionarios/index.json, que actualiza
+    // sistema-eidas/scripts/cuestionario.py generar.
+    if (!qid && !docente) {
+        $('materia').textContent = 'Casos de estudio';
+        try {
+            const r = await fetch('cuestionarios/index.json', { cache: 'no-cache' });
+            if (!r.ok) throw new Error(r.status);
+            const lista = await r.json();
+            const materias = [...new Set(lista.map((q) => q.materia))];
+            $('lista-indice').innerHTML = materias.map((m) => `
+                <h2>${esc(m)}</h2>
+                ${lista.filter((q) => q.materia === m).map((q) => `
+                    <a class="card indice-item" href="?cuestionario=${encodeURIComponent(q.id)}">
+                        <h3>${esc(q.titulo)}</h3>
+                        <p class="msg">${q.preguntas} preguntas · ${q.total} puntos · ${esc(q.comisiones.join(', '))}</p>
+                    </a>`).join('')}`).join('');
+        } catch (e) {
+            $('lista-indice').innerHTML = '<p class="msg err">No se pudo cargar la lista de casos. Recargá la página.</p>';
+        }
+        document.title = 'Casos y cuestionarios';
+        $('indice').classList.remove('hidden');
+        return;
+    }
+
     if (!/^[a-z0-9-]+$/.test(qid)) {
         fallar('<h3>Falta el cuestionario</h3><p style="margin:0">El link tiene que terminar en <code>?cuestionario=</code> y el nombre que te pasó el profesor.</p>');
         return;
