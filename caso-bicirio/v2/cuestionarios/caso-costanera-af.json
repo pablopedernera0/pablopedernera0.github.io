@@ -1,0 +1,553 @@
+{
+ "id": "caso-costanera-af",
+ "titulo": "Redes y Comunicaciones — Caso Costanera Deportes",
+ "caso": "costanera",
+ "comisiones": [
+  "3°1°"
+ ],
+ "total": 20,
+ "preguntas": [
+  {
+   "num": 1,
+   "puntos": 1,
+   "enunciado": "En la apertura había 1.800 usuarios conectados a la vez. ¿Cuántas veces más que los usuarios con los que se probó el RNF-01?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "18 veces: 1.800 ÷ 100."
+    },
+    {
+     "letra": "b",
+     "texto": "Ninguna: el RNF-01 habla de usuarios registrados, no conectados a la vez."
+    },
+    {
+     "letra": "c",
+     "texto": "15 veces: 1.800 ÷ 120."
+    },
+    {
+     "letra": "d",
+     "texto": "36 veces: 1.800 ÷ 50."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "el RNF-01 se probó con 50 usuarios simultáneos y se cumplió. Un requisito probado para un día normal no dice nada de un evento con 36 veces más gente."
+  },
+  {
+   "num": 2,
+   "puntos": 1,
+   "enunciado": "Si cada uno de los 1.800 usuarios pedía una página cada 30 segundos, ¿cuántas páginas por segundo llegaban?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "60: 1.800 ÷ 30."
+    },
+    {
+     "letra": "b",
+     "texto": "30."
+    },
+    {
+     "letra": "c",
+     "texto": "54.000: 1.800 × 30."
+    },
+    {
+     "letra": "d",
+     "texto": "1.800: una por usuario."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "usuarios conectados no es lo mismo que pedidos por segundo. 1.800 personas mirando, cada una una página cada 30 s, dan 60 páginas por segundo. Coincide con el pizarrón."
+  },
+  {
+   "num": 3,
+   "puntos": 1,
+   "enunciado": "La app tiene 8 workers y una página del catálogo le lleva 100 ms. Con todos los workers libres, ¿cuántas páginas por segundo podría atender?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "800."
+    },
+    {
+     "letra": "b",
+     "texto": "10."
+    },
+    {
+     "letra": "c",
+     "texto": "8: una por worker."
+    },
+    {
+     "letra": "d",
+     "texto": "80: cada worker hace 10 por segundo (1 ÷ 0,1), y son 8."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "1 ÷ 0,1 s = 10 páginas por segundo por worker; con 8, 80. Alcanzaba para las 60 que llegaban... si los workers hubieran estado libres."
+  },
+  {
+   "num": 4,
+   "puntos": 1,
+   "enunciado": "En la apertura llegaban 5 checkouts por segundo y cada uno dejaba a un worker esperando 8 segundos a Mercado Pago. ¿Cuántos workers hacían falta solo para los checkouts?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "13: 5 + 8."
+    },
+    {
+     "letra": "b",
+     "texto": "40: 5 por segundo × 8 segundos cada uno."
+    },
+    {
+     "letra": "c",
+     "texto": "5: uno por checkout."
+    },
+    {
+     "letra": "d",
+     "texto": "8: los que tiene la app."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "cada segundo entran 5 checkouts y cada uno ocupa un worker durante 8 s, así que en cualquier momento hay unos 40 esperando a la vez. Con 8 workers, todos quedan ocupados. Un día normal (Mercado Pago en 1 s) eran unos 5 y entraban."
+  },
+  {
+   "num": 5,
+   "puntos": 1,
+   "enunciado": "El problema estaba en el pago. ¿Por qué también dejó de andar el catálogo, si la CPU no pasó del 35 %?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Mercado Pago también arma las páginas del catálogo."
+    },
+    {
+     "letra": "b",
+     "texto": "La CPU estaba ocupada procesando los pagos y no le quedaba para el catálogo."
+    },
+    {
+     "letra": "c",
+     "texto": "Los 8 workers estaban ocupados esperando a Mercado Pago, y el catálogo necesita esos mismos workers: no quedaba ninguno libre."
+    },
+    {
+     "letra": "d",
+     "texto": "La base de datos estaba bloqueada por las ventas de zapatillas."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "esperar no gasta CPU. Los workers estaban parados, sin hacer nada, esperando una respuesta. Comprar un servidor con más CPU no lo arreglaba: es el mismo síntoma de \"latencia alta\" del simulador."
+  },
+  {
+   "num": 6,
+   "puntos": 1,
+   "enunciado": "¿Cuánto pesa una página de producto?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Unos 1.100 KB: 40 de HTML + 60 de estilos y logo + 4 fotos de 250."
+    },
+    {
+     "letra": "b",
+     "texto": "Unos 40 KB, el HTML."
+    },
+    {
+     "letra": "c",
+     "texto": "Unos 350 KB: 40 + 60 + 250."
+    },
+    {
+     "letra": "d",
+     "texto": "Unos 250 KB, lo que pesa cada foto."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "el navegador baja todo lo que la página necesita. 40 + 60 + 4 × 250 = 1.100 KB. El HTML es menos del 4 % del total."
+  },
+  {
+   "num": 7,
+   "puntos": 1,
+   "enunciado": "En la apertura se atendían solo 11 páginas por segundo, y el enlace igual estaba lleno. ¿Cómo puede ser?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Porque los 504 también ocupan el enlace."
+    },
+    {
+     "letra": "b",
+     "texto": "11 × 1.100 KB = 12.100 KB/s, unos 97 Mbps: con 11 páginas por segundo ya se llena un enlace de 100."
+    },
+    {
+     "letra": "c",
+     "texto": "No puede ser: el pizarrón tiene un error."
+    },
+    {
+     "letra": "d",
+     "texto": "Porque Mercado Pago usa el mismo enlace para los pagos."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "12.100 KB/s × 8 ≈ 97 Mbps. Casi todo son fotos. A la mañana pasa lo mismo: 10 páginas por segundo ya marcan 88 Mbps."
+  },
+  {
+   "num": 8,
+   "puntos": 1,
+   "enunciado": "Supongamos que arreglan los workers y la tienda atiende las 60 páginas por segundo. Sin cambiar nada más, ¿cuánto enlace necesitaría?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Unos 97 Mbps, lo mismo que en la apertura."
+    },
+    {
+     "letra": "b",
+     "texto": "Unos 66 Mbps: entra en el enlace de 100."
+    },
+    {
+     "letra": "c",
+     "texto": "Unos 528 Mbps: 60 × 1.100 KB = 66.000 KB/s, por 8."
+    },
+    {
+     "letra": "d",
+     "texto": "Unos 19 Mbps."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "66.000 KB/s son 66 MB/s, y 66 × 8 = 528 Mbps. Si arreglan solo los workers, el cuello de botella pasa al enlace, igual que en SIGA."
+  },
+  {
+   "num": 9,
+   "puntos": 1,
+   "enunciado": "Con un CDN, las imágenes y los estilos los entrega el CDN y el VPS manda solo el HTML (40 KB). ¿Cuánto enlace usa el VPS con 60 páginas por segundo?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Unos 19 Mbps: 60 × 40 KB = 2.400 KB/s, por 8."
+    },
+    {
+     "letra": "b",
+     "texto": "Unos 240 Mbps."
+    },
+    {
+     "letra": "c",
+     "texto": "Unos 528 Mbps, igual que antes: el CDN no cambia lo que manda el VPS."
+    },
+    {
+     "letra": "d",
+     "texto": "Ninguno: con CDN el VPS no usa el enlace."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "2.400 KB/s × 8 = 19,2 Mbps. El VPS ya no manda las fotos, solo el HTML. El plan gratuito del CDN rinde más que cualquier enlace que se pueda pagar."
+  },
+  {
+   "num": 10,
+   "puntos": 1,
+   "enunciado": "Todas las fotos cumplían el RNF-14 (menos de 300 KB cada una). ¿Por qué igual fueron un problema?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Porque 250 KB está muy cerca del límite de 300 KB."
+    },
+    {
+     "letra": "b",
+     "texto": "No fueron un problema: el enlace se llenó por los pagos."
+    },
+    {
+     "letra": "c",
+     "texto": "El RNF pone un límite a cada imagen, pero no a cuántas imágenes baja cada página ni a cuántas páginas se piden por segundo."
+    },
+    {
+     "letra": "d",
+     "texto": "Porque el RNF-14 no se estaba cumpliendo en la práctica."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "un requisito puede cumplirse y no servir. Lo que importa para la red es el total: 4 fotos por página, multiplicado por las páginas que se piden por segundo."
+  },
+  {
+   "num": 11,
+   "puntos": 1,
+   "enunciado": "A 37 clientes Mercado Pago les cobró, pero la tienda no tenía ningún pedido a su nombre. ¿Qué pasó?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Mercado Pago cobró dos veces por error."
+    },
+    {
+     "letra": "b",
+     "texto": "El checkout esperó turno y a Mercado Pago, pasó los 30 s, Nginx cortó con un 504 y la app abandonó el pedido; el pago igual se había aprobado."
+    },
+    {
+     "letra": "c",
+     "texto": "Los clientes apretaron F5 en el checkout y se generó un pedido duplicado."
+    },
+    {
+     "letra": "d",
+     "texto": "La base de datos borró los pedidos por falta de espacio."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "el cobro lo hace Mercado Pago y el pedido lo guarda la tienda, en dos sistemas distintos. Si la tienda corta la espera, Mercado Pago no se entera: cobra igual, y la tienda nunca guarda el pedido."
+  },
+  {
+   "num": 12,
+   "puntos": 1,
+   "enunciado": "¿Qué cambio evita que un worker se quede bloqueado esperando a Mercado Pago?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Pasar de 8 a 10 workers."
+    },
+    {
+     "letra": "b",
+     "texto": "Subir el corte de Nginx de 30 a 120 segundos."
+    },
+    {
+     "letra": "c",
+     "texto": "Guardar el pedido como \"pago pendiente\", liberar el worker enseguida y confirmar el pedido cuando llega la notificación de Mercado Pago."
+    },
+    {
+     "letra": "d",
+     "texto": "Pedirle a Mercado Pago que conteste más rápido durante el Hot Sale."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "la tienda deja de esperar. Además, el pedido queda guardado desde el principio, así que ya no hay cobros sin pedido. Subir el corte solo hace esperar más a todos, y 10 workers no llegan a los 40 que hacían falta."
+  },
+  {
+   "num": 13,
+   "puntos": 1,
+   "enunciado": "Con la notificación de Mercado Pago, un checkout ocupa al worker unos 100 ms, como cualquier página. Con 60 páginas por segundo en total, ¿cuántos workers quedan ocupados?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "40, como en la apertura."
+    },
+    {
+     "letra": "b",
+     "texto": "80."
+    },
+    {
+     "letra": "c",
+     "texto": "Unos 6: 60 × 0,1 s. Los 8 que ya tiene alcanzan."
+    },
+    {
+     "letra": "d",
+     "texto": "60, uno por página."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "60 por segundo × 0,1 s cada una = 6 workers ocupados a la vez. Cambiar cómo se cobra rinde más que comprar un servidor más grande."
+  },
+  {
+   "num": 14,
+   "puntos": 1,
+   "enunciado": "El RNF-02 decía \"en 5 segundos o menos, sin contar el tiempo de respuesta de Mercado Pago\". ¿Qué le faltaba?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Decir qué hace la tienda si Mercado Pago tarda: dejar a Mercado Pago afuera del número no lo deja afuera del problema."
+    },
+    {
+     "letra": "b",
+     "texto": "Nada: Mercado Pago es un sistema externo y no es responsabilidad de la tienda."
+    },
+    {
+     "letra": "c",
+     "texto": "Bajar el tiempo de 5 a 2 segundos."
+    },
+    {
+     "letra": "d",
+     "texto": "Agregar que debe probarse con 50 usuarios, como el RNF-01."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "el RNF se cumplía en las pruebas y la tienda se cayó igual por esa dependencia. Una versión mejor: \"si Mercado Pago no responde en 10 s, el pedido queda como pago pendiente y se confirma con su notificación\"."
+  },
+  {
+   "num": 15,
+   "puntos": 1,
+   "enunciado": "Del talle 42 quedaban 3 pares y se vendieron 11. ¿Por qué?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "La base de datos sumó mal por la carga de la CPU."
+    },
+    {
+     "letra": "b",
+     "texto": "El local vendió 8 pares en el mostrador sin cargarlos."
+    },
+    {
+     "letra": "c",
+     "texto": "El CDN mostraba un stock viejo guardado en caché."
+    },
+    {
+     "letra": "d",
+     "texto": "Varias compras leyeron \"quedan 3\" al mismo tiempo, antes de que cualquiera llegara a descontar su par."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "leer, pagar y descontar son tres pasos separados. Mientras una compra está pagando, otra lee el mismo stock, que todavía no bajó. Con el pago tardando 8 s, se superpusieron muchas."
+  },
+  {
+   "num": 16,
+   "puntos": 1,
+   "enunciado": "¿Qué cambio evita la sobreventa?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Que verificar y descontar sean una sola operación en la base: \"descontá un par solo si queda alguno\", y que el pedido reserve la unidad antes del pago."
+    },
+    {
+     "letra": "b",
+     "texto": "Mostrar el stock en la página con letra más grande."
+    },
+    {
+     "letra": "c",
+     "texto": "Agregar más workers para que cada compra termine más rápido."
+    },
+    {
+     "letra": "d",
+     "texto": "Revisar el stock a mano antes de despachar cada pedido."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "si la base verifica y descuenta de una sola vez, dos compras no pueden llevarse el mismo último par. Más workers hacen que se superpongan más compras, no menos."
+  },
+  {
+   "num": 17,
+   "puntos": 1,
+   "enunciado": "El cupón HOT100 era para los primeros 100 compradores y se usó 140 veces. ¿Qué tiene en común con la sobreventa de zapatillas?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Que los dos los resuelve el CDN."
+    },
+    {
+     "letra": "b",
+     "texto": "Que en los dos casos falló Mercado Pago."
+    },
+    {
+     "letra": "c",
+     "texto": "Nada: el cupón se compartió en Instagram y lo usaron personas que no debían."
+    },
+    {
+     "letra": "d",
+     "texto": "Es el mismo problema: se lee el contador, se deja pasar y recién al final se suma uno, así que varias compras al mismo tiempo ven \"menos de 100\"."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "igual que con el stock, controlar y descontar en pasos separados funciona con un comprador por vez y falla cuando hay muchos a la vez. La solución también es la misma: hacerlo en una sola operación."
+  },
+  {
+   "num": 18,
+   "puntos": 1,
+   "enunciado": "El RNF-04 pide 95 % de disponibilidad de 9:00 a 20:00. ¿Cuánto tiempo caída por día permite?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Ninguno: 95 % significa que nunca se cae."
+    },
+    {
+     "letra": "b",
+     "texto": "5 minutos."
+    },
+    {
+     "letra": "c",
+     "texto": "Unos 72 minutos: el 5 % de 24 horas."
+    },
+    {
+     "letra": "d",
+     "texto": "Unos 33 minutos: el 5 % de 11 horas (660 minutos)."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "de 9 a 20 son 11 horas, 660 minutos. El 5 % que puede faltar son 33 minutos por día, en pleno horario de venta. En porcentaje parece mucho, pero en minutos no es tan exigente."
+  },
+  {
+   "num": 19,
+   "puntos": 1,
+   "enunciado": "Para el Hot Sale, ¿qué problema tiene el RNF-04 además del porcentaje?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Ninguno: con 95 % alcanza para cualquier evento."
+    },
+    {
+     "letra": "b",
+     "texto": "Solo cubre de 9 a 20, y el Hot Sale arrancó a las 00:00: la caída de la apertura ni siquiera lo incumple."
+    },
+    {
+     "letra": "c",
+     "texto": "Que debería decir 50 usuarios, como el RNF-01."
+    },
+    {
+     "letra": "d",
+     "texto": "Que habría que medirlo en Mbps."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "el requisito describe un día normal de local. El momento de más venta del año quedó afuera del requisito, así que la tienda se cayó \"cumpliendo\" el RNF."
+  },
+  {
+   "num": 20,
+   "puntos": 1,
+   "enunciado": "Para el Cyber Monday la plata alcanza para una sola opción: un VPS 4 veces más grande todo el año, o la nube con autoescalado pagando por hora. ¿Qué argumento es el correcto?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "El VPS grande: con 16 GB entran los 40 workers que hacían falta, y eso es lo único que hay que cambiar."
+    },
+    {
+     "letra": "b",
+     "texto": "La nube: los picos son tres eventos de unos tres días por año. Se paga más solo esos días, y el resto del año alcanza con poco."
+    },
+    {
+     "letra": "c",
+     "texto": "El VPS grande: más CPU arregla la caída, porque la CPU era el cuello de botella."
+    },
+    {
+     "letra": "d",
+     "texto": "Ninguna: con un CDN no hace falta cambiar nada más."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "la CPU nunca pasó del 35 %. Agregar workers para esperar más tiempo no arregla los cobros sin pedido ni la sobreventa. El CDN resuelve el enlace, pero no el pago. Para picos cortos y previsibles conviene pagar por uso, después de aplicar los cambios que no cuestan nada."
+  }
+ ],
+ "materia": "Redes y Comunicaciones",
+ "envio_mail": "pedernera.pablo@terciariourquiza.edu.ar"
+}
