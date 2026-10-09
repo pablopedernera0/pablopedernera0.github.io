@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El cliente cambió de idea</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; background: #0b0f14; overflow: hidden; }
+#escenario { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+#escenario > section { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; }
+#escenario > section:not(.activa) { display: none !important; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 0.35em 0.6em; border-bottom: 1px solid #DAD5CB; vertical-align: top; }
+th { font-weight: 700; }
+#barra { position: fixed; right: 12px; bottom: 10px; font: 14px system-ui, sans-serif; color: #8b949e; display: flex; gap: 10px; align-items: center; }
+#barra button { background: #161b22; color: #c9d1d9; border: 1px solid #30363d; border-radius: 6px; padding: 4px 10px; cursor: pointer; font: inherit; }
+</style>
+</head>
+<body>
+<div id="escenario">
+<section id="cover" data-transition="fade" style="background:#18222F;color:#F5F3EE;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:28px;font-weight:500;color:#6FCF9F">branch: cambios-20261009</p>
+<div style="display:flex;flex-direction:column;gap:32px">
+<h1 style="font-size:144px;font-weight:700;line-height:1.05">El cliente cambió de idea</h1>
+<p style="font-size:44px;line-height:1.35;color:#C3CCD6">Un pedido de cambio por grupo, rastreado en todos sus documentos, en una branch aparte</p>
+</div>
+<p style="font-size:28px;color:#C3CCD6">Diseño de Sistemas Web · 3°1° · actividad formativa</p>
+</section>
+<section id="idea" data-transition="fade" style="background:#F5F3EE;color:#18222F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<p style="font-size:28px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#2A6DB0">La situación</p>
+<div style="display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:88px;font-weight:700;line-height:1.1">Entregaron el análisis.<br>El cliente llama con algo nuevo.</h2>
+<p style="font-size:40px;line-height:1.4;color:#4A5563">Pasa en todos los proyectos. Lo difícil no es escribir el requisito nuevo: es encontrar todo lo que ese requisito toca en lo que ya estaba escrito.</p>
+</div>
+<p style="font-size:32px;color:#4A5563">Hoy cada grupo recibe un pedido de cambio de su comitente.</p>
+</section>
+<section id="rastrear" data-transition="fade" style="background:#F5F3EE;color:#18222F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#2A6DB0">Qué hay que hacer</p>
+<h2 style="font-size:72px;font-weight:700;line-height:1.1">Rastrear el impacto, archivo por archivo</h2>
+</div>
+<div style="display:flex;align-items:stretch;gap:16px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFDF9;padding:28px;border:1px solid #DAD5CB;border-radius:14px">
+<h3 style="font-size:30px;font-weight:700">Stakeholders</h3>
+<p style="font-size:24px;line-height:1.35;color:#4A5563">¿Aparece alguien nuevo?</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFDF9;padding:28px;border:1px solid #DAD5CB;border-radius:14px">
+<h3 style="font-size:30px;font-weight:700">Requisitos</h3>
+<p style="font-size:24px;line-height:1.35;color:#4A5563">¿Qué RF se agregan o cambian?</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFDF9;padding:28px;border:1px solid #DAD5CB;border-radius:14px">
+<h3 style="font-size:30px;font-weight:700">HU</h3>
+<p style="font-size:24px;line-height:1.35;color:#4A5563">¿Y sus criterios de aceptación?</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFDF9;padding:28px;border:1px solid #DAD5CB;border-radius:14px">
+<h3 style="font-size:30px;font-weight:700">Casos de uso</h3>
+<p style="font-size:24px;line-height:1.35;color:#4A5563">¿Nuevos, o flujos alternativos?</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFDF9;padding:28px;border:1px solid #DAD5CB;border-radius:14px">
+<h3 style="font-size:30px;font-weight:700">Modelo ER</h3>
+<p style="font-size:24px;line-height:1.35;color:#4A5563">¿Dónde se guarda lo nuevo?</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFDF9;padding:28px;border:1px solid #DAD5CB;border-radius:14px">
+<h3 style="font-size:30px;font-weight:700">UI</h3>
+<p style="font-size:24px;line-height:1.35;color:#4A5563">¿Qué pantalla cambia?</p>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#18222F;color:#F5F3EE;padding:32px 40px;border-radius:14px">
+<svg viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="#F2A65A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none" aria-label="Atención"><path d="M12 3 2 21h20z"/><path d="M12 10v5M12 18v.01"/></svg>
+<p style="font-size:32px;line-height:1.4">Y los bordes, no solo el camino feliz: ¿qué pasa con el pedido número 19 si el mínimo es 20? ¿Y si el pago se rechaza?</p>
+</div>
+</section>
+<section id="branch" data-transition="fade" style="background:#F5F3EE;color:#18222F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#2A6DB0">Por qué una branch aparte</p>
+<h2 style="font-size:72px;font-weight:700;line-height:1.1">main queda como lo entregaron</h2>
+</div>
+<div style="position:relative;height:300px;background:#FFFDF9;border:1px solid #DAD5CB;border-radius:14px">
+<svg viewBox="0 0 1664 300" style="position:absolute;left:0;top:0;width:100%;height:100%" aria-label="main sigue derecho y la branch cambios-20261009 sale al costado">
+<path d="M200 110H1500" stroke="#2A6DB0" stroke-width="8"/><path d="M560 110V210H1300" stroke="#2E7D5B" stroke-width="8" fill="none"/>
+<circle cx="200" cy="110" r="16" fill="#2A6DB0"/><circle cx="560" cy="110" r="16" fill="#2A6DB0"/>
+<circle cx="900" cy="210" r="16" fill="#2E7D5B"/><circle cx="1100" cy="210" r="16" fill="#2E7D5B"/><circle cx="1300" cy="210" r="16" fill="#2E7D5B"/></svg>
+<p style="position:absolute;left:200px;top:24px;width:700px;font-family:'JetBrains Mono', 'Courier New', monospace;font-size:28px;font-weight:700;color:#2A6DB0">main · lo presentado hoy</p>
+<p style="position:absolute;left:880px;top:236px;width:700px;font-family:'JetBrains Mono', 'Courier New', monospace;font-size:28px;font-weight:700;color:#2E7D5B">cambios-20261009 · la propuesta</p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFDF9;padding:32px;border:1px solid #DAD5CB;border-radius:14px">
+<h3 style="font-size:34px;font-weight:700">Se trabaja al lado</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5563">Lo entregado no se toca. Si el cliente se arrepiente, se descarta la branch y listo.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFDF9;padding:32px;border:1px solid #DAD5CB;border-radius:14px">
+<h3 style="font-size:34px;font-weight:700">GitHub compara las dos</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5563">Una pantalla con cada archivo y línea que cambió: es el rastreo del impacto, y lo que muestran el miércoles.</p>
+</div>
+</div>
+</section>
+<section id="fechas" data-transition="fade" style="background:#18222F;color:#F5F3EE;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#6FCF9F">Fechas</p>
+<h2 style="font-size:72px;font-weight:700;line-height:1.1">Dos momentos, obligatorios para todos los grupos</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:20px;background:#223042;padding:48px;border-radius:16px">
+<p style="font-size:28px;font-weight:600;color:#F2A65A">HOY · AL TERMINAR LA CLASE</p>
+<p style="font-size:72px;font-weight:700;line-height:1">2 archivos</p>
+<p style="font-size:32px;line-height:1.4;color:#C3CCD6">La branch <span style="color:#6FCF9F">cambios-20261009</span> existe y tiene al menos 2 archivos modificados o nuevos respecto de main.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px;background:#223042;padding:48px;border-radius:16px">
+<p style="font-size:28px;font-weight:600;color:#F2A65A">MIÉRCOLES 14/10 · EN CLASE</p>
+<p style="font-size:72px;font-weight:700;line-height:1">5 minutos</p>
+<p style="font-size:32px;line-height:1.4;color:#C3CCD6">Cada grupo presenta el cambio completo, mostrando la comparación de su branch contra main.</p>
+</div>
+</div>
+<p style="font-size:32px;color:#C3CCD6">No lleva nota. La devolución es para que vean qué se les escapó.</p>
+</section>
+<section id="primer" data-transition="fade" style="background:#F5F3EE;color:#18222F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#2A6DB0">Paso a paso · desde la web de GitHub</p>
+<h2 style="font-size:72px;font-weight:700;line-height:1.1">El primer archivo crea la branch</h2>
+<p style="font-size:32px;color:#4A5563">Lo hace una sola persona del grupo. No hace falta instalar nada.</p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:24px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFDF9;padding:32px;border:1px solid #DAD5CB;border-radius:14px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:56px;font-weight:700;line-height:1;color:#2A6DB0">1</p>
+<p style="font-size:28px;line-height:1.4">Abrir el archivo en GitHub, por ejemplo <b>docs/requisitos.md</b></p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFDF9;padding:32px;border:1px solid #DAD5CB;border-radius:14px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:56px;font-weight:700;line-height:1;color:#2A6DB0">2</p>
+<p style="font-size:28px;line-height:1.4">Tocar el lápiz y hacer el cambio</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFDF9;padding:32px;border:1px solid #DAD5CB;border-radius:14px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:56px;font-weight:700;line-height:1;color:#2A6DB0">3</p>
+<p style="font-size:28px;line-height:1.4"><b>Commit changes…</b> → <b>Create a new branch</b> → nombre <span style="color:#2E7D5B"><b>cambios-20261009</b></span></p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFDF9;padding:32px;border:1px solid #DAD5CB;border-radius:14px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:56px;font-weight:700;line-height:1;color:#2A6DB0">4</p>
+<p style="font-size:28px;line-height:1.4"><b>Propose changes</b>. El pull request no hace falta crearlo.</p>
+</div>
+</div>
+<p style="font-size:30px;color:#4A5563">El nombre, exacto: sin espacios y con el guion.</p>
+</section>
+<section id="demas" data-transition="fade" style="background:#F5F3EE;color:#18222F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#2A6DB0">Paso a paso · desde la web de GitHub</p>
+<h2 style="font-size:72px;font-weight:700;line-height:1.1">Los demás archivos, cualquier integrante</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFDF9;padding:32px;border:1px solid #DAD5CB;border-radius:14px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:56px;font-weight:700;line-height:1;color:#2A6DB0">1</p>
+<p style="font-size:28px;line-height:1.4">En el selector de branch (arriba a la izquierda, dice <b>main</b>), elegir <span style="color:#2E7D5B"><b>cambios-20261009</b></span></p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFDF9;padding:32px;border:1px solid #DAD5CB;border-radius:14px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:56px;font-weight:700;line-height:1;color:#2A6DB0">2</p>
+<p style="font-size:28px;line-height:1.4">Abrir el archivo, tocar el lápiz y hacer el cambio</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFDF9;padding:32px;border:1px solid #DAD5CB;border-radius:14px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:56px;font-weight:700;line-height:1;color:#2A6DB0">3</p>
+<p style="font-size:28px;line-height:1.4"><b>Commit changes…</b> dejando marcado <b>Commit directly to the cambios-20261009 branch</b></p>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#18222F;color:#F5F3EE;padding:32px 40px;border-radius:14px">
+<svg viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="#F2A65A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none" aria-label="Atención"><path d="M12 3 2 21h20z"/><path d="M12 10v5M12 18v.01"/></svg>
+<p style="font-size:32px;line-height:1.4">Antes de editar, el selector tiene que decir cambios-20261009, no main. Y no la mezclen con main: nada de merge.</p>
+</div>
+</section>
+<section id="planb" data-transition="fade" style="background:#F5F3EE;color:#18222F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<p style="font-size:28px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#2A6DB0">Si la branch no sale</p>
+<div style="display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:88px;font-weight:700;line-height:1.1">Plan B: una issue en el repo</h2>
+<p style="font-size:40px;line-height:1.4;color:#4A5563">Pestaña <b>Issues</b> → <b>New issue</b>, con el título <span style="color:#2E7D5B"><b>Cambios 2026-10-09</b></span>, y escriban qué cambiarían en cada archivo.</p>
+</div>
+<p style="font-size:32px;color:#4A5563">Cuenta como entregado, pero intenten la branch primero: es la mitad del ejercicio.</p>
+</section>
+<section id="pedidos" data-transition="fade" style="background:#F5F3EE;color:#18222F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:112px 128px 128px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:28px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#2A6DB0">Los pedidos</p>
+<h2 style="font-size:64px;font-weight:700;line-height:1.1">Uno por grupo, de su propio comitente</h2>
+</div>
+<table style="font-size:28px;color:#18222F">
+<tr><th style="width:30%">Grupo</th><th style="width:70%">Lo que pide el cliente</th></tr>
+<tr><td>Aberturas Los Pampas</td><td>Aprobar el presupuesto online y pagar una seña del 50 %</td></tr>
+<tr><td>Easy Core Computación</td><td>Guardar el armado de PC como presupuesto, válido 48 h</td></tr>
+<tr><td>Mundo Sport</td><td>Venta mayorista a clubes, con precio por cantidad</td></tr>
+<tr><td>Gimnasio</td><td>Reservar lugar en las clases, con cupo y lista de espera</td></tr>
+<tr><td>Logística y Minería (GLPI)</td><td>Los choferes reportan fallas de camiones a Mantenimiento</td></tr>
+<tr><td>POS del bar</td><td>Pedir desde la mesa con un QR, con confirmación</td></tr>
+<tr><td>Sistema de Turnos</td><td>Seña al reservar, que se devuelve si cancela a tiempo</td></tr>
+</table>
+<p style="font-size:28px;color:#4A5563">El pedido completo de cada grupo está en la página de la consigna.</p>
+</section>
+<section id="salas" data-transition="fade" style="background:#2E7D5B;color:#F5F3EE;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<p style="font-size:28px;font-weight:600;letter-spacing:3px;text-transform:uppercase">La consigna completa</p>
+<div style="display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:120px;font-weight:700;line-height:1.05">A trabajar</h2>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:44px;font-weight:700;line-height:1.3">pablopedernera0.github.io/eidas-cambios</p>
+</div>
+<p style="font-size:36px;line-height:1.4">Hoy: la branch con 2 archivos. Miércoles 14/10: 5 minutos por grupo.</p>
+</section>
+</div>
+<div id="barra"><button id="ant" aria-label="Anterior">←</button><span id="num"></span><button id="sig" aria-label="Siguiente">→</button><button id="full" title="Pantalla completa (F)">Pantalla completa</button></div>
+<script>
+const slides = [...document.querySelectorAll('#escenario > section')];
+let i = Math.max(0, Math.min(slides.length - 1, (parseInt(location.hash.slice(1)) || 1) - 1));
+function ajustar() {
+  const e = document.getElementById('escenario');
+  const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+  e.style.transform = `translate(${(innerWidth - 1920 * s) / 2}px, ${(innerHeight - 1080 * s) / 2}px) scale(${s})`;
+}
+function ir(n) {
+  i = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((s, k) => s.classList.toggle('activa', k === i));
+  document.getElementById('num').textContent = `${i + 1} / ${slides.length}`;
+  history.replaceState(null, '', '#' + (i + 1));
+}
+addEventListener('keydown', (e) => {
+  if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); ir(i + 1); }
+  else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); ir(i - 1); }
+  else if (e.key === 'Home') ir(0);
+  else if (e.key === 'End') ir(slides.length - 1);
+  else if (e.key === 'f' || e.key === 'F') pantalla();
+});
+function pantalla() { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}); }
+document.getElementById('ant').onclick = () => ir(i - 1);
+document.getElementById('sig').onclick = () => ir(i + 1);
+document.getElementById('full').onclick = pantalla;
+document.getElementById('escenario').addEventListener('click', () => ir(i + 1));
+addEventListener('resize', ajustar);
+ajustar(); ir(i);
+</script>
+</body>
+</html>
