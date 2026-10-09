@@ -75,18 +75,18 @@
 <main>
     <span class="eyebrow">Diseño de Sistemas Web · 3°1° · actividad formativa</span>
     <h1>El cliente cambió de idea</h1>
-    <p class="subtitle">Cada grupo recibe un pedido de cambio de su comitente. El trabajo es rastrear a qué partes del análisis afecta y llevar el cambio a los documentos, en una branch aparte.</p>
+    <p class="subtitle">Cada grupo recibe un pedido de cambio de su comitente. El trabajo es rastrear a qué partes del análisis afecta y escribir, archivo por archivo, qué cambiaría, en una issue del repo del grupo.</p>
     <p style="margin-top:0.6rem"><a href="slides.html">Ver las slides de la consigna</a></p>
 
     <h2>Fechas</h2>
     <div class="fechas">
         <div class="card">
             <p class="fecha">Hoy, viernes 09/10 · al terminar la clase</p>
-            <p>La branch <code>cambios-20261009</code> existe en el repo del grupo y tiene <strong>al menos 2 archivos modificados</strong> (o nuevos) respecto de <code>main</code>.</p>
+            <p>La issue <code>Cambios 2026-10-09</code> existe en el repo del grupo y nombra <strong>al menos 2 archivos</strong>, con lo que cambiaría en cada uno.</p>
         </div>
         <div class="card">
             <p class="fecha">Miércoles 14/10</p>
-            <p>El cambio completo tiene que estar <strong>hecho</strong> en la branch. Se va a revisar.</p>
+            <p>La issue tiene el <strong>rastreo completo</strong>. Se va a revisar.</p>
         </div>
     </div>
     <p>Es obligatoria para todos los grupos y no lleva nota: la devolución es para que vean qué se les escapó.</p>
@@ -95,46 +95,41 @@
     <ol>
         <li>Leer el pedido de su grupo (más abajo).</li>
         <li>Rastrear el impacto, archivo por archivo: ¿aparece un stakeholder nuevo? ¿qué requisitos se agregan o cambian? ¿qué historias de usuario y criterios de aceptación? ¿qué casos de uso? ¿qué entidades y atributos del modelo ER? ¿qué pantallas?</li>
-        <li>Llevar esos cambios a los documentos en la branch <code>cambios-20261009</code>.</li>
+        <li>Escribir esos cambios en la issue <code>Cambios 2026-10-09</code>.</li>
         <li>Pensar en lo que no es el camino feliz: ¿qué pasa si algo sale mal o queda justo en el límite? Un plazo que vence, un cupo que se llena, un pago que no se acredita.</li>
     </ol>
 
-    <h2>Por qué una branch aparte</h2>
+    <h2>Cómo se entrega: una issue</h2>
+    <p>Los documentos del repo no se tocan: <code>main</code> queda como lo entregaron. La issue es <strong>la propuesta de cambio</strong>, y es lo que se va a revisar.</p>
     <div class="card">
-        <p><code>main</code> es la versión que presentaron hoy, y queda como está. La branch es <strong>la propuesta de cambio</strong>: se trabaja al lado, sin tocar lo entregado.</p>
-        <p>La ventaja se ve al final: GitHub compara la branch con <code>main</code> y muestra en una sola pantalla cada archivo y cada línea que cambió. Esa comparación es el rastreo del impacto, y es lo que se va a revisar. Para verla: <code>https://github.com/&lt;usuario&gt;/&lt;repo&gt;/compare/main...cambios-20261009</code>.</p>
+        <h3>Antes de escribir, en grupo</h3>
+        <p>Lean el pedido juntos, decidan qué archivos cambian y quién se encarga de cada uno.</p>
     </div>
-    <div class="warning-box">
-        <p><strong>No la mezclen con main</strong> (no hagan "merge" ni acepten un pull request). Si GitHub les ofrece abrir un pull request, pueden abrirlo para ver los cambios, pero no lo acepten.</p>
+    <div class="card">
+        <h3>Abrir la issue (una sola persona del grupo)</h3>
+        <ol>
+            <li>Entrar al repo del grupo en GitHub, pestaña <strong>Issues</strong> → <strong>New issue</strong>.</li>
+            <li>Título: <code>Cambios 2026-10-09</code> (exacto).</li>
+            <li>En el cuerpo, un apartado por archivo, con lo que se agrega o cambia. No alcanza con "agregar un requisito": digan cuál.</li>
+            <li>Tocar <strong>Create</strong>.</li>
+        </ol>
     </div>
+    <div class="card">
+        <h3>Por ejemplo</h3>
+<pre style="white-space:pre-wrap;margin:0;background:#0d1117;padding:0.8rem;border-radius:6px"><code style="background:none;padding:0">## docs/requisitos.md
+- RF-26 (nuevo): el cliente puede ... 
+- RF-21 (cambia): el checkout ahora ...
 
-    <h2>Paso a paso, desde la web de GitHub</h2>
-    <p>No hace falta instalar nada. Cada archivo que editen en la web es un commit.</p>
-    <div class="card">
-        <h3>Antes de tocar nada, en grupo</h3>
-        <p>Lean el pedido juntos, decidan qué archivos cambian y quién se encarga de cada uno. Recién después alguien crea la branch.</p>
+## docs/historias-de-usuario.md
+- HU nueva: Como ..., quiero ..., para ...
+  Criterios: ... / ¿y si ...?
+
+## docs/er-modelo.md
+- Entidad nueva ...: atributos ...</code></pre>
     </div>
     <div class="card">
-        <h3>El primer archivo (lo hace una sola persona del grupo)</h3>
-        <ol>
-            <li>Entrar al repo del grupo en GitHub y abrir el archivo, por ejemplo <code>docs/requisitos.md</code>.</li>
-            <li>Tocar el lápiz (<em>Edit this file</em>) y hacer el cambio.</li>
-            <li>Tocar <strong>Commit changes…</strong>. En la ventana, elegir <strong>Create a new branch for this commit</strong> y escribir el nombre <code>cambios-20261009</code> (exacto, sin espacios).</li>
-            <li>Tocar <strong>Propose changes</strong>. Si después aparece la pantalla de pull request, no hace falta crearlo.</li>
-        </ol>
-    </div>
-    <div class="card">
-        <h3>Los demás archivos (cualquier integrante)</h3>
-        <ol>
-            <li>En la página principal del repo, abrir el selector de branch (arriba a la izquierda, dice <code>main</code>) y elegir <code>cambios-20261009</code>.</li>
-            <li>Abrir el archivo, tocar el lápiz y hacer el cambio.</li>
-            <li>En <strong>Commit changes…</strong>, dejar marcado <strong>Commit directly to the cambios-20261009 branch</strong>.</li>
-        </ol>
-        <p>Antes de editar, fíjense que el selector diga <code>cambios-20261009</code> y no <code>main</code>.</p>
-    </div>
-    <div class="card">
-        <h3>Si no sale la branch</h3>
-        <p>Abran una issue en el repo (pestaña <strong>Issues</strong> → <strong>New issue</strong>) con el título <code>Cambios 2026-10-09</code> y escriban qué cambiarían en cada archivo. Cuenta como entregado, pero intenten la branch primero.</p>
+        <h3>Lo que agreguen después (cualquier integrante)</h3>
+        <p>Hasta el miércoles pueden seguir: editen la issue (los tres puntos → <strong>Edit</strong>) o sumen un comentario abajo. Las dos cosas valen.</p>
     </div>
 
     <h2 id="pedidos">Los pedidos</h2>
