@@ -1,0 +1,553 @@
+{
+ "id": "caso-siga-af",
+ "titulo": "Redes y Comunicaciones — Caso SIGA",
+ "caso": "siga",
+ "comisiones": [
+  "3°1°"
+ ],
+ "total": 20,
+ "preguntas": [
+  {
+   "num": 1,
+   "puntos": 1,
+   "enunciado": "En el pico (08:15) llegaban 180 pedidos por segundo y SIGA atendía 22. ¿Qué parte de los pedidos quedaba sin atender?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Cerca del 12 %: 22 / 180."
+    },
+    {
+     "letra": "b",
+     "texto": "Ninguno: los pedidos quedaban en espera y al final se atendían todos."
+    },
+    {
+     "letra": "c",
+     "texto": "El 22 %, porque se atendían 22 pedidos por segundo."
+    },
+    {
+     "letra": "d",
+     "texto": "Cerca del 88 %: (180 − 22) / 180."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "de 180 que llegan se atienden 22, quedan 158 sin atender: 158 / 180 ≈ 0,88. Los que esperan demasiado terminan en 504, así que no \"se atienden más tarde\"."
+  },
+  {
+   "num": 2,
+   "puntos": 1,
+   "enunciado": "Con los números del pizarrón, ¿cuál fue el cuello de botella el lunes a las 8:15?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Los workers de la app."
+    },
+    {
+     "letra": "b",
+     "texto": "La base de datos."
+    },
+    {
+     "letra": "c",
+     "texto": "El enlace a internet."
+    },
+    {
+     "letra": "d",
+     "texto": "La CPU del servidor."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "los atendidos quedan clavados en 22 mientras llegan 180 y la latencia sube a 14 s porque se arma una cola. La CPU (28 %), la base (3 conexiones) y el enlace (74 de 100) tenían margen."
+  },
+  {
+   "num": 3,
+   "puntos": 1,
+   "enunciado": "¿Qué dato del pizarrón muestra que la base de datos no era el problema?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "El enlace llegó a 74 Mbps en el pico."
+    },
+    {
+     "letra": "b",
+     "texto": "La CPU del servidor no pasó del 28 %."
+    },
+    {
+     "letra": "c",
+     "texto": "La latencia p95 volvió a 0,4 s a la tarde."
+    },
+    {
+     "letra": "d",
+     "texto": "Las conexiones a la base fueron 3 en los tres momentos: con o sin pico, la base recibía lo mismo."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "si la base fuera el cuello de botella, en el pico se verían muchas más conexiones esperando. Siguió con 3: los pedidos nunca llegaban hasta ella, se quedaban antes, en la cola de la app."
+  },
+  {
+   "num": 4,
+   "puntos": 1,
+   "enunciado": "¿Por qué el enlace no era el cuello de botella en el pico?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Porque SIGA no usa el enlace del edificio, tiene uno propio."
+    },
+    {
+     "letra": "b",
+     "texto": "Marcaba 74 Mbps de 100: estaba cargado, pero no lleno."
+    },
+    {
+     "letra": "c",
+     "texto": "Porque el enlace del edificio es de 1 Gbps."
+    },
+    {
+     "letra": "d",
+     "texto": "Porque a las 8:15 el resto del edificio dejó de usar internet."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "el enlace es de 100 Mbps y lo comparten SIGA, el wifi, los laboratorios y la administración. En el pico llegó a 74, con margen. Ojo: eso es con SIGA atendiendo solo 22 pedidos/s (ver la cuenta del enlace)."
+  },
+  {
+   "num": 5,
+   "puntos": 1,
+   "enunciado": "El sistema estaba colapsado, pero la CPU no pasó del 28 %. ¿Por qué?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "El enlace frenaba los pedidos antes de que llegaran al servidor."
+    },
+    {
+     "letra": "b",
+     "texto": "El servidor tenía poca memoria RAM y eso frenaba a la CPU."
+    },
+    {
+     "letra": "c",
+     "texto": "La app tiene 1 solo worker: atiende de a un pedido, usa como mucho uno de los 4 núcleos (25 %) y encima pasa casi todo el tiempo esperando a MySQL."
+    },
+    {
+     "letra": "d",
+     "texto": "MySQL se quedaba con el resto de la CPU y no dejaba trabajar a la app."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "es el síntoma de \"latencia alta\" del simulador: faltan procesos, no hardware. La máquina estaba casi ociosa; comprar una más grande no lo arreglaba."
+  },
+  {
+   "num": 6,
+   "puntos": 1,
+   "enunciado": "Si cada pedido tarda 45 ms y un worker atiende de a uno, ¿cuántos pedidos por segundo puede atender como máximo?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Unos 22: 1 ÷ 0,045 s."
+    },
+    {
+     "letra": "b",
+     "texto": "Unos 220."
+    },
+    {
+     "letra": "c",
+     "texto": "45, uno por cada milisegundo."
+    },
+    {
+     "letra": "d",
+     "texto": "Unos 4,5."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "1 ÷ 0,045 ≈ 22,2. Coincide con los 22 atendidos del pizarrón: ese es el techo de un worker solo."
+  },
+  {
+   "num": 7,
+   "puntos": 1,
+   "enunciado": "La latencia p95 pasó de 0,3 s a 14 s en el pico. ¿Por qué subió tanto?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "La foto de 200 KB tarda 14 segundos en bajar."
+    },
+    {
+     "letra": "b",
+     "texto": "Los pedidos hacían cola esperando que el único worker se liberara."
+    },
+    {
+     "letra": "c",
+     "texto": "El wifi del edificio estaba lento."
+    },
+    {
+     "letra": "d",
+     "texto": "Cada consulta a MySQL pasó a tardar 14 segundos."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "cada pedido sigue tardando unos 45 ms en procesarse; lo que crece es el tiempo esperando turno. Con 180 que llegan y 22 que salen por segundo, la cola crece sin parar."
+  },
+  {
+   "num": 8,
+   "puntos": 1,
+   "enunciado": "Los estudiantes veían \"504 Gateway Time-out\". ¿Qué significa ese error en SIGA?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "MySQL rechazó la contraseña de la app."
+    },
+    {
+     "letra": "b",
+     "texto": "El navegador del estudiante se quedó sin conexión a internet."
+    },
+    {
+     "letra": "c",
+     "texto": "Nginx le pasó el pedido a la app, esperó la respuesta y se cansó de esperar."
+    },
+    {
+     "letra": "d",
+     "texto": "La página pedida no existe en el servidor."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "el \"gateway\" es Nginx, que está en el medio entre el navegador y la app. El 504 dice que la app no contestó a tiempo: el pedido estaba en la cola del único worker."
+  },
+  {
+   "num": 9,
+   "puntos": 1,
+   "enunciado": "Los estudiantes apretaban F5 una y otra vez. ¿Eso ayudaba?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "No, empeoraba: cada recarga es un pedido más en la cola y vuelve a bajar los 250 KB, porque no hay caché."
+    },
+    {
+     "letra": "b",
+     "texto": "Daba igual: el servidor descarta los pedidos repetidos."
+    },
+    {
+     "letra": "c",
+     "texto": "Sí: reintentar aumenta la chance de entrar cuando se libera un lugar."
+    },
+    {
+     "letra": "d",
+     "texto": "Sí: el servidor le da prioridad a quien ya había pedido antes."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "el pedido anterior sigue en la cola y se suma uno nuevo. Es lo mismo que pasó con Healthcare.gov en los casos fallidos: los reintentos multiplican la carga."
+  },
+  {
+   "num": 10,
+   "puntos": 1,
+   "enunciado": "Supongamos que arreglan la app y SIGA atiende los 180 pedidos/s. Cada página pesa 250 KB. ¿Cuánto enlace usa solo SIGA?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "45 Mbps."
+    },
+    {
+     "letra": "b",
+     "texto": "4.500 Mbps."
+    },
+    {
+     "letra": "c",
+     "texto": "360 Mbps: 180 × 250 KB = 45.000 KB/s = 45 MB/s, por 8."
+    },
+    {
+     "letra": "d",
+     "texto": "36 Mbps."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "180 × 250 = 45.000 KB/s, o sea 45 MB/s. Para pasar de bytes a bits se multiplica por 8: 360 Mbps."
+  },
+  {
+   "num": 11,
+   "puntos": 1,
+   "enunciado": "A esos 360 Mbps de SIGA hay que sumarle los 30 Mbps del resto del edificio. ¿Qué enlace alcanza?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Alcanza el de 300 Mbps."
+    },
+    {
+     "letra": "b",
+     "texto": "Ninguno: hacen falta unos 390 Mbps y no alcanzan ni el de 100 ni el de 300."
+    },
+    {
+     "letra": "c",
+     "texto": "Alcanza el de 100 Mbps, porque el edificio usa poco."
+    },
+    {
+     "letra": "d",
+     "texto": "Alcanzan los dos, porque el pico dura pocos minutos."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "360 + 30 = 390 Mbps. Si arreglan solo la app, el cuello de botella se muda al enlace."
+  },
+  {
+   "num": 12,
+   "puntos": 1,
+   "enunciado": "Ahora el servidor web manda la foto y los estilos con caché: en cada recarga solo baja el HTML, de 30 KB. ¿Cuánto enlace hace falta con los 180 pedidos/s?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Unos 432 Mbps."
+    },
+    {
+     "letra": "b",
+     "texto": "5,4 Mbps en total."
+    },
+    {
+     "letra": "c",
+     "texto": "Unos 43 Mbps para SIGA, unos 73 con el edificio: entra en el enlace de 100."
+    },
+    {
+     "letra": "d",
+     "texto": "Unos 43 Mbps, pero con el edificio pasa de 100."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "180 × 30 = 5.400 KB/s = 5,4 MB/s, por 8 da 43,2 Mbps. Más los 30 del edificio, unos 73 Mbps."
+  },
+  {
+   "num": 13,
+   "puntos": 1,
+   "enunciado": "Comparando las dos cuentas del enlace (con y sin caché), ¿qué conclusión se saca?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Hay que ampliar el enlace a 300 Mbps sí o sí."
+    },
+    {
+     "letra": "b",
+     "texto": "El ancho de banda no tiene nada que ver con el problema."
+    },
+    {
+     "letra": "c",
+     "texto": "Achicar lo que se manda en cada pedido no cuesta nada y rinde más que pagar un enlace más grande."
+    },
+    {
+     "letra": "d",
+     "texto": "El caché solo sirve si SIGA se pasa a la nube."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "con caché se pasa de 390 a 73 Mbps sin gastar. Es la misma idea de la clase de HTML contra JSON: el tamaño de lo que viaja manda."
+  },
+  {
+   "num": 14,
+   "puntos": 1,
+   "enunciado": "¿Cuántos workers necesita la app para atender los 180 pedidos/s del pico?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "9: 180 ÷ 22 ≈ 8,2, y se redondea para arriba."
+    },
+    {
+     "letra": "b",
+     "texto": "8: 180 ÷ 22 ≈ 8,2, y se redondea para abajo."
+    },
+    {
+     "letra": "c",
+     "texto": "4: uno por cada núcleo del servidor."
+    },
+    {
+     "letra": "d",
+     "texto": "22: uno por cada pedido que atiende un worker en un segundo."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "cada worker atiende unos 22 por segundo. Con 8 se llega a 176, menos que 180. La regla habitual de 2 × núcleos + 1 también da 9 con 4 núcleos."
+  },
+  {
+   "num": 15,
+   "puntos": 1,
+   "enunciado": "El puerto 3306 (MySQL) responde desde internet y root tiene la contraseña del ejemplo de instalación. ¿Por qué es grave?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "No es grave: al 3306 solo se conecta la Secretaría."
+    },
+    {
+     "letra": "b",
+     "texto": "Porque hace más lenta la base de datos el lunes de inscripción."
+    },
+    {
+     "letra": "c",
+     "texto": "Porque nmap dejó abierto ese puerto al revisarlo."
+    },
+    {
+     "letra": "d",
+     "texto": "Cualquiera desde internet puede entrar a la base como root, con una contraseña que es pública, y leer, cambiar o borrar todo."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "un puerto abierto a internet lo puede probar cualquiera, no solo quien debería usarlo. Y si la contraseña está publicada, no protege nada."
+  },
+  {
+   "num": 16,
+   "puntos": 1,
+   "enunciado": "¿Qué hay que hacer con el puerto 3306?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Cerrarlo a internet (que solo la app llegue a la base), poner una contraseña fuerte y que Secretaría entre por VPN."
+    },
+    {
+     "letra": "b",
+     "texto": "Dejarlo abierto, pero cambiar la contraseña del usuario admin de SIGA."
+    },
+    {
+     "letra": "c",
+     "texto": "Moverlo al puerto 3307 para que no lo encuentren."
+    },
+    {
+     "letra": "d",
+     "texto": "Cerrar el puerto 80, que es el que usan los atacantes."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "cambiar de número de puerto no lo esconde (nmap revisa todos), y la contraseña de admin es de SIGA, no de MySQL. El 80 es el único que sí tiene que quedar abierto: por ahí entran los estudiantes."
+  },
+  {
+   "num": 17,
+   "puntos": 1,
+   "enunciado": "¿Y con el 8080, donde está phpMyAdmin?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Moverlo al 80 para que use el mismo puerto que SIGA."
+    },
+    {
+     "letra": "b",
+     "texto": "Abrir también el 443, para que vaya cifrado."
+    },
+    {
+     "letra": "c",
+     "texto": "Dejarlo como está: phpMyAdmin ya pide usuario y contraseña."
+    },
+    {
+     "letra": "d",
+     "texto": "Cerrarlo a internet y dejarlo accesible solo desde la red interna o por VPN."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "es el panel de administración de la base. Un panel de administración no tiene por qué estar expuesto a internet, y su login es otra puerta para la fuerza bruta."
+  },
+  {
+   "num": 18,
+   "puntos": 1,
+   "enunciado": "El domingo a la noche hubo 3.200 POST /login desde la misma IP en 20 minutos. ¿Qué fue eso?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "El servidor reintentando solo un pedido que había fallado."
+    },
+    {
+     "letra": "b",
+     "texto": "Una prueba de carga del administrador antes del lunes."
+    },
+    {
+     "letra": "c",
+     "texto": "Un estudiante que se olvidó la contraseña."
+    },
+    {
+     "letra": "d",
+     "texto": "Un ataque de fuerza bruta: probar contraseñas una tras otra contra el login."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "3.200 intentos en 20 minutos son casi 3 por segundo, desde una sola IP. Ninguna persona tipea a ese ritmo: es un programa probando contraseñas."
+  },
+  {
+   "num": 19,
+   "puntos": 1,
+   "enunciado": "Las últimas líneas del log terminan con un 302 y después un GET /panel que devuelve 200. ¿Qué significa?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "El servidor bloqueó la IP y la mandó a otra página."
+    },
+    {
+     "letra": "b",
+     "texto": "El ataque funcionó: alguien entró como admin la noche anterior a la inscripción."
+    },
+    {
+     "letra": "c",
+     "texto": "El panel rechazó el acceso porque la contraseña era incorrecta."
+    },
+    {
+     "letra": "d",
+     "texto": "El 302 es un error del servidor y el ataque se cortó ahí."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "los intentos fallidos devuelven 200 (el formulario otra vez). El 302 es la redirección después de un login correcto, y el GET /panel con 200 confirma que entró. Es un incidente: cambiar la contraseña ya, revisar qué hizo en /panel y limitar los intentos."
+  },
+  {
+   "num": 20,
+   "puntos": 1,
+   "enunciado": "¿Cuál de estas alertas le sirve al administrador para enterarse antes que los estudiantes de que SIGA se está cayendo?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Avisar cuando Secretaría reciba más de 10 reclamos."
+    },
+    {
+     "letra": "b",
+     "texto": "Avisar si la latencia p95 pasa de 1 s durante 2 minutos."
+    },
+    {
+     "letra": "c",
+     "texto": "Avisar si la CPU del servidor pasa del 95 %."
+    },
+    {
+     "letra": "d",
+     "texto": "Avisar si el enlace baja de 30 Mbps."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "el lunes la p95 llegó a 14 s, mientras que la CPU nunca pasó del 28 %: una alerta de CPU no habría saltado. Los reclamos llegan cuando ya es tarde, y un enlace con poco uso no es un problema."
+  }
+ ],
+ "materia": "Redes y Comunicaciones",
+ "envio_mail": "pedernera.pablo@terciariourquiza.edu.ar"
+}

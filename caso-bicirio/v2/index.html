@@ -126,6 +126,8 @@
         border-radius: 10px; border: none; cursor: pointer; margin-bottom: 10px;
         background: var(--green); color: var(--bg);
     }
+    a.btn { text-align: center; text-decoration: none; box-sizing: border-box; }
+    .mail-manual { margin: 4px 0 12px; }
     .btn.sec { background: transparent; color: var(--blue); border: 1px solid var(--blue); }
     .btn.warn { background: var(--orange); }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -210,7 +212,24 @@
     <div id="resultado" class="hidden">
         <div class="card">
             <h3>Listo, respuestas guardadas</h3>
-            <p>Mandale el archivo al profesor por WhatsApp o por mail, y guardate una copia.</p>
+            <div id="envio-mail" class="hidden">
+                <p>Ahora mandale tus respuestas al profesor por mail. Elegí tu correo: se abre un mail ya escrito, solo tenés que tocar <strong>Enviar</strong>. No cambies el asunto ni el texto.</p>
+                <a class="btn" id="mail-gmail" target="_blank" rel="noopener">Abrir en Gmail</a>
+                <div class="row">
+                    <a class="btn sec" id="mail-outlook" target="_blank" rel="noopener">Outlook / Hotmail</a>
+                    <a class="btn sec" id="mail-app">App de correo</a>
+                </div>
+                <details class="mail-manual">
+                    <summary>No se abre ninguno: escribirlo a mano</summary>
+                    <p class="msg">Creá un mail nuevo en cualquier correo y copiá estos tres datos.</p>
+                    <div class="field"><label for="mail-para">Para</label><input type="text" id="mail-para" readonly></div>
+                    <div class="field"><label for="mail-asunto">Asunto</label><input type="text" id="mail-asunto" readonly></div>
+                    <div class="field"><label for="mail-cuerpo">Texto</label><textarea id="mail-cuerpo" readonly rows="6"></textarea></div>
+                    <button class="btn sec" id="btn-copiar-cuerpo">Copiar el texto</button>
+                </details>
+                <p class="msg">También podés guardarte una copia:</p>
+            </div>
+            <p id="envio-archivo">Mandale el archivo al profesor por WhatsApp o por mail, y guardate una copia.</p>
             <button class="btn" id="btn-enviar">Enviar archivo</button>
             <div class="row">
                 <button class="btn sec" id="btn-descargar">Descargar</button>
@@ -309,7 +328,7 @@
 </div>
 
 <footer>
-    <p>Terciario Urquiza · Diseño de Sistemas Web · Caso ficticio armado para la materia.</p>
+    <p>Terciario Urquiza · <span id="materia">Diseño de Sistemas Web</span> · Caso ficticio armado para la materia.</p>
 </footer>
 
 </div>
@@ -386,6 +405,8 @@
     function puntosDe(p, dada) {
         return p.correctas.includes(dada) ? p.puntos : 0;
     }
+
+    if (Q.materia) $('materia').textContent = Q.materia;
 
     if (docente) pedirClaveDocente();
     else iniciarAlumno();
@@ -536,10 +557,11 @@
         }
 
         function bloquear() {
-            document.querySelectorAll('#cuestionario input:not(#codigo), #cuestionario select').forEach((el) => { el.disabled = true; });
+            document.querySelectorAll('#cuestionario input:not(#codigo):not([readonly]), #cuestionario select').forEach((el) => { el.disabled = true; });
             $('preguntas').classList.add('locked');
             $('cierre').classList.add('hidden');
             $('resultado').classList.remove('hidden');
+            if (Q.envio_mail) prepararMail();
             progreso();
         }
 
@@ -622,6 +644,44 @@
             descargar();
             $('msg-envio').textContent = 'Este navegador no permite compartir el archivo directamente: se descargó '
                 + nombreArchivo() + '. Adjuntalo en WhatsApp o en un mail.';
+        });
+
+        // Envío por mail (si el cuestionario tiene envio_mail). El asunto y la línea DATOS
+        // los lee el flujo de n8n que junta las respuestas. En DATOS los espacios van como
+        //  : así la línea no tiene dónde cortarse si el correo parte las líneas largas.
+        function prepararMail() {
+            const datos = { id: Q.id, nombre: estado.nombre.trim(), comision: estado.comision, fin: estado.fin, r: estado.r };
+            const para = Q.envio_mail;
+            const asunto = `[${Q.id}] ${estado.nombre.trim()} – ${estado.comision}`;
+            const cuerpo = [
+                Q.titulo,
+                `Nombre: ${estado.nombre.trim()}`,
+                `Comisión: ${estado.comision}`,
+                `Finalizado: ${fechaLocal(estado.fin)}`,
+                `Respondidas: ${respondidas()} de ${n}`,
+                '',
+                'DATOS: ' + JSON.stringify(datos).replace(/ /g, '\\u0020'),
+                '',
+            ].join('\n');
+            const q = (o) => Object.entries(o).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
+            $('mail-gmail').href = 'https://mail.google.com/mail/?' + q({ view: 'cm', fs: 1, to: para, su: asunto, body: cuerpo });
+            $('mail-outlook').href = 'https://outlook.live.com/mail/0/deeplink/compose?' + q({ to: para, subject: asunto, body: cuerpo });
+            $('mail-app').href = `mailto:${para}?` + q({ subject: asunto, body: cuerpo });
+            $('mail-para').value = para;
+            $('mail-asunto').value = asunto;
+            $('mail-cuerpo').value = cuerpo;
+            $('envio-mail').classList.remove('hidden');
+            $('envio-archivo').classList.add('hidden');
+            $('btn-enviar').classList.add('hidden');
+        }
+
+        $('btn-copiar-cuerpo').addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText($('mail-cuerpo').value);
+                $('btn-copiar-cuerpo').textContent = 'Copiado';
+            } catch (e) {
+                $('mail-cuerpo').select();
+            }
         });
 
         $('btn-copiar').addEventListener('click', async () => {
