@@ -1,4 +1,4 @@
-// Índice de recursos del sitio. Última actualización: 2026-10-05 ART.
+// Índice de recursos del sitio. Última actualización: 2026-10-09 ART.
 // Cada entrada agrega una carpeta al índice del terciario, terciario/index.html
 // (ver render-recursos.js). Para publicar un recurso nuevo: agregar un objeto acá,
 // no tocar terciario/index.html.
@@ -7,6 +7,14 @@
 //   'infraestructura' | 'desarrollo' | 'redes'
 // archivo (opcional): página dentro de la carpeta, si no es index.html
 const RECURSOS = [
+    {
+        titulo: "AWS Academy en el Terciario Urquiza",
+        categoria: "infraestructura",
+        carpeta: "aws-academy",
+        icono: "🔒",
+        descripcion: "Instructivos para docentes y estudiantes, con clave: cómo funciona AWS Academy, qué hace falta para dar cada curso, cómo se arma un Learner Lab, la inscripción, qué correo usar en cada cuenta y las insignias en Credly.",
+        fecha: "2026-10-09"
+    },
     {
         titulo: "Formación AWS: de Floci a AWS real",
         categoria: "infraestructura",
