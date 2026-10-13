@@ -1,0 +1,607 @@
+{
+ "id": "docker-mysql-aws",
+ "titulo": "Infraestructura de Redes — Repaso Docker y MySQL en AWS",
+ "caso": "docker-mysql-aws",
+ "comisiones": [
+  "ITI"
+ ],
+ "total": 22,
+ "preguntas": [
+  {
+   "num": 1,
+   "puntos": 1,
+   "enunciado": "En el Paso 2, ¿qué es la VPC por defecto?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Un servidor virtual que AWS crea solo al iniciar el Learner Lab."
+    },
+    {
+     "letra": "b",
+     "texto": "Una conexión VPN entre tu PC y AWS."
+    },
+    {
+     "letra": "c",
+     "texto": "El firewall que filtra lo que entra a la instancia."
+    },
+    {
+     "letra": "d",
+     "texto": "Una red privada propia dentro de AWS, que cada cuenta ya trae preparada para tener máquinas con salida a Internet."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "VPC es Virtual Private Cloud, una red privada tuya dentro de AWS. Las máquinas viven adentro; el firewall es el security group."
+  },
+  {
+   "num": 2,
+   "puntos": 1,
+   "enunciado": "La VPC por defecto tiene el bloque 172.31.0.0/16 y cada subred un pedazo, por ejemplo 172.31.0.0/20. ¿Por qué hay varias subredes?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Hay una por cada zona de disponibilidad (us-east-1a, us-east-1b, …)."
+    },
+    {
+     "letra": "b",
+     "texto": "Hay una por cada estudiante del Learner Lab."
+    },
+    {
+     "letra": "c",
+     "texto": "Hay una para las IPs públicas y otra para las privadas."
+    },
+    {
+     "letra": "d",
+     "texto": "Hay una por cada servicio: una para EC2, otra para S3, otra para la base de datos."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "cada subred vive en una zona de disponibilidad, un centro de datos separado dentro de la región. Por eso hay varias, cada una un pedazo del /16."
+  },
+  {
+   "num": 3,
+   "puntos": 1,
+   "enunciado": "En la tabla de rutas de la VPC por defecto, ¿qué hace la ruta 0.0.0.0/0 → igw-…?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Le asigna una IP pública a cada instancia."
+    },
+    {
+     "letra": "b",
+     "texto": "Deja el tráfico dentro de la VPC, sin salir."
+    },
+    {
+     "letra": "c",
+     "texto": "Bloquea todo el tráfico que viene de Internet."
+    },
+    {
+     "letra": "d",
+     "texto": "Manda todo lo que no es de la VPC hacia la puerta de enlace de Internet: es la ruta por defecto."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "172.31.0.0/16 → local deja adentro el tráfico de la VPC; 0.0.0.0/0 es \"todo lo demás\", que sale por el Internet gateway. Es como el router de una red de casa."
+  },
+  {
+   "num": 4,
+   "puntos": 1,
+   "enunciado": "¿Qué hace un security group recién creado con lo que entra a la instancia?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Deja pasar solo el puerto 22."
+    },
+    {
+     "letra": "b",
+     "texto": "Lo bloquea todo, salvo lo que autoricen las reglas de entrada."
+    },
+    {
+     "letra": "c",
+     "texto": "Lo deja pasar todo, salvo lo que bloqueen las reglas de entrada."
+    },
+    {
+     "letra": "d",
+     "texto": "Deja pasar solo lo que viene desde otras instancias de la VPC."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "el security group es un firewall que por defecto bloquea lo que entra y solo deja pasar lo que vos autorizás. Las reglas de salida, en cambio, vienen con todo permitido."
+  },
+  {
+   "num": 5,
+   "puntos": 1,
+   "enunciado": "¿Por qué las reglas de los puertos 80, 8080 y 8888 tienen origen Mi IP (My IP) y no 0.0.0.0/0?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Porque Mi IP hace que la página cargue más rápido."
+    },
+    {
+     "letra": "b",
+     "texto": "Porque el Learner Lab no permite reglas con 0.0.0.0/0."
+    },
+    {
+     "letra": "c",
+     "texto": "Porque phpMyAdmin entra a MySQL como root sin contraseña: abierto a todo Internet, cualquiera podría borrar la base."
+    },
+    {
+     "letra": "d",
+     "texto": "Porque con 0.0.0.0/0 la instancia no tendría IP pública."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "hay robots escaneando IPs de AWS todo el tiempo. Con Mi IP, solo tu conexión llega a los servicios. Por eso mismo desde el celular, que sale por otra IP, no entra."
+  },
+  {
+   "num": 6,
+   "puntos": 1,
+   "enunciado": "La regla de SSH para EC2 Instance Connect tiene como origen la prefix list com.amazonaws.us-east-1.ec2-instance-connect. ¿Qué IPs son esas?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Las de los servidores de AWS desde los que se conecta la terminal del navegador."
+    },
+    {
+     "letra": "b",
+     "texto": "Las IPs de los otros estudiantes del Learner Lab."
+    },
+    {
+     "letra": "c",
+     "texto": "La IP pública de tu PC."
+    },
+    {
+     "letra": "d",
+     "texto": "Las IPs de todas las instancias de la VPC."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "con EC2 Instance Connect no te conectás desde tu PC, sino desde servidores de AWS que te muestran la terminal en el navegador. Por eso la regla no es Mi IP."
+  },
+  {
+   "num": 7,
+   "puntos": 1,
+   "enunciado": "En el Paso 4, ¿qué es una AMI?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "El par de claves para entrar por SSH."
+    },
+    {
+     "letra": "b",
+     "texto": "Una imagen de disco con el sistema operativo ya instalado, a partir de la cual AWS crea la instancia."
+    },
+    {
+     "letra": "c",
+     "texto": "El disco donde se guardan los datos de la instancia."
+    },
+    {
+     "letra": "d",
+     "texto": "El tipo de instancia: cuántas vCPU y cuánta RAM tiene."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "en la nube no se instala el sistema desde un pendrive: se elige una AMI (Amazon Machine Image) y la máquina arranca con ese sistema. Elegimos Ubuntu Server 24.04 LTS, la que no dice \"SQL Server\"."
+  },
+  {
+   "num": 8,
+   "puntos": 1,
+   "enunciado": "Al lanzar la instancia aparece \"Microsoft SQL Server is not supported for the instance type 't3.micro'\". ¿Qué pasó?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "El Learner Lab no tiene crédito suficiente."
+    },
+    {
+     "letra": "b",
+     "texto": "Falta la regla del puerto de MySQL en el security group."
+    },
+    {
+     "letra": "c",
+     "texto": "Se eligió una AMI de Ubuntu con SQL Server en lugar de Ubuntu Server 24.04 LTS (HVM), SSD Volume Type."
+    },
+    {
+     "letra": "d",
+     "texto": "Hay que elegir otra región."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "las variantes con SQL Server no andan con una instancia chica. La correcta es la que dice \"SSD Volume Type\" y \"Apto para la capa gratuita\"."
+  },
+  {
+   "num": 9,
+   "puntos": 1,
+   "enunciado": "La instancia tiene una IP privada 172.31.x.x y una IP pública. ¿Por qué tiene dos?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "La privada es su dirección dentro de la VPC; la pública es por la que se la alcanza desde Internet."
+    },
+    {
+     "letra": "b",
+     "texto": "Una es de la instancia y la otra del security group."
+    },
+    {
+     "letra": "c",
+     "texto": "Una es para IPv4 y la otra para IPv6."
+    },
+    {
+     "letra": "d",
+     "texto": "La pública es la de tu PC, que AWS anota en la instancia."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "la privada está dentro del bloque de la VPC (Paso 2) y sirve adentro de la red. La pública existe porque se habilitó \"Asignar automáticamente la IP pública\"; sin ella no la podrías ver desde tu PC."
+  },
+  {
+   "num": 10,
+   "puntos": 1,
+   "enunciado": "Detenés la instancia y al otro día la volvés a arrancar. ¿Qué cambia?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "La IP privada: hay que volver a crear el security group."
+    },
+    {
+     "letra": "b",
+     "texto": "Hay que volver a instalar Docker."
+    },
+    {
+     "letra": "c",
+     "texto": "La IP pública: hay que usar la nueva."
+    },
+    {
+     "letra": "d",
+     "texto": "Se borra la base alumnos."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "la IP pública cambia cada vez que la instancia se detiene y arranca. El disco se conserva: Docker, los contenedores (restart: always), la base y el swap siguen ahí."
+  },
+  {
+   "num": 11,
+   "puntos": 1,
+   "enunciado": "Después de conectarte por SSH al otro día, phpMyAdmin no carga porque te conectás desde otra red. ¿Qué hay que hacer?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Volver a crear la instancia."
+    },
+    {
+     "letra": "b",
+     "texto": "Editar las reglas de entrada del security group y volver a elegir Mi IP."
+    },
+    {
+     "letra": "c",
+     "texto": "Reiniciar los contenedores con docker compose restart."
+    },
+    {
+     "letra": "d",
+     "texto": "Cambiar http por https."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "las reglas dejan pasar solo la IP que tenías cuando las creaste. Desde otra red tu IP pública es otra, y el security group descarta los pedidos."
+  },
+  {
+   "num": 12,
+   "puntos": 1,
+   "enunciado": "En el Paso 5, ¿qué es la infraestructura como servicio (IaaS)?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Subir el código y que el proveedor se encargue de todo lo demás."
+    },
+    {
+     "letra": "b",
+     "texto": "Usar una aplicación ya hecha desde el navegador, como Gmail."
+    },
+    {
+     "letra": "c",
+     "texto": "Alquilar la máquina (procesador, memoria, disco y red) en un centro de datos ajeno, en vez de comprarla."
+    },
+    {
+     "letra": "d",
+     "texto": "Instalar servidores propios en la sala de servidores del Terciario."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "en minutos y sin tocar un cable tuviste una computadora completa con su sistema operativo. El sistema y lo que corre arriba lo instalás vos; eso es IaaS."
+  },
+  {
+   "num": 13,
+   "puntos": 1,
+   "enunciado": "¿Para qué se crea el archivo de swap de 1 GB en el Paso 6?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Para que Docker pueda descargar las imágenes."
+    },
+    {
+     "letra": "b",
+     "texto": "Para que la instancia no pierda los datos al apagarla."
+    },
+    {
+     "letra": "c",
+     "texto": "La t3.micro tiene 1 GB de RAM y, con MySQL andando, phpMyAdmin se queda colgado: el swap da memoria de reserva en el disco."
+    },
+    {
+     "letra": "d",
+     "texto": "Para guardar las copias de seguridad de MySQL."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "sin swap, con los tres contenedores quedaban unos 57 MB libres. El swap es más lento que la RAM, pero evita que se cuelgue."
+  },
+  {
+   "num": 14,
+   "puntos": 1,
+   "enunciado": "¿Para qué sirve sudo usermod -aG docker ubuntu?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Agrega tu usuario al grupo docker, para no tener que poner sudo delante de cada comando de Docker."
+    },
+    {
+     "letra": "b",
+     "texto": "Instala Docker."
+    },
+    {
+     "letra": "c",
+     "texto": "Crea el usuario ubuntu."
+    },
+    {
+     "letra": "d",
+     "texto": "Le da a Docker permiso para abrir puertos en el security group."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "el usermod te suma al grupo docker. Para que tome efecto en la terminal que ya tenés abierta se usa newgrp docker; si no, aparece \"permission denied … docker.sock\"."
+  },
+  {
+   "num": 15,
+   "puntos": 1,
+   "enunciado": "¿Por qué el docker-compose.yml usa mysql:8.4 y no mysql:latest?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Porque latest ocupa más disco."
+    },
+    {
+     "letra": "b",
+     "texto": "Porque latest no existe en Docker Hub."
+    },
+    {
+     "letra": "c",
+     "texto": "Porque AWS no permite la etiqueta latest."
+    },
+    {
+     "letra": "d",
+     "texto": "Con latest, si sale una versión nueva que cambia algo, la práctica deja de andar sin que hayas tocado nada."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "una versión fija da siempre el mismo resultado. latest apunta a lo último que se publicó, y eso cambia con el tiempo."
+  },
+  {
+   "num": 16,
+   "puntos": 1,
+   "enunciado": "En el Paso 7 abrís http://IP-PUBLICA y aparece 403 Forbidden. ¿Qué pasa?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Es lo esperado: Nginx anda, pero la carpeta web/ está vacía hasta el Paso 9."
+    },
+    {
+     "letra": "b",
+     "texto": "Nginx no arrancó."
+    },
+    {
+     "letra": "c",
+     "texto": "Falta la regla del puerto 80 en el security group."
+    },
+    {
+     "letra": "d",
+     "texto": "Hay que entrar con https."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "si Nginx no respondiera, el navegador se quedaría esperando. El 403 es una respuesta de Nginx: llegaste, pero no tiene nada para mostrar."
+  },
+  {
+   "num": 17,
+   "puntos": 1,
+   "enunciado": "En la página del Paso 9 aparecen dos IPs. ¿Cuál es la del visitante?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "La IP del contenedor de Nginx."
+    },
+    {
+     "letra": "b",
+     "texto": "La IP pública de la instancia."
+    },
+    {
+     "letra": "c",
+     "texto": "La IP privada de la instancia (172.31.x.x)."
+    },
+    {
+     "letra": "d",
+     "texto": "La IP pública de tu conexión, la misma que AWS completó como Mi IP en el security group."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "ipify devuelve la IP pública de quien hace la consulta, o sea, tu navegador. La del servidor es la que escribiste en la barra de direcciones."
+  },
+  {
+   "num": 18,
+   "puntos": 1,
+   "enunciado": "En el Paso 10 aparecen tres IPs de la misma máquina: la pública, la 172.31.x.x y la 172.18.x.x. ¿Qué es la 172.18.x.x?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "La IP de tu PC en tu red de casa."
+    },
+    {
+     "letra": "b",
+     "texto": "La IP del Internet gateway."
+    },
+    {
+     "letra": "c",
+     "texto": "La IP privada de la instancia en la VPC."
+    },
+    {
+     "letra": "d",
+     "texto": "La del contenedor de MySQL dentro de la red de Docker."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "la pública se usa desde tu PC, la 172.31.x.x es la privada en la VPC, y la 172.18.x.x es la del contenedor en la red que arma Docker. El sed del Paso 10 la escribe en app.py."
+  },
+  {
+   "num": 19,
+   "puntos": 1,
+   "enunciado": "MySQL no tiene regla de entrada en el security group ni línea ports: en el docker-compose.yml. ¿Cómo llega phpMyAdmin a MySQL?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Por Internet, a través del puerto 3306 de la IP pública."
+    },
+    {
+     "letra": "b",
+     "texto": "Por la red interna de Docker, usando el nombre del servicio (PMA_HOST: mysql); nada entra desde Internet al 3306."
+    },
+    {
+     "letra": "c",
+     "texto": "No llega: phpMyAdmin trae su propia base de datos."
+    },
+    {
+     "letra": "d",
+     "texto": "Por el puerto 8080, que comparte con MySQL."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "los dos contenedores están en mynetwork, y ahí se encuentran por nombre. El CRUD llega por la IP del contenedor desde la misma instancia. El security group solo filtra lo que viene de afuera de la instancia."
+  },
+  {
+   "num": 20,
+   "puntos": 1,
+   "enunciado": "En el desafío, la regla del 8888 permite solo 203.0.113.10/32. ¿Por qué el navegador queda esperando hasta dar timeout en vez de mostrar enseguida \"conexión rechazada\"?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Porque 203.0.113.10 es una IP que no existe."
+    },
+    {
+     "letra": "b",
+     "texto": "Porque el security group descarta los paquetes sin responder: el navegador no recibe nada y espera."
+    },
+    {
+     "letra": "c",
+     "texto": "Porque el CRUD se cuelga al recibir un pedido de una IP no autorizada."
+    },
+    {
+     "letra": "d",
+     "texto": "Porque la instancia se apaga sola al cambiar las reglas."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "\"conexión rechazada\" es una respuesta (un RST). El security group no responde: descarta en silencio, y el navegador se queda esperando hasta que se cansa."
+  },
+  {
+   "num": 21,
+   "puntos": 1,
+   "enunciado": "Al terminar de trabajar, ¿qué conviene hacer con la instancia?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Dejarla prendida: el Learner Lab no cobra mientras no la uses."
+    },
+    {
+     "letra": "b",
+     "texto": "Terminarla (Terminate) al final de cada clase."
+    },
+    {
+     "letra": "c",
+     "texto": "Detenerla (Stop) y hacer End Lab: deja de gastar crédito y se conserva para la próxima."
+    },
+    {
+     "letra": "d",
+     "texto": "Cerrar la pestaña del navegador alcanza."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "una instancia prendida consume crédito aunque no la uses. Terminate la borra con todo lo que tiene: eso se hace recién cuando el profesor lo indique."
+  },
+  {
+   "num": 22,
+   "puntos": 1,
+   "enunciado": "¿Cuáles de estas cosas sí siguen ahí al volver a prender la instancia otro día? (puede haber más de una)",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Los contenedores de MySQL, phpMyAdmin y Nginx (por restart: always)."
+    },
+    {
+     "letra": "b",
+     "texto": "El CRUD Flask corriendo."
+    },
+    {
+     "letra": "c",
+     "texto": "La base alumnos y el swap."
+    },
+    {
+     "letra": "d",
+     "texto": "La misma IP pública."
+    }
+   ],
+   "correctas": [
+    "a",
+    "c"
+   ],
+   "porque": "el disco se conserva y los contenedores vuelven solos. El CRUD no vuelve solo (hay que repetir el Paso 10 desde cd ~/practica) y la IP pública cambia."
+  }
+ ],
+ "materia": "Infraestructura de Redes"
+}
