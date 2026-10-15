@@ -1,0 +1,250 @@
+{
+ "id": "simulacro-iti21-p1",
+ "titulo": "Infraestructura de Redes II — Simulacro de parcial",
+ "caso": "simulacro-iti21-p1",
+ "comisiones": [
+  "ITI"
+ ],
+ "total": 10,
+ "preguntas": [
+  {
+   "num": 1,
+   "puntos": 1,
+   "enunciado": "Los contenedores `isolated-a` e `isolated-b` están corriendo, pero `docker exec isolated-a ping isolated-b` responde \"bad address\". ¿Cuál es la causa más probable?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Están en redes de Docker distintas y no comparten ninguna."
+    },
+    {
+     "letra": "b",
+     "texto": "`isolated-b` tiene bloqueado el tráfico ICMP."
+    },
+    {
+     "letra": "c",
+     "texto": "Docker no permite hacer ping entre contenedores."
+    },
+    {
+     "letra": "d",
+     "texto": "A `isolated-b` le falta publicar un puerto con `-p`."
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "solo los contenedores de una misma red definida por el usuario se ven entre sí y se resuelven por nombre. Se arregla conectándolos a una red común con `docker network connect`."
+  },
+  {
+   "num": 2,
+   "puntos": 1,
+   "enunciado": "Dentro de `web-server` corre `python -m http.server 8080 --bind 127.0.0.1`. Desde `web-client`, en la misma red, el ping a `web-server` funciona, pero `curl web-server:8080` falla. ¿Por qué?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "El puerto 8080 está reservado por Docker."
+    },
+    {
+     "letra": "b",
+     "texto": "El servidor escucha solo en el loopback de su propio contenedor, así que no acepta conexiones de afuera."
+    },
+    {
+     "letra": "c",
+     "texto": "Hace falta publicar el puerto con `-p 8080:8080`."
+    },
+    {
+     "letra": "d",
+     "texto": "curl no funciona entre contenedores."
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "dentro de un contenedor, `127.0.0.1` es ese contenedor y nada más. Para aceptar conexiones de otros contenedores tiene que escuchar en `0.0.0.0`. Publicar el puerto con `-p` sirve para llegar desde el host, no entre contenedores."
+  },
+  {
+   "num": 3,
+   "puntos": 1,
+   "enunciado": "Verdadero o falso: \"Si el ping entre dos contenedores falla, seguro que el servicio web entre ellos tampoco responde.\"",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Falso"
+    },
+    {
+     "letra": "b",
+     "texto": "Verdadero"
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "ping usa ICMP y el servicio web usa TCP. Se puede bloquear ICMP con una regla de firewall (iptables) y dejar el HTTP funcionando. Que el ping no llegue no prueba que el servicio no responda."
+  },
+  {
+   "num": 4,
+   "puntos": 1,
+   "enunciado": "En el `docker-compose.yml` de la Etapa 6, el servicio `prometheus` tiene `extra_hosts: - \"host.docker.internal:host-gateway\"`. ¿Para qué está?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Para que Grafana pueda llegar a Prometheus."
+    },
+    {
+     "letra": "b",
+     "texto": "Para darle a Prometheus una IP fija."
+    },
+    {
+     "letra": "c",
+     "texto": "Para que Prometheus, desde adentro del contenedor, llegue a la app Flask, que corre en el host y no en el compose."
+    },
+    {
+     "letra": "d",
+     "texto": "Para publicar el puerto de Prometheus en el host."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "`extra_hosts` agrega una entrada al `/etc/hosts` del contenedor. `host-gateway` apunta al host, y así Prometheus llega al `/metrics` de la app."
+  },
+  {
+   "num": 5,
+   "puntos": 1,
+   "enunciado": "Verdadero o falso: \"En el mismo `docker-compose.yml`, si `dbexporter` y `mysql` comparten la red `mynetwork`, `dbexporter` puede conectarse a la base usando el nombre `mysql` en lugar de una IP.\"",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Verdadero"
+    },
+    {
+     "letra": "b",
+     "texto": "Falso"
+    }
+   ],
+   "correctas": [
+    "a"
+   ],
+   "porque": "el DNS interno de Docker resuelve el nombre de cada servicio dentro de la red."
+  },
+  {
+   "num": 6,
+   "puntos": 1,
+   "enunciado": "Un servidor web multihilo recibe 10 peticiones al mismo tiempo. ¿Cómo las atiende?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Rechaza las peticiones que superan la cantidad de núcleos del procesador."
+    },
+    {
+     "letra": "b",
+     "texto": "Levanta un proceso nuevo por cada petición, con su propia copia de la app en memoria."
+    },
+    {
+     "letra": "c",
+     "texto": "De a una por vez: las demás esperan en la cola (backlog) del socket."
+    },
+    {
+     "letra": "d",
+     "texto": "Le asigna cada petición a un hilo. Los hilos avanzan de forma concurrente dentro del mismo proceso y comparten su memoria."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "en un servidor multihilo cada petición corre en un hilo dentro del mismo proceso. Los hilos son livianos y comparten memoria, pero hay que cuidar la sincronización. Atender de a una es lo que hace un servidor de un solo hilo, como el de desarrollo. Un proceso por petición se parece más a los workers de Gunicorn."
+  },
+  {
+   "num": 7,
+   "puntos": 1,
+   "enunciado": "Verdadero o falso: \"En un servidor multihilo en Python, mientras un hilo espera la respuesta de la base de datos, otro hilo puede ir atendiendo otra petición.\"",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Falso"
+    },
+    {
+     "letra": "b",
+     "texto": "Verdadero"
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "mientras un hilo espera una operación de entrada/salida (red, base de datos, disco), Python libera el GIL y otro hilo puede avanzar. Los hilos sirven para atender peticiones que pasan mucho tiempo esperando. Lo que no aceleran es el cálculo puro: para eso Gunicorn usa procesos."
+  },
+  {
+   "num": 8,
+   "puntos": 1,
+   "enunciado": "¿Por qué una consulta parametrizada evita la inyección SQL?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Porque bloquea los caracteres `'` y `--`."
+    },
+    {
+     "letra": "b",
+     "texto": "Porque solo deja entrar al usuario `admin`."
+    },
+    {
+     "letra": "c",
+     "texto": "Porque los datos del usuario viajan separados del código SQL y nunca se interpretan como parte de la consulta."
+    },
+    {
+     "letra": "d",
+     "texto": "Porque cifra la contraseña antes de mandarla."
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "con la consulta armada concatenando texto, lo que escribe el usuario puede cambiar la consulta (por ejemplo, `admin' -- ` comenta el chequeo de la contraseña). Parametrizada, la base recibe la consulta y los datos por separado: el dato es siempre un valor, nunca código."
+  },
+  {
+   "num": 9,
+   "puntos": 1,
+   "enunciado": "En la Etapa 3, ¿qué información nos dio `nmap` sobre nuestra propia infraestructura?",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "El consumo de CPU de cada contenedor."
+    },
+    {
+     "letra": "b",
+     "texto": "Las contraseñas de los usuarios de la app."
+    },
+    {
+     "letra": "c",
+     "texto": "Las consultas SQL que llegaron a la base."
+    },
+    {
+     "letra": "d",
+     "texto": "Qué puertos están abiertos y qué servicios corren en ellos: la superficie de ataque."
+    }
+   ],
+   "correctas": [
+    "d"
+   ],
+   "porque": "`nmap` hace reconocimiento: descubre puertos abiertos y los servicios detrás. Cada puerto expuesto es una puerta que un atacante puede probar; las contraseñas se atacaron después, con `hydra`."
+  },
+  {
+   "num": 10,
+   "puntos": 1,
+   "enunciado": "Verdadero o falso: \"Grafana guarda las métricas que muestra en sus dashboards.\"",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "Verdadero"
+    },
+    {
+     "letra": "b",
+     "texto": "Falso"
+    }
+   ],
+   "correctas": [
+    "b"
+   ],
+   "porque": "las métricas las recolecta y las guarda Prometheus, que las va a buscar al `/metrics` de cada servicio. Grafana las consulta a Prometheus y las muestra."
+  }
+ ],
+ "materia": "Infraestructura de Redes"
+}

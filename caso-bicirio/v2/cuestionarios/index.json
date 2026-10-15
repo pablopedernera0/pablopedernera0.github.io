@@ -21,6 +21,16 @@
   "total": 30
  },
  {
+  "id": "simulacro-iti21-p1",
+  "titulo": "Infraestructura de Redes II — Simulacro de parcial",
+  "materia": "Infraestructura de Redes",
+  "comisiones": [
+   "ITI"
+  ],
+  "preguntas": 10,
+  "total": 10
+ },
+ {
   "id": "docker-mysql-aws",
   "titulo": "Infraestructura de Redes — Repaso Docker y MySQL en AWS",
   "materia": "Infraestructura de Redes",
