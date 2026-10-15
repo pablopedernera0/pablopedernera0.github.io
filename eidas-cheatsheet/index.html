@@ -261,59 +261,80 @@
 
 <header>
   <h1>Sistema <span>EIDAS</span> — Cheat Sheet del docente</h1>
-  <p class="tagline">Diseño de Sistemas Web · Comisiones 31 y 32 · 2.° Cuatrimestre 2026 · Terciario Urquiza</p>
+  <p class="tagline">Diseño de Sistemas Web 31 y 32 · Redes AF-31 · ITI-21 · 2.° Cuatrimestre 2026 · Terciario Urquiza · actualizada 15/10</p>
 </header>
 
 <main>
   <section>
-    <p class="section-label">Por cada grupo, en este orden</p>
+    <p class="section-label">Qué uso para qué</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="lede">Ver todo junto</span>
+        <p><code>/dashboard</code> → <code>127.0.0.1:8420</code>. Pestañas <strong>Grupos</strong> (estado de cada devolución), <strong>Recorrer</strong>, <strong>Notas</strong> y <strong>Cronograma</strong>.</p>
+      </div>
+      <div class="card">
+        <span class="lede">Leer los repos sin GitHub</span>
+        <p><strong>Recorrer</strong>: por grupo (← →) o por sección, el mismo archivo en todos los grupos (Shift ← →). Dibuja <code>.puml</code> y PDF. <strong>↻ actualizar</strong> = <code>/sync</code>.</p>
+      </div>
+      <div class="card">
+        <span class="lede">Notas por alumno</span>
+        <p><strong>Notas</strong>: cuestionario (Classroom + Forms) + repo en AF; tareas de Classroom + tu CSV en ITI. Botón <strong>↻ traer de Classroom y Forms</strong>.</p>
+      </div>
+      <div class="card">
+        <span class="lede">Consultar Classroom</span>
+        <p><code>classroom.py cursos | tareas &lt;curso&gt; | entregas &lt;curso&gt; | form &lt;id&gt;</code>. Solo lectura.</p>
+      </div>
+      <div class="card">
+        <span class="lede">Simulacros y cuestionarios</span>
+        <p>Banco en <code>sistema-eidas-datos/cuestionarios/</code> → <code>cuestionario.py generar</code> → <code>…/caso-bicirio/v2/?cuestionario=&lt;id&gt;</code>.</p>
+      </div>
+      <div class="card">
+        <span class="lede">Máquina nueva</span>
+        <p><code>/estado-eidas</code>, librerías en <code>/usr/bin/python3</code>, <code>infra/n8n/setup.sh</code>, symlinks de <code>grupos.json</code>. Ver la guía, sección 7.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">Devolución de un grupo, en este orden</p>
     <div class="steps-list">
       <div class="step-item">
         <span class="num">1</span>
         <div>
           <h3>Traer los repos</h3>
-          <span class="step-cmd"><code>python3 scripts/grupos.py sync &lt;materia&gt;</code> <span class="opt">o /sync &lt;materia&gt;</span></span>
-          <p>Clona los grupos nuevos de <code>grupos.json</code> y hace <code>git pull</code> de los que ya estaban. Mismo comando desde terminal o Claude Code.</p>
+          <span class="step-cmd"><code>/sync &lt;materia&gt;</code> <span class="opt">o ↻ actualizar en Recorrer</span></span>
+          <p>Clona los grupos nuevos y hace <code>pull</code> de <code>main</code>. No toca un clon en otra branch o con cambios sin commitear.</p>
         </div>
       </div>
       <div class="step-item">
         <span class="num">2</span>
         <div>
-          <h3>Chequear si conviene evaluar</h3>
-          <span class="step-cmd"><code>/chequear-grupo &lt;materia&gt; &lt;grupo-id&gt;</code></span>
-          <p>Solo lee, no escribe nada. Da un veredicto — <strong>LISTO PARA EVALUAR</strong> / <strong>ESPERAR</strong> / <strong>PEDIR ACTUALIZACIÓN</strong> — mirando solo lo que ya corresponde según el cronograma.</p>
+          <h3>Chequear y mirar <span class="opt">(opcional)</span></h3>
+          <span class="step-cmd"><code>/chequear-grupo &lt;materia&gt; &lt;grupo-id&gt;</code> · <code>/resumen-commits …</code></span>
+          <p>Veredicto <strong>LISTO / ESPERAR / PEDIR ACTUALIZACIÓN</strong> sin escribir nada. El punto naranja de Recorrer marca lo que cambió después del último borrador.</p>
         </div>
       </div>
       <div class="step-item">
         <span class="num">3</span>
         <div>
-          <h3>Ver el proceso <span class="opt">(opcional)</span></h3>
-          <span class="step-cmd"><code>/resumen-commits &lt;materia&gt; &lt;grupo-id&gt;</code></span>
-          <p>Cómo trabajaron en el tiempo, no cuánto. Informativo — no entra en la devolución ni pesa en la nota.</p>
+          <h3>Generar el borrador</h3>
+          <span class="step-cmd"><code>/evaluar-grupo &lt;materia&gt; &lt;grupo-id&gt;</code></span>
+          <p>Escribe <code>sistema-eidas-datos/&lt;materia&gt;/borradores/&lt;grupo&gt;/AAAA-MM-DD.md</code> y lo pushea ahí (repo privado). El grupo no lo ve.</p>
         </div>
       </div>
       <div class="step-item">
         <span class="num">4</span>
         <div>
-          <h3>Generar el borrador</h3>
-          <span class="step-cmd"><code>/evaluar-grupo &lt;materia&gt; &lt;grupo-id&gt;</code></span>
-          <p>Commitea la devolución en la branch local <code>feedback</code> — nunca la pushea. Si todavía no se dio todo en clase, sale una devolución <strong>parcial</strong>.</p>
+          <h3>Revisar — obligatorio</h3>
+          <p>Editá el borrador, respondé la "Pregunta para el docente" y <strong>tildá "Revisado y aprobado"</strong>. Si lo editás a mano, commit y push en <code>sistema-eidas-datos</code>.</p>
         </div>
       </div>
       <div class="step-item">
         <span class="num">5</span>
         <div>
-          <h3>Revisar — obligatorio</h3>
-          <span class="step-cmd"><code>git -C materias/&lt;materia&gt;/grupos/&lt;grupo-id&gt; diff main..feedback</code></span>
-          <p>Ajustá puntajes y texto a mano, sumá lo que Claude no puede ver. <strong>Publicar no te muestra este diff solo</strong> — asume que ya lo viste.</p>
-        </div>
-      </div>
-      <div class="step-item">
-        <span class="num">6</span>
-        <div>
           <h3>Publicar y notificar</h3>
-          <span class="step-cmd"><code>python3 scripts/grupos.py publicar &lt;materia&gt; &lt;grupo-id&gt;</code></span>
-          <p>Un solo comando: merge a <code>main</code>, push, y dispara N8N solo. Recién acá lo ve el grupo.</p>
+          <span class="step-cmd"><code>/publicar &lt;materia&gt; &lt;grupo-id&gt;</code> <span class="opt">o grupos.py publicar</span></span>
+          <p>Solo publica borradores aprobados: los escribe en <code>feedback/</code> del repo del grupo, pushea a <code>main</code> y N8N manda el mail. Recién acá lo ve el grupo.</p>
         </div>
       </div>
     </div>
@@ -322,72 +343,75 @@
   <section>
     <p class="section-label">Reglas que cuestan olvidar</p>
     <div class="card-grid">
-      <div class="card">
-        <span class="lede">Dos familias de comandos</span>
-        <p><code>python3 scripts/grupos.py …</code> es terminal. <code>/comando</code> es Claude Code — necesita una sesión abierta dentro de <code>sistema-eidas/</code>. <code>sync</code> tiene las dos formas; el resto no.</p>
+      <div class="card warn">
+        <span class="lede">Python del sistema</span>
+        <p>La terminal de la PC trae otro venv sin Flask ni Google: los scripts van con <code>/usr/bin/python3</code>.</p>
       </div>
       <div class="card warn">
-        <span class="lede">Publicar y notificar no tienen atajo</span>
-        <p>A propósito: <code>publicar</code> pide confirmación antes de un push irreversible que dispara un mail. Siempre por terminal, nunca <code>--yes</code> automático.</p>
+        <span class="lede">La API no califica</span>
+        <p>Classroom por API solo lee. Notas y devoluciones de tareas creadas a mano: en Classroom o "Importar calificaciones" desde el Form.</p>
       </div>
       <div class="card warn">
-        <span class="lede">No hay flag --dry-run</span>
-        <p>El chequeo de solo lectura es <code>/chequear-grupo</code>, comando aparte — no algo que se le pasa a <code>grupos.py</code>.</p>
-      </div>
-      <div class="card">
-        <span class="lede">El cronograma manda</span>
-        <p>Si la materia tiene <code>cronograma-2c-2026.md</code>, lo que no se dio en clase todavía no cuenta como "Ausente".</p>
+        <span class="lede">Mails de Classroom</span>
+        <p>"Enviado con retraso": ignorable. <strong>"Comentario privado" y "Se entregó nuevamente": no</strong>, la API no los ve.</p>
       </div>
       <div class="card warn">
-        <span class="lede">Proceso, solo al final</span>
-        <p>Los 5 pts de "evolución sobre la entrega intermedia" nunca se puntúan en una devolución parcial.</p>
-      </div>
-      <div class="card">
-        <span class="lede">Colaborador con permiso de escritura</span>
-        <p>Si el grupo no te agregó en Settings → Collaborators, el <code>push</code> de publicar va a fallar.</p>
-      </div>
-      <div class="card">
-        <span class="lede">N8N tiene que estar corriendo</span>
-        <p><code>docker compose up -d</code> en <code>infra/n8n/</code> — si no, el push se hace igual pero la notificación no sale sola.</p>
+        <span class="lede">Mostrar puntuaciones (Forms)</span>
+        <p>El diálogo viene con todos marcados: desmarcá "Todos" o le reenvía el mail a todos. En la vista Individual, <strong>Guardar</strong> en la barra de abajo.</p>
       </div>
       <div class="card warn">
+        <span class="lede">Colector de mails</span>
+        <p>Su base vive solo donde se procesó. En una máquina con la base vacía, no proceses: pisa la planilla de Drive.</p>
+      </div>
+      <div class="card">
+        <span class="lede">Código del día</span>
+        <p>Sale de <code>&amp;modo=docente</code> con la clave maestra y <strong>cambia a las 0 h</strong>: el de hoy no le sirve a quien lo haga mañana.</p>
+      </div>
+      <div class="card">
+        <span class="lede">Faltantes no bloquean</span>
+        <p>Lo que no se dio en clase no es "Ausente"; Proceso (5 pts) solo en la final. Lo pertinente fuera del template se puntúa igual.</p>
+      </div>
+      <div class="card">
         <span class="lede">Commiteó ≠ hizo el trabajo</span>
-        <p>El desglose por autor de <code>/resumen-commits</code> es solo informativo — no lo uses para juzgar aporte individual.</p>
+        <p>El desglose por autor de <code>/resumen-commits</code> es solo informativo. Proceso se sube con lo que sabés de la clase.</p>
       </div>
       <div class="card">
-        <span class="lede">La branch feedback es local</span>
-        <p>No se pushea hasta publicar — el grupo no puede verla antes de tiempo, ni por accidente.</p>
+        <span class="lede">Colaborador + N8N</span>
+        <p>Sin permiso de escritura en el repo del grupo, el push de publicar falla. Sin N8N corriendo, el push sale y el mail no (<code>grupos.py notificar</code>).</p>
       </div>
     </div>
   </section>
 
   <section class="ledger">
     <div class="tree">
-      <h3>Rúbrica en números</h3>
+      <h3>Rúbrica AF en números</h3>
       <table class="score">
         <tr><td>Repo grupal <span style="color:var(--muted); font-size:0.85em;">(incluye Proceso, 5)</span></td><td class="num">70</td></tr>
         <tr><td>Cuestionario individual</td><td class="num">30</td></tr>
         <tr class="total"><td>Total</td><td class="num">100</td></tr>
       </table>
       <p class="approval">Aprobación <strong>≥60</strong> · Recuperatorio <strong>40–59</strong> · Insuficiente <strong>&lt;40</strong></p>
+      <p class="approval" style="margin-top:0.8rem">Escala de prácticas (Redes, ITI): Excelente 100 · Muy bueno 90 · Bueno 80 · Regular 70 · Insuficiente 50</p>
     </div>
     <div class="tree">
       <h3>Dónde vive cada cosa</h3>
       <dl class="filemap">
-        <dt>materias/&lt;materia&gt;/rubrica.md</dt>
-        <dd>Criterios y puntajes de esa materia</dd>
-        <dt>materias/&lt;materia&gt;/cronograma-2c-2026.md</dt>
-        <dd>Fechas → secciones (si existe)</dd>
-        <dt>materias/&lt;materia&gt;/grupos.json</dt>
-        <dd>Repo + email de cada grupo</dd>
-        <dt>…/grupos/&lt;id&gt;/feedback/</dt>
-        <dd>Devoluciones, branch <code style="color:var(--d-color); background:none; padding:0;">feedback</code> local</dd>
+        <dt>sistema-eidas (público)</dt>
+        <dd>Scripts, comandos, rúbricas, cronogramas, <code style="color:var(--d-color); background:none; padding:0;">guia-de-uso.md</code></dd>
+        <dt>sistema-eidas-datos (privado)</dt>
+        <dd>Borradores, <code style="color:var(--d-color); background:none; padding:0;">grupos.json</code>, <code style="color:var(--d-color); background:none; padding:0;">classroom.json</code>, CSV de notas, bancos de cuestionarios, secretos</dd>
+        <dt>repo de cada grupo</dt>
+        <dd>Devoluciones publicadas en <code style="color:var(--d-color); background:none; padding:0;">feedback/</code></dd>
+        <dt>pablopedernera0.github.io</dt>
+        <dd>Cuestionarios publicados y esta página</dd>
+        <dt>Classroom y Forms</dt>
+        <dd>Notas, comentarios privados y respuestas</dd>
       </dl>
     </div>
   </section>
 </main>
 
-<footer>sistema-eidas · guia-de-uso.md tiene el detalle completo</footer>
+<footer>sistema-eidas · guia-de-uso.md tiene el detalle completo (empezá por "Mapa: qué uso para qué")</footer>
 
 </body>
 </html>
