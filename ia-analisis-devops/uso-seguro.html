@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA aplicada: Uso seguro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #05070a, #0d1117);
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100px);
+            transition: all 0.6s ease;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide.slide-tall {
+            justify-content: flex-start;
+            padding-top: 5.5rem;
+            padding-bottom: 6rem;
+        }
+
+        .slide h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1.2rem;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .slide h4 {
+            font-size: 1.15rem;
+            margin-bottom: 0.8rem;
+            color: #58a6ff;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+            max-width: 850px;
+        }
+
+        .slide > p {
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 1.2rem;
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(63, 185, 80, 0.35);
+            border-radius: 12px;
+            padding: 1.3rem;
+            text-align: left;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            background: rgba(63, 185, 80, 0.08);
+        }
+
+        .card .icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .card h4 {
+            margin-bottom: 0.4rem;
+        }
+
+        .card p {
+            font-size: 0.96rem;
+            margin-bottom: 0;
+            color: #b8c0c9;
+        }
+
+        a.card-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .warning-box {
+            background: rgba(240, 136, 62, 0.1);
+            border: 1px solid #f0883e;
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            max-width: 800px;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        strong {
+            color: #3fb950;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #f0883e;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            width: 100%;
+            max-width: 780px;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+            border-left: 4px solid #3fb950;
+        }
+
+        .step-item .num {
+            font-weight: bold;
+            color: #3fb950;
+            font-size: 1.1rem;
+            min-width: 1.5rem;
+        }
+
+        .tech-table {
+            width: 100%;
+            max-width: 950px;
+            border-collapse: collapse;
+            margin: 0.5rem 0 1rem;
+            font-size: 1rem;
+        }
+
+        .tech-table th, .tech-table td {
+            text-align: left;
+            padding: 0.6rem 0.8rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            vertical-align: top;
+        }
+
+        .tech-table th {
+            color: #8b949e;
+            font-weight: normal;
+            font-size: 0.9rem;
+        }
+
+        .tech-table td:first-child {
+            color: #3fb950;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .tech-table td:last-child {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #b8c0c9;
+        }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.2rem;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .compare-card {
+            border-radius: 12px;
+            padding: 1.1rem 1.3rem;
+            text-align: left;
+        }
+
+        .compare-card.bad {
+            background: rgba(248, 81, 73, 0.08);
+            border: 1px solid rgba(248, 81, 73, 0.5);
+        }
+
+        .compare-card.good {
+            background: rgba(63, 185, 80, 0.08);
+            border: 1px solid rgba(63, 185, 80, 0.5);
+        }
+
+        .compare-label {
+            display: block;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+            color: #8b949e;
+        }
+
+        .prompt-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.55;
+            white-space: pre-wrap;
+        }
+
+        .prompt-text mark {
+            background: rgba(248, 81, 73, 0.25);
+            color: #ffb4ae;
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+
+        .exercise-form {
+            width: 100%;
+            max-width: 780px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: left;
+            margin: 0.5rem 0 1.5rem;
+        }
+
+        .form-field label {
+            display: block;
+            font-size: 0.92rem;
+            color: #8b949e;
+            margin-bottom: 0.35rem;
+        }
+
+        .form-field input[type="text"],
+        .form-field textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: 0.6rem 0.8rem;
+            color: #c9d1d9;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 0.95rem;
+            resize: vertical;
+        }
+
+        .form-field textarea {
+            min-height: 190px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        .form-field input[type="text"]:focus,
+        .form-field textarea:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+
+        .checklist-field {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .checklist-field input[type="checkbox"] {
+            margin-top: 0.3rem;
+            width: 1rem;
+            height: 1rem;
+            accent-color: #3fb950;
+            flex-shrink: 0;
+        }
+
+        .checklist-field label {
+            font-size: 1rem;
+            color: #c9d1d9;
+            margin-bottom: 0;
+        }
+
+        .checklist-field label span {
+            display: block;
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .btn.secondary {
+            background: transparent;
+            color: #58a6ff;
+            border: 1px solid #58a6ff;
+        }
+
+        .btn.secondary:hover {
+            background: rgba(88, 166, 255, 0.12);
+        }
+
+        .check-results {
+            list-style: none;
+            margin-top: 0.4rem;
+        }
+
+        .check-results li {
+            font-size: 0.95rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .check-results li.ok { color: #3fb950; }
+        .check-results li.fail { color: #f0883e; }
+
+        .download-status {
+            font-size: 0.88rem;
+            color: #3fb950;
+            min-height: 1.2rem;
+            margin-top: 0.6rem;
+        }
+
+        .download-status.error {
+            color: #f85149;
+        }
+
+        .verdict {
+            max-width: 780px;
+            width: 100%;
+            border-radius: 10px;
+            padding: 0.9rem 1.3rem;
+            margin-top: 0.5rem;
+            font-weight: bold;
+            background: rgba(248, 81, 73, 0.1);
+            border: 1px solid #f85149;
+            color: #ffb4ae;
+        }
+
+        .verdict.ok {
+            background: rgba(63, 185, 80, 0.1);
+            border-color: #3fb950;
+            color: #3fb950;
+        }
+
+        .source-note {
+            font-size: 0.95rem;
+            color: #8b949e;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .series-nav {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.5rem;
+            display: flex;
+            gap: 0.6rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .series-nav a, .series-nav span.current {
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            color: #8b949e;
+        }
+
+        .series-nav a:hover {
+            color: #58a6ff;
+        }
+
+        .series-nav span.current {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: #3fb950;
+            color: #05070a;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #56d364;
+        }
+
+        @media (max-width: 800px) {
+            .slide { padding: 4rem 1rem 6rem; justify-content: flex-start; }
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.6rem; }
+            .series-nav { display: none; }
+            .tech-table td:first-child { white-space: normal; }
+        }
+
+        .prev:disabled, .next:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<div class="series-nav">
+    <a href="index.html">🤖 Introducción</a>
+    <span class="current">🔐 Uso seguro</span>
+    <a href="analisis-funcional.html">📋 Análisis Funcional</a>
+    <a href="redes-devops.html">🌐 Redes / DevOps</a>
+</div>
+
+<div class="presentation-container">
+
+    <!-- Slide 1: Portada -->
+    <div class="slide active">
+        <div class="eyebrow">Terciario Urquiza · 2026</div>
+        <h1>🔐 Uso seguro de la IA</h1>
+        <p class="subtitle">Qué no pegar en un prompt, cómo anonimizar, y por qué la última palabra es tuya</p>
+        <p class="center" style="opacity:0.75; font-style:italic;">Segunda parte de la serie. Antes de pasar a los casos, el criterio que vale para todos.</p>
+    </div>
+
+    <!-- Slide 2: El riesgo está en lo que compartís -->
+    <div class="slide">
+        <h2>El riesgo está en lo que pegás</h2>
+        <p class="center">La IA no hace daño por sí sola. El problema aparece cuando lo que le pasás queda <strong>guardado, procesado, expuesto o reutilizado</strong>: en el historial de tu cuenta, en los servidores del proveedor, en una captura que compartís, o en manos de alguien que entra a esa cuenta.</p>
+        <div class="warning-box">
+            <p>El chat no tiene un filtro que te avise "esto es un DNI" o "esto es una contraseña". Si lo pegaste, ya salió de tu máquina. <strong>La única barrera sos vos</strong>, antes de apretar Enter.</p>
+        </div>
+    </div>
+
+    <!-- Slide 3: Qué no se pega -->
+    <div class="slide">
+        <h2>Qué no va en un prompt</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🪪</span>
+                <h4>Identificadores directos</h4>
+                <p>Nombres, DNI, CUIL, mail, teléfono, dirección. Todo lo que señala a una persona concreta.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🩺</span>
+                <h4>Datos sensibles</h4>
+                <p>Salud, origen étnico, religión, opiniones políticas, datos bancarios. Si se filtran, el daño es mayor y la ley los protege más.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔑</span>
+                <h4>Secretos técnicos</h4>
+                <p>Contraseñas, tokens, el <code>.env</code>, claves de AWS, la cadena de conexión a la base. Un log o un <code>docker-compose.yml</code> pegado "tal cual" suele traer alguno.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🏢</span>
+                <h4>Información de terceros</h4>
+                <p>El dump de la base del cliente, el código privado de la empresa, las notas de tus compañeros. No es tuya para compartirla.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Evaluar, anonimizar, verificar -->
+    <div class="slide">
+        <h2>Tres pasos antes de pegar</h2>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <div><strong>Evaluar.</strong> Leé lo que vas a pegar y marcá qué datos identifican a alguien, son sensibles o son secretos. Preguntate si la IA los necesita de verdad para resolver lo que le pedís (casi nunca).</div>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <div><strong>Anonimizar.</strong> Reemplazá esos datos por referencias genéricas (<code>USUARIO_1</code>, <code>IP_SERVIDOR</code>, <code>&lt;PASSWORD&gt;</code>) con las técnicas de la próxima slide.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <div><strong>Verificar.</strong> Releé el resultado. ¿Alguien que conozca el caso podría reconstruir quién es, combinando lo que quedó? Esa revisión no la hace ninguna herramienta: la hacés vos.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Técnicas de anonimización -->
+    <div class="slide">
+        <h2>Cinco técnicas de anonimización</h2>
+        <table class="tech-table">
+            <tr><th>Técnica</th><th>Qué hace</th><th>Ejemplo</th></tr>
+            <tr><td>Supresión</td><td>Borra el dato por completo.</td><td>"Lucía Benítez, DNI 31.456.789" → "una usuaria"</td></tr>
+            <tr><td>Generalización</td><td>Cambia un detalle por una categoría más amplia.</td><td>"46 años" → "adulto"; "Villa Ocampo" → "una localidad del norte"</td></tr>
+            <tr><td>Enmascaramiento</td><td>Oculta parte del dato y deja la forma.</td><td>"203.0.113.45" → "203.0.x.x"; "Turnos2026!" → "&lt;PASSWORD&gt;"</td></tr>
+            <tr><td>Descontextualización</td><td>Quita lo que identifica por ser único.</td><td>"la única programadora del centro" → "una persona del equipo técnico"</td></tr>
+            <tr><td>Agrupación temporal</td><td>Cambia fechas exactas por rangos.</td><td>"03/09/2026 14:20" → "a principios de septiembre"</td></tr>
+        </table>
+        <p class="center" style="opacity:0.85;">Ojo con la descontextualización: un dato que no parece personal ("el único DBA", "el de la silla de ruedas") puede identificar a alguien mejor que su nombre.</p>
+    </div>
+
+    <!-- Slide 6: Antes / después -->
+    <div class="slide">
+        <h2>Antes y después</h2>
+        <div class="compare-grid">
+            <div class="compare-card bad">
+                <span class="compare-label">❌ Así no</span>
+                <div class="prompt-text">El usuario <mark>jperez</mark> (<mark>jperez@ejemplo.com</mark>) no puede loguearse desde <mark>203.0.113.45</mark>. El log dice:
+<mark>DB_PASSWORD=Prod_2026!</mark> connection refused
+¿Qué puede ser?</div>
+            </div>
+            <div class="compare-card good">
+                <span class="compare-label">✅ Así sí</span>
+                <div class="prompt-text">Un usuario no puede loguearse desde una IP externa. El log dice:
+DB_PASSWORD=&lt;PASSWORD&gt; connection refused
+La app corre en Docker y la base en otro contenedor. ¿Qué puede ser?</div>
+            </div>
+        </div>
+        <div class="warning-box">
+            <p>Fijate que el segundo prompt no perdió nada de lo que la IA necesita para ayudar, y hasta ganó contexto útil (Docker, contenedores). Anonimizar bien no es borrar todo: es <strong>dejar el problema y sacar a las personas y los secretos</strong>.</p>
+        </div>
+    </div>
+
+    <!-- Slide 7: Actividad — consigna -->
+    <div class="slide">
+        <h2>Actividad — anonimizá este pedido de ayuda</h2>
+        <p class="center">En la próxima pantalla hay un mensaje real-de-mentira: alguien pide ayuda con un error en un sistema de turnos. Todos los datos son inventados, pero tiene de todo lo que no debería ir a una IA.</p>
+        <div class="steps-list">
+            <div class="step-item">
+                <span class="num">1</span>
+                <div>Editá el texto directamente en el recuadro, aplicando las técnicas que vimos.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">2</span>
+                <div>Tocá <strong>Revisar</strong>: la página te dice qué datos siguen ahí y si te quedaste sin el problema técnico.</div>
+            </div>
+            <div class="step-item">
+                <span class="num">3</span>
+                <div>Si el profe lo pide, descargá el resultado y subilo a Classroom.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Actividad — formulario -->
+    <div class="slide slide-tall">
+        <h2>Actividad — editá y revisá</h2>
+        <div class="exercise-form">
+            <div class="form-field">
+                <label for="an-nombre">Nombre y comisión</label>
+                <input type="text" id="an-nombre" placeholder="Ej: Pérez Juan - ITI 2°1°">
+            </div>
+            <div class="form-field">
+                <label for="an-texto">Mensaje a anonimizar (editalo acá)</label>
+                <textarea id="an-texto" spellcheck="false" style="min-height: 260px;"></textarea>
+            </div>
+            <div class="button-row">
+                <button type="button" class="btn" id="an-revisar">Revisar</button>
+                <button type="button" class="btn secondary" id="an-reset">Volver al original</button>
+                <button type="button" class="btn secondary" id="an-download">⬇ Descargar (.md)</button>
+            </div>
+            <ul class="check-results" id="an-resultados"></ul>
+            <p class="download-status" id="an-status"></p>
+        </div>
+    </div>
+
+    <!-- Slide 9: Alucinaciones -->
+    <div class="slide">
+        <h2>Cuando la IA se equivoca con seguridad</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🔢</span>
+                <h4>Errores de hecho</h4>
+                <p>Fechas, cifras, nombres o versiones inventadas o desactualizadas.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📦</span>
+                <h4>Referencias que no existen</h4>
+                <p>Un paquete de npm o pip, un flag de un comando, un artículo de una ley. Ojo: instalar un paquete inventado puede bajarte uno malicioso con ese nombre.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🧩</span>
+                <h4>Razonamiento flojo</h4>
+                <p>Conclusiones que suenan lógicas pero no se siguen de lo que le diste.</p>
+            </div>
+        </div>
+        <p class="center" style="margin-top: 0.5rem;">Dos frases que conviene sumar al prompt:</p>
+        <div class="steps-list">
+            <div class="step-item"><span class="num">💬</span><div>"Si no tenés información suficiente, decímelo en vez de suponer."</div></div>
+            <div class="step-item"><span class="num">💬</span><div>"Indicá de dónde sale cada afirmación: de lo que te pasé, de documentación oficial, o si es una suposición tuya."</div></div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Sesgo y humano en el circuito -->
+    <div class="slide">
+        <h2>Sesgos y la tentación de no revisar</h2>
+        <div class="card-grid">
+            <div class="card">
+                <span class="icon">🪞</span>
+                <h4>La IA copia el pasado</h4>
+                <p>Un filtro de CVs entrenado con veinte años de contrataciones de líderes técnicos, casi todos hombres, aprende que "líder" se parece a "hombre", y descarta a las mujeres. No es un error de programación: es una desigualdad vieja amplificada.</p>
+            </div>
+            <div class="card">
+                <span class="icon">😌</span>
+                <h4>Sesgo de automatización</h4>
+                <p>La tendencia a aceptar lo que dice la máquina porque está bien redactado y ordenado. Cuanto más prolija la respuesta, más fácil es no leerla con atención.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🧑‍💻</span>
+                <h4>Humano en el circuito</h4>
+                <p>La IA asiste; decide una persona que entiende el resultado y responde por él. Cuando una IA arma el primer borrador de una devolución de sus trabajos, ninguno sale sin que el profe lo lea, lo corrija y lo apruebe.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Checklist -->
+    <div class="slide slide-tall">
+        <h2>¿Está mi prompt seguro?</h2>
+        <p class="center" style="opacity:0.85;">Usala antes de enviar cualquier prompt que lleve material real.</p>
+        <div class="exercise-form" id="checklist">
+            <div class="checklist-field">
+                <input type="checkbox" id="ck-1">
+                <label for="ck-1">¿Saqué los identificadores directos?<span>Nombres, DNI, CUIL, mail, teléfono, usuario.</span></label>
+            </div>
+            <div class="checklist-field">
+                <input type="checkbox" id="ck-2">
+                <label for="ck-2">¿Excluí los datos sensibles?<span>Salud, datos bancarios, opiniones, cualquier cosa de la esfera íntima.</span></label>
+            </div>
+            <div class="checklist-field">
+                <input type="checkbox" id="ck-3">
+                <label for="ck-3">¿Saqué los secretos técnicos?<span>Contraseñas, tokens, claves de AWS, el <code>.env</code>, IPs y hosts de producción.</span></label>
+            </div>
+            <div class="checklist-field">
+                <input type="checkbox" id="ck-4">
+                <label for="ck-4">¿Anonimicé lo que sí hacía falta?<span>Supresión, generalización, enmascaramiento, descontextualización o rangos de fechas.</span></label>
+            </div>
+            <div class="checklist-field">
+                <input type="checkbox" id="ck-5">
+                <label for="ck-5">¿Es necesario este dato?<span>¿O puedo resolverlo con un ejemplo inventado o una variable genérica?</span></label>
+            </div>
+        </div>
+        <div class="verdict" id="verdict">Todavía no: si queda alguna sin marcar, no envíes el prompt.</div>
+    </div>
+
+    <!-- Slide 12: Cierre y fuente -->
+    <div class="slide">
+        <h2>Ahora sí, a los casos concretos</h2>
+        <p class="center" style="margin-bottom: 1.5rem;">En los dos casos que siguen vas a pegar requisitos y logs. Aplicá esta checklist antes de cada prompt.</p>
+        <div class="card-grid">
+            <a class="card-link" href="analisis-funcional.html">
+                <div class="card">
+                    <span class="icon">📋</span>
+                    <h4>Análisis Funcional →</h4>
+                    <p>Prompt malo vs. bueno, y ajuste de un modelo ER con IA.</p>
+                </div>
+            </a>
+            <a class="card-link" href="redes-devops.html">
+                <div class="card">
+                    <span class="icon">🌐</span>
+                    <h4>Redes / DevOps →</h4>
+                    <p>Interpretar logs de un incidente real del hilo conductor.</p>
+                </div>
+            </a>
+        </div>
+        <p class="source-note">Basado en el Módulo 1 del curso <em>Cómo crear prompts efectivos</em> (Gobierno de Santa Fe, 2026), que sigue el Protocolo para la Adopción y Uso de IA Generativa en la Administración Pública (Decreto 2726/2025). Adaptado para estudiantes de sistemas.</p>
+    </div>
+
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">12</span>
+</div>
+
+<div class="controls">
+    <button class="btn prev" onclick="previousSlide()">← Anterior</button>
+    <button class="btn next" onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    document.getElementById('total-slides').textContent = totalSlides;
+
+    function showSlide(n) {
+        if (n < 0 || n >= totalSlides) return;
+        slides[currentSlide].classList.remove('active');
+        currentSlide = n;
+        slides[currentSlide].classList.add('active');
+        document.getElementById('current-slide').textContent = currentSlide + 1;
+        document.querySelector('.prev').disabled = currentSlide === 0;
+        document.querySelector('.next').disabled = currentSlide === totalSlides - 1;
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            previousSlide();
+        }
+    });
+
+    showSlide(0);
+
+    // ============================================================
+    // Actividad: anonimizar. Todos los datos son inventados
+    // (203.0.113.0/24 es un rango reservado para documentación).
+    // ============================================================
+    const ORIGINAL = `Hola! Soy Lucía Benítez (DNI 31.456.789), la única programadora del Centro de Salud de Villa Ocampo, así que no tengo a quién preguntarle.
+
+Desde el 03/09/2026 a las 14:20, cuando el paciente Ramón Ortiz (ramon.ortiz@ejemplo.com, cel 3482-456789) intenta sacar turno y pone "control de diabetes" como motivo, la app devuelve error 500.
+
+En el log del contenedor de Flask aparece esto:
+2026-09-03 14:20:11 ERROR sqlalchemy: (1406) Data too long for column 'motivo' at row 1
+conexión: mysql://admin:Turnos2026!@203.0.113.45:3306/turnos
+
+¿Qué puede estar pasando?`;
+
+    // Cada regla: qué buscar en el texto y qué decir si sigue ahí.
+    const REGLAS = [
+        { re: /luc[ií]a|ben[ií]tez/i, msg: 'El nombre de la programadora (supresión).' },
+        { re: /ram[oó]n|ortiz/i, msg: 'El nombre del paciente (supresión).' },
+        { re: /\b\d{2}\.?\d{3}\.?\d{3}\b/, msg: 'Un número con forma de DNI.' },
+        { re: /[\w.+-]+@[\w-]+\.[\w.]+/, msg: 'Una dirección de mail.' },
+        { re: /\d{3,4}[- ]?\d{6}/, msg: 'Un número con forma de teléfono.' },
+        { re: /diabetes/i, msg: 'El motivo de consulta: es un dato de salud (sensible).' },
+        { re: /Turnos2026/, msg: 'La contraseña de la base de datos.' },
+        { re: /203\.0\.113\.45/, msg: 'La IP del servidor (enmascarala o reemplazala).' },
+        { re: /villa ocampo/i, msg: 'La localidad: junto con "centro de salud" identifica el lugar (generalización).' },
+        { re: /[uú]nica programadora/i, msg: '"La única programadora": identifica a una persona por ser única (descontextualización).' },
+        { re: /03\/09\/2026|14:20(?!:)/, msg: 'La fecha y hora exactas del hecho (agrupación temporal). La hora del log puede quedar si la necesitás, pero pensalo.' },
+    ];
+
+    // Lo que la IA necesita para ayudar: si se borra, el prompt deja de servir.
+    const NECESARIO = [
+        { re: /1406|data too long/i, msg: 'El error de la base (1406 / Data too long): sin eso la IA no puede ayudar.' },
+        { re: /motivo/i, msg: 'Que el problema está en la columna "motivo".' },
+    ];
+
+    const textoEl = document.getElementById('an-texto');
+    const resultadosEl = document.getElementById('an-resultados');
+    const statusEl = document.getElementById('an-status');
+    textoEl.value = ORIGINAL;
+
+    function revisar() {
+        const t = textoEl.value;
+        const quedan = REGLAS.filter((r) => r.re.test(t));
+        const faltan = NECESARIO.filter((r) => !r.re.test(t));
+        const items = [];
+        quedan.forEach((r) => items.push(`<li class="fail">⚠ Sigue ahí: ${r.msg}</li>`));
+        faltan.forEach((r) => items.push(`<li class="fail">✂ Te pasaste: falta ${r.msg}</li>`));
+        if (!items.length) {
+            items.push('<li class="ok">✅ No encontré datos personales, sensibles ni secretos, y el problema técnico sigue ahí. Releelo una vez más: ¿alguien que conozca el caso podría saber quién es?</li>');
+        } else {
+            items.unshift(`<li class="${quedan.length ? 'fail' : 'ok'}">Quedan ${quedan.length} de ${REGLAS.length} datos a sacar.</li>`);
+        }
+        resultadosEl.innerHTML = items.join('');
+        return { quedan, faltan };
+    }
+
+    document.getElementById('an-revisar').addEventListener('click', revisar);
+    document.getElementById('an-reset').addEventListener('click', () => {
+        textoEl.value = ORIGINAL;
+        resultadosEl.innerHTML = '';
+        statusEl.textContent = '';
+    });
+
+    function slugify(str) {
+        return str
+            .toLowerCase()
+            .normalize('NFD').replace(/[̀-ͯ]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '') || 'anonimo';
+    }
+
+    document.getElementById('an-download').addEventListener('click', () => {
+        const nombre = document.getElementById('an-nombre').value.trim();
+        if (!nombre) {
+            statusEl.textContent = 'Completá tu nombre y comisión antes de descargar.';
+            statusEl.classList.add('error');
+            return;
+        }
+        statusEl.classList.remove('error');
+        const { quedan, faltan } = revisar();
+        const fecha = new Date().toLocaleString('es-AR');
+        const contenido = `# Actividad — anonimizar un pedido de ayuda (IA: uso seguro)
+
+**Nombre y comisión:** ${nombre}
+**Fecha:** ${fecha}
+
+## Texto anonimizado
+
+\`\`\`
+${textoEl.value.trim()}
+\`\`\`
+
+## Revisión automática
+
+- Datos que siguen en el texto: ${quedan.length} de ${REGLAS.length}
+${quedan.map((r) => `  - ${r.msg}`).join('\n')}
+- Información técnica necesaria que se perdió: ${faltan.length}
+${faltan.map((r) => `  - ${r.msg}`).join('\n')}
+`;
+        const blob = new Blob([contenido], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ejercicio-anonimizar-${slugify(nombre)}.md`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        statusEl.textContent = 'Descargado. Subilo a Classroom si el profe lo pidió.';
+    });
+
+    // Checklist: el veredicto cambia solo cuando están todas marcadas.
+    const checks = document.querySelectorAll('#checklist input[type="checkbox"]');
+    const verdictEl = document.getElementById('verdict');
+    checks.forEach((c) => c.addEventListener('change', () => {
+        const todas = [...checks].every((x) => x.checked);
+        verdictEl.classList.toggle('ok', todas);
+        verdictEl.textContent = todas
+            ? 'Listo para enviar. Y cuando llegue la respuesta, la revisás vos.'
+            : 'Todavía no: si queda alguna sin marcar, no envíes el prompt.';
+    }));
+</script>
+</body>
+</html>

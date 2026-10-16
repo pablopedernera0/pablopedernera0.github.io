@@ -1,4 +1,4 @@
-// Índice de recursos del sitio. Última actualización: 2026-10-09 ART.
+// Índice de recursos del sitio. Última actualización: 2026-10-16 ART.
 // Cada entrada agrega una carpeta al índice del terciario, terciario/index.html
 // (ver render-recursos.js). Para publicar un recurso nuevo: agregar un objeto acá,
 // no tocar terciario/index.html.
@@ -129,12 +129,12 @@ const RECURSOS = [
         fecha: "2026-08-13"
     },
     {
-        titulo: "IA Aplicada: Introducción, Análisis Funcional y Redes/DevOps",
+        titulo: "IA Aplicada: Introducción, Uso seguro, Análisis Funcional y Redes/DevOps",
         categoria: "desarrollo",
         carpeta: "ia-analisis-devops",
         icono: "🧭",
-        descripcion: "Serie de 3 páginas: cómo escribir un buen prompt, y dos casos concretos — ajustar un modelo ER y leer logs de un incidente.",
-        fecha: "2026-08-13"
+        descripcion: "Serie de 4 páginas: cómo escribir un buen prompt, cómo usar la IA sin exponer datos (anonimización, alucinaciones, sesgos, con actividad autocorregible), y dos casos concretos — ajustar un modelo ER y leer logs de un incidente.",
+        fecha: "2026-10-16"
     },
     {
         titulo: "Dimensionamiento de Servidores",
