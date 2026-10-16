@@ -97,6 +97,14 @@ const RECURSOS = [
         fecha: "2026-08-18"
     },
     {
+        titulo: "Wireframes con PlantUML Salt",
+        categoria: "desarrollo",
+        carpeta: "wireframes-salt",
+        icono: "▭",
+        descripcion: "Cómo bocetar las pantallas del sistema en texto, dentro del repo, y cómo justificarlas en docs/diseño-ui.md. Tres ejemplos para copiar: inicio de sesión, listado con filtros y asistente por pasos.",
+        fecha: "2026-10-16"
+    },
+    {
         titulo: "Definition of Ready y Slicing Vertical",
         categoria: "desarrollo",
         carpeta: "dor-slicing",

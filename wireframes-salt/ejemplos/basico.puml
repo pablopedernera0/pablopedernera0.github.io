@@ -1,0 +1,20 @@
+@startsalt
+{+
+  <b>Elementos básicos
+  Texto común
+  "Campo de texto      "
+  [Botón]
+  [X] Casilla marcada
+  [ ] Casilla vacía
+  (X) Opción elegida
+  ( ) Otra opción
+  ^Lista desplegable^
+  ..
+  {/ <b>Pestaña 1 | Pestaña 2 | Pestaña 3 }
+  {* Archivo | Editar | Ayuda }
+  {#
+    Columna A | Columna B
+    dato 1 | dato 2
+  }
+}
+@endsalt

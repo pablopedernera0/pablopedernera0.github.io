@@ -1,0 +1,18 @@
+@startsalt
+{+
+  {* Inicio | <b>Turnos | Profesionales | Salir }
+  ..
+  <b>Mis turnos
+  {
+    Buscar | "nombre o DNI       " | Estado | ^Todos^ | Desde | "01/10/2026" | [Filtrar]
+  }
+  ..
+  {#
+    <b>Fecha | <b>Hora | <b>Cliente | <b>Servicio | <b>Estado | <b>Acciones
+    16/10 | 09:00 | Ana López | Corte | Confirmado | { [Ver] | [Cancelar] }
+    16/10 | 10:30 | Juan Pérez | Color | Pendiente de pago | { [Ver] | [Cancelar] }
+    17/10 | 11:00 | Sofía Díaz | Corte | Confirmado | { [Ver] | [Cancelar] }
+  }
+  { [< Anterior] | Página 1 de 4 | [Siguiente >] }
+}
+@endsalt

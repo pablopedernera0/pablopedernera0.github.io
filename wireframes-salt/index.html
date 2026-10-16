@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wireframes con PlantUML Salt — Guía</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { background: #131a22; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #131a22, #232f3e) fixed;
+            color: #e8edf2;
+            line-height: 1.65;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 260px minmax(0, 1fr);
+            gap: 2.5rem;
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* Índice lateral */
+        nav.toc {
+            position: sticky;
+            top: 1.5rem;
+            align-self: start;
+            max-height: calc(100vh - 3rem);
+            overflow-y: auto;
+            font-size: 0.9rem;
+            border-left: 2px solid rgba(255, 153, 0, 0.35);
+            padding-left: 1rem;
+        }
+        nav.toc .toc-title {
+            color: #ff9900;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.8rem;
+            margin-bottom: 0.6rem;
+        }
+        nav.toc a {
+            display: block;
+            color: #b8c4d0;
+            text-decoration: none;
+            padding: 0.2rem 0;
+        }
+        nav.toc a:hover, nav.toc a.active { color: #ff9900; }
+
+        main { min-width: 0; }
+
+        .eyebrow {
+            display: inline-block;
+            background: rgba(255, 153, 0, 0.15);
+            border: 1px solid #ff9900;
+            color: #ff9900;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            line-height: 1.2;
+            color: #ff9900;
+            margin-bottom: 0.8rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        h2 {
+            font-size: 1.6rem;
+            color: #ff9900;
+            margin: 2.8rem 0 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            scroll-margin-top: 1rem;
+        }
+        h3 { font-size: 1.2rem; color: #7dd3fc; margin: 1.5rem 0 0.6rem; }
+
+        p, ul, ol, table, pre, blockquote { margin-bottom: 1rem; }
+        ul, ol { padding-left: 1.5rem; }
+        li { margin-bottom: 0.4rem; }
+        li > ul, li > ol, li > pre { margin-top: 0.5rem; }
+        strong { color: #fff; }
+        a { color: #7dd3fc; }
+        hr { border: none; }
+
+        code {
+            font-family: Consolas, 'Courier New', monospace;
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffd9a0;
+            padding: 0.1rem 0.35rem;
+            border-radius: 4px;
+            font-size: 0.92em;
+        }
+
+        pre {
+            position: relative;
+            background: #0d1117;
+            border: 1px solid rgba(255, 153, 0, 0.3);
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            overflow-x: auto;
+        }
+        pre code {
+            background: none;
+            color: #c9f2c7;
+            padding: 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 153, 0, 0.15);
+            border: 1px solid #ff9900;
+            color: #ff9900;
+            border-radius: 6px;
+            padding: 0.2rem 0.7rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .copy-btn:hover { background: rgba(255, 153, 0, 0.3); }
+
+        blockquote {
+            background: rgba(125, 211, 252, 0.08);
+            border-left: 4px solid #7dd3fc;
+            border-radius: 0 8px 8px 0;
+            padding: 0.8rem 1.2rem;
+        }
+        blockquote p:last-child { margin-bottom: 0; }
+
+        .check {
+            background: rgba(74, 222, 128, 0.1);
+            border-left: 4px solid #4ade80;
+            border-radius: 0 8px 8px 0;
+            padding: 0.8rem 1.2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            display: block;
+            overflow-x: auto;
+        }
+        th, td {
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 0.5rem 0.8rem;
+            text-align: left;
+            vertical-align: top;
+        }
+        th { background: rgba(255, 153, 0, 0.18); color: #ffb84d; }
+        tr:nth-child(even) td { background: rgba(255,255,255,0.03); }
+
+        @media (max-width: 900px) {
+            .layout { grid-template-columns: 1fr; }
+            nav.toc { display: none; }
+            h1 { font-size: 1.9rem; }
+        }
+            main img { max-width: 100%; background: #fff; border-radius: 8px; padding: 0.6rem; display: block; margin: 0.6rem 0 1.2rem; }
+    </style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="Índice"><div class="toc-title">En esta guía</div></nav>
+<main>
+<span class="eyebrow">Guía · Diseño de Sistemas Web</span>
+<h1 id="wireframes-con-plantuml-salt">Wireframes con PlantUML Salt</h1>
+<p>Cómo bocetar las pantallas de su sistema en texto, dentro del repo, y cómo justificarlas en <code>docs/diseño-ui.md</code>. Incluye tres ejemplos para copiar y adaptar.</p>
+<h2 id="para-que-sirve">Para qué sirve</h2>
+<p>Un wireframe es el esqueleto de una pantalla: qué hay, dónde y en qué orden, sin colores ni diseño final. Sirve para decidir el flujo y los campos antes de programar, y para comprobar que la pantalla cumple lo que piden los requisitos y las historias de usuario.</p>
+<p>En esta guía los dibujamos con <strong>Salt</strong>, la parte de PlantUML para bocetos de pantallas. Se escribe en texto, igual que el diagrama de casos de uso y el modelo ER que ya tienen en <code>diagramas/</code>. Eso tiene tres ventajas en un proyecto con git:</p>
+<ul>
+<li><strong>Queda en el historial.</strong> Cada cambio de la pantalla es un commit que se puede comparar con el anterior.</li>
+<li><strong>Se revisa como el resto del repo.</strong> Un compañero o el docente puede comentar una línea concreta, por ejemplo un botón que falta.</li>
+<li><strong>No hace falta saber dibujar.</strong> Se escribe la estructura y PlantUML la dibuja siempre igual.</li>
+</ul>
+<p>Salt no reemplaza a Figma o a una herramienta de diseño: sirve para el boceto. Si el grupo ya trabaja en otra herramienta, puede seguir con ella; lo que pide la rúbrica es la pantalla y la justificación, no la herramienta.</p>
+<h2 id="como-verlos">Cómo verlos</h2>
+<p>Cada pantalla va en su propio archivo, por ejemplo <code>diagramas/wireframes/01-login.puml</code>. Hay tres formas de verla dibujada:</p>
+<table>
+<thead>
+<tr>
+<th>Forma</th>
+<th>Para qué</th>
+<th>Cómo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Editor web de PlantUML</td>
+<td>Probar mientras escriben</td>
+<td>Abrir <a href="https://www.plantuml.com/plantuml/uml/">plantuml.com/plantuml</a>, pegar el código y mirar el dibujo a la derecha. No instala nada.</td>
+</tr>
+<tr>
+<td>VS Code</td>
+<td>Trabajar en el repo</td>
+<td>Extensión <strong>PlantUML</strong> (jebbs). Con el archivo abierto, <code>Alt+D</code> muestra la vista previa. En la configuración, <code>plantuml.render</code> en <code>PlantUMLServer</code> evita instalar Java.</td>
+</tr>
+<tr>
+<td>GitHub</td>
+<td>Que se vea en <code>docs/diseño-ui.md</code></td>
+<td>Una imagen que apunta al proxy de PlantUML con la ruta <em>raw</em> del archivo (abajo). Solo funciona si el repo es público.</td>
+</tr>
+</tbody>
+</table>
+<p>Para que la pantalla aparezca dentro de <code>docs/diseño-ui.md</code>, pongan esta línea, con su usuario, su repo y el nombre del archivo:</p>
+<pre><code class="language-markdown">![Inicio de sesión](https://www.plantuml.com/plantuml/proxy?cache=no&amp;src=https://raw.githubusercontent.com/USUARIO/REPO/main/diagramas/wireframes/01-login.puml)
+</code></pre>
+<p>Si el repo es privado, el proxy no puede leer el archivo. En ese caso exporten el dibujo como PNG o SVG desde el editor web o desde VS Code, súbanlo a <code>diagramas/wireframes/</code> y enlácenlo con una ruta relativa: <code>![Inicio de sesión](../diagramas/wireframes/01-login.png)</code>.</p>
+<h2 id="lo-basico-de-salt">Lo básico de Salt</h2>
+<p>Una pantalla se escribe entre <code>@startsalt</code> y <code>@endsalt</code>. Todo va dentro de llaves <code>{ }</code>, que arman una grilla: cada línea es una fila y <code>|</code> separa columnas. Una llave puede tener otra adentro, así se arma un bloque dentro de otro.</p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Se escribe</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Grilla sin bordes</td>
+<td><code>{ … }</code></td>
+<td>agrupar campos en filas y columnas</td>
+</tr>
+<tr>
+<td>Grilla con borde exterior</td>
+<td><code>{+ … }</code></td>
+<td>el marco de la pantalla</td>
+</tr>
+<tr>
+<td>Tabla con todas las líneas</td>
+<td><code>{# … }</code></td>
+<td>un listado con columnas</td>
+</tr>
+<tr>
+<td>Texto</td>
+<td>se escribe tal cual</td>
+<td><code>Correo electrónico</code></td>
+</tr>
+<tr>
+<td>Negrita, color, subrayado</td>
+<td><code>&lt;b&gt;</code>, <code>&lt;color:red&gt;</code>, <code>&lt;u&gt;</code></td>
+<td><code>&lt;b&gt;Mis turnos</code></td>
+</tr>
+<tr>
+<td>Campo de texto</td>
+<td>entre comillas</td>
+<td><code>"usuario@correo.com     "</code></td>
+</tr>
+<tr>
+<td>Botón</td>
+<td>entre corchetes</td>
+<td><code>[Ingresar]</code></td>
+</tr>
+<tr>
+<td>Casilla</td>
+<td><code>[X]</code> marcada, <code>[ ]</code> vacía</td>
+<td><code>[X] Recordarme</code></td>
+</tr>
+<tr>
+<td>Opción única</td>
+<td><code>(X)</code> elegida, <code>( )</code> no</td>
+<td><code>(X) 09:00</code></td>
+</tr>
+<tr>
+<td>Lista desplegable</td>
+<td>entre <code>^</code></td>
+<td><code>^Todos^</code></td>
+</tr>
+<tr>
+<td>Separador</td>
+<td><code>..</code> punteado, <code>==</code> doble, <code>--</code> simple</td>
+<td>entre secciones</td>
+</tr>
+<tr>
+<td>Pestañas</td>
+<td><code>{/ … | … }</code></td>
+<td><code>{/ &lt;b&gt;Datos | Pagos }</code></td>
+</tr>
+<tr>
+<td>Menú</td>
+<td><code>{* … | … }</code></td>
+<td><code>{* Inicio | Turnos | Salir }</code></td>
+</tr>
+</tbody>
+</table>
+<p>El largo del campo de texto sale de los espacios entre las comillas: más espacios, campo más ancho. Este código usa casi todos los elementos (<a href="ejemplos/basico.puml">descargar basico.puml</a>):</p>
+<pre><code>@startsalt
+{+
+  &lt;b&gt;Elementos básicos
+  Texto común
+  &quot;Campo de texto      &quot;
+  [Botón]
+  [X] Casilla marcada
+  [ ] Casilla vacía
+  (X) Opción elegida
+  ( ) Otra opción
+  ^Lista desplegable^
+  ..
+  {/ &lt;b&gt;Pestaña 1 | Pestaña 2 | Pestaña 3 }
+  {* Archivo | Editar | Ayuda }
+  {#
+    Columna A | Columna B
+    dato 1 | dato 2
+  }
+}
+@endsalt
+</code></pre>
+<p><img loading="lazy" alt="Elementos básicos de Salt dibujados" src="ejemplos/basico.png" /></p>
+<h2 id="ejemplo-1-inicio-de-sesion">Ejemplo 1: inicio de sesión</h2>
+<p>Es la pantalla más simple y sirve para practicar la grilla. Antes de escribir, miren qué dicen sus requisitos: qué datos se piden, qué pasa si son incorrectos y qué opciones hay (recordar la sesión, recuperar la contraseña, registrarse).</p>
+<ol>
+<li>Abran el marco de la pantalla con <code>{+</code> y pongan el título en negrita.</li>
+<li>Escriban cada etiqueta en una línea y el campo en la siguiente, así el formulario queda en una sola columna.</li>
+<li>Sumen la casilla, y un separador <code>..</code> antes y después del mensaje de error.</li>
+<li>El mensaje de error va en rojo, con el texto que mostraría el sistema. Si su HU dice que no revela cuál dato está mal, el texto tiene que ser genérico.</li>
+<li>Al final, el botón principal y los enlaces secundarios en una fila.</li>
+</ol>
+<p><a href="ejemplos/01-login.puml">Descargar 01-login.puml</a></p>
+<pre><code>@startsalt
+{+
+  &lt;b&gt;Iniciar sesión
+  ..
+  Correo electrónico
+  &quot;usuario@correo.com          &quot;
+  Contraseña
+  &quot;****                        &quot;
+  [X] Recordarme en este dispositivo
+  ..
+  &lt;color:red&gt;Usuario o contraseña incorrectos&lt;/color&gt;
+  ..
+  [         Ingresar          ]
+  ¿Olvidaste tu contraseña? | ¿No tenés cuenta? &lt;u&gt;Registrate&lt;/u&gt;
+}
+@endsalt
+</code></pre>
+<p><img loading="lazy" alt="Pantalla de inicio de sesión en Salt" src="ejemplos/01-login.png" /></p>
+<p>Los espacios dentro de <code>[         Ingresar          ]</code> hacen el botón más ancho, para que se vea como la acción principal.</p>
+<h2 id="ejemplo-2-listado-con-filtros">Ejemplo 2: listado con filtros</h2>
+<p>La mayoría de los sistemas tiene una pantalla que muestra registros y deja buscarlos: turnos, pedidos, incidencias, socios. Se arma con tres partes: un menú arriba, una fila de filtros y una tabla.</p>
+<ol>
+<li><strong>Menú:</strong> <code>{* … }</code> con las secciones del sistema. La sección en la que está el usuario va en negrita.</li>
+<li><strong>Filtros:</strong> una grilla de una sola fila, con cada etiqueta seguida de su campo o su lista. Los filtros tienen que ser los que piden sus requisitos, no otros.</li>
+<li><strong>Tabla:</strong> <code>{# … }</code>, la primera fila con los títulos en negrita. Pongan dos o tres filas de ejemplo con datos de su caso, incluido un estado poco común (como "Pendiente de pago"), para mostrar que lo pensaron.</li>
+<li><strong>Acciones por fila:</strong> si una celda lleva dos botones, van en su propia grilla: <code>{ [Ver] | [Cancelar] }</code>.</li>
+<li><strong>Paginado:</strong> una fila al pie, si el listado puede ser largo.</li>
+</ol>
+<p><a href="ejemplos/02-listado.puml">Descargar 02-listado.puml</a></p>
+<pre><code>@startsalt
+{+
+  {* Inicio | &lt;b&gt;Turnos | Profesionales | Salir }
+  ..
+  &lt;b&gt;Mis turnos
+  {
+    Buscar | &quot;nombre o DNI       &quot; | Estado | ^Todos^ | Desde | &quot;01/10/2026&quot; | [Filtrar]
+  }
+  ..
+  {#
+    &lt;b&gt;Fecha | &lt;b&gt;Hora | &lt;b&gt;Cliente | &lt;b&gt;Servicio | &lt;b&gt;Estado | &lt;b&gt;Acciones
+    16/10 | 09:00 | Ana López | Corte | Confirmado | { [Ver] | [Cancelar] }
+    16/10 | 10:30 | Juan Pérez | Color | Pendiente de pago | { [Ver] | [Cancelar] }
+    17/10 | 11:00 | Sofía Díaz | Corte | Confirmado | { [Ver] | [Cancelar] }
+  }
+  { [&lt; Anterior] | Página 1 de 4 | [Siguiente &gt;] }
+}
+@endsalt
+</code></pre>
+<p><img loading="lazy" alt="Listado de turnos con filtros y tabla en Salt" src="ejemplos/02-listado.png" /></p>
+<h2 id="ejemplo-3-formulario-por-pasos">Ejemplo 3: formulario por pasos</h2>
+<p>Cuando una tarea tiene muchas decisiones (reservar, comprar, armar algo), conviene partirla en pasos y mostrar un resumen a la vista. Es el patrón <em>asistente</em> (o <em>step-by-step</em>). En un boceto alcanza con mostrar <strong>un</strong> paso bien resuelto e indicar los demás.</p>
+<ol>
+<li><strong>Indicador de pasos:</strong> una fila con los nombres de los pasos separados por <code>&gt;</code>, el actual en negrita. Así el usuario sabe cuánto le falta.</li>
+<li><strong>Cuerpo en dos columnas:</strong> a la izquierda los campos del paso actual; a la derecha un recuadro <code>{+ … }</code> con el resumen de lo elegido hasta ahora.</li>
+<li><strong>Opciones visibles:</strong> si hay pocas opciones (los horarios libres), van como <code>(X)</code> / <code>( )</code> y no escondidas en una lista desplegable.</li>
+<li><strong>Navegación:</strong> al pie, "Volver" y "Continuar". Los puntos <code>.</code> son celdas vacías que empujan el segundo botón a la derecha.</li>
+</ol>
+<p><a href="ejemplos/03-asistente.puml">Descargar 03-asistente.puml</a></p>
+<pre><code>@startsalt
+{+
+  &lt;b&gt;Reservar un turno
+  { &lt;b&gt;1. Servicio&lt;/b&gt; | &gt; | &lt;b&gt;2. Horario&lt;/b&gt; | &gt; | 3. Datos | &gt; | 4. Confirmar }
+  ==
+  {
+    {+
+      Profesional | ^Cualquiera^
+      Fecha | &quot;16/10/2026&quot;
+      ..
+      Horarios libres
+      { (X) 09:00 | ( ) 09:30 | ( ) 10:00 }
+      { ( ) 11:30 | ( ) 12:00 | ( ) 15:00 }
+    } | {+
+      &lt;b&gt;Tu reserva
+      Servicio: Corte
+      Duración: 30 min
+      Precio: $ 8.000
+      Seña: $ 2.000
+    }
+  }
+  ==
+  { [&lt; Volver] | . | . | . | [Continuar &gt;] }
+}
+@endsalt
+</code></pre>
+<p><img loading="lazy" alt="Asistente de reserva por pasos en Salt" src="ejemplos/03-asistente.png" /></p>
+<p>El resumen a la derecha no es decoración: muestra el precio y la seña antes de confirmar, que es justo lo que el usuario necesita saber para decidir.</p>
+<h2 id="del-wireframe-a-diseno-uimd">Del wireframe a diseño-ui.md</h2>
+<p>El dibujo solo no alcanza: la rúbrica evalúa que cada pantalla esté <strong>justificada</strong>. Por cada wireframe, <code>docs/diseño-ui.md</code> lleva una entrada con cinco cosas:</p>
+<table>
+<thead>
+<tr>
+<th>Qué</th>
+<th>Qué tiene que decir</th>
+<th>Lo que no alcanza</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wireframe</td>
+<td>La imagen o el link al archivo <code>.puml</code></td>
+<td>Una ruta escrita como texto que no se puede abrir</td>
+</tr>
+<tr>
+<td>Patrón</td>
+<td>El nombre: formulario en una columna, tabla con filtros, asistente por pasos, tarjetas, modal</td>
+<td>"Diseño moderno y limpio"</td>
+</tr>
+<tr>
+<td>Por qué</td>
+<td>Por qué ese patrón le sirve a <strong>este</strong> usuario, con un dato del caso</td>
+<td>Una frase que sirve para cualquier sistema</td>
+</tr>
+<tr>
+<td>Formulario</td>
+<td>Cantidad de campos, si va en una pantalla o por pasos, qué se valida y qué mensaje se muestra</td>
+<td>"Valida los datos"</td>
+</tr>
+<tr>
+<td>Accesibilidad</td>
+<td>Algo concreto: contraste, uso con teclado, tamaño de botones, texto además del color</td>
+<td>"Es accesible"</td>
+</tr>
+</tbody>
+</table>
+<p>Una entrada completa, para el asistente del Ejemplo 3:</p>
+<pre><code class="language-markdown">## Pantalla 3 — Reservar un turno
+
+![Reservar un turno](../diagramas/wireframes/03-reservar-turno.png)
+
+**Patrón:** asistente por pasos con resumen lateral.
+
+**Por qué:** la reserva tiene cuatro decisiones (servicio, profesional, horario, datos).
+En una sola pantalla el formulario sería largo y el cliente, que reserva desde el
+celular, perdería de vista qué eligió. El resumen muestra la seña antes de pagar
+(RF-28), que es lo que más dudas genera.
+
+**Formulario:** 4 pasos de 1 a 3 campos. Los horarios ocupados no se muestran
+(RF-12). Si otra persona toma el horario antes de confirmar, se vuelve al paso 2
+con el mensaje &quot;Ese horario ya no está libre&quot;.
+
+**Accesibilidad:** los horarios son botones de al menos 44 px (RNF-08), el paso
+actual se indica con texto y no solo con color, y todo se puede completar con teclado.
+</code></pre>
+<p>Cada requisito citado (RF-28, RNF-08) tiene que existir en su <code>docs/requisitos.md</code> con ese número. Si la pantalla muestra algo que ningún requisito pide, o al revés, esa incoherencia resta.</p>
+<h2 id="errores-comunes">Errores comunes</h2>
+<table>
+<thead>
+<tr>
+<th>Lo que pasa</th>
+<th>Por qué</th>
+<th>Arreglo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dos botones en una celda se dibujan pegados o rotos</td>
+<td>Una celda espera un solo elemento</td>
+<td>Agruparlos: <code>{ [Ver] | [Cancelar] }</code></td>
+</tr>
+<tr>
+<td>Los acentos salen como <code>Ã³</code></td>
+<td>El archivo no está guardado en UTF-8</td>
+<td>En VS Code, abajo a la derecha: "Save with Encoding" → UTF-8</td>
+</tr>
+<tr>
+<td>El dibujo no aparece y sale un error</td>
+<td>Falta <code>@startsalt</code> o una llave <code>{</code> quedó sin cerrar</td>
+<td>Contar las llaves: cada <code>{</code> tiene su <code>}</code></td>
+</tr>
+<tr>
+<td>En GitHub la imagen sale rota</td>
+<td>El repo es privado, o la ruta <em>raw</em> está mal</td>
+<td>Probar la ruta <em>raw</em> en el navegador, o subir el PNG</td>
+</tr>
+<tr>
+<td>El link en <code>diseño-ui.md</code> no abre</td>
+<td>La ruta está escrita entre comillas invertidas y no como link</td>
+<td><code>[Nombre](../diagramas/wireframes/archivo.png)</code></td>
+</tr>
+<tr>
+<td>El nombre del archivo no coincide</td>
+<td><code>02-tablero.png</code> en el documento, <code>02-tableros.png</code> en la carpeta</td>
+<td>Copiar el nombre desde la carpeta</td>
+</tr>
+</tbody>
+</table>
+<h2 id="lista-antes-de-subir">Lista antes de subir</h2>
+<p>Revisen cada pantalla con esta lista:</p>
+<ul>
+<li>☐ La pantalla corresponde a una historia de usuario o a un caso de uso, y se nota cuál.</li>
+<li>☐ Los campos y filtros son los que piden los requisitos, ni más ni menos.</li>
+<li>☐ Hay al menos un caso que sale mal (error, sin resultados, sin lugar) dibujado o descripto.</li>
+<li>☐ El link en <code>docs/diseño-ui.md</code> abre la imagen.</li>
+<li>☐ La entrada tiene patrón, por qué, formulario y accesibilidad.</li>
+<li>☐ Lo que generó una IA, lo leyeron y lo adaptaron: no quedan marcas, textos de plantilla ni pantallas de otro sistema.</li>
+</ul>
+<p style="margin-top:3rem;color:#8b98a5;font-size:0.85rem">Terciario Urquiza · Prof. Pablo Pedernera · octubre de 2026</p>
+</main>
+</div>
+<script>
+    // Índice lateral a partir de los h2
+    const toc = document.querySelector('nav.toc');
+    const headings = [...document.querySelectorAll('main h2')];
+    headings.forEach(h => {
+        const a = document.createElement('a');
+        a.href = '#' + h.id;
+        a.textContent = h.textContent;
+        toc.appendChild(a);
+    });
+    const links = [...toc.querySelectorAll('a')];
+    window.addEventListener('scroll', () => {
+        let actual = headings[0];
+        headings.forEach(h => { if (h.getBoundingClientRect().top < 120) actual = h; });
+        links.forEach(a => a.classList.toggle('active', a.hash === '#' + actual.id));
+    });
+
+    // Los links a otras páginas abren en una pestaña nueva: la guía se ve embebida en
+    // Canvas, y muchos sitios (GitHub, AWS) no se dejan mostrar dentro de un iframe
+    document.querySelectorAll('main a[href]:not([href^="#"])').forEach(a => {
+        a.target = '_blank';
+        a.rel = 'noopener';
+    });
+
+    // Resaltar las verificaciones
+    document.querySelectorAll('main p').forEach(p => {
+        if (p.textContent.trim().startsWith('✔')) p.classList.add('check');
+    });
+
+    // Botón para copiar cada bloque de código
+    document.querySelectorAll('pre').forEach(pre => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.textContent = 'Copiar';
+        btn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(pre.querySelector('code').innerText);
+                btn.textContent = '¡Copiado!';
+            } catch (e) {
+                btn.textContent = 'Seleccioná y copiá';
+            }
+            setTimeout(() => btn.textContent = 'Copiar', 1500);
+        });
+        pre.appendChild(btn);
+    });
+</script>
+</body>
+</html>

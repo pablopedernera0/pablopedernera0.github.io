@@ -1,0 +1,25 @@
+@startsalt
+{+
+  <b>Reservar un turno
+  { <b>1. Servicio</b> | > | <b>2. Horario</b> | > | 3. Datos | > | 4. Confirmar }
+  ==
+  {
+    {+
+      Profesional | ^Cualquiera^
+      Fecha | "16/10/2026"
+      ..
+      Horarios libres
+      { (X) 09:00 | ( ) 09:30 | ( ) 10:00 }
+      { ( ) 11:30 | ( ) 12:00 | ( ) 15:00 }
+    } | {+
+      <b>Tu reserva
+      Servicio: Corte
+      Duración: 30 min
+      Precio: $ 8.000
+      Seña: $ 2.000
+    }
+  }
+  ==
+  { [< Volver] | . | . | . | [Continuar >] }
+}
+@endsalt

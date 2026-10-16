@@ -1,0 +1,16 @@
+@startsalt
+{+
+  <b>Iniciar sesión
+  ..
+  Correo electrónico
+  "usuario@correo.com          "
+  Contraseña
+  "****                        "
+  [X] Recordarme en este dispositivo
+  ..
+  <color:red>Usuario o contraseña incorrectos</color>
+  ..
+  [         Ingresar          ]
+  ¿Olvidaste tu contraseña? | ¿No tenés cuenta? <u>Registrate</u>
+}
+@endsalt
