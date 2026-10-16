@@ -472,6 +472,57 @@ con el mensaje &quot;Ese horario ya no está libre&quot;.
 actual se indica con texto y no solo con color, y todo se puede completar con teclado.
 </code></pre>
 <p>Cada requisito citado (RF-28, RNF-08) tiene que existir en su <code>docs/requisitos.md</code> con ese número. Si la pantalla muestra algo que ningún requisito pide, o al revés, esa incoherencia resta.</p>
+<h2 id="usarlo-con-un-asistente-de-ia">Usarlo con un asistente de IA</h2>
+<p>Pueden pedirle ayuda a un asistente (Claude, Gemini u otro) para armar los wireframes. Lo que no puede hacer por ustedes es lo que evalúa la rúbrica: decidir y justificar con su caso por qué cada pantalla es como es. Lo que suban lo tienen que poder defender en voz alta.</p>
+<p>Este prompt está pensado para que la IA trabaje con <strong>su</strong> repo y les deje las decisiones. Cambien <code>USUARIO/REPO</code> por el de su grupo:</p>
+<pre><code>Estoy haciendo el Diseño UI de mi proyecto de Diseño de Sistemas Web.
+Te paso tres cosas:
+
+1. Mi repo: https://github.com/USUARIO/REPO (requisitos en docs/requisitos.md,
+   historias en docs/historias-de-usuario.md, casos de uso en docs/casos-de-uso.md).
+2. La guía de wireframes con PlantUML Salt que usamos en la materia:
+   https://pablopedernera0.github.io/wireframes-salt/
+3. Lo que evalúa la rúbrica en Diseño UI: al menos un wireframe por pantalla o
+   módulo relevante; patrones (tarjetas, modal, asistente por pasos, etc.)
+   justificados con el caso y los usuarios del sistema; decisiones de formulario
+   (cantidad de campos, flujo, validaciones); y al menos una consideración de
+   accesibilidad concreta.
+
+Quiero que me ayudes así, en este orden:
+
+A. Antes de dibujar, leé mis requisitos e historias y proponeme una lista de
+   pantallas. Para cada una decime qué HU y qué RF cubre, con el número tal como
+   está en mi repo. No inventes requisitos: si una pantalla necesita algo que mis
+   requisitos no dicen, marcalo como pregunta para mí.
+
+B. Esperá a que elija las pantallas. Después hacé UNA por vez: el código Salt
+   para guardar en diagramas/wireframes/NN-nombre.puml, con datos de ejemplo de
+   mi caso (no genéricos) y al menos un caso que sale mal (error, sin lugar,
+   sin resultados).
+
+C. Para cada pantalla, un borrador de la entrada de docs/diseño-ui.md con
+   patrón, por qué le sirve a mi usuario, formulario y accesibilidad, citando mis
+   RF y RNF por número. Escribilo como borrador: yo lo voy a revisar y reescribir
+   con mis palabras.
+
+No agregues marcas de cita, notas para mí ni texto de relleno dentro del código o
+del markdown: lo que me des tiene que poder ir al repo tal cual, después de que
+yo lo revise.
+</code></pre>
+<p>Por qué está armado así:</p>
+<ul>
+<li><strong>El paso A</strong> obliga a mapear cada pantalla contra sus historias y requisitos antes de dibujar. Si falta un requisito, aparece como pregunta y no como invento.</li>
+<li><strong>El paso B, de a una pantalla</strong>, les deja decidir en cada paso, en vez de recibir diez pantallas de golpe sin mirarlas.</li>
+<li><strong>"Escribilo como borrador"</strong> deja la justificación en sus manos: es lo que evalúa la rúbrica.</li>
+</ul>
+<p>Antes de subir lo que les devuelva, revisen sí o sí:</p>
+<ul>
+<li>☐ Cada RF y HU que cita existe en su repo con ese número.</li>
+<li>☐ No quedan marcas de la IA (<code>[cite: …]</code>, "Nota del borrador", "Mandame…"), textos de plantilla ni corchetes.</li>
+<li>☐ La justificación habla de su usuario y su caso, no de "un sistema cualquiera".</li>
+<li>☐ El <code>.puml</code> se dibuja sin errores en el editor web.</li>
+<li>☐ Pueden explicar cada pantalla sin leer.</li>
+</ul>
 <h2 id="errores-comunes">Errores comunes</h2>
 <table>
 <thead>
