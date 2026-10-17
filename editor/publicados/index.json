@@ -1,0 +1,14 @@
+[
+ {
+  "id": "cuestionario-prueba1",
+  "titulo": "Cuestionario de prueba",
+  "materia": "Redes y comunicaciones",
+  "comisiones": [
+   "31",
+   "32"
+  ],
+  "tipo": "practica",
+  "preguntas": 1,
+  "total": 1
+ }
+]
