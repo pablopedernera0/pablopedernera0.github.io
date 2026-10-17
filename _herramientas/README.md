@@ -25,3 +25,17 @@ los puede leer con la acción `read` del artifact) y volver a correr el script.
 Los íconos y formas propias de las slides (`<x-icon>`, `<x-shape>`, `<x-connector>`) se
 traducen a SVG. Un ícono que no esté en `ICONOS` corta la conversión con un error que dice
 cuál falta: se agrega ahí.
+
+## alta-profe.py — acceso al editor de cuestionarios (prueba)
+
+```bash
+python3 _herramientas/alta-profe.py <email>          # alta o nueva contraseña
+python3 _herramientas/alta-profe.py --baja <email>   # saca la entrada
+```
+
+Pide por consola (sin eco) un token **fine-grained** de GitHub para ese profe (Contents:
+Read and write, solo sobre `contenidos-prueba` y `pablopedernera0.github.io`, con
+vencimiento), genera una contraseña y escribe en `editor/usuarios.json` el token **cifrado
+con esa contraseña** (PBKDF2-SHA256 600k sobre `email|contraseña` → AES-256-GCM). Correrlo
+en una terminal aparte, nunca pegar el token en un chat. Después commitear y pushear
+`editor/usuarios.json`. Para revocar de verdad: borrar el token en GitHub.

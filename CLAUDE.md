@@ -28,3 +28,21 @@ varios.
 Las presentaciones se publican acá como HTML autónomo con `_herramientas/slides-a-html.py`
 (fuentes en `_herramientas/decks/`, ver `_herramientas/README.md`). Jekyll no publica
 `_herramientas/`: el script y las fuentes viajan por git pero no quedan en el sitio.
+
+## Editor de cuestionarios (prueba, desde 16/10/2026)
+
+- `editor/index.html`: login con email + contraseña. La contraseña descifra en el navegador
+  un token fine-grained guardado cifrado en `editor/usuarios.json` (alta con
+  `_herramientas/alta-profe.py`, ver `_herramientas/README.md`). No hay servidor.
+- Edita los cuestionarios del repo **privado** `pablopedernera0/contenidos-prueba`
+  (`cuestionarios/<id>.json` con clave + `index.json`; campo `tipo`: `practica` | `nota`).
+  Cada commit lleva al final "Editado desde el editor web por <email>".
+- "Publicar" escribe en `editor/publicados/<id>.json` + `index.json` de este sitio; los de
+  `tipo: nota` salen **sin** `correctas` ni `porque`.
+- Los estudiantes lo responden en el visor de siempre con `&fuente=editor`:
+  `caso-bicirio/v2/?cuestionario=<id>&fuente=editor`. Sin clave = sin autocorrección ni
+  vista docente; las respuestas llegan por mail (`envio_mail`).
+- El editor commitea directo en GitHub: hacer `git pull` antes de tocar este repo a mano.
+- Es una prueba: lo de `caso-bicirio/v2/cuestionarios/` no se migró. Pendientes: `envio_mail`
+  del profe logueado, corrección de los "con nota" con la clave privada, alta de colegas,
+  presentaciones.
