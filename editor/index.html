@@ -514,10 +514,10 @@
             const lista = (idx.data || []).filter((x) => x.id !== actual.id);
             lista.unshift(resumen(actual));
             await escribirJson(REPO_SITIO, RAMA_SITIO, `${DIR_PUBLICADOS}/index.json`, lista, idx.sha, `Índice publicados: ${actual.id}${firma()}`);
-            const url = `publicados/${actual.id}.json`;
+            const url = new URL(`../caso-bicirio/v2/?cuestionario=${actual.id}&fuente=editor`, location.href).href;
             const m = $('msg');
             m.className = 'ok';
-            m.textContent = `Publicado${actual.tipo === 'nota' ? ' sin la clave' : ''}. En 1-2 minutos queda en `;
+            m.textContent = `Publicado${actual.tipo === 'nota' ? ' sin la clave (sin autocorrección; las respuestas llegan por mail)' : ''}. En 1-2 minutos, link para estudiantes: `;
             const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.textContent = url;
             m.appendChild(a);
         } catch (e) {

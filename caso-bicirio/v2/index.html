@@ -352,6 +352,10 @@
     const params = new URLSearchParams(location.search);
     const docente = params.get('modo') === 'docente';
     const qid = params.get('cuestionario') || '';
+    // ?fuente=editor: cuestionarios publicados desde /editor/ (prueba). Sin el parámetro,
+    // todo sigue saliendo de cuestionarios/ como siempre.
+    const DIR = params.get('fuente') === 'editor' ? '../../editor/publicados' : 'cuestionarios';
+    const FUENTE = DIR === 'cuestionarios' ? '' : '&fuente=editor';
 
     // SHA-256 de "docente|<clave maestra>". Para cambiar la clave, ver
     // sistema-eidas-datos/cuestionarios/README.md.
@@ -374,14 +378,14 @@
     if (!qid && !docente) {
         $('materia').textContent = 'Casos de estudio';
         try {
-            const r = await fetch('cuestionarios/index.json', { cache: 'no-cache' });
+            const r = await fetch(`${DIR}/index.json`, { cache: 'no-cache' });
             if (!r.ok) throw new Error(r.status);
             const lista = await r.json();
             const materias = [...new Set(lista.map((q) => q.materia))];
             $('lista-indice').innerHTML = materias.map((m) => `
                 <h2>${esc(m)}</h2>
                 ${lista.filter((q) => q.materia === m).map((q) => `
-                    <a class="card indice-item" href="?cuestionario=${encodeURIComponent(q.id)}">
+                    <a class="card indice-item" href="?cuestionario=${encodeURIComponent(q.id)}${FUENTE}">
                         <h3>${esc(q.titulo)}</h3>
                         <p class="msg">${q.preguntas} preguntas · ${q.total} puntos · ${esc(q.comisiones.join(', '))}</p>
                     </a>`).join('')}`).join('');
@@ -400,14 +404,17 @@
 
     let Q, casoMd;
     try {
-        const r = await fetch(`cuestionarios/${qid}.json`, { cache: 'no-cache' });
+        const r = await fetch(`${DIR}/${qid}.json`, { cache: 'no-cache' });
         if (!r.ok) throw new Error(r.status);
         Q = await r.json();
     } catch (e) {
         fallar(`<h3>No encontré el cuestionario</h3><p style="margin:0">No existe "${esc(qid)}". Revisá el link que te pasó el profesor.</p>`);
         return;
     }
+    // Los cuestionarios con nota se publican sin clave: no hay autocorrección.
+    const sinClave = Q.preguntas.some((p) => !Array.isArray(p.correctas));
     try {
+        if (!Q.caso) throw new Error('sin caso');
         const r = await fetch(`casos/${encodeURIComponent(Q.caso)}/caso.md`, { cache: 'no-cache' });
         if (!r.ok) throw new Error(r.status);
         casoMd = await r.text();
@@ -445,8 +452,13 @@
 
     if (Q.materia) $('materia').textContent = Q.materia;
 
+    if (docente && sinClave) {
+        fallar('<h3>Cuestionario con nota</h3><p style="margin:0">La clave de este cuestionario no se publica: está en el repo privado.</p>');
+        return;
+    }
     if (docente) pedirClaveDocente();
     else iniciarAlumno();
+    if (sinClave) $('correccion-pendiente').classList.add('hidden');
 
     // ============================================================
     // Markdown mínimo para el caso: títulos, párrafos, listas,
@@ -786,7 +798,7 @@
         progreso();
         if (estado.fin) {
             bloquear();
-            if (estado.corregido) mostrarCorreccion();
+            if (estado.corregido && !sinClave) mostrarCorreccion();
         }
     }
 
