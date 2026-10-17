@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Editor de cuestionarios</title>
+<style>
+    :root {
+        --bg: #05070a;
+        --bg2: #0d1117;
+        --panel: rgba(255, 255, 255, 0.04);
+        --line: rgba(255, 255, 255, 0.10);
+        --text: #c9d1d9;
+        --muted: #8b949e;
+        --blue: #58a6ff;
+        --green: #3fb950;
+        --red: #f85149;
+        --orange: #f0883e;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: linear-gradient(135deg, var(--bg), var(--bg2)) fixed;
+        background-color: var(--bg);
+        color: var(--text);
+        font-size: 16px;
+        line-height: 1.5;
+    }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 0 16px 120px; }
+    nav.top {
+        position: sticky; top: 0; z-index: 20;
+        background: rgba(5, 7, 10, 0.92); backdrop-filter: blur(6px);
+        border-bottom: 1px solid var(--line);
+    }
+    nav.top .inner {
+        max-width: 860px; margin: 0 auto; padding: 10px 16px;
+        display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    }
+    nav.top .quien { margin-left: auto; font-size: 0.9rem; color: var(--muted); }
+    header { padding: 28px 0 8px; }
+    .eyebrow {
+        display: inline-block; font-size: 0.8rem; color: var(--blue);
+        border: 1px solid var(--blue); background: rgba(88, 166, 255, 0.12);
+        padding: 4px 12px; border-radius: 20px; margin-bottom: 12px;
+    }
+    h1 { font-size: 1.8rem; color: var(--blue); line-height: 1.2; margin-bottom: 8px; }
+    h2 { font-size: 1.25rem; color: var(--blue); margin: 28px 0 10px; }
+    p.muted, .muted { color: var(--muted); }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 12px 0; }
+    label { display: block; font-size: 0.85rem; color: var(--muted); margin: 10px 0 4px; }
+    input[type=text], input[type=email], input[type=password], input[type=number], textarea, select {
+        width: 100%; background: #0b0f14; color: var(--text); border: 1px solid var(--line);
+        border-radius: 8px; padding: 9px 11px; font: inherit;
+    }
+    textarea { min-height: 70px; resize: vertical; }
+    input:focus, textarea:focus, select:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+    .fila { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    button {
+        font: inherit; cursor: pointer; border-radius: 18px; padding: 7px 14px;
+        border: 1px solid var(--line); background: transparent; color: var(--text);
+    }
+    button:hover { border-color: var(--blue); }
+    button.go { background: var(--green); border-color: var(--green); color: var(--bg); font-weight: bold; }
+    button.pub { background: var(--blue); border-color: var(--blue); color: var(--bg); font-weight: bold; }
+    button.mini { padding: 3px 10px; font-size: 0.85rem; }
+    button.borrar { color: var(--red); }
+    button:disabled { opacity: 0.5; cursor: default; }
+    .lista a {
+        display: flex; justify-content: space-between; gap: 12px; padding: 12px 14px; margin: 8px 0;
+        border: 1px solid var(--line); border-radius: 10px; color: var(--text); text-decoration: none;
+        background: var(--panel);
+    }
+    .lista a:hover { border-color: var(--blue); }
+    .tag { font-size: 0.75rem; padding: 2px 9px; border-radius: 12px; border: 1px solid var(--line); white-space: nowrap; }
+    .tag.nota { color: var(--orange); border-color: var(--orange); }
+    .tag.practica { color: var(--green); border-color: var(--green); }
+    .pregunta { border-left: 3px solid var(--blue); }
+    .pregunta .cab { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .pregunta .cab b { color: var(--blue); margin-right: auto; }
+    .opcion { display: grid; grid-template-columns: auto auto 1fr auto; gap: 8px; align-items: center; margin: 6px 0; }
+    .opcion .letra { font-family: Consolas, monospace; color: var(--muted); }
+    .opcion input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--green); }
+    .acciones { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .barra {
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+        background: rgba(5, 7, 10, 0.95); border-top: 1px solid var(--line);
+    }
+    .barra .inner { max-width: 860px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .barra .total { margin-right: auto; color: var(--muted); font-size: 0.9rem; }
+    #msg { min-height: 1.4em; margin-top: 10px; font-size: 0.95rem; }
+    #msg.ok { color: var(--green); }
+    #msg.err { color: var(--red); }
+    .hidden { display: none !important; }
+    a { color: var(--blue); }
+    @media (max-width: 520px) {
+        h1 { font-size: 1.45rem; }
+        .opcion { grid-template-columns: auto 1fr auto; }
+        .opcion .letra { display: none; }
+    }
+</style>
+</head>
+<body>
+
+<nav class="top"><div class="inner">
+    <span class="eyebrow" style="margin:0">Editor · prueba</span>
+    <span class="quien" id="quien"></span>
+    <button class="mini hidden" id="btn-salir">Salir</button>
+</div></nav>
+
+<div class="wrap">
+
+<!-- ===== LOGIN ===== -->
+<section id="vista-login">
+    <header>
+        <h1>Editor de cuestionarios</h1>
+        <p class="muted">Entrá con el email y la contraseña que te pasó Pablo.</p>
+    </header>
+    <form class="panel" id="form-login" autocomplete="on">
+        <label for="email">Email</label>
+        <input type="email" id="email" autocomplete="username" required>
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" autocomplete="current-password" required>
+        <div class="acciones"><button class="go" type="submit" id="btn-entrar">Entrar</button></div>
+    </form>
+</section>
+
+<!-- ===== LISTA ===== -->
+<section id="vista-lista" class="hidden">
+    <header>
+        <h1>Cuestionarios</h1>
+        <p class="muted">Fuente: repo privado <code id="repo-fuentes"></code>. Lo publicado queda en
+            <code>editor/publicados/</code> del sitio.</p>
+    </header>
+    <div class="lista" id="lista"></div>
+    <div class="acciones"><button class="go" id="btn-nuevo">+ Nuevo cuestionario</button></div>
+</section>
+
+<!-- ===== EDICIÓN ===== -->
+<section id="vista-edicion" class="hidden">
+    <header>
+        <button class="mini" id="btn-volver">← Volver</button>
+        <h1 id="titulo-edicion" style="margin-top:14px"></h1>
+    </header>
+    <div class="panel">
+        <label for="f-titulo">Título</label>
+        <input type="text" id="f-titulo">
+        <div class="fila">
+            <div><label for="f-id">Identificador (nombre del archivo)</label><input type="text" id="f-id"></div>
+            <div><label for="f-materia">Materia</label><input type="text" id="f-materia"></div>
+        </div>
+        <div class="fila">
+            <div><label for="f-comisiones">Comisiones (separadas por coma)</label><input type="text" id="f-comisiones"></div>
+            <div>
+                <label for="f-tipo">Tipo</label>
+                <select id="f-tipo">
+                    <option value="practica">Práctica: se publica con la clave</option>
+                    <option value="nota">Con nota: se publica sin la clave</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <h2>Preguntas</h2>
+    <div id="preguntas"></div>
+    <div class="acciones"><button id="btn-agregar-pregunta">+ Agregar pregunta</button></div>
+</section>
+
+<p id="msg" role="status"></p>
+</div>
+
+<div class="barra hidden" id="barra"><div class="inner">
+    <span class="total" id="total"></span>
+    <button class="go" id="btn-guardar">Guardar</button>
+    <button class="pub" id="btn-publicar">Publicar en el sitio</button>
+</div></div>
+
+<script>
+(() => {
+    // ---- Configuración de la prueba ----
+    const REPO_FUENTES = 'pablopedernera0/contenidos-prueba';
+    const RAMA_FUENTES = 'main';
+    const REPO_SITIO = 'pablopedernera0/pablopedernera0.github.io';
+    const RAMA_SITIO = 'master';
+    const DIR_PUBLICADOS = 'editor/publicados';
+
+    const $ = (id) => document.getElementById(id);
+    let usuario = null;   // { email, token }
+    let actual = null;    // cuestionario en edición
+    let shaActual = null; // sha del archivo en el repo (null si es nuevo)
+    let idOriginal = null;
+
+    // ---- Mensajes ----
+    function msg(texto, tipo = '') { const m = $('msg'); m.textContent = texto; m.className = tipo; }
+
+    // ---- Base64 con UTF-8 ----
+    const deB64 = (s) => Uint8Array.from(atob(s.replace(/\s/g, '')), (c) => c.charCodeAt(0));
+    function aB64(texto) {
+        const bytes = new TextEncoder().encode(texto);
+        let bin = '';
+        for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+        return btoa(bin);
+    }
+
+    // ---- Login: la contraseña descifra el token (ver _herramientas/alta-profe.py) ----
+    async function descifrarToken(u, email, password) {
+        const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(`${email}|${password}`), 'PBKDF2', false, ['deriveKey']);
+        const clave = await crypto.subtle.deriveKey(
+            { name: 'PBKDF2', hash: 'SHA-256', salt: deB64(u.salt), iterations: u.iter },
+            base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+        const plano = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: deB64(u.iv) }, clave, deB64(u.token));
+        return new TextDecoder().decode(plano);
+    }
+
+    $('form-login').addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        const email = $('email').value.trim().toLowerCase();
+        const password = $('password').value;
+        $('btn-entrar').disabled = true;
+        msg('Verificando…');
+        try {
+            const r = await fetch('usuarios.json', { cache: 'no-cache' });
+            const usuarios = r.ok ? await r.json() : [];
+            const u = usuarios.find((x) => x.email === email);
+            let token = null;
+            if (u) { try { token = await descifrarToken(u, email, password); } catch (e) { token = null; } }
+            if (!token) { msg('Email o contraseña incorrectos.', 'err'); return; }
+            usuario = { email, token };
+            try { sessionStorage.setItem('editor-sesion', JSON.stringify(usuario)); } catch (e) { /* sin storage: sesión solo en memoria */ }
+            $('password').value = '';
+            msg('');
+            await entrar();
+        } catch (e) {
+            msg('No se pudo verificar: ' + e.message, 'err');
+        } finally {
+            $('btn-entrar').disabled = false;
+        }
+    });
+
+    $('btn-salir').addEventListener('click', () => {
+        try { sessionStorage.removeItem('editor-sesion'); } catch (e) { /* nada */ }
+        usuario = null; mostrar('login'); msg('');
+    });
+
+    // ---- API de GitHub ----
+    async function gh(ruta, opciones = {}) {
+        const r = await fetch(`https://api.github.com${ruta}`, {
+            ...opciones,
+            headers: {
+                Accept: 'application/vnd.github+json',
+                Authorization: `Bearer ${usuario.token}`,
+                'X-GitHub-Api-Version': '2022-11-28',
+                ...(opciones.body ? { 'Content-Type': 'application/json' } : {}),
+            },
+        });
+        if (r.status === 401) throw new Error('el token no es válido o venció (avisale a Pablo)');
+        if (r.status === 403) throw new Error('el token no tiene permiso para esto');
+        return r;
+    }
+    async function leerJson(repo, rama, ruta) {
+        const r = await gh(`/repos/${repo}/contents/${ruta}?ref=${rama}`);
+        if (r.status === 404) return { data: null, sha: null };
+        if (!r.ok) throw new Error(`GitHub respondió ${r.status} al leer ${ruta}`);
+        const j = await r.json();
+        return { data: JSON.parse(new TextDecoder().decode(deB64(j.content))), sha: j.sha };
+    }
+    async function escribirJson(repo, rama, ruta, data, sha, mensaje) {
+        const body = { message: mensaje, content: aB64(JSON.stringify(data, null, 1) + '\n'), branch: rama };
+        if (sha) body.sha = sha;
+        const r = await gh(`/repos/${repo}/contents/${ruta}`, { method: 'PUT', body: JSON.stringify(body) });
+        if (r.status === 409 || r.status === 422) throw new Error(`${ruta} cambió mientras editabas (o el nombre ya existe). Volvé a la lista y abrilo de nuevo.`);
+        if (!r.ok) throw new Error(`GitHub respondió ${r.status} al guardar ${ruta}`);
+        return (await r.json()).content.sha;
+    }
+    async function borrarArchivo(repo, rama, ruta, sha, mensaje) {
+        const r = await gh(`/repos/${repo}/contents/${ruta}`, { method: 'DELETE', body: JSON.stringify({ message: mensaje, sha, branch: rama }) });
+        if (!r.ok) throw new Error(`GitHub respondió ${r.status} al borrar ${ruta}`);
+    }
+    const firma = () => `\n\nEditado desde el editor web por ${usuario.email}`;
+
+    // ---- Vistas ----
+    function mostrar(v) {
+        for (const n of ['login', 'lista', 'edicion']) $(`vista-${n}`).classList.toggle('hidden', n !== v);
+        $('barra').classList.toggle('hidden', v !== 'edicion');
+        $('btn-salir').classList.toggle('hidden', v === 'login');
+        $('quien').textContent = v === 'login' ? '' : usuario.email;
+        window.scrollTo(0, 0);
+    }
+
+    async function entrar() {
+        mostrar('lista');
+        $('repo-fuentes').textContent = REPO_FUENTES;
+        $('lista').innerHTML = '<p class="muted">Cargando…</p>';
+        try {
+            const { data } = await leerJson(REPO_FUENTES, RAMA_FUENTES, 'cuestionarios/index.json');
+            const items = data || [];
+            $('lista').innerHTML = '';
+            if (!items.length) $('lista').innerHTML = '<p class="muted">Todavía no hay cuestionarios.</p>';
+            for (const it of items) {
+                const a = document.createElement('a');
+                a.href = '#';
+                a.innerHTML = `<span><b></b><br><span class="muted"></span></span><span class="tag ${it.tipo === 'nota' ? 'nota' : 'practica'}">${it.tipo === 'nota' ? 'con nota' : 'práctica'}</span>`;
+                a.querySelector('b').textContent = it.titulo;
+                a.querySelector('.muted').textContent = `${it.materia || ''} · ${it.preguntas} preguntas · ${it.total} pts`;
+                a.addEventListener('click', (ev) => { ev.preventDefault(); abrir(it.id); });
+                $('lista').appendChild(a);
+            }
+        } catch (e) {
+            $('lista').innerHTML = '';
+            msg('No pude leer la lista: ' + e.message, 'err');
+        }
+    }
+
+    async function abrir(id) {
+        msg('Abriendo…');
+        try {
+            const { data, sha } = await leerJson(REPO_FUENTES, RAMA_FUENTES, `cuestionarios/${id}.json`);
+            if (!data) throw new Error('no existe el archivo');
+            actual = data; shaActual = sha; idOriginal = id;
+            pintar(); mostrar('edicion'); msg('');
+        } catch (e) { msg('No pude abrirlo: ' + e.message, 'err'); }
+    }
+
+    $('btn-nuevo').addEventListener('click', () => {
+        actual = {
+            id: '', titulo: '', materia: '', comisiones: [], tipo: 'practica', total: 1,
+            envio_mail: 'pedernera.pablo@terciariourquiza.edu.ar',
+            preguntas: [preguntaVacia(1)],
+        };
+        shaActual = null; idOriginal = null;
+        pintar(); mostrar('edicion'); msg('');
+    });
+    $('btn-volver').addEventListener('click', () => { msg(''); entrar(); });
+
+    // ---- Edición ----
+    const LETRAS = 'abcdefghij';
+    function preguntaVacia(num) {
+        return { num, puntos: 1, enunciado: '', opciones: ['a', 'b', 'c', 'd'].map((l) => ({ letra: l, texto: '' })), correctas: [], porque: '' };
+    }
+
+    function pintar() {
+        $('titulo-edicion').textContent = actual.titulo || 'Nuevo cuestionario';
+        $('f-titulo').value = actual.titulo || '';
+        $('f-id').value = actual.id || '';
+        $('f-materia').value = actual.materia || '';
+        $('f-comisiones').value = (actual.comisiones || []).join(', ');
+        $('f-tipo').value = actual.tipo === 'nota' ? 'nota' : 'practica';
+        const cont = $('preguntas');
+        cont.innerHTML = '';
+        actual.preguntas.forEach((p, i) => cont.appendChild(tarjeta(p, i)));
+        actualizarTotal();
+    }
+
+    function tarjeta(p, i) {
+        const d = document.createElement('div');
+        d.className = 'panel pregunta';
+        d.innerHTML = `
+            <div class="cab">
+                <b>Pregunta ${i + 1}</b>
+                <label style="margin:0">Puntos</label>
+                <input type="number" min="0" step="0.5" style="width:80px" class="p-puntos">
+                <button class="mini" data-acc="subir" title="Subir">↑</button>
+                <button class="mini" data-acc="bajar" title="Bajar">↓</button>
+                <button class="mini borrar" data-acc="borrar">Borrar</button>
+            </div>
+            <label>Enunciado</label>
+            <textarea class="p-enunciado"></textarea>
+            <label>Opciones (tildá la o las correctas)</label>
+            <div class="p-opciones"></div>
+            <button class="mini" data-acc="opcion">+ Opción</button>
+            <label>Por qué (se muestra al corregir)</label>
+            <textarea class="p-porque"></textarea>`;
+        d.querySelector('.p-puntos').value = p.puntos;
+        d.querySelector('.p-enunciado').value = p.enunciado;
+        d.querySelector('.p-porque').value = p.porque || '';
+        d.querySelector('.p-puntos').addEventListener('input', (e) => { p.puntos = Number(e.target.value) || 0; actualizarTotal(); });
+        d.querySelector('.p-enunciado').addEventListener('input', (e) => { p.enunciado = e.target.value; });
+        d.querySelector('.p-porque').addEventListener('input', (e) => { p.porque = e.target.value; });
+
+        const ops = d.querySelector('.p-opciones');
+        p.opciones.forEach((o, j) => {
+            const fila = document.createElement('div');
+            fila.className = 'opcion';
+            fila.innerHTML = `<input type="checkbox" aria-label="Correcta"><span class="letra">${o.letra})</span><input type="text"><button class="mini borrar" title="Sacar opción">✕</button>`;
+            const chk = fila.querySelector('input[type=checkbox]');
+            chk.checked = (p.correctas || []).includes(o.letra);
+            chk.addEventListener('change', () => {
+                const set = new Set(p.correctas || []);
+                chk.checked ? set.add(o.letra) : set.delete(o.letra);
+                p.correctas = LETRAS.split('').filter((l) => set.has(l));
+            });
+            const txt = fila.querySelector('input[type=text]');
+            txt.value = o.texto;
+            txt.addEventListener('input', () => { o.texto = txt.value; });
+            fila.querySelector('button').addEventListener('click', () => {
+                if (p.opciones.length <= 2) { msg('Cada pregunta necesita al menos 2 opciones.', 'err'); return; }
+                const eraCorrecta = (p.correctas || []).includes(o.letra);
+                p.opciones.splice(j, 1);
+                // Re-letrar y mover las correctas con su opción.
+                const correctasTexto = new Set();
+                p.opciones.forEach((op) => { if ((p.correctas || []).includes(op.letra)) correctasTexto.add(op); });
+                p.opciones.forEach((op, k) => { op.letra = LETRAS[k]; });
+                p.correctas = p.opciones.filter((op) => correctasTexto.has(op)).map((op) => op.letra);
+                if (eraCorrecta) msg('Sacaste una opción correcta: revisá la clave.', 'err');
+                pintar();
+            });
+            ops.appendChild(fila);
+        });
+
+        d.querySelectorAll('button[data-acc]').forEach((b) => b.addEventListener('click', () => {
+            const acc = b.dataset.acc;
+            const P = actual.preguntas;
+            if (acc === 'opcion') {
+                if (p.opciones.length >= LETRAS.length) return;
+                p.opciones.push({ letra: LETRAS[p.opciones.length], texto: '' });
+            } else if (acc === 'borrar') {
+                if (P.length <= 1) { msg('El cuestionario necesita al menos una pregunta.', 'err'); return; }
+                P.splice(i, 1);
+            } else if (acc === 'subir' && i > 0) {
+                [P[i - 1], P[i]] = [P[i], P[i - 1]];
+            } else if (acc === 'bajar' && i < P.length - 1) {
+                [P[i + 1], P[i]] = [P[i], P[i + 1]];
+            }
+            P.forEach((q, k) => { q.num = k + 1; });
+            pintar();
+        }));
+        return d;
+    }
+
+    $('btn-agregar-pregunta').addEventListener('click', () => {
+        actual.preguntas.push(preguntaVacia(actual.preguntas.length + 1));
+        pintar();
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    function actualizarTotal() {
+        actual.total = actual.preguntas.reduce((s, p) => s + (Number(p.puntos) || 0), 0);
+        $('total').textContent = `${actual.preguntas.length} preguntas · ${actual.total} pts`;
+    }
+
+    // Lee los campos de cabecera y valida. Devuelve null si está todo bien, o el error.
+    function validar() {
+        actual.titulo = $('f-titulo').value.trim();
+        actual.id = $('f-id').value.trim().toLowerCase();
+        actual.materia = $('f-materia').value.trim();
+        actual.comisiones = $('f-comisiones').value.split(',').map((s) => s.trim()).filter(Boolean);
+        actual.tipo = $('f-tipo').value;
+        actualizarTotal();
+        if (!actual.titulo) return 'Falta el título.';
+        if (!/^[a-z0-9][a-z0-9-]*$/.test(actual.id)) return 'El identificador solo puede tener minúsculas, números y guiones (ej: repaso-hu-31).';
+        for (const p of actual.preguntas) {
+            if (!p.enunciado.trim()) return `La pregunta ${p.num} no tiene enunciado.`;
+            if (p.opciones.some((o) => !o.texto.trim())) return `La pregunta ${p.num} tiene una opción vacía.`;
+            if (!p.correctas || !p.correctas.length) return `La pregunta ${p.num} no tiene ninguna opción correcta tildada.`;
+        }
+        return null;
+    }
+
+    function resumen(q) {
+        return { id: q.id, titulo: q.titulo, materia: q.materia, comisiones: q.comisiones, tipo: q.tipo, preguntas: q.preguntas.length, total: q.total };
+    }
+
+    async function guardar() {
+        const error = validar();
+        if (error) { msg(error, 'err'); return false; }
+        $('btn-guardar').disabled = true; $('btn-publicar').disabled = true;
+        msg('Guardando…');
+        try {
+            const ruta = `cuestionarios/${actual.id}.json`;
+            const renombrado = idOriginal && idOriginal !== actual.id;
+            if (!shaActual || renombrado) {
+                const existe = await leerJson(REPO_FUENTES, RAMA_FUENTES, ruta);
+                if (existe.sha) throw new Error(`ya existe un cuestionario con el identificador "${actual.id}"`);
+            }
+            const nuevoSha = await escribirJson(REPO_FUENTES, RAMA_FUENTES, ruta, actual, renombrado ? null : shaActual,
+                `Cuestionario ${actual.id}: ${shaActual ? 'edición' : 'alta'}${firma()}`);
+            if (renombrado) {
+                const viejo = await leerJson(REPO_FUENTES, RAMA_FUENTES, `cuestionarios/${idOriginal}.json`);
+                if (viejo.sha) await borrarArchivo(REPO_FUENTES, RAMA_FUENTES, `cuestionarios/${idOriginal}.json`, viejo.sha, `Cuestionario ${idOriginal} → ${actual.id}${firma()}`);
+            }
+            const idx = await leerJson(REPO_FUENTES, RAMA_FUENTES, 'cuestionarios/index.json');
+            const lista = (idx.data || []).filter((x) => x.id !== actual.id && x.id !== idOriginal);
+            lista.unshift(resumen(actual));
+            await escribirJson(REPO_FUENTES, RAMA_FUENTES, 'cuestionarios/index.json', lista, idx.sha, `Índice: ${actual.id}${firma()}`);
+            shaActual = nuevoSha; idOriginal = actual.id;
+            $('titulo-edicion').textContent = actual.titulo;
+            msg('Guardado en el repo privado.', 'ok');
+            return true;
+        } catch (e) {
+            msg('No se guardó: ' + e.message, 'err');
+            return false;
+        } finally {
+            $('btn-guardar').disabled = false; $('btn-publicar').disabled = false;
+        }
+    }
+
+    // Versión pública: los de nota salen sin clave ni explicación.
+    function versionPublica(q) {
+        const pub = JSON.parse(JSON.stringify(q));
+        if (pub.tipo === 'nota') pub.preguntas.forEach((p) => { delete p.correctas; delete p.porque; });
+        return pub;
+    }
+
+    $('btn-guardar').addEventListener('click', guardar);
+    $('btn-publicar').addEventListener('click', async () => {
+        if (!(await guardar())) return;
+        $('btn-guardar').disabled = true; $('btn-publicar').disabled = true;
+        msg('Publicando en el sitio…');
+        try {
+            const ruta = `${DIR_PUBLICADOS}/${actual.id}.json`;
+            const prev = await leerJson(REPO_SITIO, RAMA_SITIO, ruta);
+            await escribirJson(REPO_SITIO, RAMA_SITIO, ruta, versionPublica(actual), prev.sha,
+                `Publicar cuestionario ${actual.id} (${actual.tipo === 'nota' ? 'sin clave' : 'con clave'})${firma()}`);
+            const idx = await leerJson(REPO_SITIO, RAMA_SITIO, `${DIR_PUBLICADOS}/index.json`);
+            const lista = (idx.data || []).filter((x) => x.id !== actual.id);
+            lista.unshift(resumen(actual));
+            await escribirJson(REPO_SITIO, RAMA_SITIO, `${DIR_PUBLICADOS}/index.json`, lista, idx.sha, `Índice publicados: ${actual.id}${firma()}`);
+            const url = `publicados/${actual.id}.json`;
+            const m = $('msg');
+            m.className = 'ok';
+            m.textContent = `Publicado${actual.tipo === 'nota' ? ' sin la clave' : ''}. En 1-2 minutos queda en `;
+            const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.textContent = url;
+            m.appendChild(a);
+        } catch (e) {
+            msg('Se guardó, pero no se publicó: ' + e.message, 'err');
+        } finally {
+            $('btn-guardar').disabled = false; $('btn-publicar').disabled = false;
+        }
+    });
+
+    // ---- Arranque: si la sesión de esta pestaña sigue abierta, entrar directo ----
+    try {
+        const s = JSON.parse(sessionStorage.getItem('editor-sesion') || 'null');
+        if (s && s.email && s.token) { usuario = s; entrar(); }
+    } catch (e) { /* sin storage */ }
+})();
+</script>
+</body>
+</html>
