@@ -1,0 +1,37 @@
+{
+ "id": "cuestionario-prueba1",
+ "titulo": "Cuestionario de prueba",
+ "materia": "Redes y comunicaciones",
+ "comisiones": [
+  "31",
+  "32"
+ ],
+ "tipo": "practica",
+ "total": 1,
+ "envio_mail": "pedernera.pablo@terciariourquiza.edu.ar",
+ "preguntas": [
+  {
+   "num": 1,
+   "puntos": 1,
+   "enunciado": "Un servidor no envia las paginas",
+   "opciones": [
+    {
+     "letra": "a",
+     "texto": "No esta enchufado"
+    },
+    {
+     "letra": "b",
+     "texto": "No tiene nada instalado"
+    },
+    {
+     "letra": "c",
+     "texto": "no se"
+    }
+   ],
+   "correctas": [
+    "c"
+   ],
+   "porque": "Quien sabe algo?"
+  }
+ ]
+}
