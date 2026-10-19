@@ -86,3 +86,6 @@ th { color: var(--muted); font-weight: 600; }
 .tabla-scroll { overflow-x: auto; }
 .fuentes { font-size: .9rem; color: var(--muted); }
 .fuentes li { margin-bottom: 8px; overflow-wrap: anywhere; }
+figure { margin: 24px 0; }
+figure img { display: block; max-width: 100%; height: auto; border-radius: 8px; }
+.resumen ul { margin: 0 0 16px; padding-left: 20px; }

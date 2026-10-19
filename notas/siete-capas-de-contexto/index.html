@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Un modelo de 7 capas de contexto para evaluar con IA</title>
+<meta name="description" content="Por qué la IA no le devuelve lo mismo a todos, y lo que aprendí evaluando a 16 grupos en un cuatrimestre.">
+<meta name="author" content="Pablo Pedernera">
+<meta property="og:title" content="Un modelo de 7 capas de contexto para evaluar con IA">
+<meta property="og:description" content="Por qué la IA no le devuelve lo mismo a todos, y lo que aprendí evaluando a 16 grupos en un cuatrimestre.">
+<meta property="og:image" content="https://pablopedernera0.github.io/notas/siete-capas-de-contexto/capas.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="../../css/lectura.css">
+</head>
+<body>
+<main>
+  <p class="migas ui"><a href="../">← Notas</a></p>
+  <article>
+  <h1>Un modelo de 7 capas de contexto para evaluar con IA</h1>
+  <p class="bajada"><em>Por qué la IA no le devuelve lo mismo a todos, y lo que aprendí evaluando a 16 grupos en un cuatrimestre.</em></p>
+  <p class="meta ui">Pablo Pedernera · <time datetime="2026-10-19">19 de octubre de 2026</time></p>
+  <ul class="etiquetas ui">
+    <li>evaluación</li>
+    <li>inteligencia artificial</li>
+    <li>retroalimentación formativa</li>
+    <li>contexto</li>
+  </ul>
+
+  <p>Hay una experiencia que se repite mucho: un docente quiere probar la IA para corregir. Arma un prompt pidiendo una devolución y le pasa los trabajos de sus estudiantes, uno por uno. Salen devoluciones casi iguales: las mismas fortalezas genéricas, las mismas sugerencias ("profundizar el análisis", "incorporar más ejemplos", "revisar la coherencia"). Entonces se impone la conclusión más razonable: la IA sirve, en el mejor de los casos, para ordenar, no para confiar.</p>
+  <p>Estoy de acuerdo con la conclusión. No estoy tan seguro del diagnóstico.</p>
+  <p>Este cuatrimestre evalué con asistencia de IA a 16 grupos en dos comisiones de Diseño de Sistemas Web. Publiqué 122 devoluciones. No salieron iguales, y no fue por usar un modelo mejor ni un prompt ingenioso. Fue por algo bastante menos vistoso: <strong>el contexto que la IA tenía al leer cada trabajo</strong>.</p>
+
+  <h2>Lo que pasa cuando no hay contexto</h2>
+  <p>Si a la IA se le da un trabajo y se le pide "hacé una devolución", no sabe qué se pidió, con qué criterios se va a mirar, en qué momento del proceso está el estudiante ni qué se le dijo la vez anterior. Hace lo único que puede: describe lo que lee y sugiere lo que se le sugeriría a cualquiera. Las devoluciones iguales no son una falla del modelo; son la respuesta esperable a una pregunta sin contexto.</p>
+  <p>Nos pasaría lo mismo a nosotros. Un docente que recibe trabajos de una materia ajena, sin consigna ni criterios, también escribiría devoluciones parecidas.</p>
+
+  <h2>El modelo: siete capas de contexto</h2>
+  <p>Mirando hacia atrás, lo que rodeaba a cada lectura de la IA se puede ordenar en siete capas, de la más estable a la más cambiante. Cada una responde a una pregunta distinta, y si falta cualquiera, la devolución lo nota. Las cinco de abajo son lo que la IA <strong>lee</strong> junto con el trabajo. Las dos de arriba cierran el ciclo con el docente: lo que la IA <strong>no puede saber</strong> y la forma en que el borrador <strong>vuelve</strong> a quien decide. Ninguna depende de que la materia sea técnica.</p>
+  <figure>
+    <a href="capas.png"><img src="capas.png" width="1408" height="860" alt="Infografía: siete capas apiladas, de la 1 abajo a la 7 arriba. 1 Propósito y consigna (¿qué se pidió, y para qué?). 2 Criterios con niveles descriptos (¿con qué se mira?). 3 Momento del proceso (¿qué corresponde ahora?). 4 Historia del grupo (¿de dónde viene este trabajo?). 5 Criterios acumulados del docente (¿qué ya decidí antes?). Las capas 1 a 5 son lo que la IA lee. 6 Lo que solo sabe el docente (¿qué no está escrito en ningún lado?). 7 Forma fija de la salida (¿cómo vuelve el borrador a quien decide?). Las capas 6 y 7 cierran con el docente. Pie: cada capa se apoya en la de abajo; si algo falla, revisá desde abajo."></a>
+  </figure>
+  <ol>
+    <li><strong>Propósito y consigna</strong> — <em>¿qué se pidió, y para qué?</em> Qué quiero que aprendan y qué les pedí. Parece obvio, y es lo primero que falta cuando uno "prueba" la IA con un trabajo suelto.</li>
+    <li><strong>Criterios con niveles descriptos</strong> — <em>¿con qué se mira?</em> No alcanza con "claridad" o "profundidad": hay que escribir qué distingue un trabajo Muy bueno de uno Bueno en cada aspecto. Es la capa que más trabajo docente pide y la que más cambia el resultado. Si yo no sé decir la diferencia por escrito, la IA tampoco la va a ver.</li>
+    <li><strong>Momento del proceso</strong> — <em>¿qué corresponde ahora?</em> Qué ya se dio en clase y qué todavía no. Sin esto, la IA marca como "faltante" algo que todavía no corresponde y la devolución desalienta en vez de orientar. Con un cronograma a mano, la devolución de mitad de cuatrimestre evalúa solo lo que ya tocaba.</li>
+    <li><strong>La historia del grupo</strong> — <em>¿de dónde viene este trabajo?</em> La devolución anterior y qué hicieron con ella. Esta es, para mí, la capa decisiva. Cuando la IA lee "la vez pasada les dijimos X, y ahora hicieron Y", la devolución deja de ser un veredicto y pasa a ser una conversación. Ya no se evalúa solo el producto, sino la respuesta a la devolución. Cada grupo recibió en promedio unas ocho devoluciones en el cuatrimestre; la nota final fue la última de esa serie, no la única.</li>
+    <li><strong>Los criterios que el docente va fijando en el camino</strong> — <em>¿qué ya decidí antes?</em> Decisiones que se toman en una ronda y valen para todas las siguientes: una sección recién empezada se marca "en curso" y no se puntúa; lo que falta antes de la entrega final no bloquea; si el contenido está bien pero en otro archivo que el pedido, cuenta igual. Casi nunca se escriben. Yo las fui anotando, y son las que hacen que la IA lea como uno de una ronda a la otra, en vez de volver a empezar de cero cada vez.</li>
+    <li><strong>Lo que solo sabe el docente</strong> — <em>¿qué no está escrito en ningún lado?</em> Cómo trabajó el grupo en clase, qué dificultades tuvo, qué tono le conviene a cada mensaje. Esto no lo pone la IA, y no tiene que ponerlo: entra en la revisión. Para no olvidarlo, cada borrador termina con una pregunta dirigida a mí sobre algo que solo yo puedo responder.</li>
+    <li><strong>Una forma fija para la salida</strong> — <em>¿cómo vuelve el borrador a quien decide?</em> Puntaje por sección, un nivel de confianza de la IA en cada sección y esa pregunta final. Con una forma fija la revisión es rápida, y se ve enseguida dónde duda la IA, que es justamente donde más tengo que mirar.</li>
+  </ol>
+  <p>Sí, son siete, como el modelo OSI. También doy Redes, y no fue a propósito. Pero la analogía sirve en un punto: cada capa se apoya en la de abajo, y cuando algo falla conviene revisar desde abajo. La historia del grupo no le sirve de mucho a la IA si no sabe con qué criterios mirarla. La prueba del prompt con los trabajos uno por uno falla en la capa 1: no hay consigna, ni criterios, ni nada encima.</p>
+
+  <h2>Cuánto cambié de lo que escribió la IA</h2>
+  <p>"El docente siempre revisa" es una frase que dice todo el mundo. Quise ver cuánto revisé de verdad, y lo saqué del historial de versiones:</p>
+  <ul>
+    <li>de las <strong>122</strong> devoluciones publicadas, en <strong>83</strong> cambió algo entre el borrador de la IA y lo que llegó a los estudiantes (dos de cada tres);</li>
+    <li>en <strong>28</strong> cambió el puntaje.</li>
+  </ul>
+  <p>Parte de esos cambios no son correcciones de criterio, sino que el grupo subió más trabajo entre el borrador y la publicación. Aun así, el dato dice algo claro: el borrador es eso, un borrador. La IA ordena; la decisión sigue siendo mía. Y cuánto ordena depende de cuánto contexto se construyó antes.</p>
+
+  <h2>Lo que no funcionó (y cómo lo fuimos corrigiendo)</h2>
+  <p>El dispositivo también se equivocó, y contar esos errores me parece más útil que mostrar solo el resultado:</p>
+  <ul>
+    <li><strong>Confundir plantilla con avance.</strong> Los grupos arrancan desde un repositorio con estructura fija. Al principio, una sección con el esqueleto de la plantilla parecía "hecha". Hubo que enseñarle a la IA (y a mí mismo) a distinguir un archivo completo de uno con contenido propio.</li>
+    <li><strong>Exigir lo que todavía no se había dado.</strong> Antes de sumar el cronograma, los faltantes restaban puntos aunque el tema no se hubiera visto en clase. Ahí nació la devolución parcial.</li>
+    <li><strong>Faltantes que restaban y después no.</strong> El criterio cambió a mitad de camino, y hubo que aplicarlo hacia atrás con cuidado para no ser injusto con los grupos que ya tenían su devolución.</li>
+    <li><strong>Borradores que se perdían entre máquinas.</strong> Un problema bien técnico, pero real: una devolución a medio revisar quedaba en una computadora y no en la otra. Lo resolvimos moviendo los borradores a un lugar único.</li>
+  </ul>
+  <p>Cada uno de estos errores terminó convertido en una línea más de la capa 5. Así es como crece el contexto.</p>
+
+  <h2>¿Funciona solo en materias técnicas?</h2>
+  <p>Es la objeción que más escuché, y tiene algo de cierto. En una materia técnica buena parte del juicio es <strong>coherencia verificable</strong>: si los requisitos, los casos de uso y el modelo de datos se corresponden entre sí. En una materia humanística pesa más el <strong>juicio interpretativo</strong>, y el riesgo de que la IA homogeneice es mayor.</p>
+  <p>Pero mirando las siete capas, ninguna es propia de lo técnico: la consigna, los criterios con niveles, el momento del proceso, la historia del estudiante, los criterios acumulados, lo que solo sabe el docente y la forma de la salida existen en cualquier materia. Lo que cambia es el peso: en lo humanístico, las capas 2 y 6 piden más trabajo (criterios mejor escritos y una supervisión más intensa). Me parece una diferencia de grado, no de naturaleza. Me encantaría probarlo en una materia que no sea la mía.</p>
+
+  <h2>Lo que no puedo afirmar</h2>
+  <p>No hubo grupo de control. Las consignas de este cuatrimestre no eran las mismas que las del anterior, y los grupos partieron de una plantilla. No puedo decir que esto haya mejorado el aprendizaje en un porcentaje. Lo que sí puedo decir es que todo es <strong>trazable</strong>: cada devolución, cada cambio que hice sobre lo que propuso la IA y cada respuesta de los grupos quedaron registrados. Por ejemplo, un grupo hizo 22 commits después de la devolución de cierre, respondiendo punto por punto, y pasó de 52 a 70 sobre 70. No es una prueba, pero es el tipo de evidencia que una evaluación de proceso debería poder mostrar.</p>
+
+  <h2>Por qué me importa</h2>
+  <p>No uso la IA para corregir más rápido. La uso porque me deja sostener algo que sin ella no podía: muchas devoluciones a lo largo del cuatrimestre, en lugar de una al final. La evaluación vuelve a ser parte del aprendizaje y no su cierre, que es lo que vienen planteando hace tiempo Álvarez Méndez ("evaluar para conocer"), Anijovich con la retroalimentación formativa o Placci con la evaluación de prácticas, que no admiten respuestas modelo. La IA, sin contexto, empuja justamente hacia la respuesta modelo. Con contexto, puede ayudar a escaparle.</p>
+  <p>La herramienta importa poco. El contexto lo construimos los docentes, y es ahí donde está el trabajo.</p>
+
+  <div class="resumen">
+    <p><strong>Cómo lo hice yo.</strong> Para quien quiera los detalles técnicos:</p>
+    <ul>
+      <li>Cada grupo trabaja en un <strong>repositorio de GitHub</strong> generado desde una plantilla con estructura fija (requisitos, casos de uso, historias de usuario, diagramas, diseño de UI). El historial de commits es, de paso, un portafolio de proceso.</li>
+      <li>La IA (Claude, a través de Claude Code) lee el repositorio junto con la <strong>rúbrica</strong>, el <strong>cronograma</strong>, las <strong>devoluciones anteriores</strong> del grupo y un archivo con los <strong>criterios acumulados</strong>. Escribe un borrador en un repositorio privado mío, que los estudiantes no ven.</li>
+      <li>Yo reviso y edito el borrador. Solo cuando lo marco como aprobado, un script lo publica en el repositorio del grupo, y un flujo de <strong>N8N</strong> les manda un mail con el link.</li>
+      <li>Además, un cuestionario individual por grupo, que también arma la IA y reviso yo, para ver que cada integrante entiende las decisiones del trabajo.</li>
+    </ul>
+    <p>Nada de esto es imprescindible. Las siete capas se pueden armar con un documento compartido y un chat. Lo imprescindible es escribirlas.</p>
+  </div>
+
+  <h2>Referencias</h2>
+  <ul class="fuentes">
+    <li>Álvarez Méndez, J. M. (2001). <em>Evaluar para conocer, examinar para excluir.</em> Morata.</li>
+    <li>Anijovich, R. (2019). <em>Orientaciones para la formación docente y el trabajo en el aula: retroalimentación formativa.</em> SUMMA.</li>
+    <li>Placci, N. (2025). <em>La evaluación de la práctica como eje del proceso formativo.</em> Homo Sapiens Ediciones.</li>
+  </ul>
+  </article>
+</main>
+</body>
+</html>
