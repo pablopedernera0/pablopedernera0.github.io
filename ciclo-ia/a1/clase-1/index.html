@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Clase 1 — Qué es la inteligencia artificial y cómo se llegó hasta acá</title>
+<style>
+  :root {
+    --azul-oscuro: #1b365d; --azul: #0066cc; --amarillo: #ffd200;
+    --fondo: #ffffff; --texto: #1f2a37; --suave: #5b6b7d; --linea: #d9e0e8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #0f1d33; font-family: "DejaVu Sans", "Segoe UI", Arial, sans-serif; }
+  .diapo {
+    display: none; position: absolute; inset: 0; margin: auto;
+    width: min(100vw, calc(100vh * 16 / 9)); height: min(100vh, calc(100vw * 9 / 16));
+    background: var(--fondo); color: var(--texto); overflow: hidden;
+    font-size: min(2.05vw, 3.65vh); border-top: 0.35em solid var(--azul);
+  }
+  .diapo.activa { display: block; }
+  .contenido { padding: 1.3em 2.4em 2em; height: 100%; overflow: auto; }
+  h1, h2 { margin: 0 0 0.7em; line-height: 1.15; color: var(--azul-oscuro); }
+  h2 { font-size: 1.55em; border-bottom: 0.08em solid var(--amarillo); padding-bottom: 0.3em; }
+  p, li { line-height: 1.45; }
+  li { margin-bottom: 0.45em; }
+  ul, ol { padding-left: 1.3em; }
+  strong { color: var(--azul-oscuro); }
+  h3 { margin: 0.9em 0 0.4em; color: var(--azul); font-size: 1.1em; }
+  table { border-collapse: collapse; width: 100%; margin: 0.4em 0 0.8em; font-size: 0.85em; }
+  th, td { border: 0.05em solid var(--linea); padding: 0.4em 0.6em; text-align: left; vertical-align: top; }
+  th { background: var(--azul-oscuro); color: #fff; }
+  blockquote { margin: 0.8em 0; padding: 0.6em 1em; border-left: 0.25em solid var(--amarillo); background: #f2f5f8; font-style: italic; }
+  a { color: var(--azul); word-break: break-all; }
+  .portada, .seccion { background: var(--azul-oscuro); color: #fff; }
+  .portada h1, .seccion h1 { color: #fff; font-size: 2.2em; }
+  .portada .contenido, .seccion .contenido { display: flex; flex-direction: column; justify-content: center; }
+  .portada p, .seccion p { color: #d6e2f0; }
+  .portada strong, .seccion strong { color: var(--amarillo); }
+  .notas { display: none; }
+  body.con-notas .diapo.activa .notas {
+    display: block; position: absolute; left: 0; right: 0; bottom: 0; max-height: 45%;
+    overflow: auto; background: #fff8d6; color: #333; font-size: 0.6em;
+    padding: 0.8em 1.6em; border-top: 0.15em solid var(--amarillo);
+  }
+  .pie {
+    position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between;
+    padding: 0.4em 1em; font-size: 13px; color: #9fb3c8; pointer-events: none;
+  }
+  @media print {
+    html, body { background: #fff; height: auto; }
+    .diapo { display: block !important; position: relative; width: 100%; height: auto; min-height: 100vh; page-break-after: always; font-size: 16pt; }
+    .pie, .notas { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<section class="diapo portada"><div class="contenido"><h1>Qué es la inteligencia artificial y cómo se llegó hasta acá</h1><p><strong>Clase 1</strong> · Alfabetización en inteligencia artificial</p>
+<p>Ciclo de Actualización Pedagógica en Ciencia de Datos e Inteligencia Artificial</p>
+<p>Terciario Urquiza N.° 49 · Martes 10 de noviembre de 2026</p></div><aside class="notas"><p>Bloque de apertura: minutos 0 a 15. Presentación de quien dicta. Recordar que la clase se graba.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Antes de empezar</h2><p>¿Qué entendés hoy por <strong>inteligencia artificial</strong>?</p>
+<p>Respondé en la herramienta de votación con una o dos palabras.</p></div><aside class="notas"><p>Pregunta de apertura, en nube de palabras. Se mira sin comentarla todavía. Las respuestas se guardan: en la clase 5 se vuelve sobre esta nube para ver qué cambió.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Cómo se cursa</h2><ul><li>Cinco clases en vivo, martes y jueves de 18 a 20 h, del 10 al 24 de noviembre.</li><li>Las clases se graban como apoyo.</li><li>En el aula virtual se publica el material antes de cada clase: presentación, lectura de la semana y consigna de la actividad de clase.</li><li>28 horas reloj: 10 de clase y 18 de trabajo autónomo tutorado.</li></ul></div><aside class="notas"></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>La actividad de clase</h2><ul><li>Una por clase, breve (15 a 20 minutos) e individual, en el aula virtual.</li><li>Queda abierta siete días desde la clase.</li><li>Después de enviar la tuya, ves las respuestas de los demás.</li><li>Es lo que acredita la cursada: hay que completar al menos el 75 % (a confirmar).</li></ul></div><aside class="notas"><p>Explicar por qué es obligatoria: el certificado consigna horas reloj, y las horas de clase tienen que quedar acreditadas por algo más que haber estado conectado.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Cómo se aprueba</h2><ul><li><strong>Entrega de la unidad 1.1</strong> — domingo 22/11: tres sistemas de tu práctica.</li><li><strong>Entrega de la unidad 1.5</strong> — domingo 29/11: un caso de tu espacio curricular.</li><li><strong>Trabajo final integrador</strong> — domingo 06/12: una decisión pedagógica sobre una herramienta, fundamentada. Recuperación hasta el viernes 18/12.</li></ul>
+<p>Las entregas se aprueban o se reelaboran. El integrador se califica de 1 a 10 y aprueba con 6. La consigna y la rúbrica ya están en el aula virtual.</p></div><aside class="notas"></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Qué no es este curso</h2><ul><li>No enseña a usar una herramienta en particular.</li><li>No enseña a escribir instrucciones para un asistente.</li></ul>
+<h3>Qué es</h3>
+<ul><li>Entender <strong>qué tipo de sistema</strong> tenés enfrente.</li><li>Saber <strong>qué se puede esperar</strong> de él y por qué se equivoca.</li><li>Saber <strong>qué responsabilidad</strong> asume quien lo usa con datos de otras personas.</li></ul></div><aside class="notas"></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Qué nombra la expresión</h1><p>Un nombre, muchas cosas</p></div><aside class="notas"><p>Bloque de los minutos 15 a 30.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Un campo de estudio, no un producto</h2><ul><li>"Inteligencia artificial" nombra un <strong>campo de estudio</strong> con más de setenta años.</li><li>El nombre aparece en 1955, en la propuesta de John McCarthy para el encuentro de Dartmouth College de 1956.</li><li>La propuesta partía de una conjetura: que cualquier rasgo de la inteligencia puede describirse con tanta precisión que una máquina puede simularlo.</li></ul></div><aside class="notas"><p>Fuente: Fundación Sadosky (2024), pregunta 2, que cita la propuesta de McCarthy y otros (1955). Es la lectura de esta semana.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>El mismo nombre para cosas muy distintas</h2><p>Un <strong>corrector ortográfico</strong> y un <strong>asistente conversacional</strong> se llaman, los dos, inteligencia artificial.</p>
+<p>¿Qué tienen en común? ¿En qué se diferencian?</p>
+<blockquote>"Debemos tener cuidado de no atribuir a una máquina propiedades que esa máquina</blockquote>
+<blockquote>particular no tiene." — John McCarthy, 1983</blockquote></div><aside class="notas"><p>Pregunta para el grupo, a mano alzada o en el chat de la videollamada (no es la actividad de clase). Lo que buscamos: que comparten el nombre porque automatizan tareas que asociamos con la inteligencia humana, pero funcionan de maneras muy distintas. La cita de McCarthy está en Fundación Sadosky (2024), pregunta 2.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Cómo se llegó hasta acá</h1><p>Tres etapas, con el lenguaje como hilo</p></div><aside class="notas"><p>Bloque de los minutos 30 a 65. Seguimos el recorrido de Gómez-Rodríguez (2024), que usa el procesamiento del lenguaje como hilo, y lo completamos con la historia general de la Sadosky.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Los primeros pasos</h2><ul><li><strong>1943</strong> — McCulloch y Pitts publican el primer modelo neuronal moderno, la idea de la que vienen las redes neuronales actuales.</li><li><strong>1950</strong> — Alan Turing propone evaluar la inteligencia de una máquina por su capacidad de conversar como una persona: lo que después se llamó "prueba de Turing".</li><li><strong>1956</strong> — En Dartmouth la inteligencia artificial se constituye como campo, con nombre propio.</li></ul></div><aside class="notas"></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>1954: "Un cerebro electrónico traduce del ruso"</h2><ul><li>En plena Guerra Fría, el experimento Georgetown-IBM muestra un sistema que traduce algunas oraciones del ruso al inglés.</li><li>Era muy rudimentario, pero los titulares instalaron la idea de que la traducción automática era posible.</li><li>Las predicciones: el problema iba a estar resuelto en pocos años.</li></ul>
+<p>¿Se cumplió?</p></div><aside class="notas"><p><em>Recortable</em> si el bloque se alarga. Fuente: Gómez-Rodríguez (2024), sección 2. El titular original fue "Electronic brain translates Russian". La traducción automática de calidad tardó más de cincuenta años: es un buen ejemplo de expectativas que se adelantan a lo que la técnica puede dar. Enlaza con los "inviernos" de la IA.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Etapa 1 — Reglas escritas a mano</h2><p>Hasta fines de los años 80.</p>
+<ul><li>Personas expertas escriben las reglas: gramáticas, diccionarios, "si pasa esto, respondé aquello".</li><li><strong>ELIZA</strong> (Joseph Weizenbaum, 1966) conversaba siguiendo reglas que reformulaban lo que escribía la persona.</li><li>El problema: <strong>no escala</strong>. Hace falta escribir reglas para cada idioma, cada tarea y cada excepción, y el lenguaje es cambiante y ambiguo.</li></ul></div><aside class="notas"></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Etapa 2 — Aprender de ejemplos</h2><p>Desde fines de los años 80.</p>
+<ul><li>En lugar de reglas, <strong>ejemplos y un algoritmo que aprende de ellos</strong>: para traducir, oraciones en un idioma junto con su traducción.</li><li>Más barato y escalable: alcanza con tener buenos datos.</li><li>En la década de 2010 vuelven las redes neuronales, con el <strong>aprendizaje profundo</strong>.</li><li>El límite: cada sistema hace <strong>una sola tarea</strong>. Para resumir textos hay que entrenar otro sistema, desde cero, con otros ejemplos.</li></ul></div><aside class="notas"><p>Frase que cita Gómez-Rodríguez, de Fred Jelinek (investigador en reconocimiento de voz): "Cada vez que despido a un lingüista, el sistema funciona mejor". Sirve para discutir qué se gana y qué se pierde al pasar de reglas a ejemplos.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Etapa 3 — Modelos de lenguaje de propósito general</h2><p>Desde fines de la década de 2010.</p>
+<ul><li>Los mismos modelos de la etapa anterior, pero mucho más grandes: más datos, mejores computadoras y una arquitectura nueva (Transformers, 2017).</li><li>Aprenden de cantidades enormes de texto tomado tal cual de internet, sin ejemplos preparados para cada tarea.</li><li>Un <strong>mismo sistema</strong> traduce, resume, responde y conversa.</li></ul></div><aside class="notas"><p>El artículo de GPT-2 (2019) se titulaba "Los modelos de lenguaje aprenden muchas tareas sin supervisión": resume el cambio. Gómez-Rodríguez lo fecha en 2018; se presentó en 2019.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Cada etapa resolvió un límite de la anterior</h2><table><thead><tr><th></th><th>Cómo se le "enseña" a la máquina</th><th>El límite</th></tr></thead><tbody><tr><td>Reglas</td><td>Expertos escriben reglas</td><td>No escala</td></tr><tr><td>Aprendizaje de ejemplos</td><td>Ejemplos preparados para una tarea</td><td>Un sistema por tarea</td></tr><tr><td>Propósito general</td><td>Enormes cantidades de texto</td><td>Lo veremos en la clase 3</td></tr></tbody></table>
+<p>Entre etapa y etapa hubo <strong>"inviernos" de la IA</strong>: años de expectativas defraudadas y menos inversión.</p></div><aside class="notas"></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>De las etapas a las familias</h1><p>Tres tipos de sistemas que hoy conviven</p></div><aside class="notas"><p>Bloque de los minutos 65 a 75.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Tres familias</h2><ul><li><strong>Basados en reglas</strong> — alguien escribió las reglas. Ejemplo: el sistema que controla las correlatividades en una inscripción.</li><li><strong>Aprendizaje automático</strong> — aprendió de ejemplos a clasificar o predecir. Ejemplo: un sistema que separa granos sanos de granos dañados a partir de fotos.</li><li><strong>Generativos</strong> — producen texto, imágenes o sonido nuevos, parecidos a los que vieron. Ejemplo: un generador de imágenes a partir de una descripción.</li></ul>
+<p><strong>Las tres conviven</strong>: la más nueva no reemplazó a las otras.</p></div><aside class="notas"><p>Los ejemplos se eligieron para que no se repitan con los de la votación que sigue.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Votación</h1><p>¿A qué familia pertenece cada sistema?</p></div><aside class="notas"><p>Bloque de los minutos 75 a 105. 10 minutos: se votan los ocho sistemas, uno por uno, sin mostrar resultados. 20 minutos: se muestran los resultados y se discuten los sistemas en los que el voto se dividió; en cada uno, dos o tres personas justifican en vivo.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Ocho sistemas, cuatro opciones</h2><p>Para cada sistema: <strong>reglas</strong>, <strong>aprendizaje automático</strong>, <strong>generativo</strong> o <strong>no es inteligencia artificial</strong>.</p>
+<ol><li>Corrector ortográfico</li><li>Filtro de correo no deseado</li><li>Recomendador de una plataforma de video</li><li>Asistente conversacional</li><li>Sistema de turnos de un centro de salud</li><li>Traductor automático</li><li>Reconocimiento de rostro para desbloquear el teléfono</li><li>Calculadora de promedios de una planilla de calificaciones</li></ol></div><aside class="notas"></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Los casos dudosos</h2><ul><li><strong>Traductor automático</strong>: la misma tarea se resolvió con las tres familias a lo largo del tiempo. ¿Cuál usa el que conocés?</li><li><strong>Corrector ortográfico</strong>: puede funcionar con reglas o con aprendizaje.</li><li><strong>Calculadora de promedios</strong>: no todo lo automático es inteligencia artificial.</li></ul></div><aside class="notas"><p>Mostrar esta diapositiva después de los resultados, para ordenar la discusión. En el sistema de turnos, la respuesta depende de cómo esté hecho: si asigna por orden de llegada y disponibilidad, son reglas.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Cierre</h1></div><aside class="notas"><p>Bloque de los minutos 105 a 120.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Qué nos llevamos</h2><ul><li>La inteligencia artificial es un <strong>campo con más de setenta años</strong>, no un producto reciente.</li><li>Pasó por <strong>tres etapas</strong>: reglas, aprendizaje de ejemplos y modelos de propósito general. Cada una resolvió un límite de la anterior.</li><li>Hoy conviven <strong>tres familias</strong> de sistemas, y no todo lo automático es inteligencia artificial.</li></ul></div><aside class="notas"></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Para el jueves 12/11</h2><ul><li><strong>Actividad de clase</strong> (aula virtual, hasta el martes 17/11): clasificá cinco sistemas de la lista en una de las tres familias. Elegí uno de los casos dudosos y explicá en tres a cinco líneas por qué lo clasificaste así y qué te haría cambiar de opinión.</li><li><strong>Lectura</strong>: Gómez-Rodríguez (2024), secciones 1 y 2, y Fundación Sadosky (2024), pregunta 2.</li><li><strong>Registro personal</strong>: tres sistemas que aparecen en tu práctica y a qué familia pertenecen. Te sirve para la entrega 1.1.</li></ul></div><aside class="notas"></aside></section>
+<div class="pie"><span>Alfabetización en inteligencia artificial · Curso introductorio (A1) · Martes 10/11/2026</span><span id="contador"></span></div>
+<script>
+  const diapos = document.querySelectorAll('.diapo');
+  let actual = 0;
+  function mostrar(n) {
+    actual = Math.max(0, Math.min(diapos.length - 1, n));
+    diapos.forEach((d, i) => d.classList.toggle('activa', i === actual));
+    document.getElementById('contador').textContent = (actual + 1) + ' / ' + diapos.length;
+    history.replaceState(null, '', '#' + (actual + 1));
+  }
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) mostrar(actual + 1);
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) mostrar(actual - 1);
+    else if (e.key === 'Home') mostrar(0);
+    else if (e.key === 'End') mostrar(diapos.length - 1);
+    else if (e.key === 'n' || e.key === 'N') document.body.classList.toggle('con-notas');
+  });
+  document.addEventListener('click', e => {
+    if (e.target.closest('a') || e.target.closest('.notas')) return;
+    mostrar(actual + (e.clientX > window.innerWidth / 3 ? 1 : -1));
+  });
+  let x0 = null;
+  document.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 40) mostrar(actual + (dx < 0 ? 1 : -1));
+    x0 = null;
+  });
+  mostrar((parseInt(location.hash.slice(1), 10) || 1) - 1);
+</script>
+</body>
+</html>
