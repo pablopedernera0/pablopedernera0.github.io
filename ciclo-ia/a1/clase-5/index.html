@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Clase 5 — Responsabilidad profesional y criterios de uso responsable</title>
+<style>
+  :root {
+    --azul-oscuro: #1b365d; --azul: #0066cc; --amarillo: #ffd200;
+    --fondo: #ffffff; --texto: #1f2a37; --suave: #5b6b7d; --linea: #d9e0e8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #0f1d33; font-family: "DejaVu Sans", "Segoe UI", Arial, sans-serif; }
+  .diapo {
+    display: none; position: absolute; inset: 0; margin: auto;
+    width: min(100vw, calc(100vh * 16 / 9)); height: min(100vh, calc(100vw * 9 / 16));
+    background: var(--fondo); color: var(--texto); overflow: hidden;
+    font-size: min(2.05vw, 3.65vh); border-top: 0.35em solid var(--azul);
+  }
+  .diapo.activa { display: block; }
+  .contenido { padding: 1.3em 2.4em 2em; height: 100%; overflow: auto; }
+  h1, h2 { margin: 0 0 0.7em; line-height: 1.15; color: var(--azul-oscuro); }
+  h2 { font-size: 1.55em; border-bottom: 0.08em solid var(--amarillo); padding-bottom: 0.3em; }
+  p, li { line-height: 1.45; }
+  li { margin-bottom: 0.45em; }
+  ul, ol { padding-left: 1.3em; }
+  strong { color: var(--azul-oscuro); }
+  h3 { margin: 0.9em 0 0.4em; color: var(--azul); font-size: 1.1em; }
+  table { border-collapse: collapse; width: 100%; margin: 0.4em 0 0.8em; font-size: 0.85em; }
+  th, td { border: 0.05em solid var(--linea); padding: 0.4em 0.6em; text-align: left; vertical-align: top; }
+  th { background: var(--azul-oscuro); color: #fff; }
+  blockquote { margin: 0.8em 0; padding: 0.6em 1em; border-left: 0.25em solid var(--amarillo); background: #f2f5f8; font-style: italic; }
+  a { color: var(--azul); word-break: break-all; }
+  .portada, .seccion { background: var(--azul-oscuro); color: #fff; }
+  .portada h1, .seccion h1 { color: #fff; font-size: 2.2em; }
+  .portada .contenido, .seccion .contenido { display: flex; flex-direction: column; justify-content: center; }
+  .portada p, .seccion p { color: #d6e2f0; }
+  .portada strong, .seccion strong { color: var(--amarillo); }
+  .notas { display: none; }
+  body.con-notas .diapo.activa .notas {
+    display: block; position: absolute; left: 0; right: 0; bottom: 0; max-height: 45%;
+    overflow: auto; background: #fff8d6; color: #333; font-size: 0.6em;
+    padding: 0.8em 1.6em; border-top: 0.15em solid var(--amarillo);
+  }
+  .pie {
+    position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between;
+    padding: 0.4em 1em; font-size: 13px; color: #9fb3c8; pointer-events: none;
+  }
+  @media print {
+    html, body { background: #fff; height: auto; }
+    .diapo { display: block !important; position: relative; width: 100%; height: auto; min-height: 100vh; page-break-after: always; font-size: 16pt; }
+    .pie, .notas { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<section class="diapo portada"><div class="contenido"><h1>Responsabilidad profesional y criterios de uso responsable</h1><p><strong>Clase 5</strong> · Alfabetización en inteligencia artificial · Unidad 1.5</p>
+<p>Ciclo de Actualización Pedagógica en Ciencia de Datos e Inteligencia Artificial</p>
+<p>Terciario Urquiza N.° 49 · Martes 24 de noviembre de 2026</p></div><aside class="notas"><p>Recordar que la clase se graba. Es la última clase del curso: cierra la unidad 1.5 y lanza el integrador.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>De la clase pasada</h2><p>¿Cómo resolvieron la situación que eligieron?</p>
+<p>¿Qué principio de la ley usaron? ¿Qué quedó en "depende"?</p></div><aside class="notas"><p>Minutos 0 a 10. Leer dos respuestas de la actividad de la clase 4, idealmente de situaciones distintas.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Responsabilidad</h1><p>¿Quién responde?</p></div><aside class="notas"><p>Minutos 10 a 28.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>El sistema no es responsable</h2><ul><li>Quien responde por una decisión tomada con apoyo de un sistema automatizado es <strong>quien decide usarlo, y cómo</strong>.</li><li>La responsabilidad también alcanza a lo que <strong>no se hizo</strong>: la ley obliga a adoptar medidas de seguridad (art. 9). No hacerlo ya es un incumplimiento, aunque nunca haya una filtración.</li><li>Recordemos el caso del abogado de Rosario: la herramienta inventó los fallos, pero el llamado de atención fue para él.</li></ul></div><aside class="notas"><p>[Caso de referencia documentado sobre responsabilidad por omisión en seguridad de datos: a definir por quien dicte, con su fuente.] El caso de Rosario se vio en la clase 3.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Un caso hipotético</h2><p>Una institución adopta un sistema que marca a los estudiantes con <strong>riesgo de abandonar</strong>. Se entrenó con datos de otra institución, donde casi nadie trabajaba mientras estudiaba.</p>
+<p>El sistema marca de más a quienes trabajan.</p>
+<ul><li>¿Quién responde por las decisiones que se tomaron con esa marca?</li><li>¿Qué había que preguntar sobre los datos <strong>antes</strong> de adoptarlo?</li></ul></div><aside class="notas"><p>Retoma el sesgo de la clase 3: los datos no representaban a esta población. Respuestas esperables: responde la institución que lo adoptó y quien tomó decisiones con la marca; antes había que preguntar con qué datos se entrenó, de qué población, y cómo se equivoca con cada grupo (no solo el acierto global). Es un caso inventado para la clase.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Autoría e integridad académica</h1></div><aside class="notas"><p>Minutos 28 a 43.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Producciones generadas</h2><ul><li>¿De quién es un texto generado con un asistente? ¿Cómo se cita?</li><li>¿Qué se le puede pedir a un estudiante: que no lo use, que lo declare, que muestre el proceso?</li><li>Los <strong>detectores de texto generado</strong> no resuelven el problema: se equivocan en las dos direcciones, y un error acusa a alguien que no copió.</li></ul>
+<p>¿Qué cambia en una consigna si el estudiante tiene un asistente disponible?</p></div><aside class="notas"><p>No cerrar la discusión: se retoma en A2, en la unidad sobre diseño de consignas y evaluación con evidencia de proceso.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>El entorno productivo</h1><p>Lo que van a encontrar los estudiantes en la región</p></div><aside class="notas"><p>Minutos 43 a 58. Usar los ejemplos para mostrar qué les espera a los estudiantes, no para entrar en los controles técnicos.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Tres escenarios</h2><table><thead><tr><th>Escenario</th><th>Qué datos</th><th>Cuidado</th></tr></thead><tbody><tr><td>Un sanatorio entrena un modelo con imágenes médicas</td><td>Datos de salud</td><td>Máximo</td></tr><tr><td>Una empresa de tecnología agropecuaria cruza telemetría de maquinaria con el CUIT y la ubicación de los campos</td><td>Perfiles productivos y económicos</td><td>Mayor</td></tr><tr><td>Una billetera virtual calcula el riesgo crediticio</td><td>Perfiles financieros</td><td>Mayor</td></tr></tbody></table>
+<p>Lo que entra a un modelo <strong>no se borra fácil</strong>: si alguien pide la supresión de sus datos (art. 16), puede haber que volver a entrenar el modelo.</p></div><aside class="notas"><p>Para cada uno: qué datos, qué nivel de cuidado, qué haría falta. Son escenarios genéricos, no empresas concretas.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Antes de cargar datos en una herramienta</h1></div><aside class="notas"><p>Minutos 58 a 70.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Preguntas para hacerse</h2><p>Siguiendo el recorrido de un dato:</p>
+<ol><li>¿Qué tipo de dato es y qué tan sensible?</li><li>¿Es necesario, o alcanza con menos?</li><li>¿Dónde queda guardado, y en qué país?</li><li>¿Quién más puede verlo?</li><li>¿Por cuánto tiempo?</li><li>¿Se puede pedir que se borre?</li></ol></div><aside class="notas"></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Encuadre normativo y pertinencia</h2><ul><li>Un uso puede estar <strong>contemplado por la normativa</strong> y aun así <strong>no ser adecuado</strong> en un contexto educativo.</li><li>La pregunta no es solo "¿se puede?", sino también "¿conviene, acá, con estos estudiantes, para esto?".</li></ul>
+<p>Un marco de referencia: la <strong>Recomendación sobre la ética de la inteligencia artificial</strong> de UNESCO (2021), que incluye entre sus principios la proporcionalidad, el derecho a la privacidad y la protección de datos, la supervisión humana, la transparencia y la equidad.</p></div><aside class="notas"><p>La recomendación se publica en el aula virtual antes de la clase.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Criterios en común</h1></div><aside class="notas"><p>Minutos 70 a 95. 10 minutos: cada cursante escribe un criterio en la herramienta de votación. 15 minutos: se leen en pantalla, se agrupan los parecidos y se discute cuáles responden al encuadre normativo, cuáles a la pertinencia y cuáles a las dos.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Escribí un criterio</h2><p>Un criterio de uso de inteligencia artificial <strong>para tu espacio curricular</strong>.</p>
+<p>Ejemplos de forma (no de contenido):</p>
+<ul><li>"Antes de ..., verifico ..."</li><li>"No cargo ... porque ..."</li><li>"Lo habilito para ..., siempre que ..."</li></ul></div><aside class="notas"><p>Después de agrupar: ¿hay criterios que miren los datos con que se entrenó la herramienta? Si no aparecen, volver al caso hipotético de la detección de abandono.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Cierre del curso</h1></div><aside class="notas"><p>Minutos 95 a 120.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>¿Qué cambió?</h2><p>La nube de palabras de la clase 1: ¿qué entendían por inteligencia artificial?</p>
+<p>¿Qué dirían hoy?</p></div><aside class="notas"><p>Mostrar la nube guardada de la clase 1. Si hay tiempo, repetir la pregunta y comparar.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>El trabajo final integrador</h2><p>Elegí una <strong>decisión pedagógica concreta</strong> sobre una herramienta de inteligencia artificial en tu espacio curricular: habilitarla, restringirla, incorporarla o recomendar que la institución la adopte.</p>
+<p>Un análisis fundamentado en cuatro partes:</p>
+<ol><li><strong>La herramienta</strong>: qué tipo de sistema es y cómo lo sabés.</li><li><strong>Qué podés esperar de ella</strong>: dónde puede fallar en tu contexto.</li><li><strong>Los datos</strong>: de quién son, cuál es el encuadre normativo de su uso y si es pertinente.</li><li><strong>La decisión</strong>: qué decidís, con qué condiciones y cómo vas a saber si fue acertada.</li></ol></div><aside class="notas"></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Cómo se evalúa</h2><table><thead><tr><th>Criterio</th><th>Peso</th></tr></thead><tbody><tr><td>Caracterización del sistema</td><td>25 %</td></tr><tr><td>Límites y errores</td><td>25 %</td></tr><tr><td>Datos: encuadre normativo y pertinencia</td><td>25 %</td></tr><tr><td>Decisión pedagógica</td><td>25 %</td></tr></tbody></table>
+<p>Aprueba con 6, con todos los criterios al menos en el nivel suficiente. No se busca una respuesta correcta sobre la herramienta: se evalúa la calidad del razonamiento.</p>
+<p><strong>Fechas</strong>: entrega el domingo 06/12; recuperación hasta el viernes 18/12.</p></div><aside class="notas"><p>La rúbrica completa está en el aula virtual desde el inicio del curso.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Para cerrar</h2><ul><li><strong>Actividad de clase</strong> (aula virtual, hasta el martes 01/12): publicá dos criterios de uso para tu espacio curricular. Para cada uno, una línea que explique si responde al encuadre normativo, a la pertinencia o a las dos. Al menos uno tiene que tener en cuenta los datos con que se entrenó la herramienta.</li><li><strong>Entrega de la unidad 1.5</strong>: domingo 29/11.</li><li><strong>Integrador</strong>: domingo 06/12.</li></ul>
+<p>En febrero de 2027 el ciclo sigue con el curso <strong>Enseñar con inteligencia artificial en el aula</strong>.</p></div><aside class="notas"></aside></section>
+<div class="pie"><span>Alfabetización en inteligencia artificial · Curso introductorio (A1) · Martes 24/11/2026</span><span id="contador"></span></div>
+<script>
+  const diapos = document.querySelectorAll('.diapo');
+  let actual = 0;
+  function mostrar(n) {
+    actual = Math.max(0, Math.min(diapos.length - 1, n));
+    diapos.forEach((d, i) => d.classList.toggle('activa', i === actual));
+    document.getElementById('contador').textContent = (actual + 1) + ' / ' + diapos.length;
+    history.replaceState(null, '', '#' + (actual + 1));
+  }
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) mostrar(actual + 1);
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) mostrar(actual - 1);
+    else if (e.key === 'Home') mostrar(0);
+    else if (e.key === 'End') mostrar(diapos.length - 1);
+    else if (e.key === 'n' || e.key === 'N') document.body.classList.toggle('con-notas');
+  });
+  document.addEventListener('click', e => {
+    if (e.target.closest('a') || e.target.closest('.notas')) return;
+    mostrar(actual + (e.clientX > window.innerWidth / 3 ? 1 : -1));
+  });
+  let x0 = null;
+  document.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 40) mostrar(actual + (dx < 0 ? 1 : -1));
+    x0 = null;
+  });
+  mostrar((parseInt(location.hash.slice(1), 10) || 1) - 1);
+</script>
+</body>
+</html>

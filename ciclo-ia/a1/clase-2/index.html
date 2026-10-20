@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Clase 2 — Dato, modelo y entrenamiento</title>
+<style>
+  :root {
+    --azul-oscuro: #1b365d; --azul: #0066cc; --amarillo: #ffd200;
+    --fondo: #ffffff; --texto: #1f2a37; --suave: #5b6b7d; --linea: #d9e0e8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #0f1d33; font-family: "DejaVu Sans", "Segoe UI", Arial, sans-serif; }
+  .diapo {
+    display: none; position: absolute; inset: 0; margin: auto;
+    width: min(100vw, calc(100vh * 16 / 9)); height: min(100vh, calc(100vw * 9 / 16));
+    background: var(--fondo); color: var(--texto); overflow: hidden;
+    font-size: min(2.05vw, 3.65vh); border-top: 0.35em solid var(--azul);
+  }
+  .diapo.activa { display: block; }
+  .contenido { padding: 1.3em 2.4em 2em; height: 100%; overflow: auto; }
+  h1, h2 { margin: 0 0 0.7em; line-height: 1.15; color: var(--azul-oscuro); }
+  h2 { font-size: 1.55em; border-bottom: 0.08em solid var(--amarillo); padding-bottom: 0.3em; }
+  p, li { line-height: 1.45; }
+  li { margin-bottom: 0.45em; }
+  ul, ol { padding-left: 1.3em; }
+  strong { color: var(--azul-oscuro); }
+  h3 { margin: 0.9em 0 0.4em; color: var(--azul); font-size: 1.1em; }
+  table { border-collapse: collapse; width: 100%; margin: 0.4em 0 0.8em; font-size: 0.85em; }
+  th, td { border: 0.05em solid var(--linea); padding: 0.4em 0.6em; text-align: left; vertical-align: top; }
+  th { background: var(--azul-oscuro); color: #fff; }
+  blockquote { margin: 0.8em 0; padding: 0.6em 1em; border-left: 0.25em solid var(--amarillo); background: #f2f5f8; font-style: italic; }
+  a { color: var(--azul); word-break: break-all; }
+  .portada, .seccion { background: var(--azul-oscuro); color: #fff; }
+  .portada h1, .seccion h1 { color: #fff; font-size: 2.2em; }
+  .portada .contenido, .seccion .contenido { display: flex; flex-direction: column; justify-content: center; }
+  .portada p, .seccion p { color: #d6e2f0; }
+  .portada strong, .seccion strong { color: var(--amarillo); }
+  .notas { display: none; }
+  body.con-notas .diapo.activa .notas {
+    display: block; position: absolute; left: 0; right: 0; bottom: 0; max-height: 45%;
+    overflow: auto; background: #fff8d6; color: #333; font-size: 0.6em;
+    padding: 0.8em 1.6em; border-top: 0.15em solid var(--amarillo);
+  }
+  .pie {
+    position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between;
+    padding: 0.4em 1em; font-size: 13px; color: #9fb3c8; pointer-events: none;
+  }
+  @media print {
+    html, body { background: #fff; height: auto; }
+    .diapo { display: block !important; position: relative; width: 100%; height: auto; min-height: 100vh; page-break-after: always; font-size: 16pt; }
+    .pie, .notas { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<section class="diapo portada"><div class="contenido"><h1>Dato, modelo y entrenamiento</h1><p><strong>Clase 2</strong> · Alfabetización en inteligencia artificial</p>
+<p>Ciclo de Actualización Pedagógica en Ciencia de Datos e Inteligencia Artificial</p>
+<p>Terciario Urquiza N.° 49 · Jueves 12 de noviembre de 2026</p></div><aside class="notas"><p>Recordar que la clase se graba.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>De la clase pasada</h2><ul><li>Tres familias: reglas, aprendizaje automático, generativos.</li><li>Los casos dudosos: el traductor, el corrector, la calculadora de promedios.</li></ul>
+<p>¿Qué clasificaron en la actividad de clase?</p></div><aside class="notas"><p>Minutos 0 a 10. Leer dos o tres respuestas de la actividad de la clase 1, con algún caso dudoso. Si alguien cambió de opinión después de la lectura, mejor.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Qué es un dato</h1><p>Del mundo a la tabla</p></div><aside class="notas"><p>Minutos 10 a 25.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Un dato registra algo y deja afuera mucho</h2><p>Una estudiante entrega un trabajo práctico. En la planilla queda:</p>
+<table><thead><tr><th>Estudiante</th><th>TP 2</th></tr></thead><tbody><tr><td>García, Ana</td><td>7</td></tr></tbody></table>
+<p>¿Qué pasó con ese trabajo que <strong>no</strong> quedó registrado?</p></div><aside class="notas"><p>Que el grupo enumere: cuánto tiempo le llevó, si lo rehízo, si lo hizo sola, qué parte le costó, la devolución, si entregó tarde por una razón. El 7 registra un número y deja afuera el proceso. El nombre es inventado.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Registrar es decidir</h2><ul><li>Alguien decide <strong>qué se registra</strong> y qué no.</li><li>Alguien decide <strong>cómo</strong>: una nota de 1 a 10, aprobado o no aprobado, un comentario.</li><li>Un sistema que aprende de datos solo "ve" lo que quedó en la tabla.</li></ul>
+<blockquote>Lo que no está en los datos no existe para el modelo.</blockquote></div><aside class="notas"></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Un modelo a mano</h1><p>¿Cómo se aprende una regla a partir de ejemplos?</p></div><aside class="notas"><p>Minutos 25 a 45.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Ocho frutas con su etiqueta</h2><table><thead><tr><th>Fruta</th><th>Color</th><th>Tamaño</th><th>Cáscara</th><th>¿Cítrico?</th></tr></thead><tbody><tr><td>Naranja</td><td>naranja</td><td>mediana</td><td>no lisa</td><td>sí</td></tr><tr><td>Limón</td><td>amarillo</td><td>chica</td><td>no lisa</td><td>sí</td></tr><tr><td>Pomelo</td><td>amarillo</td><td>grande</td><td>no lisa</td><td>sí</td></tr><tr><td>Mandarina</td><td>naranja</td><td>chica</td><td>no lisa</td><td>sí</td></tr><tr><td>Manzana</td><td>rojo</td><td>mediana</td><td>lisa</td><td>no</td></tr><tr><td>Banana</td><td>amarillo</td><td>mediana</td><td>lisa</td><td>no</td></tr><tr><td>Pera</td><td>verde</td><td>mediana</td><td>lisa</td><td>no</td></tr><tr><td>Ciruela</td><td>violeta</td><td>chica</td><td>lisa</td><td>no</td></tr></tbody></table>
+<p>¿Qué regla separa los cítricos de los que no lo son?</p></div><aside class="notas"><p>Que el grupo proponga reglas (en la herramienta de votación o en voz alta). Lo más probable es que aparezca "si la cáscara no es lisa, es cítrico", que con estos ocho ejemplos acierta siempre. Si proponen "si es naranja o amarillo", mostrar que falla con la banana.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Probemos la regla con frutas nuevas</h2><p>Regla: <strong>si la cáscara no es lisa, es cítrico.</strong></p>
+<table><thead><tr><th>Fruta</th><th>Color</th><th>Tamaño</th><th>Cáscara</th><th>La regla dice</th><th>En realidad</th></tr></thead><tbody><tr><td>Lima</td><td>verde</td><td>chica</td><td>no lisa</td><td>cítrico</td><td>cítrico</td></tr><tr><td>Kiwi</td><td>marrón</td><td>chica</td><td>no lisa</td><td>cítrico</td><td>no</td></tr><tr><td>Palta</td><td>verde</td><td>mediana</td><td>no lisa</td><td>cítrico</td><td>no</td></tr><tr><td>Frutilla</td><td>rojo</td><td>chica</td><td>no lisa</td><td>cítrico</td><td>no</td></tr></tbody></table>
+<p>¿Dónde falla y por qué?</p></div><aside class="notas"><p>La regla aprendió lo que distinguía a los ejemplos que tenía, no qué es un cítrico. Entre las ocho frutas, la cáscara rugosa coincidía con ser cítrico; entre todas las frutas, no. Mostrar primero solo las cuatro frutas y las tres primeras columnas, y completar en vivo.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>De la regla a mano al entrenamiento</h2><ul><li>Nosotros miramos los ejemplos y ajustamos la regla hasta que acertó.</li><li><strong>Entrenar</strong> es hacer eso de forma automática: un programa ajusta el modelo hasta que acierta con los ejemplos.</li><li>El resultado es un <strong>modelo</strong>: puede responder sobre casos nuevos, sin garantía de acertar.</li><li>Lo que aprende depende de <strong>qué ejemplos tuvo</strong>.</li></ul></div><aside class="notas"><p>Enlaza con la lectura: Fundación Sadosky (2024), pregunta 3, llama "datos de entrenamiento" a los ejemplos y "predicción" a la respuesta del modelo, "para reflejar que se trata de una respuesta altamente probable pero no necesariamente correcta".</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Un modelo de lenguaje a mano</h1><p>¿Cómo "escribe" una máquina?</p></div><aside class="notas"><p>Minutos 45 a 75. Sigue a Gómez-Rodríguez (2024), sección 3.1. Acá se arma con una palabra de contexto; el texto lo explica con dos, y los modelos actuales usan miles.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Cuatro oraciones verdaderas</h2><ol><li>Rosario está en Santa Fe.</li><li>Rosario está sobre el río Paraná.</li><li>Mendoza está al pie de la cordillera.</li><li>Córdoba está en el centro del país.</li></ol>
+<p>Contemos qué palabra viene <strong>después</strong> de cada palabra.</p></div><aside class="notas"></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>La tabla: qué palabra sigue a cada una</h2><table><thead><tr><th>Después de...</th><th>viene...</th><th>veces</th></tr></thead><tbody><tr><td>Rosario</td><td>está</td><td>2</td></tr><tr><td>Mendoza / Córdoba</td><td>está</td><td>1 cada una</td></tr><tr><td>está</td><td>en</td><td>2</td></tr><tr><td>está</td><td>sobre</td><td>1</td></tr><tr><td>está</td><td>al</td><td>1</td></tr><tr><td>en</td><td>Santa Fe</td><td>1</td></tr><tr><td>en</td><td>el</td><td>1</td></tr><tr><td>el</td><td>río Paraná</td><td>1</td></tr><tr><td>el</td><td>centro del país</td><td>1</td></tr></tbody></table></div><aside class="notas"><p>Para simplificar, "Santa Fe", "río Paraná" y "centro del país" se cuentan como un solo bloque. Lo importante es la fila de "está": de cuatro veces, dos sigue "en", una "sobre" y una "al". Esas son las probabilidades.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Generar: empezar y sortear</h2><p>Empezamos con <strong>Mendoza</strong>.</p>
+<ul><li>Después de "Mendoza" siempre viene <strong>está</strong>.</li><li>Después de "está": "en" (2 de 4), "sobre" (1 de 4) o "al" (1 de 4). Sorteamos: sale <strong>sobre</strong>.</li><li>Después de "sobre" viene <strong>el</strong>; después de "el", sorteamos: sale <strong>río Paraná</strong>.</li></ul>
+<blockquote>Mendoza está sobre el río Paraná.</blockquote>
+<p>Gramatical. Plausible. <strong>Falsa.</strong></p></div><aside class="notas"><p>Hacer el sorteo en vivo con un dado o con la herramienta de votación ("elijan un número del 1 al 4"). Otras frases que pueden salir: "Córdoba está al pie de la cordillera", "Rosario está en el centro del país". Todas salen de oraciones verdaderas.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Qué muestra el ejemplo</h2><ul><li>El modelo <strong>continúa</strong> un texto con lo que es probable según lo que vio.</li><li>No sabe geografía: no tiene forma de saber si lo que produce es cierto.</li><li>Los modelos de lenguaje actuales hacen algo parecido, con mucho más contexto y muchísimos más textos.</li></ul>
+<p>Ahora, con textos más largos: <strong>el generador de Markov</strong>.</p>
+<p><a href="https://pablopedernera0.github.io/generador-markov/" target="_blank" rel="noopener">https://pablopedernera0.github.io/generador-markov/</a></p></div><aside class="notas"><p>Mostrar el generador con los textos de partida. Buscar en vivo una frase gramatical y falsa: es lo mismo que pide la actividad de clase. Advertencia de la nota de la clase: revisar antes que las frases de geografía de los textos de partida sean todas verdaderas.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Un clasificador sin código</h1><p>Entrenar un modelo en vivo</p></div><aside class="notas"><p>Minutos 75 a 100. <em>Recortable</em> si se extendió el bloque anterior: pasa a la actividad guiada del trabajo autónomo. Herramienta sugerida: Teachable Machine (<a href="https://teachablemachine.withgoogle.com/" target="_blank" rel="noopener">https://teachablemachine.withgoogle.com/</a>). Alternativa a probar antes: Machine Learning for Kids. Usar objetos, no caras de personas: en la clase 4 se vuelve sobre por qué.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Granos sanos y granos dañados</h2><ol><li>Entrenamos con <strong>pocas fotos</strong> de cada clase. Probamos.</li><li>Entrenamos con <strong>más fotos</strong>. Probamos.</li><li>Entrenamos con fotos de <strong>un solo tipo</strong>. Probamos.</li><li>Probamos con un grano sobre <strong>otro fondo</strong>.</li></ol>
+<p>¿Qué cambia en lo que hace el modelo?</p></div><aside class="notas"><p>El modelo aprende de los ejemplos que tuvo, no "qué es un grano sano". Si todos los ejemplos tenían fondo blanco, un fondo distinto lo confunde. Antecedente real: en la UTN se desarrollaron sistemas de visión por computadora para evaluar granos de soja y de arroz (ver "Usos prácticos del clasificador" en la guía). Probar la demostración antes de la clase: cuántas fotos por clase hacen falta y cómo responde al cambio de fondo.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>El mismo procedimiento, en la región</h2><ul><li><strong>Malezas en el lote</strong>: cultivo frente a maleza. No cuesta lo mismo equivocarse para cada lado.</li><li><strong>Piezas metalmecánicas</strong>: con pocas piezas defectuosas, un modelo que dice siempre "buena" acierta casi siempre.</li><li><strong>Fruta</strong>: madura, verde o dañada. Si el límite no es nítido, el modelo hereda la duda de quien etiquetó.</li><li><strong>Sonido de un motor</strong>: normal o con falla. El ruido del aula cambia lo que "escucha".</li></ul></div><aside class="notas"><p>Detalle y fuentes en "Usos prácticos del clasificador", al final de la clase 2 en la guía. Para la actividad guiada, cada cursante puede elegir uno de estos casos o uno de su área.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Entrenar no es lo mismo que usar</h2><ul><li>El modelo se <strong>entrena una vez</strong>, con muchos datos, y después se <strong>usa</strong>.</li><li>Usarlo no lo cambia: un modelo abierto se puede descargar y correr en una computadora común, sin conexión. Es un archivo.</li><li>Lo que puede guardar lo que escribís, o usarlo para entrenar una versión futura, es el <strong>servicio en línea</strong> que ofrece el modelo.</li></ul>
+<p>¿Qué hace con tus datos la herramienta que usan tus estudiantes?</p></div><aside class="notas"><p>Minutos 100 a 110. Contra la idea frecuente de que el asistente "aprende" de cada conversación. [Ajustar a la herramienta concreta.] La pregunta final anticipa la clase 4.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Cierre</h1></div><aside class="notas"><p>Minutos 110 a 120.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Para el martes 17/11</h2><ul><li><strong>Actividad de clase</strong> (aula virtual, hasta el jueves 19/11): usá el generador de Markov hasta conseguir una frase que sea gramatical y falsa. Pegala y explicá en tres a cinco líneas por qué el generador la produjo.</li><li><strong>Lectura</strong>: Gómez-Rodríguez (2024), secciones 3 a 5, y Fundación Sadosky (2024), preguntas 3 y 4.</li><li><strong>Lectura complementaria</strong>: <a href="https://pablopedernera0.github.io/generador-markov/lectura/" target="_blank" rel="noopener">https://pablopedernera0.github.io/generador-markov/lectura/</a></li><li><strong>Actividad guiada</strong>: entrenar el clasificador con datos balanceados y desbalanceados. ¿Qué le pasa al modelo si se lo entrena con un solo tipo de caso?</li><li><strong>Optativo</strong>, para quien viene de informática: el mismo generador en Python, en <a href="https://killercoda.com/pablop22/scenario/generador-markov" target="_blank" rel="noopener">https://killercoda.com/pablop22/scenario/generador-markov</a></li></ul></div><aside class="notas"></aside></section>
+<div class="pie"><span>Alfabetización en inteligencia artificial · Curso introductorio (A1) · Jueves 12/11/2026</span><span id="contador"></span></div>
+<script>
+  const diapos = document.querySelectorAll('.diapo');
+  let actual = 0;
+  function mostrar(n) {
+    actual = Math.max(0, Math.min(diapos.length - 1, n));
+    diapos.forEach((d, i) => d.classList.toggle('activa', i === actual));
+    document.getElementById('contador').textContent = (actual + 1) + ' / ' + diapos.length;
+    history.replaceState(null, '', '#' + (actual + 1));
+  }
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) mostrar(actual + 1);
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) mostrar(actual - 1);
+    else if (e.key === 'Home') mostrar(0);
+    else if (e.key === 'End') mostrar(diapos.length - 1);
+    else if (e.key === 'n' || e.key === 'N') document.body.classList.toggle('con-notas');
+  });
+  document.addEventListener('click', e => {
+    if (e.target.closest('a') || e.target.closest('.notas')) return;
+    mostrar(actual + (e.clientX > window.innerWidth / 3 ? 1 : -1));
+  });
+  let x0 = null;
+  document.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 40) mostrar(actual + (dx < 0 ? 1 : -1));
+    x0 = null;
+  });
+  mostrar((parseInt(location.hash.slice(1), 10) || 1) - 1);
+</script>
+</body>
+</html>

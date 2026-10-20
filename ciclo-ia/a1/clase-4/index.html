@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Clase 4 — Datos personales y encuadre normativo de su uso</title>
+<style>
+  :root {
+    --azul-oscuro: #1b365d; --azul: #0066cc; --amarillo: #ffd200;
+    --fondo: #ffffff; --texto: #1f2a37; --suave: #5b6b7d; --linea: #d9e0e8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #0f1d33; font-family: "DejaVu Sans", "Segoe UI", Arial, sans-serif; }
+  .diapo {
+    display: none; position: absolute; inset: 0; margin: auto;
+    width: min(100vw, calc(100vh * 16 / 9)); height: min(100vh, calc(100vw * 9 / 16));
+    background: var(--fondo); color: var(--texto); overflow: hidden;
+    font-size: min(2.05vw, 3.65vh); border-top: 0.35em solid var(--azul);
+  }
+  .diapo.activa { display: block; }
+  .contenido { padding: 1.3em 2.4em 2em; height: 100%; overflow: auto; }
+  h1, h2 { margin: 0 0 0.7em; line-height: 1.15; color: var(--azul-oscuro); }
+  h2 { font-size: 1.55em; border-bottom: 0.08em solid var(--amarillo); padding-bottom: 0.3em; }
+  p, li { line-height: 1.45; }
+  li { margin-bottom: 0.45em; }
+  ul, ol { padding-left: 1.3em; }
+  strong { color: var(--azul-oscuro); }
+  h3 { margin: 0.9em 0 0.4em; color: var(--azul); font-size: 1.1em; }
+  table { border-collapse: collapse; width: 100%; margin: 0.4em 0 0.8em; font-size: 0.85em; }
+  th, td { border: 0.05em solid var(--linea); padding: 0.4em 0.6em; text-align: left; vertical-align: top; }
+  th { background: var(--azul-oscuro); color: #fff; }
+  blockquote { margin: 0.8em 0; padding: 0.6em 1em; border-left: 0.25em solid var(--amarillo); background: #f2f5f8; font-style: italic; }
+  a { color: var(--azul); word-break: break-all; }
+  .portada, .seccion { background: var(--azul-oscuro); color: #fff; }
+  .portada h1, .seccion h1 { color: #fff; font-size: 2.2em; }
+  .portada .contenido, .seccion .contenido { display: flex; flex-direction: column; justify-content: center; }
+  .portada p, .seccion p { color: #d6e2f0; }
+  .portada strong, .seccion strong { color: var(--amarillo); }
+  .notas { display: none; }
+  body.con-notas .diapo.activa .notas {
+    display: block; position: absolute; left: 0; right: 0; bottom: 0; max-height: 45%;
+    overflow: auto; background: #fff8d6; color: #333; font-size: 0.6em;
+    padding: 0.8em 1.6em; border-top: 0.15em solid var(--amarillo);
+  }
+  .pie {
+    position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between;
+    padding: 0.4em 1em; font-size: 13px; color: #9fb3c8; pointer-events: none;
+  }
+  @media print {
+    html, body { background: #fff; height: auto; }
+    .diapo { display: block !important; position: relative; width: 100%; height: auto; min-height: 100vh; page-break-after: always; font-size: 16pt; }
+    .pie, .notas { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<section class="diapo portada"><div class="contenido"><h1>Datos personales y encuadre normativo de su uso</h1><p><strong>Clase 4</strong> · Alfabetización en inteligencia artificial · Unidad 1.5</p>
+<p>Ciclo de Actualización Pedagógica en Ciencia de Datos e Inteligencia Artificial</p>
+<p>Terciario Urquiza N.° 49 · Jueves 19 de noviembre de 2026</p></div><aside class="notas"><p>Recordar que la clase se graba. Empieza la unidad 1.5, Marco legal y ético.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>De la unidad 1.1 a la 1.5</h2><ul><li>Los datos definen el modelo: lo que aprende sale de sus ejemplos.</li><li>Quien usa un servicio en línea <strong>también le entrega datos</strong>.</li><li>En la clase 2 entrenamos un clasificador con fotos de granos, no de caras. ¿Por qué?</li></ul></div><aside class="notas"><p>Minutos 0 a 10. La respuesta a la última pregunta es el tema de hoy: una cara es un dato personal, y uno que permite identificar a alguien.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Dato personal y tratamiento</h1></div><aside class="notas"><p>Minutos 10 a 30.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Lo que dice la ley</h2><p>La Ley 25.326 de Protección de los Datos Personales (art. 2) define:</p>
+<ul><li><strong>Dato personal</strong>: "información de cualquier tipo referida a personas físicas o de existencia ideal determinadas o determinables".</li><li><strong>Dato sensible</strong>: el que revela origen racial y étnico, opiniones políticas, convicciones religiosas, filosóficas o morales, afiliación sindical, o información sobre la salud o la vida sexual.</li><li><strong>Tratamiento</strong>: las operaciones que permiten recolectar, guardar, ordenar, modificar, relacionar, evaluar, ceder o destruir datos.</li></ul>
+<p>Los datos no son un insumo neutro: <strong>son una responsabilidad</strong> de quien los trata.</p></div><aside class="notas"><p>Texto oficial en InfoLEG: <a href="https://servicios.infoleg.gob.ar/infolegInternet/anexos/60000-64999/64790/texact.htm" target="_blank" rel="noopener">https://servicios.infoleg.gob.ar/infolegInternet/anexos/60000-64999/64790/texact.htm</a> Quien dicta verifica antes de la clase que la ley no haya sido modificada ni reemplazada, y precisa la normativa complementaria vigente.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>En el aula</h2><p>¿Cuáles de estos son datos personales? ¿Cuáles son sensibles?</p>
+<ul><li>Una lista de calificaciones con nombre y apellido.</li><li>Un trabajo práctico con el nombre de quien lo hizo.</li><li>El registro de asistencia de un curso.</li><li>Un legajo con un certificado médico.</li><li>Una foto del curso en un acto escolar.</li></ul>
+<p>Cargar cualquiera de ellos en una herramienta <strong>es tratarlos</strong>.</p></div><aside class="notas"><p>Todos son datos personales. El certificado médico es un dato sensible (salud). La foto permite identificar a las personas. Que cargarlos en una herramienta sea un tratamiento es lo que conecta la ley con el uso cotidiano de la inteligencia artificial en la escuela.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Los principios de la ley</h1></div><aside class="notas"><p>Minutos 30 a 55. Cada principio con una situación del aula.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Cinco principios</h2><ul><li><strong>Consentimiento</strong> (art. 5): libre, expreso e informado.</li><li><strong>Información</strong> (art. 6): quien recolecta datos tiene que decir para qué, quién los va a tener y qué derechos tiene el titular.</li><li><strong>Calidad y finalidad</strong> (art. 4): datos "ciertos, adecuados, pertinentes y no excesivos", usados para lo que se recolectaron y no para otra cosa.</li><li><strong>Seguridad</strong> (art. 9): quien trata datos tiene que adoptar las medidas técnicas y organizativas necesarias para protegerlos.</li><li><strong>Derechos de los titulares</strong> (arts. 14 a 16): acceder a sus datos y pedir que se rectifiquen, actualicen o supriman.</li></ul></div><aside class="notas"><p>El art. 5 prevé excepciones al consentimiento, entre ellas los datos que se recaban para el ejercicio de funciones propias de los poderes del Estado. Quien dicta precisa cómo se aplica a una institución educativa de gestión estatal antes de presentarlo: es otra zona donde el encuadre depende del caso.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Tres que se suelen pasar por alto</h2><ul><li><strong>Minimización</strong> (art. 4, "no excesivos"): ¿hace falta el nombre del estudiante para que un asistente revise un texto?</li><li><strong>Conservación</strong> (art. 4): los datos se destruyen cuando dejan de ser necesarios para su finalidad. ¿Qué pasa con los trabajos que se subieron el año pasado?</li><li><strong>Transferencia internacional</strong> (art. 12): un servicio con servidores en otro país puede implicar una transferencia de datos fuera del país. La ley la restringe cuando el destino no da una protección adecuada.</li></ul></div><aside class="notas"><p>La pregunta de la transferencia no siempre tiene una respuesta cerrada: depende del servicio, del país y de las condiciones de uso. Es un buen ejemplo de por qué hablamos de encuadre normativo y no de "lícito o ilícito": se analiza qué normas y principios alcanzan la situación, cuáles se cumplen y cuáles quedan en duda.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>No todos los datos piden el mismo cuidado</h1></div><aside class="notas"><p>Minutos 55 a 68.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Una gradación por criticidad</h2><table><thead><tr><th>Tipo de dato</th><th>Ejemplos</th><th>Cuidado</th></tr></thead><tbody><tr><td>Identificatorios comunes</td><td>nombre, DNI, correo</td><td>básico</td></tr><tr><td>Datos que arman un perfil</td><td>registro de actividad, historial de rendimiento</td><td>mayor</td></tr><tr><td>Datos sensibles</td><td>salud, convicciones, origen, biometría</td><td>máximo</td></tr></tbody></table>
+<p>A más criticidad, más exigencias de seguridad.</p>
+<p>No es lo mismo una lista de nombres que un legajo con certificados médicos.</p></div><aside class="notas"><p>Presentarla como criterio de trabajo. La norma de referencia de la gradación en niveles está por precisar: quien dicta verifica si sigue vigente la Disposición DNPDP 11/2006 o si la Resolución AAIP 47/2018 la reemplazó por otro enfoque. Los controles técnicos (cifrado, registro de accesos, entornos aislados) se nombran como ejemplo, sin desarrollarlos.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Tres situaciones</h1><p>¿Cuál es el encuadre normativo de cada uso?</p></div><aside class="notas"><p>Minutos 68 a 108. Unos 13 minutos por situación: se votan las dos preguntas cerradas, se muestran los resultados, se leen respuestas a la pregunta abierta y se discute con los principios y la gradación.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Las tres preguntas</h2><p>Para cada situación:</p>
+<ol><li>¿Hay datos personales? (<strong>sí / no / depende</strong>)</li><li>¿Qué principios de la normativa se ponen en juego? (<strong>consentimiento, finalidad, seguridad, transferencia</strong>)</li><li>¿Qué haría falta para que el uso quede bien encuadrado?</li></ol>
+<p>Los "depende" son el mejor punto de partida: obligan a decir <strong>de qué</strong> depende.</p></div><aside class="notas"></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Situación 1</h2><p>Un docente carga los trabajos de su curso en un asistente para que los corrija.</p></div><aside class="notas"><p>Puntos para la discusión: ¿los trabajos tienen nombre? ¿Hace falta? (minimización). ¿Los estudiantes saben y consintieron? ¿Qué hace el servicio con lo que se carga: lo guarda, lo usa para entrenar? ¿Dónde están sus servidores? (transferencia). Vuelve la distinción de la clase 2 entre el modelo y el servicio.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Situación 2</h2><p>La institución adopta una plataforma que registra la actividad de cada estudiante.</p></div><aside class="notas"><p>Puntos para la discusión: el registro de actividad es un dato que arma un perfil. ¿Para qué se usa (finalidad)? ¿Quién lo ve? ¿Por cuánto tiempo se guarda (conservación)? ¿Se informó a los estudiantes y a sus familias? ¿Pueden pedir acceso o supresión?</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Situación 3</h2><p>Un estudiante hace su práctica profesionalizante en un sanatorio que está armando un sistema para detectar anomalías en tomografías. Quiere subir algunas imágenes a una herramienta para su informe.</p></div><aside class="notas"><p>Datos de salud: nivel crítico. Discutir anonimización y seudonimización (sacar o reemplazar lo que identifica a la persona), y quién autoriza: no lo decide el estudiante. Enlaza con la clase 5, que trabaja el entorno productivo.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Cierre</h1></div><aside class="notas"><p>Minutos 108 a 120.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Para el martes 24/11</h2><ul><li><strong>Actividad de clase</strong> (aula virtual, hasta el jueves 26/11): elegí una de las tres situaciones y respondé las tres preguntas, con al menos un principio de la Ley 25.326 que sostenga tu respuesta. Indicá además qué tan sensibles son los datos en juego.</li><li><strong>Lectura</strong>: un texto de análisis sobre datos personales aplicado a educación (se publica en el aula virtual).</li><li><strong>Entrega de la unidad 1.5</strong>: domingo 29/11. Ya se puede empezar.</li></ul></div><aside class="notas"><p>Quien ve la grabación hace la actividad igual: puede tomar la discusión de la votación como punto de partida, pero la respuesta es propia. El texto de análisis está por definir; hay dos candidatos en la guía docente.</p></aside></section>
+<div class="pie"><span>Alfabetización en inteligencia artificial · Curso introductorio (A1) · Jueves 19/11/2026</span><span id="contador"></span></div>
+<script>
+  const diapos = document.querySelectorAll('.diapo');
+  let actual = 0;
+  function mostrar(n) {
+    actual = Math.max(0, Math.min(diapos.length - 1, n));
+    diapos.forEach((d, i) => d.classList.toggle('activa', i === actual));
+    document.getElementById('contador').textContent = (actual + 1) + ' / ' + diapos.length;
+    history.replaceState(null, '', '#' + (actual + 1));
+  }
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) mostrar(actual + 1);
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) mostrar(actual - 1);
+    else if (e.key === 'Home') mostrar(0);
+    else if (e.key === 'End') mostrar(diapos.length - 1);
+    else if (e.key === 'n' || e.key === 'N') document.body.classList.toggle('con-notas');
+  });
+  document.addEventListener('click', e => {
+    if (e.target.closest('a') || e.target.closest('.notas')) return;
+    mostrar(actual + (e.clientX > window.innerWidth / 3 ? 1 : -1));
+  });
+  let x0 = null;
+  document.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 40) mostrar(actual + (dx < 0 ? 1 : -1));
+    x0 = null;
+  });
+  mostrar((parseInt(location.hash.slice(1), 10) || 1) - 1);
+</script>
+</body>
+</html>

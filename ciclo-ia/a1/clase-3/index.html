@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Clase 3 — Límites, sesgos y errores de interpretación</title>
+<style>
+  :root {
+    --azul-oscuro: #1b365d; --azul: #0066cc; --amarillo: #ffd200;
+    --fondo: #ffffff; --texto: #1f2a37; --suave: #5b6b7d; --linea: #d9e0e8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #0f1d33; font-family: "DejaVu Sans", "Segoe UI", Arial, sans-serif; }
+  .diapo {
+    display: none; position: absolute; inset: 0; margin: auto;
+    width: min(100vw, calc(100vh * 16 / 9)); height: min(100vh, calc(100vw * 9 / 16));
+    background: var(--fondo); color: var(--texto); overflow: hidden;
+    font-size: min(2.05vw, 3.65vh); border-top: 0.35em solid var(--azul);
+  }
+  .diapo.activa { display: block; }
+  .contenido { padding: 1.3em 2.4em 2em; height: 100%; overflow: auto; }
+  h1, h2 { margin: 0 0 0.7em; line-height: 1.15; color: var(--azul-oscuro); }
+  h2 { font-size: 1.55em; border-bottom: 0.08em solid var(--amarillo); padding-bottom: 0.3em; }
+  p, li { line-height: 1.45; }
+  li { margin-bottom: 0.45em; }
+  ul, ol { padding-left: 1.3em; }
+  strong { color: var(--azul-oscuro); }
+  h3 { margin: 0.9em 0 0.4em; color: var(--azul); font-size: 1.1em; }
+  table { border-collapse: collapse; width: 100%; margin: 0.4em 0 0.8em; font-size: 0.85em; }
+  th, td { border: 0.05em solid var(--linea); padding: 0.4em 0.6em; text-align: left; vertical-align: top; }
+  th { background: var(--azul-oscuro); color: #fff; }
+  blockquote { margin: 0.8em 0; padding: 0.6em 1em; border-left: 0.25em solid var(--amarillo); background: #f2f5f8; font-style: italic; }
+  a { color: var(--azul); word-break: break-all; }
+  .portada, .seccion { background: var(--azul-oscuro); color: #fff; }
+  .portada h1, .seccion h1 { color: #fff; font-size: 2.2em; }
+  .portada .contenido, .seccion .contenido { display: flex; flex-direction: column; justify-content: center; }
+  .portada p, .seccion p { color: #d6e2f0; }
+  .portada strong, .seccion strong { color: var(--amarillo); }
+  .notas { display: none; }
+  body.con-notas .diapo.activa .notas {
+    display: block; position: absolute; left: 0; right: 0; bottom: 0; max-height: 45%;
+    overflow: auto; background: #fff8d6; color: #333; font-size: 0.6em;
+    padding: 0.8em 1.6em; border-top: 0.15em solid var(--amarillo);
+  }
+  .pie {
+    position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between;
+    padding: 0.4em 1em; font-size: 13px; color: #9fb3c8; pointer-events: none;
+  }
+  @media print {
+    html, body { background: #fff; height: auto; }
+    .diapo { display: block !important; position: relative; width: 100%; height: auto; min-height: 100vh; page-break-after: always; font-size: 16pt; }
+    .pie, .notas { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<section class="diapo portada"><div class="contenido"><h1>Límites, sesgos y errores de interpretación</h1><p><strong>Clase 3</strong> · Alfabetización en inteligencia artificial</p>
+<p>Ciclo de Actualización Pedagógica en Ciencia de Datos e Inteligencia Artificial</p>
+<p>Terciario Urquiza N.° 49 · Martes 17 de noviembre de 2026</p></div><aside class="notas"><p>Recordar que la clase se graba.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>De la clase pasada</h2><p>Frases gramaticales y falsas del generador de Markov.</p>
+<p>¿Por qué el generador las produjo?</p></div><aside class="notas"><p>Minutos 0 a 10. Leer dos o tres frases de la actividad de la clase 2 y sus explicaciones. Lo que buscamos: el generador continúa lo probable según lo que vio; no tiene cómo saber si es cierto.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Tres casos</h1><p>¿Qué falló y de dónde viene la falla?</p></div><aside class="notas"><p>Minutos 10 a 35. Unos 6 minutos por caso y 7 para la pregunta abierta. En cada caso, preguntar si la falla viene de los datos, del entrenamiento o de la generación.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>1. Fallos que no existen</h2><ul><li>En 2025, la Cámara de Apelación en lo Civil y Comercial de Rosario (Sala II) advirtió que un abogado había citado <strong>jurisprudencia inexistente</strong>, incluido un fallo atribuido a la propia Sala.</li><li>El abogado reconoció que las citas venían de una herramienta de IA generativa y que no las había verificado.</li><li>La Cámara le hizo un llamado de atención y pidió al Colegio de Abogados de Rosario que difunda los riesgos.</li></ul>
+<p>¿Cómo podía parecer verdadera una cita que no existía?</p></div><aside class="notas"><p>Qué muestra: el texto tenía la forma exacta de una cita jurisprudencial; la forma no dice nada sobre si existe. Es la generación: el sistema produce lo plausible. Hubo un caso parecido en Morón (febrero de 2025). Fuentes: La Capital, 26/08/2025; Allende &amp; Brea, 17/09/2025 (resolución del 20/08/2025). [Conseguir el texto del fallo antes de la clase.]</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>2. Un sistema de selección que aprendió a discriminar</h2><ul><li>Desde 2014, Amazon desarrolló un sistema que puntuaba currículums de una a cinco estrellas.</li><li>Se entrenó con los currículums recibidos durante <strong>diez años</strong>, en su mayoría de varones.</li><li>Aprendió a <strong>bajar el puntaje</strong> de los currículums que incluían la palabra "women's" ("de mujeres") y de egresadas de dos universidades de mujeres.</li><li>Corregir esas palabras no garantizaba que no encontrara otra forma de discriminar. La empresa abandonó el proyecto.</li></ul>
+<p>Nadie programó la discriminación. ¿De dónde salió?</p></div><aside class="notas"><p>Qué muestra: el sistema reprodujo la historia de los datos. Es la falla de los datos. Fuente: J. Dastin, Reuters, 10/10/2018. Complemento, si hay tiempo y con cuidado, sin mostrar imágenes: los etiquetados automáticos que clasificaron a personas negras como animales (Google Photos, 2015; Facebook, 2021, que pidió disculpas y desactivó la función).</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>3. "Acierta casi siempre"</h2><p>Tres sistemas comerciales clasificaban el género de una persona a partir de una foto.</p>
+<table><thead><tr><th>Grupo</th><th>Error máximo</th></tr></thead><tbody><tr><td>Varones de piel clara</td><td>0,8 %</td></tr><tr><td>Mujeres de piel oscura</td><td>hasta 34,7 %</td></tr></tbody></table>
+<p>Los conjuntos de prueba que se usaban como referencia tenían mayoría de personas de piel clara.</p>
+<p>¿Qué esconde un buen porcentaje de acierto global?</p></div><aside class="notas"><p>Qué muestra: un buen resultado general puede esconder que el sistema falla mucho con un grupo, el que estaba menos representado en los datos. Enlaza con las piezas metalmecánicas de la clase 2. Fuente: Buolamwini y Gebru (2018), "Gender Shades", PMLR 81. [Precisar con las tablas del artículo el acierto global de cada sistema.]</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>¿Dónde más?</h2><p>¿Dónde podría aparecer un sesgo así <strong>en tu área o en tu institución</strong>?</p>
+<p>Respondé en la herramienta de votación.</p></div><aside class="notas"><p>7 minutos. Se leen respuestas en pantalla. Si nadie arranca, ejemplos: un sistema que sugiere a quién ofrecer una beca, un corrector automático entrenado con textos de otra variedad del español, un detector de "riesgo de abandono" entrenado con otra población (volvemos sobre ese en la clase 5).</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>¿Verdadero, dudoso o falso?</h1><p>Una respuesta de un asistente, afirmación por afirmación</p></div><aside class="notas"><p>Minutos 35 a 60. 8 minutos: se lee la respuesta completa y se vota cada afirmación. 17 minutos: resultados, verificación y discusión de las que dividieron el voto.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>La pregunta</h2><p>[Pegar acá la pregunta que se le hizo al asistente.]</p>
+<h3>La respuesta</h3>
+<p>[Pegar acá la respuesta completa, sin editar.]</p></div><aside class="notas"><p>Preparar antes de la clase con un asistente conversacional real. Tema sugerido, que cualquier docente puede evaluar: "Explicame en un párrafo qué fue la Reforma Universitaria de 1918". Probar varias veces hasta tener una respuesta con al menos una afirmación dudosa o falsa; si no aparece, pedir detalles más finos (fechas, nombres, cifras). Anotar qué asistente, qué día y la verificación de cada afirmación con su fuente. No cargar datos personales.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Afirmación por afirmación</h2><ol><li>[Afirmación 1]</li><li>[Afirmación 2]</li><li>[Afirmación 3]</li><li>[Afirmación 4]</li><li>[Afirmación 5]</li><li>[Afirmación 6]</li></ol>
+<p>Para cada una: <strong>verificable</strong>, <strong>plausible pero dudosa</strong> o <strong>falsa</strong>.</p></div><aside class="notas"><p>Partir la respuesta en cinco o seis afirmaciones. Después de votar, verificar cada una con su fuente. Lo que buscamos: que se vea que la fluidez del texto no dice nada sobre su verdad. Las afirmaciones verdaderas y las falsas están escritas con la misma seguridad.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Errores de interpretación</h1><p>Lo que solemos suponer sin darnos cuenta</p></div><aside class="notas"><p>Minutos 60 a 80.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Cuatro errores frecuentes</h2><ul><li><strong>La fluidez no es comprensión.</strong> Un texto bien escrito no prueba que quien lo produjo entienda.</li><li><strong>El sistema no sabe ni quiere.</strong> No miente ni engaña: produce lo plausible. Tampoco "sabe" cuando acierta.</li><li><strong>Un porcentaje global oculta en qué casos falla.</strong> Hay que preguntar: ¿con quién se equivoca?</li><li><strong>Correlación no es causalidad.</strong> Si en los datos dos cosas aparecen juntas, el modelo las asocia, aunque una no cause la otra.</li></ul></div><aside class="notas"><p>Para el último, volver a la regla de las frutas de la clase 2: en los ejemplos, la cáscara rugosa aparecía junto con ser cítrico, pero no es lo que hace que una fruta sea cítrica. Lo mismo con el sistema de Amazon: "women's" aparecía junto con menos contrataciones en los datos históricos.</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Alucinación y comprensión</h1></div><aside class="notas"><p>Minutos 80 a 105. <em>Recortable</em>: el debate sobre la comprensión se puede dejar para la lectura (Gómez-Rodríguez, 2024, sección 4).</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Las "alucinaciones" no son una falla</h2><ul><li>Se llama alucinación a un texto que suena plausible pero es falso o no tiene sentido.</li><li>No es un mal funcionamiento: <strong>el modelo se entrenó para producir texto plausible</strong>, y eso es lo que produce.</li><li>Es más frecuente cuando el modelo no tiene la respuesta: por ejemplo, si se le pregunta por algo que no estaba en sus datos.</li><li>Se puede reducir, pero no eliminar.</li></ul>
+<blockquote>No darle nunca presunción de veracidad a lo que produce. Si importa que sea cierto,</blockquote>
+<blockquote>verificarlo en otra fuente.</blockquote></div><aside class="notas"><p>Las dos ideas y la recomendación final están en Gómez-Rodríguez (2024), sección 4.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>¿Un modelo de lenguaje comprende?</h2><h3>No: "loros estocásticos"</h3>
+<p>Repiten patrones de los textos con que se entrenaron, sin acceso al significado. Como alguien encerrado en una biblioteca en tailandés, sin saber el idioma: podría aprender a dar respuestas convincentes sin entender nada.</p>
+<h3>Tal vez sí: modelos internos del mundo</h3>
+<p>Un modelo entrenado solo con listas de jugadas de Othello, un juego de tablero, aprendió a jugar de forma legal en más del 99 % de los casos y armó por dentro una representación del tablero que nunca vio.</p></div><aside class="notas"><p>Primera posición: Bender y otros (2021). Segunda: el experimento de Li y otros (2023). Las dos están en Gómez-Rodríguez (2024), sección 4. El debate sigue abierto: no lo cerramos. Pregunta para el grupo: ¿qué tendría que hacer un sistema para que digamos que comprende?</p></aside></section>
+<section class="diapo seccion"><div class="contenido"><h1>Cierre de la unidad 1.1</h1></div><aside class="notas"><p>Minutos 105 a 120.</p></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Qué nos llevamos de la unidad</h2><ul><li>La inteligencia artificial es un campo de más de setenta años, con tres familias de sistemas que conviven.</li><li>Un modelo aprende de sus datos: <strong>lo que no está en los datos no existe para el modelo</strong>, y lo que está, sesgos incluidos, lo reproduce.</li><li>Un modelo generativo produce lo plausible, no lo verdadero.</li></ul>
+<p><strong>De acá a la unidad 1.5</strong>: si los datos definen el modelo, ¿qué datos se pueden usar, y cómo?</p></div><aside class="notas"></aside></section>
+<section class="diapo comun"><div class="contenido"><h2>Para el jueves 19/11</h2><ul><li><strong>Actividad de clase</strong> (aula virtual, hasta el martes 24/11): pedile a un asistente conversacional una explicación sobre un tema de tu área que conozcas bien. Pegá un fragmento y señalá una afirmación verificable, una plausible pero dudosa y, si la hay, una falsa. Cerrá con dos líneas sobre por qué el sistema pudo producir lo dudoso o lo falso. <strong>No cargues datos personales tuyos ni de estudiantes.</strong></li><li><strong>Entrega de la unidad 1.1</strong>: domingo 22/11.</li><li><strong>Lectura</strong>: los principios de la Ley 25.326 de Protección de los Datos Personales.</li></ul></div><aside class="notas"><p>Para quien quiera profundizar: Fundación Sadosky (2024), pregunta 7 ("¿Es correcto afirmar que la IA no se equivoca nunca y que sus resultados son éticos o justos?", pp. 20-23).</p></aside></section>
+<div class="pie"><span>Alfabetización en inteligencia artificial · Curso introductorio (A1) · Martes 17/11/2026</span><span id="contador"></span></div>
+<script>
+  const diapos = document.querySelectorAll('.diapo');
+  let actual = 0;
+  function mostrar(n) {
+    actual = Math.max(0, Math.min(diapos.length - 1, n));
+    diapos.forEach((d, i) => d.classList.toggle('activa', i === actual));
+    document.getElementById('contador').textContent = (actual + 1) + ' / ' + diapos.length;
+    history.replaceState(null, '', '#' + (actual + 1));
+  }
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) mostrar(actual + 1);
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) mostrar(actual - 1);
+    else if (e.key === 'Home') mostrar(0);
+    else if (e.key === 'End') mostrar(diapos.length - 1);
+    else if (e.key === 'n' || e.key === 'N') document.body.classList.toggle('con-notas');
+  });
+  document.addEventListener('click', e => {
+    if (e.target.closest('a') || e.target.closest('.notas')) return;
+    mostrar(actual + (e.clientX > window.innerWidth / 3 ? 1 : -1));
+  });
+  let x0 = null;
+  document.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 40) mostrar(actual + (dx < 0 ? 1 : -1));
+    x0 = null;
+  });
+  mostrar((parseInt(location.hash.slice(1), 10) || 1) - 1);
+</script>
+</body>
+</html>
