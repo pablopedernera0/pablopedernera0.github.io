@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Microclase: Lo que no veo</title>
+<meta name="description" content="Guión conjetural de la microclase de Seguridad Informática, 5.º 1.ª. Pablo Pedernera, Prácticas Educativas II.">
+<style>
+:root{
+  --bg:#faf8f4; --surface:#ffffff; --ink:#1d1f23; --muted:#5d636d; --line:#e2ddd3;
+  --accent:#b4442c; --accent-soft:#f6e4de; --q:#1f5f8b; --q-soft:#e3eef6;
+  --inicio:#c98a1b; --desarrollo:#b4442c; --cierre:#2f7a55;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16171a; --surface:#1f2125; --ink:#ecebe7; --muted:#a3a7ae; --line:#33363c;
+    --accent:#e9795f; --accent-soft:#3a2520; --q:#7fb6dc; --q-soft:#1c2c38;
+    --inicio:#e5ae4c; --desarrollo:#e9795f; --cierre:#6cc396;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16171a; --surface:#1f2125; --ink:#ecebe7; --muted:#a3a7ae; --line:#33363c;
+  --accent:#e9795f; --accent-soft:#3a2520; --q:#7fb6dc; --q-soft:#1c2c38;
+  --inicio:#e5ae4c; --desarrollo:#e9795f; --cierre:#6cc396;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 Georgia,"Iowan Old Style","Palatino Linotype",serif}
+.wrap{max-width:760px;margin:0 auto;padding:40px 16px 80px}
+header .kicker{font:600 13px/1.4 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:clamp(28px,6vw,40px);line-height:1.15;margin:.3em 0 .2em}
+.sub{color:var(--muted);margin:0 0 28px}
+h2{font:700 22px/1.3 system-ui,sans-serif;margin:48px 0 12px}
+h3{font:700 15px/1.3 system-ui,sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:24px 0 6px}
+p{margin:0 0 14px}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;font-size:15px}
+.meta dt{font:600 13px/1.6 system-ui,sans-serif;color:var(--muted)}
+.meta dd{margin:0}
+.timeline{display:flex;height:38px;border-radius:8px;overflow:hidden;margin:20px 0 6px;font:600 13px/38px system-ui,sans-serif;color:#fff;text-align:center}
+.timeline a{color:#fff;text-decoration:none}
+.timeline .i{flex:2;background:var(--inicio)}
+.timeline .d{flex:5;background:var(--desarrollo)}
+.timeline .c{flex:3;background:var(--cierre)}
+.tl-note{font:13px system-ui,sans-serif;color:var(--muted);margin-bottom:8px}
+.phase{border-left:4px solid var(--c);padding-left:18px;margin-top:40px}
+.phase h2{margin-top:0;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.phase h2 .min{font:600 13px system-ui,sans-serif;color:var(--c);background:var(--surface);border:1px solid var(--c);border-radius:20px;padding:1px 10px}
+.q{background:var(--q-soft);border-radius:8px;padding:12px 16px;margin:12px 0;color:var(--ink)}
+.q strong{color:var(--q)}
+.q ul{margin:0;padding-left:20px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:14px 0}
+.concept{background:var(--accent-soft);border-radius:4px;padding:0 4px;font-weight:700}
+table{width:100%;border-collapse:collapse;font:15px/1.4 system-ui,sans-serif;background:var(--surface)}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg);font-weight:600}
+.tablewrap{overflow-x:auto;margin:10px 0 18px}
+.bib p{padding-left:2em;text-indent:-2em;font-size:15px}
+footer{margin-top:56px;font:13px system-ui,sans-serif;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media print{body{background:#fff;color:#000;font-size:12pt}.timeline a{color:#fff}.phase{break-inside:avoid-page}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">Prácticas Educativas II · Guión conjetural</div>
+  <h1>Lo que no veo también cuenta</h1>
+  <p class="sub">Microclase de Seguridad Informática · 5.º 1.ª · Pablo Pedernera</p>
+</header>
+
+<dl class="meta">
+  <dt>Materia</dt><dd>Seguridad Informática</dd>
+  <dt>Curso</dt><dd>5.º 1.ª, Bachiller en Informática, turno mañana</dd>
+  <dt>Clase</dt><dd>Clase 1 de la unidad “Lo que no veo también cuenta”</dd>
+  <dt>Duración</dt><dd>Microclase de 10 minutos ante compañeros y docentes en el rol de estudiantes de 5.º año (Anijovich et al., 2009). En el aula, bloque de 80 minutos (9:15 a 10:35), después del recreo.</dd>
+  <dt>Tema</dt><dd>El uso intermitente del celular, su disparador (la notificación) y el peso de las redes sociales</dd>
+  <dt>Objetivo</dt><dd>Que los estudiantes contrasten su estimación de uso con los datos del dispositivo, expliquen la diferencia incluyendo el uso intermitente y reconozcan en qué categoría se concentra su tiempo.</dd>
+</dl>
+
+<div class="timeline" role="img" aria-label="Inicio 2 minutos, desarrollo 5 minutos, cierre 3 minutos">
+  <a class="i" href="#inicio">Inicio · 2′</a><a class="d" href="#desarrollo">Desarrollo · 5′</a><a class="c" href="#cierre">Cierre · 3′</a>
+</div>
+<p class="tl-note">Tiempos estimados sobre los 10 minutos de la microclase.</p>
+
+<h2>Contenidos a enseñar</h2>
+<ul>
+  <li>Ventajas y desventajas del uso de las redes sociales: uso intermitente y tiempo de conexión.</li>
+  <li>Cuidados para utilizar las redes: las notificaciones como disparador de las consultas y las redes sociales como la categoría que más tiempo ocupa.</li>
+  <li>Estrategia proactiva de seguridad: conocer el propio patrón de uso para determinar vulnerabilidades.</li>
+</ul>
+<p>El guión está escrito en futuro, como relato de anticipación (Bombini, s. f.): qué haré, qué es probable que respondan los estudiantes y cómo intervendré en cada caso. Aunque la clase se presenta en una microclase ante compañeros, el guión anticipa las respuestas del grupo real de 5.º 1.ª, a partir de lo observado y de lo conversado con la docente.</p>
+
+<h2>Antes de la clase</h2>
+<p>Escribiré en el pizarrón la frase que los estudiantes anotaron el 20/08, <em>“Estamos mucho tiempo conectados a la tarde”</em>, y dibujaré una tabla vacía con dos filas, <strong>Desbloqueos</strong> y <strong>Tiempo de pantalla</strong>, y dos columnas, <strong>Estimado</strong> y <strong>Registrado</strong>, con un espacio al lado para la <strong>Categoría de mayor uso</strong>.</p>
+<p>Dejaré sobre cada banco un cuarto de hoja para la estimación (la <a href="#planilla">planilla</a>) y tendré preparado un <a href="#caso">caso</a> para quien no tenga celular o no quiera usarlo. También tendré a mano mi propio dato real, por si nadie quiere compartir el suyo: el viernes 9/10 mi teléfono registró 38 desbloqueos, 2 h 43 min de pantalla y 190 notificaciones, 157 de ellas de WhatsApp; el sábado 10/10, de 1 h 43 min de pantalla, 1 h 30 min fueron de la categoría Social.</p>
+
+<section class="phase" id="inicio" style="--c:var(--inicio)">
+  <h2>Inicio <span class="min">2 minutos</span></h2>
+  <p>Entraré y, antes de saludar formalmente, señalaré la frase del pizarrón. Les diré que es una conclusión a la que ellos mismos llegaron y que hoy la vamos a poner a prueba.</p>
+  <div class="q"><strong>Pregunta:</strong> “¿Cuántas veces creen que desbloquearon el celular ayer? ¿Cuánto tiempo lo usaron en todo el día? ¿Y en qué lo usaron más?”</div>
+  <p>Les pediré que cada uno anote en el papel que encontró en el banco dos números y una categoría (redes sociales, videos, juegos, mensajes, música, estudio), sin mirar el teléfono y sin decirlo en voz alta.</p>
+  <h3>Procesos de pensamiento</h3>
+  <p>Recuperación de saberes previos y formulación de una conjetura sobre el propio uso.</p>
+  <h3>Posibles respuestas y dificultades</h3>
+  <p>Algunos responderán enseguida “diez”, “una hora”; casi todos pensarán en la tarde, y varios elegirán “juegos” o “videos” antes que “redes sociales”; otros dirán “ni idea”, y alguno querrá mirar el celular para contestar. A ese le pediré que espere: primero la estimación, después el dato. Si alguien dice que no tiene celular o que no lo trajo, le pediré que estime igual y le ofreceré trabajar con el compañero de al lado. En el aula real esta clase empieza al volver del recreo, cuando cuesta arrancar: una pregunta personal y una tarea breve e individual ordenan la entrada sin necesidad de pedir silencio.</p>
+  <h3>Recursos</h3>
+  <p>Pizarrón con la frase y la tabla, planillas de estimación.</p>
+</section>
+
+<section class="phase" id="desarrollo" style="--c:var(--desarrollo)">
+  <h2>Desarrollo <span class="min">5 minutos</span></h2>
+  <p>Les indicaré cómo ver el dato en su teléfono: <strong>Configuración → Bienestar digital</strong> en Android (en los Samsung, el Panel), o <strong>Configuración → Tiempo en pantalla</strong> en iPhone, donde aparecen, día por día, el tiempo total de pantalla, las notificaciones, los desbloqueos y el uso por categorías. Les pediré que busquen el día de ayer.</p>
+  <p>Les aclararé que nadie va a mostrar su pantalla: solo vamos a usar los números y la categoría, y quien no quiera no los comparte. Anotarán los datos reales al lado de su estimación y completaré la tabla del pizarrón con lo que quieran compartir, sin nombres.</p>
+  <div class="q"><strong>Preguntas para guiar la oralidad</strong>
+    <ul>
+      <li>“¿Qué cuenta el teléfono que ustedes no contaron?”</li>
+      <li>Una vez que aparezcan las consultas breves: “¿Quién decide cuándo miramos el celular?”</li>
+      <li>Cuando la tabla muestre que la categoría que más se repite es Social: “¿Por qué creen que las redes sociales se quedan con la mayor parte del tiempo?”</li>
+    </ul>
+  </div>
+  <h3>Posibles respuestas y dificultades</h3>
+  <p>Casi todos habrán subestimado, con diferencias grandes (estiman diez desbloqueos y el teléfono marca cuarenta; estiman dos horas y marca cinco), y habrá risas o sorpresa. Si alguien dice que el teléfono “cuenta mal”, no lo descartaré: le devolveré la pregunta sobre qué cuenta el teléfono.</p>
+  <p>Espero respuestas como “las veces que lo miro un segundo”, “cuando me llega un mensaje”, “para ver la hora”. Cuando aparezcan, las tomaré y nombraré el concepto: <span class="concept">uso intermitente</span>, las muchas consultas breves que no registramos como “estar conectados” y que, sumadas, son horas.</p>
+  <p>Con la segunda pregunta espero que surja el disparador, <span class="concept">la notificación</span>; si no aparece, mostraré mi propio dato (190 notificaciones y 38 desbloqueos en un día) y los relacionaré. Con la tercera espero respuestas como “te avisan”, “te muestran algo nuevo”, “nunca se terminan”: las aplicaciones que más tiempo se llevan son también las que más nos llaman. Si alguno no encuentra la opción en su modelo de teléfono, trabajará con el compañero o con el caso preparado.</p>
+  <h3>Procesos de pensamiento</h3>
+  <p>Contrastar una conjetura con datos, explicar una diferencia, pasar de entender el uso como sesiones largas a incluir las consultas intermitentes, y empezar a ver la notificación como algo que una aplicación decide por ellos y a las redes sociales como aplicaciones diseñadas para retener su atención.</p>
+  <h3>Recursos</h3>
+  <p>Celulares de los estudiantes, tabla del pizarrón, caso preparado.</p>
+</section>
+
+<section class="phase" id="cierre" style="--c:var(--cierre)">
+  <h2>Cierre <span class="min">3 minutos</span></h2>
+  <p>Volveré a la frase del pizarrón y les preguntaré si la cambiarían. Espero respuestas del tipo <em>“no solo a la tarde: todo el día, de a poquito, y casi siempre en redes”</em>, y escribiré la nueva versión al lado de la original.</p>
+  <p>Les pediré que anoten en el mismo papel cuál aplicación les mandó más notificaciones ayer y cuál les ocupó más tiempo, y les anticiparé que en la próxima clase vamos a mirar qué información personal le damos a esa aplicación cada vez que nos “llama”: el papel es lo que traen para empezar, así la clase no arranca de memoria.</p>
+  <h3>Procesos de pensamiento</h3>
+  <p>Síntesis y reformulación de una idea previa.</p>
+  <h3>Cómo sabré si se logró el objetivo (evaluación formativa)</h3>
+  <p>Si en la tabla y en la reformulación de la frase aparece el uso intermitente como parte de su uso, y si cada uno identificó una aplicación disparadora y su categoría de mayor uso.</p>
+  <h3>Recursos</h3>
+  <p>Pizarrón y planillas de estimación, que quedan como insumo de la clase 2.</p>
+</section>
+
+<h2 id="planilla">Planilla de estimación y registro</h2>
+<p>Es el cuarto de hoja que cada estudiante encuentra sobre el banco. No lleva nombre: los datos pasan a la tabla del pizarrón solo si el estudiante quiere compartirlos.</p>
+<h3>Parte 1. Ayer, con mi celular…</h3>
+<div class="tablewrap"><table>
+  <tr><th>Pregunta</th><th>Lo que creo (inicio, sin mirar el teléfono)</th><th>Lo que registró el teléfono (desarrollo)</th></tr>
+  <tr><td>¿Cuántas veces lo desbloqueé?</td><td></td><td></td></tr>
+  <tr><td>¿Cuánto tiempo lo usé en todo el día?</td><td>___ h ___ min</td><td>___ h ___ min</td></tr>
+  <tr><td>¿En qué lo usé más? (redes sociales, videos, juegos, mensajes, música, estudio)</td><td></td><td></td></tr>
+  <tr><td>¿Cuántas notificaciones recibí?</td><td>(no se estima)</td><td></td></tr>
+</table></div>
+<h3>Parte 2. Para el cierre</h3>
+<div class="tablewrap"><table>
+  <tr><th>Pregunta</th><th>Mi respuesta</th></tr>
+  <tr><td>La aplicación que más notificaciones me mandó ayer</td><td></td></tr>
+  <tr><td>La aplicación que más tiempo me ocupó ayer</td><td></td></tr>
+  <tr><td>La frase del pizarrón, como la escribiría yo: “Estamos mucho tiempo conectados…”</td><td></td></tr>
+</table></div>
+
+<div class="box" id="caso">
+  <h3 style="margin-top:0">Caso preparado</h3>
+  <p style="margin:0">Juan, de 5.º año, creía que ayer había desbloqueado el celular 10 veces, que lo había usado unas 2 horas y que lo usaba más para jugar. El teléfono registró 52 desbloqueos, 5 horas y 40 minutos de pantalla y 170 notificaciones, 120 de ellas de WhatsApp; la categoría de mayor uso fue Social. ¿Qué no contó Juan? ¿Quién decidió muchas de esas consultas?</p>
+</div>
+
+<h2>Bibliografía de la clase</h2>
+<div class="bib">
+  <p>Anijovich, R., Cappelletti, G., Mora, S. y Sabelli, M. J. (2009). <em>Transitar la formación pedagógica: dispositivos y estrategias</em>. Paidós.</p>
+  <p>Bombini, G. (s. f.). <em>Prácticas docentes y escritura: hipótesis y experiencias en torno a una relación productiva</em> [Ponencia en las jornadas RENPYR].</p>
+  <p>Ministerio de Educación de la Provincia de Santa Fe. (2014). <em>Diseño curricular de Educación Secundaria Orientada</em> (Anexo III, Res. 2630/14).</p>
+  <p>UNICEF. (s. f.). <em>Mídete: uso responsable de las redes sociales</em>. <a href="https://www.unicef.org/cuba/midete-uso-responsable-redes-sociales">unicef.org</a></p>
+</div>
+
+<footer>Pablo Pedernera · Prácticas Educativas II · Profesorado de Educación Secundaria · Octubre de 2026</footer>
+</div>
+</body>
+</html>
