@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Microclase: permisos</title>
+<meta name="description" content="Guión conjetural de la microclase de Seguridad Informática, 5.º 1.ª, clase 2: los permisos de las aplicaciones. Pablo Pedernera, Prácticas Educativas II.">
+<style>
+:root{
+  --bg:#faf8f4; --surface:#ffffff; --ink:#1d1f23; --muted:#5d636d; --line:#e2ddd3;
+  --accent:#b4442c; --accent-soft:#f6e4de; --q:#1f5f8b; --q-soft:#e3eef6;
+  --inicio:#c98a1b; --desarrollo:#b4442c; --cierre:#2f7a55;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16171a; --surface:#1f2125; --ink:#ecebe7; --muted:#a3a7ae; --line:#33363c;
+    --accent:#e9795f; --accent-soft:#3a2520; --q:#7fb6dc; --q-soft:#1c2c38;
+    --inicio:#e5ae4c; --desarrollo:#e9795f; --cierre:#6cc396;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16171a; --surface:#1f2125; --ink:#ecebe7; --muted:#a3a7ae; --line:#33363c;
+  --accent:#e9795f; --accent-soft:#3a2520; --q:#7fb6dc; --q-soft:#1c2c38;
+  --inicio:#e5ae4c; --desarrollo:#e9795f; --cierre:#6cc396;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 Georgia,"Iowan Old Style","Palatino Linotype",serif}
+.wrap{max-width:760px;margin:0 auto;padding:40px 16px 80px}
+header .kicker{font:600 13px/1.4 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:clamp(28px,6vw,40px);line-height:1.15;margin:.3em 0 .2em}
+.sub{color:var(--muted);margin:0 0 28px}
+h2{font:700 22px/1.3 system-ui,sans-serif;margin:48px 0 12px}
+h3{font:700 15px/1.3 system-ui,sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:24px 0 6px}
+p{margin:0 0 14px}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;font-size:15px}
+.meta dt{font:600 13px/1.6 system-ui,sans-serif;color:var(--muted)}
+.meta dd{margin:0}
+.timeline{display:flex;height:38px;border-radius:8px;overflow:hidden;margin:20px 0 6px;font:600 13px/38px system-ui,sans-serif;color:#fff;text-align:center}
+.timeline a{color:#fff;text-decoration:none}
+.timeline .i{flex:2;background:var(--inicio)}
+.timeline .d{flex:5;background:var(--desarrollo)}
+.timeline .c{flex:3;background:var(--cierre)}
+.tl-note{font:13px system-ui,sans-serif;color:var(--muted);margin-bottom:8px}
+.phase{border-left:4px solid var(--c);padding-left:18px;margin-top:40px}
+.phase h2{margin-top:0;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.phase h2 .min{font:600 13px system-ui,sans-serif;color:var(--c);background:var(--surface);border:1px solid var(--c);border-radius:20px;padding:1px 10px}
+.q{background:var(--q-soft);border-radius:8px;padding:12px 16px;margin:12px 0;color:var(--ink)}
+.q strong{color:var(--q)}
+.q ul{margin:0;padding-left:20px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:14px 0}
+.concept{background:var(--accent-soft);border-radius:4px;padding:0 4px;font-weight:700}
+table{width:100%;border-collapse:collapse;font:15px/1.4 system-ui,sans-serif;background:var(--surface)}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg);font-weight:600}
+.tablewrap{overflow-x:auto;margin:10px 0 18px}
+.bib p{padding-left:2em;text-indent:-2em;font-size:15px}
+footer{margin-top:56px;font:13px system-ui,sans-serif;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media print{body{background:#fff;color:#000;font-size:12pt}.timeline a{color:#fff}.phase{break-inside:avoid-page}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">Prácticas Educativas II · Guión conjetural</div>
+  <h1>Cada consulta deja algo</h1>
+  <p class="sub">Microclase de Seguridad Informática · 5.º 1.ª · Pablo Pedernera</p>
+</header>
+
+<dl class="meta">
+  <dt>Materia</dt><dd>Seguridad Informática</dd>
+  <dt>Curso</dt><dd>5.º 1.ª, Bachiller en Informática, turno mañana</dd>
+  <dt>Clase</dt><dd>Clase 2 de la unidad “Lo que no veo también cuenta”</dd>
+  <dt>Duración</dt><dd>Microclase de 10 minutos ante compañeros y docentes en el rol de estudiantes de 5.º año (Anijovich et al., 2009). En el aula, bloque de 80 minutos (9:15 a 10:35), después del recreo.</dd>
+  <dt>Tema</dt><dd>Los permisos de las aplicaciones: qué información personal le entregamos a la aplicación que más nos “llama”, cuáles necesita realmente y qué pasa cuando no los aceptamos</dd>
+  <dt>Objetivo</dt><dd>Que los estudiantes identifiquen qué información personal le ofrecen a la aplicación que más los “llama” a través de sus permisos, distingan los permisos necesarios para su función de los que no lo son y fundamenten una decisión de configuración en términos de vulnerabilidad.</dd>
+</dl>
+
+<div class="timeline" role="img" aria-label="Inicio 2 minutos, desarrollo 5 minutos, cierre 3 minutos">
+  <a class="i" href="#inicio">Inicio · 2′</a><a class="d" href="#desarrollo">Desarrollo · 5′</a><a class="c" href="#cierre">Cierre · 3′</a>
+</div>
+<p class="tl-note">Tiempos estimados sobre los 10 minutos de la microclase.</p>
+
+<h2>Contenidos a enseñar</h2>
+<ul>
+  <li><strong>Cuidados para utilizar las redes sociales:</strong> permisos de las aplicaciones y configuración de privacidad.</li>
+  <li><strong>Información personal e identidad digital:</strong> lo público y lo privado; qué dice de cada uno la información que entregan los permisos.</li>
+  <li><strong>Estrategia proactiva de seguridad:</strong> predecir posibles daños y determinar vulnerabilidades. Una aplicación debería tener solo los permisos que necesita para funcionar (principio de mínimo privilegio).</li>
+</ul>
+<p>El guión está escrito en futuro, como relato de anticipación (Bombini, s. f.): qué haré, qué es probable que respondan los estudiantes y cómo intervendré en cada caso. Aunque la clase se presenta en una microclase ante compañeros, el guión anticipa las respuestas del grupo real de 5.º 1.ª, a partir de lo observado y de lo conversado con la docente.</p>
+
+<h2>Antes de la clase</h2>
+<p>Dejaré en el pizarrón la frase que el grupo reformuló al cerrar la clase 1 (<em>“no solo a la tarde: todo el día, de a poquito, y casi siempre en redes”</em>) y, al lado, una tabla vacía con tres columnas: <strong>Permiso</strong>, <strong>¿Cuántos lo tienen activado?</strong> y <strong>¿Lo necesita?</strong> En las filas escribiré los permisos que piden la mayoría de las aplicaciones: <strong>Ubicación</strong>, <strong>Contactos</strong>, <strong>Micrófono</strong>, <strong>Cámara</strong> y <strong>Fotos y archivos</strong>.</p>
+<p>Cada estudiante tendrá sobre el banco la planilla de la clase 1, con la aplicación que más lo “llamó”, y la <a href="#planilla">planilla de permisos</a>. Tendré preparado un <a href="#caso">caso</a> para quien no tenga celular o no quiera usar el suyo. También revisaré antes los permisos de las aplicaciones de mi propio teléfono, para tener un ejemplo real si nadie quiere compartir el suyo.</p>
+
+<section class="phase" id="inicio" style="--c:var(--inicio)">
+  <h2>Inicio <span class="min">2 minutos</span></h2>
+  <p>Señalaré la frase del pizarrón y recordaré lo que descubrimos la clase anterior: las aplicaciones que más tiempo se llevan son también las que más nos “llaman”.</p>
+  <div class="q"><strong>Pregunta:</strong> “La aplicación que más los llamó ayer, ¿qué sabe de ustedes?”</div>
+  <p>Les pediré que, sin mirar el teléfono, marquen en la columna “Lo que creo” de la planilla a qué cosas creen que esa aplicación tiene acceso.</p>
+  <h3>Procesos de pensamiento</h3>
+  <p>Recuperación de lo trabajado en la clase anterior y formulación de una conjetura sobre la propia exposición.</p>
+  <h3>Posibles respuestas y dificultades</h3>
+  <p>Muchos dirán “nada, solo mis mensajes” o “lo que publico”; otros marcarán todo “por las dudas”, y alguno dirá “no tengo nada que ocultar”. No discutiré esa frase en el inicio: la anotaré en un costado del pizarrón para retomarla en el desarrollo. Si alguien no recuerda qué aplicación lo llamó más, trabajará con WhatsApp o Instagram, que seguramente estarán entre las más mencionadas en la clase 1. Como en la clase anterior, la consigna empieza con una tarea breve e individual, que ordena la entrada después del recreo.</p>
+  <h3>Recursos</h3>
+  <p>Frase y tabla del pizarrón, planilla de la clase 1 y planilla de permisos.</p>
+</section>
+
+<section class="phase" id="desarrollo" style="--c:var(--desarrollo)">
+  <h2>Desarrollo <span class="min">5 minutos</span></h2>
+  <p>Les indicaré dónde ver los permisos: en Android, <strong>Configuración → Aplicaciones → la aplicación → Permisos</strong>, o <strong>Configuración → Privacidad → Administrador de permisos</strong>, que muestra qué aplicaciones usan cada permiso (el nombre cambia según la marca); en iPhone, <strong>Configuración → la aplicación</strong>.</p>
+  <p>Anotarán en la columna “Lo que encontré” qué permisos están permitidos y si la ubicación está en “Permitir siempre” o “Solo mientras se usa la app”. Como en la clase anterior, nadie muestra su pantalla y nadie tiene que cambiar nada todavía. Luego completaré la tabla del pizarrón a mano alzada: cuántos tienen activado cada permiso.</p>
+  <div class="q"><strong>Preguntas para guiar la oralidad</strong>
+    <ul>
+      <li>“¿Qué permiso no esperaban encontrar?”</li>
+      <li>Con la tabla completa: “¿Para qué necesita la aplicación cada permiso? ¿Funcionaría sin él?”</li>
+      <li>Cuando aparezca la experiencia de haber rechazado alguno: “¿Qué pasó cuando le dijeron que no?”</li>
+      <li>Para cerrar, retomando la frase anotada: “Si alguien entrara a esa aplicación, ¿qué podría saber de ustedes?”</li>
+    </ul>
+  </div>
+  <h3>Posibles respuestas y dificultades</h3>
+  <p>La mayoría encontrará más permisos activados de los que marcó, y las sorpresas más frecuentes serán la ubicación en “Permitir siempre” y el acceso a los contactos. Ante la segunda pregunta, algunos permisos tendrán una justificación clara (“el micrófono, para mandar audios”; “la cámara, para las historias”) y otros no (“¿para qué quiere mis contactos un juego?”).</p>
+  <p>Ahí nombraré el concepto: en seguridad, una aplicación debería tener solo los permisos que necesita para su función, lo que se conoce como <span class="concept">principio de mínimo privilegio</span>, y cada permiso de más es una <span class="concept">vulnerabilidad</span>, una puerta abierta que no hacía falta abrir.</p>
+  <p>Con la tercera pregunta espero respuestas como “no me dejaba entrar”, “me lo volvía a pedir cada vez” o “me decía que la aplicación no iba a funcionar bien”: muchas aplicaciones tienen un sistema para <span class="concept">bloquear o limitar su uso si no se aceptan los permisos</span>, aunque muchas veces esos permisos no sean necesarios para lo que el usuario quiere hacer. Lo presentaré como una decisión de diseño de la aplicación y no como una falla: es la misma lógica de la notificación que vimos en la clase 1, la aplicación decide por nosotros y pone las condiciones.</p>
+  <p>Si alguien dice “no tengo nada que ocultar”, no lo descartaré: le preguntaré si le daría a un desconocido la lista de los lugares donde estuvo esta semana y los teléfonos de toda su familia, que es lo que entregan juntos la ubicación y los contactos. Si alguno no encuentra la opción en su modelo de teléfono, trabajará con el compañero o con el caso de la linterna.</p>
+  <h3>Procesos de pensamiento</h3>
+  <p>Contrastar una conjetura con datos, relacionar cada permiso con la función de la aplicación y justificar si es necesario, anticipar qué daño podría producir un permiso de más (estrategia proactiva) y empezar a ver el pedido de permisos como una negociación desigual, en la que la aplicación pone las condiciones.</p>
+  <h3>Recursos</h3>
+  <p>Celulares de los estudiantes, planilla de permisos, tabla del pizarrón, caso preparado.</p>
+</section>
+
+<section class="phase" id="cierre" style="--c:var(--cierre)">
+  <h2>Cierre <span class="min">3 minutos</span></h2>
+  <p>Les pediré que elijan de la planilla un permiso que la aplicación no necesita para lo que ellos la usan y que anoten qué harían con él (desactivarlo, pasarlo a “Solo mientras se usa la app” o dejarlo como está) y por qué. Escucharé dos o tres decisiones.</p>
+  <p>Espero que aparezcan algunas como <em>“le saco la ubicación a Instagram, no la necesito para ver historias”</em> y también otras como <em>“si le saco los contactos a WhatsApp no veo los nombres”</em>: las dos son válidas si están fundamentadas, y la segunda muestra que no todo permiso sobra.</p>
+  <p>Les propondré que, si quieren, apliquen el cambio en su casa y observen qué hace la aplicación: si sigue funcionando, si insiste o si se bloquea. Les anticiparé que eso es lo que vamos a contar al empezar la clase 3, en la que cada uno armará su propia política de uso.</p>
+  <h3>Procesos de pensamiento</h3>
+  <p>Toma de decisiones fundamentada y anticipación de las consecuencias de una configuración.</p>
+  <h3>Cómo sabré si se logró el objetivo (evaluación formativa)</h3>
+  <p>Si en la planilla cada estudiante distingue al menos un permiso necesario de uno que no lo es para la función de la aplicación, si puede explicar qué información personal expone ese permiso y si fundamenta su decisión en términos de vulnerabilidad y no solo de comodidad.</p>
+  <h3>Recursos</h3>
+  <p>Planilla de permisos, que queda como insumo de la clase 3.</p>
+</section>
+
+<h2 id="planilla">Planilla de permisos</h2>
+<p>Es la planilla que cada estudiante encuentra sobre el banco. No lleva nombre, y los datos pasan a la tabla del pizarrón solo si el estudiante quiere compartirlos. La columna “Lo que creo” se completa en el inicio, sin mirar el teléfono; “Lo que encontré”, en el desarrollo; la segunda parte, en el cierre.</p>
+<p><strong>La aplicación que más me “llamó” ayer (de la planilla de la clase 1):</strong> ______________________</p>
+<h3>Parte 1. ¿Qué sabe de mí esta aplicación?</h3>
+<div class="tablewrap"><table>
+  <tr><th>Permiso</th><th>Lo que creo (inicio): ¿tiene acceso?</th><th>Lo que encontré en Configuración (desarrollo)</th></tr>
+  <tr><td>Ubicación (¿siempre o solo mientras la uso?)</td><td></td><td></td></tr>
+  <tr><td>Contactos</td><td></td><td></td></tr>
+  <tr><td>Micrófono</td><td></td><td></td></tr>
+  <tr><td>Cámara</td><td></td><td></td></tr>
+  <tr><td>Fotos y archivos</td><td></td><td></td></tr>
+  <tr><td>Otro: ______________</td><td></td><td></td></tr>
+</table></div>
+<h3>Parte 2. Para el cierre</h3>
+<div class="tablewrap"><table>
+  <tr><th>Pregunta</th><th>Mi respuesta</th></tr>
+  <tr><td>Un permiso que la aplicación necesita para lo que yo la uso, y para qué</td><td></td></tr>
+  <tr><td>Un permiso que no necesita, y qué podría saber de mí con él</td><td></td></tr>
+  <tr><td>¿Alguna vez la aplicación no me dejó seguir si no aceptaba un permiso? ¿Cuál?</td><td></td></tr>
+  <tr><td>Mi decisión: qué permiso desactivo, limito o dejo como está, y por qué</td><td></td></tr>
+</table></div>
+
+<div class="box" id="caso">
+  <h3 style="margin-top:0">Caso preparado</h3>
+  <p style="margin:0">“Linterna Pro” es una aplicación que solo enciende la luz del celular. Al instalarla, pide acceso a la ubicación, a los contactos, al micrófono y a las fotos. Si se rechaza alguno, muestra el aviso “Para continuar, permití el acceso” y no enciende la luz. ¿Qué permisos necesita realmente para funcionar? ¿Qué podría saber de vos con los demás? ¿Por qué creés que no te deja usarla si no los aceptás?</p>
+</div>
+
+<h2>Bibliografía de la clase</h2>
+<div class="bib">
+  <p>Anijovich, R., Cappelletti, G., Mora, S. y Sabelli, M. J. (2009). <em>Transitar la formación pedagógica: dispositivos y estrategias</em>. Paidós.</p>
+  <p>Bombini, G. (s. f.). <em>Prácticas docentes y escritura: hipótesis y experiencias en torno a una relación productiva</em> [Ponencia en las jornadas RENPYR].</p>
+  <p>Ministerio de Educación de la Provincia de Santa Fe. (2014). <em>Diseño curricular de Educación Secundaria Orientada</em> (Anexo III, Res. 2630/14).</p>
+  <p>UNICEF. (s. f.). <em>Mídete: uso responsable de las redes sociales</em>. <a href="https://www.unicef.org/cuba/midete-uso-responsable-redes-sociales">unicef.org</a></p>
+</div>
+
+<footer>Pablo Pedernera · Prácticas Educativas II · Profesorado de Educación Secundaria · Octubre de 2026</footer>
+</div>
+</body>
+</html>
