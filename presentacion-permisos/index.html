@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Clase 2: permisos</title>
+<meta name="description" content="Presentación de la clase 2 de la unidad “Lo que no veo también cuenta”: los permisos de las aplicaciones. Seguridad Informática, 5.º 1.ª. Pablo Pedernera, Prácticas Educativas II.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Nunito+Sans:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#11181d;--bar:#1b252c;--ink:#e8edf0;--muted:#9fb0ba}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:'Nunito Sans',Arial,sans-serif;overflow:hidden}
+#stage{position:absolute;inset:0 0 56px 0;display:flex;align-items:center;justify-content:center}
+#canvas{width:1920px;height:1080px;position:relative;transform-origin:center center;flex:none}
+.slide{position:absolute;inset:0;width:1920px;height:1080px;box-sizing:border-box;overflow:hidden}
+.slide:not(.on){display:none !important}
+.slide h1,.slide h2,.slide h3,.slide p,.slide ul,.slide table{margin:0}
+.slide table{border-collapse:collapse;width:100%}
+.slide th,.slide td{border:1px solid currentColor;border-color:inherit;padding:.35em .6em;text-align:left;vertical-align:top}
+.slide th{font-weight:700}
+.notes{display:none}
+#bar{position:absolute;left:0;right:0;bottom:0;height:56px;background:var(--bar);display:flex;align-items:center;gap:12px;padding:0 16px;font-size:15px}
+#bar button{background:#2a3740;color:var(--ink);border:0;border-radius:8px;padding:8px 14px;font:inherit;cursor:pointer}
+#bar button:focus-visible{outline:2px solid #e9a07f}
+#count{color:var(--muted);min-width:56px;text-align:center}
+#hint{color:var(--muted);margin-left:auto}
+#notes{position:absolute;left:0;right:0;bottom:56px;max-height:40%;overflow:auto;background:#f4efe6;color:#1d2a33;padding:16px 20px;font-size:17px;line-height:1.5;display:none;border-top:3px solid #b4442c}
+body.shownotes #notes{display:block}
+@media (max-width:600px){#hint{display:none}}
+</style>
+</head>
+<body>
+<div id="stage"><div id="canvas">
+<section id="cover" class="slide" data-transition="fade" style="background:#1d2a33;color:#f4efe6;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<p style="font-size:28px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#e9a07f">Seguridad Informática · 5.º 1.ª</p>
+<div style="display:flex;flex-direction:column;gap:32px">
+<h1 style="font-family:'Domine', Georgia, serif;font-size:120px;font-weight:700;line-height:1.05;color:#f4efe6">Cada consulta<br>deja algo</h1>
+<p style="font-size:44px;line-height:1.3;color:#c9d6dc">Los permisos de las aplicaciones: qué les damos, qué necesitan y qué pasa si decimos que no</p>
+</div>
+<p style="font-size:28px;color:#c9d6dc">Clase 2 de la unidad “Lo que no veo también cuenta” · Pablo Pedernera · Prácticas Educativas II</p>
+<aside class="notes">≈30 s. Buen día. No voy a dar la clase: les voy a contar cómo la daría. Es la segunda clase de una unidad de tres para 5.º 1.ª de la Escuela de Comercio N.º 49, en Seguridad Informática. El tema son los permisos de las aplicaciones.</aside>
+</section>
+<section id="grupo" class="slide" data-transition="fade" style="background:#faf6ef;color:#1d2a33;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#b4442c">El grupo y el momento</p>
+<h2 style="font-family:'Domine', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Un grupo que habla, en un horario difícil</h2>
+</div>
+<div style="display:flex;gap:40px">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#ffffff;padding:48px;border:1px solid #e6dfd3;border-radius:16px">
+<h3 style="font-size:44px;font-weight:700;color:#1d2a33">5.º 1.ª</h3>
+<p style="font-size:32px;line-height:1.45;color:#4a5560">28 a 30 inscriptos, de 16 a 18 años, asistencia irregular. Juntos desde primero: confianza, mucha participación oral. Se enganchan cuando la clase parte de su propia experiencia.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#ffffff;padding:48px;border:1px solid #e6dfd3;border-radius:16px">
+<h3 style="font-size:44px;font-weight:700;color:#1d2a33">9:15, después del recreo</h3>
+<p style="font-size:32px;line-height:1.45;color:#4a5560">Martes y jueves, de 9:15 a 10:35. Vuelven activados y cuesta arrancar: en una clase observada, retomar lo anterior llevó casi 40 minutos.</p>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.4;color:#1d2a33"><b>Decisión:</b> abrir con una tarea breve e individual y con lo producido la clase anterior a la vista.</p>
+<aside class="notes">≈1 min. Antes de la clase, el grupo. Son entre 28 y 30, de 16 a 18 años, con asistencia irregular. Se conocen desde primero: hay confianza y participan mucho en lo oral, y se enganchan cuando la clase parte de lo que ellos viven. El problema es el horario: la clase empieza a las 9:15, justo después del recreo, y en las cuatro clases que observé costó arrancar; una vez, retomar lo anterior llevó casi cuarenta minutos. Por eso cada clase de la unidad abre con una consigna breve e individual.</aside>
+</section>
+<section id="unidad" class="slide" data-transition="fade" style="background:#faf6ef;color:#1d2a33;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#b4442c">La clase en la unidad</p>
+<h2 style="font-family:'Domine', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">De cuánto lo uso a qué le entrego</h2>
+</div>
+<div style="display:flex;gap:32px;align-items:stretch">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#ffffff;padding:44px;border:1px solid #e6dfd3;border-radius:16px">
+<p style="font-size:28px;font-weight:700;color:#6b7680">ANTES · Clase 1</p>
+<h3 style="font-size:40px;font-weight:700">Lo que no veo también cuenta</h3>
+<p style="font-size:28px;line-height:1.45;color:#4a5560">Estimaron su uso y lo compararon con el teléfono: uso intermitente, la notificación como disparador. Anotaron qué app los “llamó” más.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#1d2a33;padding:44px;border-radius:16px">
+<p style="font-size:28px;font-weight:700;color:#e9a07f">HOY · Clase 2</p>
+<h3 style="font-size:40px;font-weight:700;color:#f4efe6">Cada consulta deja algo</h3>
+<p style="font-size:28px;line-height:1.45;color:#c9d6dc">¿Qué sabe de mí esa aplicación? Permisos, datos personales y vulnerabilidad.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#ffffff;padding:44px;border:1px solid #e6dfd3;border-radius:16px">
+<p style="font-size:28px;font-weight:700;color:#6b7680">DESPUÉS · Clase 3</p>
+<h3 style="font-size:40px;font-weight:700">Mi política de uso</h3>
+<p style="font-size:28px;line-height:1.45;color:#4a5560">Cuentan qué pasó con el permiso que cambiaron, redactan tres medidas fundamentadas y hacen una infografía para un curso inferior.</p>
+</div>
+</div>
+<aside class="notes">≈1 min. La unidad tiene tres clases y es concéntrica: parte del propio uso y se abre hacia los datos y el cuidado. Antes, en la Unidad 1, habían registrado su uso y concluido que “estamos mucho tiempo conectados a la tarde”. En la clase 1 lo pusieron a prueba con los datos del teléfono y descubrieron el uso intermitente y la notificación como disparador; se llevaron anotada la aplicación que más los llamó. Hoy partimos de esa aplicación. Y en la clase 3 arman su propia política de uso.</aside>
+</section>
+<section id="objetivo" class="slide" data-transition="fade" style="background:#faf6ef;color:#1d2a33;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#b4442c">Objetivo y contenidos</p>
+<h2 style="font-family:'Domine', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15">Que distingan los permisos que una app necesita de los que no, y decidan con criterio de seguridad</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;border-top:6px solid #b4442c;padding:32px 0 0 0">
+<h3 style="font-size:36px;font-weight:700">Cuidados en las redes</h3>
+<p style="font-size:28px;line-height:1.45;color:#4a5560">Permisos de las aplicaciones y configuración de privacidad.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;border-top:6px solid #1f5f8b;padding:32px 0 0 0">
+<h3 style="font-size:36px;font-weight:700">Identidad digital</h3>
+<p style="font-size:28px;line-height:1.45;color:#4a5560">Lo público y lo privado: qué dice de cada uno lo que entregan los permisos.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;border-top:6px solid #2f7a55;padding:32px 0 0 0">
+<h3 style="font-size:36px;font-weight:700">Estrategia proactiva</h3>
+<p style="font-size:28px;line-height:1.45;color:#4a5560">Predecir daños y detectar vulnerabilidades: principio de mínimo privilegio.</p>
+</div>
+</div>
+<aside class="notes">≈45 s. El objetivo es que identifiquen qué información personal le dan a la aplicación que más los llama, que distingan los permisos que necesita para funcionar de los que no, y que tomen una decisión de configuración fundamentada en seguridad, no solo en comodidad. Los contenidos salen de la Unidad 1 de la planificación institucional y de la estrategia proactiva del Diseño Curricular de Santa Fe.</aside>
+</section>
+<section id="antes" class="slide" data-transition="fade" style="background:#faf6ef;color:#1d2a33;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#b4442c">Antes de la clase</p>
+<h2 style="font-family:'Domine', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Lo que encuentran al entrar</h2>
+</div>
+<div style="display:flex;gap:48px;align-items:start">
+<div style="flex:1.2;display:flex;flex-direction:column;gap:20px;background:#24342c;padding:40px;border-radius:16px">
+<p style="font-size:28px;font-style:italic;color:#e8efe9">“No solo a la tarde: todo el día, de a poquito, y casi siempre en redes”</p>
+<table style="font-family:'Nunito Sans', Arial, sans-serif;font-size:28px;color:#e8efe9;border:1px solid #6f8a7b">
+<tr><th style="width:36%">Permiso</th><th style="width:36%">¿Cuántos lo tienen?</th><th style="width:28%">¿Lo necesita?</th></tr>
+<tr><td>Ubicación</td><td></td><td></td></tr>
+<tr><td>Contactos</td><td></td><td></td></tr>
+<tr><td>Micrófono</td><td></td><td></td></tr>
+<tr><td>Cámara</td><td></td><td></td></tr>
+<tr><td>Fotos y archivos</td><td></td><td></td></tr>
+</table>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:36px;font-weight:700">En cada banco</h3>
+<p style="font-size:28px;line-height:1.45;color:#4a5560">La planilla de la clase 1 (la app que más los “llamó”) y la planilla de permisos.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:36px;font-weight:700">Caso preparado</h3>
+<p style="font-size:28px;line-height:1.45;color:#4a5560">“Linterna Pro”: solo enciende la luz, pero pide ubicación, contactos, micrófono y fotos, y no funciona si rechazás alguno.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:36px;font-weight:700">Mi ejemplo real</h3>
+<p style="font-size:28px;line-height:1.45;color:#4a5560">Los permisos de mi propio teléfono, por si nadie quiere compartir.</p>
+</div>
+</div>
+</div>
+<aside class="notes">≈45 s. Cuando entren, en el pizarrón va a estar la frase que ellos mismos reformularon al cerrar la clase 1, y al lado una tabla vacía con los permisos que piden casi todas las aplicaciones. En cada banco, la planilla de la clase anterior, con la aplicación que más los llamó, y la planilla de permisos. Para quien no tenga celular o no quiera usar el suyo, tengo un caso inventado: una linterna que pide permisos que no necesita y se niega a funcionar si no se los das. Y llevo revisados los permisos de mi teléfono, por si nadie quiere mostrar los suyos.</aside>
+</section>
+<section id="inicio" class="slide" data-transition="fade" style="background:#faf6ef;color:#1d2a33;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:28px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#b4442c">Inicio</p>
+<p style="font-size:28px;font-weight:700;color:#ffffff;background:#c98a1b;padding:6px 20px;border-radius:40px">2 minutos</p>
+</div>
+<h2 style="font-family:'Domine', Georgia, serif;font-size:96px;font-weight:700;line-height:1.1">“La aplicación que más los llamó ayer, ¿qué sabe de ustedes?”</h2>
+<div style="display:flex;gap:48px">
+<p style="flex:1;font-size:32px;line-height:1.45;color:#4a5560">Sin mirar el teléfono, marcan en <b>“Lo que creo”</b> a qué creen que tiene acceso.</p>
+<p style="flex:1;font-size:32px;line-height:1.45;color:#4a5560">Espero “nada, solo mis mensajes”, “todo por las dudas” y algún <b>“no tengo nada que ocultar”</b>: lo anoto al costado para después.</p>
+</div>
+<aside class="notes">≈1 min. El inicio dura dos minutos. Señalo la frase y recuerdo lo que descubrieron: las aplicaciones que más tiempo se llevan son las que más nos llaman. Y pregunto: la aplicación que más los llamó ayer, ¿qué sabe de ustedes? Cada uno marca en la planilla, sin mirar el teléfono, a qué cree que tiene acceso. Es una conjetura, como en la clase 1. Espero que muchos digan “nada, solo mis mensajes”, que otros marquen todo, y que alguno diga “no tengo nada que ocultar”. Esa frase no la discuto en el inicio: la anoto en un costado del pizarrón para retomarla en el desarrollo.</aside>
+</section>
+<section id="desarrollo" class="slide" data-transition="fade" style="background:#faf6ef;color:#1d2a33;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:28px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#b4442c">Desarrollo</p>
+<p style="font-size:28px;font-weight:700;color:#ffffff;background:#b4442c;padding:6px 20px;border-radius:40px">5 minutos</p>
+</div>
+<h2 style="font-family:'Domine', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Revisan los permisos de verdad</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#ffffff;padding:40px;border:1px solid #e6dfd3;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700">Android</h3>
+<p style="font-size:28px;line-height:1.45;color:#4a5560">Configuración → Aplicaciones → la app → Permisos. O Privacidad → Administrador de permisos.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#ffffff;padding:40px;border:1px solid #e6dfd3;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700">iPhone</h3>
+<p style="font-size:28px;line-height:1.45;color:#4a5560">Configuración → la app. ¿Ubicación “siempre” o “solo mientras se usa”?</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#ffffff;padding:40px;border:1px solid #e6dfd3;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700">Regla</h3>
+<p style="font-size:28px;line-height:1.45;color:#4a5560">Nadie muestra su pantalla ni cambia nada todavía. Se comparten números, a mano alzada.</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#e3eef6;padding:36px 44px;border-radius:16px">
+<p style="font-size:32px;line-height:1.5;color:#1d2a33"><b>¿Qué permiso no esperaban encontrar?</b> · <b>¿Para qué lo necesita? ¿Funcionaría sin él?</b> · <b>¿Qué pasó cuando le dijeron que no?</b> · <b>Si alguien entrara a esa app, ¿qué sabría de ustedes?</b></p>
+</div>
+<aside class="notes">≈1 min 30 s. El desarrollo es el corazón de la clase, cinco minutos. Les muestro dónde ver los permisos en Android y en iPhone, y que se fijen si la ubicación está en “siempre”. La regla de privacidad es la misma que en la clase 1: nadie muestra su pantalla, nadie cambia nada todavía, y la tabla del pizarrón se completa a mano alzada. Después guío la discusión con cuatro preguntas, en este orden: qué permiso no esperaban, para qué lo necesita la app y si funcionaría sin él, qué pasó cuando le dijeron que no, y si alguien entrara a esa aplicación, qué podría saber de ellos.</aside>
+</section>
+<section id="concepto" class="slide" data-transition="fade" style="background:#b4442c;color:#fbf3ee;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:56px">
+<p style="font-size:28px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#fbe3d8">El concepto que nombro</p>
+<h2 style="font-family:'Domine', Georgia, serif;font-size:88px;font-weight:700;line-height:1.1;color:#fbf3ee">Una app debería tener solo los permisos que necesita para funcionar</h2>
+<div style="display:flex;gap:48px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px">
+<h3 style="font-size:40px;font-weight:700;color:#fbf3ee">Mínimo privilegio</h3>
+<p style="font-size:32px;line-height:1.45;color:#fbe3d8">Cada permiso de más es una <b>vulnerabilidad</b>: una puerta abierta que no hacía falta abrir.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px">
+<h3 style="font-size:40px;font-weight:700;color:#fbf3ee">“Si no aceptás, no entrás”</h3>
+<p style="font-size:32px;line-height:1.45;color:#fbe3d8">Muchas apps bloquean o limitan su uso si no das los permisos, aunque no los necesiten. La app pone las condiciones.</p>
+</div>
+</div>
+<aside class="notes">≈1 min. Cuando aparezcan permisos sin justificación, por ejemplo un juego que quiere los contactos, nombro el concepto: en seguridad, una aplicación debería tener solo los permisos que necesita para su función. Es el principio de mínimo privilegio, y cada permiso de más es una vulnerabilidad. Con la pregunta de qué pasó cuando dijeron que no, espero respuestas como “no me dejaba entrar” o “me lo pedía todo el tiempo”: muchas aplicaciones tienen un sistema para bloquear o limitar su uso si no aceptás los permisos, aunque muchas veces no los necesiten para lo que queremos hacer. Lo presento como una decisión de diseño, la misma lógica de la notificación de la clase 1: la aplicación decide por nosotros.</aside>
+</section>
+<section id="respuestas" class="slide" data-transition="fade" style="background:#faf6ef;color:#1d2a33;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#b4442c">Lo que anticipo</p>
+<h2 style="font-family:'Domine', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Si dicen esto, hago esto</h2>
+</div>
+<table style="font-family:'Nunito Sans', Arial, sans-serif;font-size:30px;color:#1d2a33;border:1px solid #d9d0c2">
+<tr style="background:#efe7da"><th style="width:42%">Posible respuesta</th><th style="width:58%">Mi intervención</th></tr>
+<tr><td>“El micrófono, para mandar audios”</td><td>Lo valido: es un permiso necesario para esa función.</td></tr>
+<tr><td>“¿Para qué quiere mis contactos un juego?”</td><td>Nombro mínimo privilegio y vulnerabilidad.</td></tr>
+<tr><td>“No me dejaba entrar si no aceptaba”</td><td>Muestro que la app condiciona su uso: pone las condiciones.</td></tr>
+<tr><td>“No tengo nada que ocultar”</td><td>¿Le darías a un desconocido dónde estuviste esta semana y los teléfonos de tu familia?</td></tr>
+<tr><td>“No encuentro la opción”</td><td>Trabaja con el compañero o con el caso de la linterna.</td></tr>
+</table>
+<aside class="notes">≈1 min. Esto es lo que espero que pase y cómo voy a intervenir. Algunos permisos tienen justificación clara, como el micrófono para los audios, y lo valido. Otros no, y ahí entra el concepto. Si alguien dice “no tengo nada que ocultar”, no lo descarto: le pregunto si le daría a un desconocido la lista de lugares donde estuvo esta semana y los teléfonos de su familia, que es lo que entregan juntos la ubicación y los contactos. Y si alguno no encuentra la opción en su modelo de teléfono, trabaja con el compañero o con el caso preparado.</aside>
+</section>
+<section id="cierre" class="slide" data-transition="fade" style="background:#faf6ef;color:#1d2a33;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:28px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#b4442c">Cierre</p>
+<p style="font-size:28px;font-weight:700;color:#ffffff;background:#2f7a55;padding:6px 20px;border-radius:40px">3 minutos</p>
+</div>
+<h2 style="font-family:'Domine', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Cada uno toma una decisión</h2>
+</div>
+<p style="font-size:36px;line-height:1.45;color:#1d2a33">Eligen un permiso que la app no necesita para lo que ellos la usan y anotan qué harían: <b>desactivarlo</b>, <b>limitarlo a “solo mientras se usa”</b> o <b>dejarlo</b>, y por qué.</p>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#ffffff;padding:40px;border:1px solid #e6dfd3;border-radius:16px">
+<p style="font-size:30px;line-height:1.45;font-style:italic;color:#4a5560">“Le saco la ubicación a Instagram, no la necesito para ver historias.”</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#ffffff;padding:40px;border:1px solid #e6dfd3;border-radius:16px">
+<p style="font-size:30px;line-height:1.45;font-style:italic;color:#4a5560">“Si le saco los contactos a WhatsApp no veo los nombres.” No todo permiso sobra.</p>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.4;color:#2f7a55"><b>Tarea:</b> si quieren, aplicar el cambio en casa y ver qué hace la app. Eso abre la clase 3.</p>
+<aside class="notes">≈1 min. En el cierre, tres minutos, cada uno elige de su planilla un permiso que la aplicación no necesita para lo que la usa y anota qué haría con él y por qué. Escucho dos o tres decisiones. Las dos de la pantalla son válidas si están fundamentadas, y la segunda muestra que no todo permiso sobra. La tarea es voluntaria: aplicar el cambio en casa y observar si la aplicación sigue funcionando, insiste o se bloquea. Eso es lo que van a contar al empezar la clase 3, cuando armen su política de uso.</aside>
+</section>
+<section id="evaluacion" class="slide" data-transition="fade" style="background:#1d2a33;color:#f4efe6;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:28px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#e9a07f">Evaluación formativa</p>
+<h2 style="font-family:'Domine', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1;color:#f4efe6">Cómo voy a saber si se logró</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;border-top:6px solid #e9a07f;padding:32px 0 0 0">
+<p style="font-family:'Domine', Georgia, serif;font-size:72px;font-weight:700;color:#e9a07f">1</p>
+<p style="font-size:32px;line-height:1.45;color:#c9d6dc">Distingue al menos un permiso <b style="color:#f4efe6">necesario</b> de uno que <b style="color:#f4efe6">no lo es</b> para la función de la app.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;border-top:6px solid #e9a07f;padding:32px 0 0 0">
+<p style="font-family:'Domine', Georgia, serif;font-size:72px;font-weight:700;color:#e9a07f">2</p>
+<p style="font-size:32px;line-height:1.45;color:#c9d6dc">Explica qué <b style="color:#f4efe6">información personal</b> expone ese permiso.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;border-top:6px solid #e9a07f;padding:32px 0 0 0">
+<p style="font-family:'Domine', Georgia, serif;font-size:72px;font-weight:700;color:#e9a07f">3</p>
+<p style="font-size:32px;line-height:1.45;color:#c9d6dc">Fundamenta su decisión en términos de <b style="color:#f4efe6">vulnerabilidad</b>, no solo de comodidad.</p>
+</div>
+</div>
+<p style="font-size:28px;color:#c9d6dc">Evidencia: la planilla de permisos, que queda como insumo de la clase 3.</p>
+<aside class="notes">≈45 s. Para terminar, cómo voy a saber si se logró el objetivo. Miro la planilla: si cada uno distingue al menos un permiso necesario de uno que no lo es, si puede explicar qué información personal expone, y si fundamenta su decisión en términos de vulnerabilidad y no solo de comodidad. La planilla no se descarta: es el punto de partida de la clase 3. Muchas gracias.</aside>
+</section>
+</div></div>
+<div id="notes" aria-live="polite"></div>
+<div id="bar">
+<button id="prev" aria-label="Slide anterior">←</button>
+<span id="count"></span>
+<button id="next" aria-label="Slide siguiente">→</button>
+<button id="nbtn" aria-pressed="false">Notas</button>
+<button id="fs">Pantalla completa</button>
+<span id="hint">← → para avanzar · N: notas · F: pantalla completa</span>
+</div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];let i=0;
+const canvas=document.getElementById('canvas'),stage=document.getElementById('stage');
+function fit(){const s=Math.min(stage.clientWidth/1920,stage.clientHeight/1080);canvas.style.transform='scale('+s+')';}
+function show(n){i=Math.max(0,Math.min(slides.length-1,n));slides.forEach((s,k)=>s.classList.toggle('on',k===i));
+document.getElementById('count').textContent=(i+1)+' / '+slides.length;
+const a=slides[i].querySelector('.notes');document.getElementById('notes').textContent=a?a.textContent:'';
+try{history.replaceState(null,'','#'+(i+1));}catch(e){}}
+function notes(){const on=document.body.classList.toggle('shownotes');document.getElementById('nbtn').setAttribute('aria-pressed',on);setTimeout(fit,0);}
+document.getElementById('prev').onclick=()=>show(i-1);
+document.getElementById('next').onclick=()=>show(i+1);
+document.getElementById('nbtn').onclick=notes;
+document.getElementById('fs').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();else document.exitFullscreen();};
+document.addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(i+1)}
+else if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);else if(e.key==='n'||e.key==='N')notes();
+else if(e.key==='f'||e.key==='F')document.getElementById('fs').click();else if(e.key==='Home')show(0);else if(e.key==='End')show(slides.length-1);});
+let x0=null;stage.addEventListener('touchstart',e=>x0=e.touches[0].clientX,{passive:true});
+stage.addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>40)show(i+(dx<0?1:-1));x0=null;});
+window.addEventListener('resize',fit);fit();show((parseInt(location.hash.slice(1))||1)-1);
+</script>
+</body>
+</html>
