@@ -144,6 +144,7 @@
         <li>Ser estudiante o egresado del Terciario Urquiza (cualquier carrera y año).</li>
         <li>Tener <strong>18 años o más</strong>: lo exige AWS Academy.</li>
         <li>Inscribirte con tu <strong>correo institucional</strong> (<code>@terciariourquiza.edu.ar</code>).
+            <strong>Si egresaste, usá tu correo personal</strong>: el institucional puede darse de baja.
             Ese correo pasa a ser tu usuario de AWS Academy y no se puede cambiar. Si ya tenés cuenta
             (por ejemplo, del Learner Lab), usá el mismo correo: el curso aparece en la misma cuenta.</li>
         <li>Una computadora con navegador. Los laboratorios no andan bien en el celular.</li>
@@ -159,7 +160,7 @@
     <h2 id="inscripcion">Inscripción</h2>
     <p>
         Completá los datos y tocá <strong>Preparar mail</strong>. Se arma un mail al profesor con tus
-        datos: lo mandás desde tu correo institucional. Con eso quedás anotado o anotada, y antes del
+        datos: lo mandás desde el mismo correo que pusiste en el formulario. Con eso quedás anotado o anotada, y antes del
         3/12 te llega la invitación de AWS Academy.
     </p>
 
@@ -181,8 +182,8 @@
         </div>
         <div class="fila">
             <div>
-                <label for="correo">Correo institucional <span class="ayuda">(será tu usuario en AWS Academy)</span></label>
-                <input type="email" id="correo" autocomplete="email" placeholder="apellido.nombre@terciariourquiza.edu.ar">
+                <label for="correo">Correo <span class="ayuda">(el institucional; si egresaste, el personal. Será tu usuario en AWS Academy)</span></label>
+                <input type="email" id="correo" autocomplete="email" placeholder="tu-dni@terciariourquiza.edu.ar">
             </div>
             <div>
                 <label for="anio">Año que cursás <span class="ayuda">(o si egresaste)</span></label>
@@ -204,7 +205,7 @@
     </form>
 
     <div id="envio" class="envio hidden">
-        <p class="msg ok">Listo. Mandá el mail <strong>desde tu correo institucional</strong>:</p>
+        <p class="msg ok">Listo. Mandá el mail <strong>desde el mismo correo que pusiste en el formulario</strong>:</p>
         <a id="mail-gmail" class="boton" target="_blank" rel="noopener">Abrir en Gmail</a>
         <a id="mail-outlook" class="boton sec" target="_blank" rel="noopener">Abrir en Outlook</a>
         <a id="mail-app" class="boton sec">Abrir en mi app de correo</a>
@@ -238,10 +239,15 @@
         const carrera = $('carrera').value;
         const anio = $('anio').value;
         if (nombre.length < 4) { msg.textContent = 'Completá tu apellido y nombre.'; return; }
-        if (!/^[^\s@]+@terciariourquiza\.edu\.ar$/.test(correo)) {
-            msg.textContent = 'El correo tiene que ser el institucional (@terciariourquiza.edu.ar).'; return;
-        }
         if (!carrera || !anio) { msg.textContent = 'Elegí tu carrera y el año que cursás (o si egresaste).'; return; }
+        const egresado = anio === 'Egresado';
+        const institucional = /^[^\s@]+@terciariourquiza\.edu\.ar$/.test(correo);
+        if (!egresado && !institucional) {
+            msg.textContent = 'El correo tiene que ser el institucional (@terciariourquiza.edu.ar). Si egresaste, elegí "Egresado" y usá tu correo personal.'; return;
+        }
+        if (egresado && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+            msg.textContent = 'Revisá el correo: no parece una dirección válida.'; return;
+        }
         if (!$('mayor').checked) { msg.textContent = 'AWS Academy pide tener 18 años o más.'; return; }
         if (!$('entiendo').checked) { msg.textContent = 'Marcá que leíste las condiciones del curso.'; return; }
         msg.textContent = '';
@@ -250,7 +256,7 @@
         const cuerpo = [
             'Inscripción a AWS Academy Cloud Foundations (3/12/2026 – 26/2/2027)',
             `Apellido y nombre: ${nombre}`,
-            `Correo institucional: ${correo}`,
+            `${institucional ? 'Correo institucional' : 'Correo personal'}: ${correo}`,
             `Carrera: ${carrera}`,
             `Año: ${anio}`,
             'Tengo 18 años o más y leí las condiciones del curso.',
