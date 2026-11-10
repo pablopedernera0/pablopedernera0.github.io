@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cloud Foundations en verano</title>
-    <meta name="description" content="Curso AWS Academy Cloud Foundations para estudiantes del Terciario Urquiza, a su ritmo, del 3 de diciembre de 2026 al 26 de febrero de 2027. Inscripción.">
+    <meta name="description" content="Curso AWS Academy Cloud Foundations para estudiantes y egresados del Terciario Urquiza, a su ritmo, del 3 de diciembre de 2026 al 26 de febrero de 2027. Inscripción.">
     <style>
         :root {
             --bg1: #131a22; --bg2: #232f3e; --panel: rgba(255,255,255,0.05); --line: rgba(255,255,255,0.12);
@@ -92,7 +92,7 @@
     <p class="intro">
         <strong>AWS Academy Cloud Foundations</strong> es el curso introductorio oficial de AWS:
         qué es la nube, los servicios principales de AWS, seguridad, arquitectura y precios. Lo
-        abrimos para estudiantes del Terciario Urquiza de cualquier carrera. Es <strong>gratis</strong>,
+        abrimos para estudiantes y egresados del Terciario Urquiza de cualquier carrera. Es <strong>gratis</strong>,
         se cursa <strong>en línea y a tu ritmo</strong>, y si aprobás te llevás la insignia oficial
         <strong>AWS Academy Graduate</strong>.
     </p>
@@ -141,7 +141,7 @@
 
     <h2>Requisitos</h2>
     <ul>
-        <li>Ser estudiante del Terciario Urquiza (cualquier carrera y año).</li>
+        <li>Ser estudiante o egresado del Terciario Urquiza (cualquier carrera y año).</li>
         <li>Tener <strong>18 años o más</strong>: lo exige AWS Academy.</li>
         <li>Inscribirte con tu <strong>correo institucional</strong> (<code>@terciariourquiza.edu.ar</code>).
             Ese correo pasa a ser tu usuario de AWS Academy y no se puede cambiar. Si ya tenés cuenta
@@ -185,13 +185,13 @@
                 <input type="email" id="correo" autocomplete="email" placeholder="apellido.nombre@terciariourquiza.edu.ar">
             </div>
             <div>
-                <label for="anio">Año que cursás</label>
+                <label for="anio">Año que cursás <span class="ayuda">(o si egresaste)</span></label>
                 <select id="anio">
                     <option value="">Elegí…</option>
                     <option>1.º</option>
                     <option>2.º</option>
                     <option>3.º</option>
-                    <option>Egresé en 2026</option>
+                    <option>Egresado</option>
                 </select>
             </div>
         </div>
@@ -241,7 +241,7 @@
         if (!/^[^\s@]+@terciariourquiza\.edu\.ar$/.test(correo)) {
             msg.textContent = 'El correo tiene que ser el institucional (@terciariourquiza.edu.ar).'; return;
         }
-        if (!carrera || !anio) { msg.textContent = 'Elegí tu carrera y el año que cursás.'; return; }
+        if (!carrera || !anio) { msg.textContent = 'Elegí tu carrera y el año que cursás (o si egresaste).'; return; }
         if (!$('mayor').checked) { msg.textContent = 'AWS Academy pide tener 18 años o más.'; return; }
         if (!$('entiendo').checked) { msg.textContent = 'Marcá que leíste las condiciones del curso.'; return; }
         msg.textContent = '';
