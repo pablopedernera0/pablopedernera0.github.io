@@ -246,7 +246,6 @@
         if (!$('entiendo').checked) { msg.textContent = 'Marcá que leíste las condiciones del curso.'; return; }
         msg.textContent = '';
 
-        const datos = { id: ID, nombre, correo, carrera, anio, fecha: new Date().toISOString() };
         const asunto = `[${ID}] ${nombre} – ${carrera} ${anio}`;
         const cuerpo = [
             'Inscripción a AWS Academy Cloud Foundations (3/12/2026 – 26/2/2027)',
@@ -255,8 +254,6 @@
             `Carrera: ${carrera}`,
             `Año: ${anio}`,
             'Tengo 18 años o más y leí las condiciones del curso.',
-            '',
-            'DATOS: ' + JSON.stringify(datos).replace(/ /g, '\\u0020'),
             '',
         ].join('\n');
         const q = (o) => Object.entries(o).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
