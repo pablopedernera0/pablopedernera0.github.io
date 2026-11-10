@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cloud Foundations en verano</title>
-    <meta name="description" content="Curso AWS Academy Cloud Foundations para estudiantes y egresados del Terciario Urquiza, a su ritmo, del 3 de diciembre de 2026 al 26 de febrero de 2027. Inscripción.">
+    <meta name="description" content="Curso AWS Academy Cloud Foundations para estudiantes, egresados y docentes del Terciario Urquiza, a su ritmo, del 3 de diciembre de 2026 al 26 de febrero de 2027. Inscripción.">
     <style>
         :root {
             --bg1: #131a22; --bg2: #232f3e; --panel: rgba(255,255,255,0.05); --line: rgba(255,255,255,0.12);
@@ -92,7 +92,8 @@
     <p class="intro">
         <strong>AWS Academy Cloud Foundations</strong> es el curso introductorio oficial de AWS:
         qué es la nube, los servicios principales de AWS, seguridad, arquitectura y precios. Lo
-        abrimos para estudiantes y egresados del Terciario Urquiza de cualquier carrera. Es <strong>gratis</strong>,
+        abrimos para estudiantes y egresados del Terciario Urquiza de cualquier carrera, y también para
+        sus docentes. Es <strong>gratis</strong>,
         se cursa <strong>en línea y a tu ritmo</strong>, y si aprobás te llevás la insignia oficial
         <strong>AWS Academy Graduate</strong>.
     </p>
@@ -141,9 +142,10 @@
 
     <h2>Requisitos</h2>
     <ul>
-        <li>Ser estudiante o egresado del Terciario Urquiza (cualquier carrera y año).</li>
+        <li>Ser estudiante, egresado o docente del Terciario Urquiza (cualquier carrera y año).</li>
         <li>Tener <strong>18 años o más</strong>: lo exige AWS Academy.</li>
         <li>Inscribirte con tu <strong>correo institucional</strong> (<code>@terciariourquiza.edu.ar</code>).
+            Los docentes también usan el institucional.
             <strong>Si egresaste, usá tu correo personal</strong>: el institucional puede darse de baja.
             Ese correo pasa a ser tu usuario de AWS Academy y no se puede cambiar. Si ya tenés cuenta
             (por ejemplo, del Learner Lab), usá el mismo correo: el curso aparece en la misma cuenta.</li>
@@ -171,30 +173,39 @@
                 <input type="text" id="nombre" autocomplete="name" placeholder="Pérez, Ana">
             </div>
             <div>
-                <label for="carrera">Carrera</label>
-                <select id="carrera">
+                <label for="rol">Sos</label>
+                <select id="rol">
                     <option value="">Elegí…</option>
-                    <option>Analista Funcional</option>
-                    <option>Desarrollo de Software</option>
-                    <option>Infraestructura de TI</option>
+                    <option value="estudiante">Estudiante</option>
+                    <option value="egresado">Egresado/a</option>
+                    <option value="docente">Docente</option>
                 </select>
             </div>
         </div>
         <div class="fila">
             <div>
-                <label for="correo">Correo <span class="ayuda">(el institucional; si egresaste, el personal. Será tu usuario en AWS Academy)</span></label>
-                <input type="email" id="correo" autocomplete="email" placeholder="tu-dni@terciariourquiza.edu.ar">
+                <label for="carrera">Carrera <span class="ayuda">(si sos docente y das clases en varias, elegí "Varias carreras")</span></label>
+                <select id="carrera">
+                    <option value="">Elegí…</option>
+                    <option>Analista Funcional</option>
+                    <option>Desarrollo de Software</option>
+                    <option>Infraestructura de TI</option>
+                    <option value="Varias carreras">Varias carreras (docentes)</option>
+                </select>
             </div>
-            <div>
-                <label for="anio">Año que cursás <span class="ayuda">(o si egresaste)</span></label>
+            <div id="bloque-anio">
+                <label for="anio">Año que cursás</label>
                 <select id="anio">
                     <option value="">Elegí…</option>
                     <option>1.º</option>
                     <option>2.º</option>
                     <option>3.º</option>
-                    <option>Egresado</option>
                 </select>
             </div>
+        </div>
+        <div>
+            <label for="correo">Correo <span class="ayuda" id="ayuda-correo">(el institucional, @terciariourquiza.edu.ar. Será tu usuario en AWS Academy)</span></label>
+            <input type="email" id="correo" autocomplete="email" placeholder="tu-dni@terciariourquiza.edu.ar">
         </div>
         <label class="check"><input type="checkbox" id="mayor"> Tengo 18 años o más.</label>
         <label class="check"><input type="checkbox" id="entiendo"> Entiendo que es un curso a mi ritmo, que la
@@ -230,35 +241,54 @@
     const ID = 'inscripcion-cloud-foundations-2026';
     const $ = (id) => document.getElementById(id);
 
+    const ROLES = { estudiante: 'Estudiante', egresado: 'Egresado/a', docente: 'Docente' };
+
+    // Según el rol: el año solo aplica a estudiantes y el correo cambia de requisito.
+    function actualizarRol() {
+        const rol = $('rol').value;
+        $('bloque-anio').classList.toggle('hidden', rol === 'egresado' || rol === 'docente');
+        $('ayuda-correo').textContent = rol === 'egresado'
+            ? '(podés usar tu correo personal. Será tu usuario en AWS Academy)'
+            : '(el institucional, @terciariourquiza.edu.ar. Será tu usuario en AWS Academy)';
+    }
+    $('rol').addEventListener('change', actualizarRol);
+
     $('form').addEventListener('submit', (ev) => {
         ev.preventDefault();
         const msg = $('msg');
         msg.className = 'msg err';
         const nombre = $('nombre').value.trim().replace(/\s+/g, ' ');
         const correo = $('correo').value.trim().toLowerCase();
+        const rol = $('rol').value;
         const carrera = $('carrera').value;
         const anio = $('anio').value;
         if (nombre.length < 4) { msg.textContent = 'Completá tu apellido y nombre.'; return; }
-        if (!carrera || !anio) { msg.textContent = 'Elegí tu carrera y el año que cursás (o si egresaste).'; return; }
-        const egresado = anio === 'Egresado';
+        if (!rol) { msg.textContent = 'Elegí si sos estudiante, egresado/a o docente.'; return; }
+        if (!carrera) { msg.textContent = 'Elegí tu carrera.'; return; }
+        if (rol === 'estudiante' && !anio) { msg.textContent = 'Elegí el año que cursás.'; return; }
         const institucional = /^[^\s@]+@terciariourquiza\.edu\.ar$/.test(correo);
-        if (!egresado && !institucional) {
-            msg.textContent = 'El correo tiene que ser el institucional (@terciariourquiza.edu.ar). Si egresaste, elegí "Egresado" y usá tu correo personal.'; return;
+        if (rol !== 'egresado' && !institucional) {
+            msg.textContent = rol === 'docente'
+                ? 'Como docente, usá tu correo institucional (@terciariourquiza.edu.ar).'
+                : 'El correo tiene que ser el institucional (@terciariourquiza.edu.ar). Si egresaste, elegí "Egresado/a" y usá tu correo personal.';
+            return;
         }
-        if (egresado && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+        if (rol === 'egresado' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
             msg.textContent = 'Revisá el correo: no parece una dirección válida.'; return;
         }
         if (!$('mayor').checked) { msg.textContent = 'AWS Academy pide tener 18 años o más.'; return; }
         if (!$('entiendo').checked) { msg.textContent = 'Marcá que leíste las condiciones del curso.'; return; }
         msg.textContent = '';
 
-        const asunto = `[${ID}] ${nombre} – ${carrera} ${anio}`;
+        const detalle = rol === 'estudiante' ? anio : `(${ROLES[rol]})`;
+        const asunto = `[${ID}] ${nombre} – ${carrera} ${detalle}`;
         const cuerpo = [
             'Inscripción a AWS Academy Cloud Foundations (3/12/2026 – 26/2/2027)',
             `Apellido y nombre: ${nombre}`,
             `${institucional ? 'Correo institucional' : 'Correo personal'}: ${correo}`,
             `Carrera: ${carrera}`,
-            `Año: ${anio}`,
+            `Sos: ${ROLES[rol]}`,
+            ...(rol === 'estudiante' ? [`Año: ${anio}`] : []),
             'Tengo 18 años o más y leí las condiciones del curso.',
             '',
         ].join('\n');
