@@ -1,4 +1,4 @@
-// Índice de recursos del sitio. Última actualización: 2026-10-16 ART.
+// Índice de recursos del sitio. Última actualización: 2026-11-10 ART.
 // Cada entrada agrega una carpeta al índice del terciario, terciario/index.html
 // (ver render-recursos.js). Para publicar un recurso nuevo: agregar un objeto acá,
 // no tocar terciario/index.html.
@@ -7,6 +7,14 @@
 //   'infraestructura' | 'desarrollo' | 'redes'
 // archivo (opcional): página dentro de la carpeta, si no es index.html
 const RECURSOS = [
+    {
+        titulo: "Cloud Foundations en verano (inscripción)",
+        categoria: "infraestructura",
+        carpeta: "cloud-foundations",
+        icono: "☁️",
+        descripcion: "Curso oficial AWS Academy Cloud Foundations, gratis, en línea y a tu ritmo, del 3/12/2026 al 26/2/2027, para estudiantes de cualquier carrera (18+). Da la insignia AWS Academy Graduate y prepara para Cloud Practitioner. Inscripción hasta el 30/11.",
+        fecha: "2026-11-10"
+    },
     {
         titulo: "Casos y cuestionarios",
         categoria: "redes",

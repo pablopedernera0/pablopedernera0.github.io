@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Foundations en verano</title>
+    <meta name="description" content="Curso AWS Academy Cloud Foundations para estudiantes del Terciario Urquiza, a su ritmo, del 3 de diciembre de 2026 al 26 de febrero de 2027. Inscripción.">
+    <style>
+        :root {
+            --bg1: #131a22; --bg2: #232f3e; --panel: rgba(255,255,255,0.05); --line: rgba(255,255,255,0.12);
+            --ink: #e8edf2; --muted: #b8c4d0; --naranja: #ff9900; --celeste: #7dd3fc; --ok: #86efac; --err: #fca5a5;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { background: var(--bg1); }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg1), var(--bg2)) fixed;
+            color: var(--ink); line-height: 1.6;
+        }
+        main { max-width: 860px; margin: 0 auto; padding: 2.5rem 16px 4rem; }
+        a { color: var(--celeste); }
+        .eyebrow {
+            display: inline-block; background: rgba(255,153,0,0.15); border: 1px solid var(--naranja);
+            color: var(--naranja); padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.8rem;
+            letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1rem;
+        }
+        h1 { font-size: 2.3rem; line-height: 1.2; color: var(--naranja); margin-bottom: 0.8rem; }
+        h2 { font-size: 1.45rem; color: var(--naranja); margin: 2.4rem 0 0.8rem; }
+        p, li { color: var(--muted); }
+        p + p { margin-top: 0.7rem; }
+        strong { color: #fff; }
+        .intro { font-size: 1.1rem; }
+        ul, ol { padding-left: 1.3rem; }
+        li { margin: 0.35rem 0; }
+
+        .datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; margin: 1.6rem 0; }
+        .dato { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 0.9rem 1rem; }
+        .dato .k { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--naranja); }
+        .dato .v { color: #fff; font-weight: 600; font-size: 1.05rem; }
+        .dato .s { font-size: 0.85rem; color: var(--muted); }
+
+        .cta {
+            display: inline-block; background: var(--naranja); color: #131a22; font-weight: 700;
+            padding: 0.7rem 1.4rem; border-radius: 8px; text-decoration: none; margin-top: 0.4rem;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.95rem; }
+        th, td { text-align: left; padding: 0.55rem 0.7rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+        th { color: var(--naranja); font-weight: 600; }
+        td { color: var(--muted); }
+        td:first-child { color: #fff; white-space: nowrap; }
+
+        .aviso {
+            border-left: 4px solid var(--naranja); background: rgba(255,153,0,0.08);
+            padding: 0.9rem 1.1rem; border-radius: 0 8px 8px 0; margin: 1rem 0;
+        }
+
+        form, .envio { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1.4rem; margin-top: 1rem; }
+        label { display: block; color: #fff; font-weight: 600; margin: 1rem 0 0.3rem; }
+        label:first-child { margin-top: 0; }
+        .ayuda { font-size: 0.85rem; color: var(--muted); font-weight: 400; }
+        input[type=text], input[type=email], select, textarea {
+            width: 100%; padding: 0.6rem 0.7rem; border-radius: 6px; border: 1px solid var(--line);
+            background: rgba(0,0,0,0.25); color: var(--ink); font: inherit;
+        }
+        textarea { font-family: Consolas, 'Courier New', monospace; font-size: 0.85rem; min-height: 9rem; }
+        .fila { display: grid; grid-template-columns: 2fr 1fr; gap: 0.8rem; }
+        .check { display: flex; gap: 0.6rem; align-items: flex-start; font-weight: 400; color: var(--muted); margin-top: 0.9rem; }
+        .check input { margin-top: 0.35rem; flex: none; }
+        button, .boton {
+            display: inline-block; background: var(--naranja); color: #131a22; border: 0; font: inherit; font-weight: 700;
+            padding: 0.65rem 1.3rem; border-radius: 8px; cursor: pointer; text-decoration: none; margin: 1.2rem 0.4rem 0 0;
+        }
+        .boton.sec, button.sec { background: transparent; color: var(--naranja); border: 1px solid var(--naranja); }
+        .msg { margin-top: 0.8rem; font-size: 0.9rem; }
+        .msg.err { color: var(--err); }
+        .msg.ok { color: var(--ok); }
+        .hidden { display: none; }
+        footer { margin-top: 3rem; font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 1rem; }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .fila { grid-template-columns: 1fr; }
+            td:first-child { white-space: normal; }
+        }
+    </style>
+</head>
+<body>
+<main>
+    <span class="eyebrow">AWS Academy · Formación abierta · Verano 2026–2027</span>
+    <h1>Cloud Foundations en verano</h1>
+    <p class="intro">
+        <strong>AWS Academy Cloud Foundations</strong> es el curso introductorio oficial de AWS:
+        qué es la nube, los servicios principales de AWS, seguridad, arquitectura y precios. Lo
+        abrimos para estudiantes del Terciario Urquiza de cualquier carrera. Es <strong>gratis</strong>,
+        se cursa <strong>en línea y a tu ritmo</strong>, y si aprobás te llevás la insignia oficial
+        <strong>AWS Academy Graduate</strong>.
+    </p>
+
+    <div class="datos">
+        <div class="dato"><div class="k">Cursada</div><div class="v">3/12/2026 – 26/2/2027</div><div class="s">a tu ritmo</div></div>
+        <div class="dato"><div class="k">Dedicación</div><div class="v">≈ 20 h en total</div><div class="s">menos de 2 h por semana (estimado)</div></div>
+        <div class="dato"><div class="k">Encuentros online</div><div class="v">2</div><div class="s">jueves 3/12 y jueves 18/2</div></div>
+        <div class="dato"><div class="k">Inscripción</div><div class="v">hasta el lunes 30/11</div><div class="s">con el formulario de abajo</div></div>
+    </div>
+
+    <a class="cta" href="#inscripcion">Inscribirme</a>
+
+    <h2>Qué te llevás</h2>
+    <ul>
+        <li><strong>La insignia AWS Academy Graduate – Cloud Foundations</strong> en Credly, para
+            sumar al CV y a LinkedIn. Se obtiene con al menos el <strong>70 %</strong> en las
+            evaluaciones del curso y se libera <strong>en la fecha de fin, el 26/2/2027</strong>.</li>
+        <li><strong>Práctica en AWS real</strong>: los laboratorios se hacen en la consola de AWS,
+            dentro de un entorno de AWS Academy. <strong>No hace falta tarjeta de crédito</strong>
+            ni crear una cuenta de AWS.</li>
+        <li><strong>La base para la certificación AWS Certified Cloud Practitioner</strong>
+            (CLF-C02). Ojo: el examen de certificación es aparte y pago, y se rinde por tu cuenta.
+            El curso no lo incluye.</li>
+    </ul>
+
+    <h2>Cómo se cursa</h2>
+    <p>
+        El curso está en el Canvas de AWS Academy: unos diez módulos, cada uno con su material,
+        laboratorios guiados y una evaluación que <strong>se corrige sola</strong>. No hay entregas
+        para el profesor. Vos manejás tus tiempos dentro de las fechas de la cursada.
+    </p>
+
+    <table>
+        <thead><tr><th>Cuándo</th><th>Qué</th></tr></thead>
+        <tbody>
+            <tr><td>Hasta lun 30/11</td><td>Inscripción con el formulario de esta página.</td></tr>
+            <tr><td>1 y 2/12</td><td>Te llega el mail de AWS Academy con la invitación al curso (asunto <em>"Invitación al curso"</em>; puede tardar unos minutos y caer en spam).</td></tr>
+            <tr><td>Jue 3/12</td><td><strong>Encuentro online de arranque:</strong> cómo entrar, cómo se cursa, cómo se usan los laboratorios y qué pide la insignia. El link y la hora llegan por mail.</td></tr>
+            <tr><td>Diciembre</td><td>Ritmo sugerido: los primeros módulos antes de las fiestas.</td></tr>
+            <tr><td>Enero</td><td>Los módulos del medio.</td></tr>
+            <tr><td>Jue 18/2</td><td><strong>Encuentro online de consultas:</strong> dudas del curso y cómo seguir hacia Cloud Practitioner.</td></tr>
+            <tr><td>Vie 26/2</td><td><strong>Fin de la cursada.</strong> Tener todas las evaluaciones hechas. Se libera la insignia.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Requisitos</h2>
+    <ul>
+        <li>Ser estudiante del Terciario Urquiza (cualquier carrera y año).</li>
+        <li>Tener <strong>18 años o más</strong>: lo exige AWS Academy.</li>
+        <li>Inscribirte con tu <strong>correo institucional</strong> (<code>@terciariourquiza.edu.ar</code>).
+            Ese correo pasa a ser tu usuario de AWS Academy y no se puede cambiar. Si ya tenés cuenta
+            (por ejemplo, del Learner Lab), usá el mismo correo: el curso aparece en la misma cuenta.</li>
+        <li>Una computadora con navegador. Los laboratorios no andan bien en el celular.</li>
+    </ul>
+
+    <div class="aviso">
+        <p><strong>Si en el curso ves "Active su oferta de AWS Skill Builder", no la respondas
+        todavía.</strong> Es una sola pregunta, se puede responder <strong>una sola vez</strong> y,
+        si decís que sí, los 12 meses de Skill Builder empiezan a correr ese día. Conviene
+        guardarla para cuando vayas a preparar la certificación. Consultalo en el encuentro.</p>
+    </div>
+
+    <h2 id="inscripcion">Inscripción</h2>
+    <p>
+        Completá los datos y tocá <strong>Preparar mail</strong>. Se arma un mail al profesor con tus
+        datos: lo mandás desde tu correo institucional. Con eso quedás anotado o anotada, y antes del
+        3/12 te llega la invitación de AWS Academy.
+    </p>
+
+    <form id="form" novalidate>
+        <div class="fila">
+            <div>
+                <label for="nombre">Apellido y nombre</label>
+                <input type="text" id="nombre" autocomplete="name" placeholder="Pérez, Ana">
+            </div>
+            <div>
+                <label for="carrera">Carrera</label>
+                <select id="carrera">
+                    <option value="">Elegí…</option>
+                    <option>Analista Funcional</option>
+                    <option>Desarrollo de Software</option>
+                    <option>Infraestructura de TI</option>
+                </select>
+            </div>
+        </div>
+        <div class="fila">
+            <div>
+                <label for="correo">Correo institucional <span class="ayuda">(será tu usuario en AWS Academy)</span></label>
+                <input type="email" id="correo" autocomplete="email" placeholder="apellido.nombre@terciariourquiza.edu.ar">
+            </div>
+            <div>
+                <label for="anio">Año que cursás</label>
+                <select id="anio">
+                    <option value="">Elegí…</option>
+                    <option>1.º</option>
+                    <option>2.º</option>
+                    <option>3.º</option>
+                    <option>Egresé en 2026</option>
+                </select>
+            </div>
+        </div>
+        <label class="check"><input type="checkbox" id="mayor"> Tengo 18 años o más.</label>
+        <label class="check"><input type="checkbox" id="entiendo"> Entiendo que es un curso a mi ritmo, que la
+            insignia pide el 70 % en las evaluaciones hechas antes del 26/2/2027 y que el examen de
+            certificación no está incluido.</label>
+        <button type="submit">Preparar mail</button>
+        <p id="msg" class="msg"></p>
+    </form>
+
+    <div id="envio" class="envio hidden">
+        <p class="msg ok">Listo. Mandá el mail <strong>desde tu correo institucional</strong>:</p>
+        <a id="mail-gmail" class="boton" target="_blank" rel="noopener">Abrir en Gmail</a>
+        <a id="mail-outlook" class="boton sec" target="_blank" rel="noopener">Abrir en Outlook</a>
+        <a id="mail-app" class="boton sec">Abrir en mi app de correo</a>
+        <p style="margin-top:1.2rem">Si ninguno abre, copiá estos datos en un mail nuevo:</p>
+        <label for="mail-para">Para</label>
+        <input type="text" id="mail-para" readonly>
+        <label for="mail-asunto">Asunto</label>
+        <input type="text" id="mail-asunto" readonly>
+        <label for="mail-cuerpo">Mensaje</label>
+        <textarea id="mail-cuerpo" readonly></textarea>
+        <button type="button" class="sec" id="copiar">Copiar mensaje</button>
+    </div>
+
+    <footer>
+        Prof. Pablo Pedernera · Terciario Urquiza · AWS Academy es un programa de Amazon Web
+        Services para instituciones educativas. Dudas: en el mismo mail de inscripción.
+    </footer>
+</main>
+
+<script>
+    const PARA = 'pedernera.pablo@terciariourquiza.edu.ar';
+    const ID = 'inscripcion-cloud-foundations-2026';
+    const $ = (id) => document.getElementById(id);
+
+    $('form').addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        const msg = $('msg');
+        msg.className = 'msg err';
+        const nombre = $('nombre').value.trim().replace(/\s+/g, ' ');
+        const correo = $('correo').value.trim().toLowerCase();
+        const carrera = $('carrera').value;
+        const anio = $('anio').value;
+        if (nombre.length < 4) { msg.textContent = 'Completá tu apellido y nombre.'; return; }
+        if (!/^[^\s@]+@terciariourquiza\.edu\.ar$/.test(correo)) {
+            msg.textContent = 'El correo tiene que ser el institucional (@terciariourquiza.edu.ar).'; return;
+        }
+        if (!carrera || !anio) { msg.textContent = 'Elegí tu carrera y el año que cursás.'; return; }
+        if (!$('mayor').checked) { msg.textContent = 'AWS Academy pide tener 18 años o más.'; return; }
+        if (!$('entiendo').checked) { msg.textContent = 'Marcá que leíste las condiciones del curso.'; return; }
+        msg.textContent = '';
+
+        const datos = { id: ID, nombre, correo, carrera, anio, fecha: new Date().toISOString() };
+        const asunto = `[${ID}] ${nombre} – ${carrera} ${anio}`;
+        const cuerpo = [
+            'Inscripción a AWS Academy Cloud Foundations (3/12/2026 – 26/2/2027)',
+            `Apellido y nombre: ${nombre}`,
+            `Correo institucional: ${correo}`,
+            `Carrera: ${carrera}`,
+            `Año: ${anio}`,
+            'Tengo 18 años o más y leí las condiciones del curso.',
+            '',
+            'DATOS: ' + JSON.stringify(datos).replace(/ /g, '\\u0020'),
+            '',
+        ].join('\n');
+        const q = (o) => Object.entries(o).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
+        $('mail-gmail').href = 'https://mail.google.com/mail/?' + q({ view: 'cm', fs: 1, to: PARA, su: asunto, body: cuerpo });
+        $('mail-outlook').href = 'https://outlook.live.com/mail/0/deeplink/compose?' + q({ to: PARA, subject: asunto, body: cuerpo });
+        $('mail-app').href = `mailto:${PARA}?` + q({ subject: asunto, body: cuerpo });
+        $('mail-para').value = PARA;
+        $('mail-asunto').value = asunto;
+        $('mail-cuerpo').value = cuerpo;
+        $('envio').classList.remove('hidden');
+        $('envio').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    $('copiar').addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText($('mail-cuerpo').value);
+            $('copiar').textContent = 'Copiado';
+        } catch (e) {
+            $('mail-cuerpo').select();
+        }
+    });
+</script>
+</body>
+</html>
