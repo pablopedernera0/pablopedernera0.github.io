@@ -1,0 +1,18 @@
+{
+  "v": 4,
+  "createdOnFiles": {"v": 1, "at": "2026-11-10T22:00:00Z"},
+  "lists": "css",
+  "title": "Cloud Foundations: encuentro de arranque",
+  "order": ["cover", "hoy", "que-es", "fechas", "entrar", "modulos", "ritmo", "demo", "labs", "insignia", "skill-builder", "despues", "consultas"],
+  "sections": {
+    "s1": {"description": "Qué es el curso y las fechas que importan", "start": "cover"},
+    "s2": {"description": "Entrar a AWS Academy y cómo se cursa", "start": "entrar"},
+    "s3": {"description": "Los laboratorios, mostrados en vivo", "start": "demo"},
+    "s4": {"description": "La insignia, Skill Builder y lo que viene después", "start": "insignia"}
+  },
+  "faces": {
+    "space-grotesk": {"family": "Space Grotesk", "href": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Inter:wght@400;600&display=swap"},
+    "inter": {"family": "Inter", "href": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Inter:wght@400;600&display=swap"}
+  },
+  "designSystems": []
+}

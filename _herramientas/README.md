@@ -21,6 +21,7 @@ los puede leer con la acción `read` del artifact) y volver a correr el script.
 |---|---|---|
 | `decks/requisitos-ultimo-momento` | `requisitos-ultimo-momento/slides.html` | https://claude.ai/artifact/57GXe1Y2ycUy9FiTyKy17H |
 | `decks/caso-costanera` | `caso-costanera-af/slides.html` | https://claude.ai/artifact/23ctvDgLsiGxPpT7dPCbo9 |
+| `decks/cloud-foundations-encuentro-1` | `cloud-foundations/encuentro-1/slides.html` | https://claude.ai/artifact/H7fnuGWkGSpmXcytXHKA9F |
 
 Los íconos y formas propias de las slides (`<x-icon>`, `<x-shape>`, `<x-connector>`) se
 traducen a SVG. Un ícono que no esté en `ICONOS` corta la conversión con un error que dice

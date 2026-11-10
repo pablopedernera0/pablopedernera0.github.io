@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Foundations: encuentro de arranque</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;family=Inter:wght@400;600&amp;display=swap">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; background: #0b0f14; overflow: hidden; }
+#escenario { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+#escenario > section { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; }
+#escenario > section:not(.activa) { display: none !important; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 0.35em 0.6em; border-bottom: 1px solid rgba(128, 128, 128, 0.35); vertical-align: top; }
+th { font-weight: 700; }
+#barra { position: fixed; right: 12px; bottom: 10px; font: 14px system-ui, sans-serif; color: #8b949e; display: flex; gap: 10px; align-items: center; }
+#barra button { background: #161b22; color: #c9d1d9; border: 1px solid #30363d; border-radius: 6px; padding: 4px 10px; cursor: pointer; font: inherit; }
+</style>
+</head>
+<body>
+<div id="escenario">
+<section id="cover" data-transition="fade" style="background:linear-gradient(135deg, #131a22, #232f3e);color:#e8edf2;font-family:Inter, Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#ff9900">AWS Academy · Formación abierta · Verano 2026–2027</p>
+<div style="display:flex;flex-direction:column;gap:32px">
+<h1 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:120px;font-weight:700;line-height:1.05;color:#ff9900">Cloud Foundations</h1>
+<p style="font-size:44px;line-height:1.3;color:#e8edf2">Encuentro de arranque</p>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:end">
+<p style="font-size:32px;color:#b8c4d0">Jueves 3 de diciembre de 2026</p>
+<p style="font-size:32px;color:#b8c4d0">Terciario Urquiza · Prof. Pablo Pedernera</p>
+</div>
+
+</section>
+<section id="hoy" data-transition="fade" style="background:#131a22;color:#e8edf2;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:64px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#ff9900">Hoy</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;color:#e8edf2">Cuatro cosas en 45 minutos</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#1d2733;border:1px solid #33414f;border-radius:16px;padding:40px">
+<p style="font-size:44px;font-weight:700;font-family:'Space Grotesk', Arial, sans-serif;color:#ff9900">1</p>
+<h3 style="font-size:44px;font-weight:600;color:#e8edf2">Qué es y cuándo</h3>
+<p style="font-size:32px;color:#b8c4d0">El curso, las fechas y el 26/2.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#1d2733;border:1px solid #33414f;border-radius:16px;padding:40px">
+<p style="font-size:44px;font-weight:700;font-family:'Space Grotesk', Arial, sans-serif;color:#ff9900">2</p>
+<h3 style="font-size:44px;font-weight:600;color:#e8edf2">Entrar y cursar</h3>
+<p style="font-size:32px;color:#b8c4d0">La cuenta, los módulos y el ritmo.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#1d2733;border:1px solid #33414f;border-radius:16px;padding:40px">
+<p style="font-size:44px;font-weight:700;font-family:'Space Grotesk', Arial, sans-serif;color:#ff9900">3</p>
+<h3 style="font-size:44px;font-weight:600;color:#e8edf2">Un laboratorio en vivo</h3>
+<p style="font-size:32px;color:#b8c4d0">Cómo se abre AWS real y cómo se cierra.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#1d2733;border:1px solid #33414f;border-radius:16px;padding:40px">
+<p style="font-size:44px;font-weight:700;font-family:'Space Grotesk', Arial, sans-serif;color:#ff9900">4</p>
+<h3 style="font-size:44px;font-weight:600;color:#e8edf2">La insignia y después</h3>
+<p style="font-size:32px;color:#b8c4d0">Qué pide, Skill Builder y Cloud Practitioner.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#8a99a8">Cloud Foundations · Verano 2026–2027</p>
+
+</section>
+<section id="que-es" data-transition="fade" style="background:#131a22;color:#e8edf2;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:64px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#ff9900">Qué es</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;color:#e8edf2">El curso introductorio oficial de AWS</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:24px;background:#1d2733;border:1px solid #33414f;border-top:6px solid #ff9900;border-radius:16px;padding:48px">
+<h3 style="font-size:44px;font-weight:600;color:#ff9900">Es</h3>
+<ul style="font-size:32px;line-height:1.4;color:#c9d3dd;display:flex;flex-direction:column;gap:16px">
+<li>Qué es la nube y los servicios principales de AWS</li>
+<li>Laboratorios en la consola de AWS real</li>
+<li>Gratis, en línea y a tu ritmo</li>
+<li>Con insignia oficial si aprobás</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:24px;background:#1d2733;border:1px solid #33414f;border-top:6px solid #7dd3fc;border-radius:16px;padding:48px">
+<h3 style="font-size:44px;font-weight:600;color:#7dd3fc">No es</h3>
+<ul style="font-size:32px;line-height:1.4;color:#c9d3dd;display:flex;flex-direction:column;gap:16px">
+<li>La certificación: el examen es aparte y pago</li>
+<li>Una cuenta de AWS propia: no pide tarjeta</li>
+<li>Una materia: no hay entregas ni notas del profesor</li>
+</ul>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#8a99a8">Cloud Foundations · Verano 2026–2027</p>
+
+</section>
+<section id="fechas" data-transition="fade" style="background:#131a22;color:#e8edf2;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:64px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#ff9900">Cuándo</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;color:#e8edf2">Tres fechas para agendar</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#1d2733;border:1px solid #33414f;border-radius:16px;padding:48px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;color:#e8edf2">3/12</p>
+<h3 style="font-size:32px;font-weight:600;color:#ff9900">Hoy</h3>
+<p style="font-size:32px;color:#b8c4d0">Arranca la cursada.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#1d2733;border:1px solid #33414f;border-radius:16px;padding:48px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;color:#e8edf2">18/2</p>
+<h3 style="font-size:32px;font-weight:600;color:#ff9900">Jueves</h3>
+<p style="font-size:32px;color:#b8c4d0">Encuentro de consultas, online.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#ff9900;border-radius:16px;padding:48px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;color:#131a22">26/2</p>
+<h3 style="font-size:32px;font-weight:600;color:#131a22">Viernes · límite</h3>
+<p style="font-size:32px;color:#131a22">Todo hecho. Ese día se libera la insignia.</p>
+</div>
+</div>
+<p style="font-size:32px;color:#b8c4d0">Entre medio no hay clases: cada uno avanza cuando puede.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#8a99a8">Cloud Foundations · Verano 2026–2027</p>
+
+</section>
+<section id="entrar" data-transition="fade" style="background:#f4f1ea;color:#131a22;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#9a5000">Entrar</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;color:#131a22">De la invitación al curso, en cuatro pasos</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:24px">
+<div style="display:flex;flex-direction:column;gap:16px;background:#fbfaf6;border:1px solid #d9d3c5;border-radius:16px;padding:36px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;color:#9a5000">1</p>
+<h3 style="font-size:32px;font-weight:600;color:#131a22">El mail</h3>
+<p style="font-size:24px;line-height:1.4;color:#4a5563">De notifications@instructure.com, con el nombre del curso en inglés. Mirá en spam.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#fbfaf6;border:1px solid #d9d3c5;border-radius:16px;padding:36px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;color:#9a5000">2</p>
+<h3 style="font-size:32px;font-weight:600;color:#131a22">La cuenta</h3>
+<p style="font-size:24px;line-height:1.4;color:#4a5563"><b>Create My Account</b> la primera vez. <b>I Have a Canvas Account</b> si ya entraste por el Learner Lab.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#fbfaf6;border:1px solid #d9d3c5;border-radius:16px;padding:36px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;color:#9a5000">3</p>
+<h3 style="font-size:32px;font-weight:600;color:#131a22">La zona horaria</h3>
+<p style="font-size:24px;line-height:1.4;color:#4a5563">Viene en UTC. Elegí <b>Buenos Aires</b> para ver bien las fechas.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#fbfaf6;border:1px solid #d9d3c5;border-radius:16px;padding:36px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;color:#9a5000">4</p>
+<h3 style="font-size:32px;font-weight:600;color:#131a22">Volver después</h3>
+<p style="font-size:24px;line-height:1.4;color:#4a5563">awsacademy.instructure.com, con tu correo institucional y tu contraseña.</p>
+</div>
+</div>
+<p style="font-size:32px;color:#4a5563">Tu usuario es el correo institucional y no se puede cambiar.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6b7280">Cloud Foundations · Verano 2026–2027</p>
+
+</section>
+<section id="modulos" data-transition="fade" style="background:#f4f1ea;color:#131a22;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#9a5000">Cómo está armado</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;color:#131a22">Diez módulos, cada uno con su evaluación</h2>
+</div>
+<div style="display:flex;gap:48px">
+<table style="flex:1;font-size:28px;color:#131a22">
+<tr><th style="width:12%;color:#9a5000">N.º</th><th style="width:88%;color:#9a5000">Módulo</th></tr>
+<tr><td>1</td><td>Conceptos de la nube</td></tr>
+<tr><td>2</td><td>Economía de la nube y facturación</td></tr>
+<tr><td>3</td><td>Infraestructura global de AWS</td></tr>
+<tr><td>4</td><td>Seguridad en la nube</td></tr>
+<tr><td>5</td><td>Redes y entrega de contenido</td></tr>
+</table>
+<table style="flex:1;font-size:28px;color:#131a22">
+<tr><th style="width:12%;color:#9a5000">N.º</th><th style="width:88%;color:#9a5000">Módulo</th></tr>
+<tr><td>6</td><td>Cómputo</td></tr>
+<tr><td>7</td><td>Almacenamiento</td></tr>
+<tr><td>8</td><td>Bases de datos</td></tr>
+<tr><td>9</td><td>Arquitectura en la nube</td></tr>
+<tr><td>10</td><td>Escalado automático y monitoreo</td></tr>
+</table>
+</div>
+<p style="font-size:32px;color:#4a5563">Cada módulo trae material, laboratorios guiados y una evaluación que se corrige sola.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6b7280">Cloud Foundations · Verano 2026–2027</p>
+
+</section>
+<section id="ritmo" data-transition="fade" style="background:#f4f1ea;color:#131a22;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#9a5000">Ritmo sugerido</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;color:#131a22">Menos de dos horas por semana</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#fbfaf6;border:1px solid #d9d3c5;border-top:6px solid #9a5000;border-radius:16px;padding:44px">
+<h3 style="font-size:44px;font-weight:600;color:#131a22">Diciembre</h3>
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;color:#9a5000">1 a 4</p>
+<p style="font-size:28px;line-height:1.4;color:#4a5563">Los conceptuales, antes de las fiestas.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#fbfaf6;border:1px solid #d9d3c5;border-top:6px solid #9a5000;border-radius:16px;padding:44px">
+<h3 style="font-size:44px;font-weight:600;color:#131a22">Enero</h3>
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;color:#9a5000">5 a 8</p>
+<p style="font-size:28px;line-height:1.4;color:#4a5563">Redes, cómputo, almacenamiento y bases de datos.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#fbfaf6;border:1px solid #d9d3c5;border-top:6px solid #9a5000;border-radius:16px;padding:44px">
+<h3 style="font-size:44px;font-weight:600;color:#131a22">Febrero</h3>
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;color:#9a5000">9 y 10</p>
+<p style="font-size:28px;line-height:1.4;color:#4a5563">Arquitectura, escalado y lo que haya quedado.</p>
+</div>
+</div>
+<p style="font-size:32px;color:#4a5563">Unas 20 horas en total. Es una sugerencia: podés ir más rápido.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6b7280">Cloud Foundations · Verano 2026–2027</p>
+
+</section>
+<section id="demo" data-transition="fade" style="background:#ff9900;color:#131a22;font-family:Inter, Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#131a22">En vivo</p>
+<h1 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:120px;font-weight:700;line-height:1.05;color:#131a22">Abramos un laboratorio</h1>
+<p style="font-size:44px;line-height:1.3;color:#2a1a00">AWS real, desde el navegador, sin cuenta propia.</p>
+
+</section>
+<section id="labs" data-transition="fade" style="background:#131a22;color:#e8edf2;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#ff9900">Los laboratorios</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;color:#e8edf2">Se abren, se usan y se cierran</h2>
+</div>
+<div style="display:flex;gap:24px;align-items:stretch">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#1d2733;border:1px solid #33414f;border-radius:16px;padding:36px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;font-weight:700;color:#ff9900">Start Lab</p>
+<p style="font-size:28px;line-height:1.4;color:#b8c4d0">Arranca el entorno.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#1d2733;border:1px solid #33414f;border-radius:16px;padding:36px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;font-weight:700;color:#86efac">Punto verde</p>
+<p style="font-size:28px;line-height:1.4;color:#b8c4d0">Esperar. La primera vez tarda unos minutos.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#1d2733;border:1px solid #33414f;border-radius:16px;padding:36px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;font-weight:700;color:#7dd3fc">AWS</p>
+<p style="font-size:28px;line-height:1.4;color:#b8c4d0">Abre la consola. Seguís la guía del laboratorio.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#1d2733;border:1px solid #33414f;border-radius:16px;padding:36px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;font-weight:700;color:#ff9900">End Lab</p>
+<p style="font-size:28px;line-height:1.4;color:#b8c4d0">Al terminar, siempre.</p>
+</div>
+</div>
+<ul style="font-size:32px;line-height:1.4;color:#c9d3dd;display:flex;flex-direction:column;gap:16px">
+<li>Desde una computadora: en el celular no andan bien.</li>
+<li>La consola sale en el idioma del navegador. La guía nombra los botones en inglés: buscá el equivalente.</li>
+</ul>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#8a99a8">Cloud Foundations · Verano 2026–2027</p>
+
+</section>
+<section id="insignia" data-transition="fade" style="background:#f4f1ea;color:#131a22;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#9a5000">La insignia</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;color:#131a22">AWS Academy Graduate, en Credly</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#fbfaf6;border:1px solid #d9d3c5;border-radius:16px;padding:48px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:120px;font-weight:700;line-height:1;color:#9a5000">70 %</p>
+<p style="font-size:32px;line-height:1.4;color:#4a5563">Como mínimo, en las evaluaciones del curso.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#fbfaf6;border:1px solid #d9d3c5;border-radius:16px;padding:48px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:120px;font-weight:700;line-height:1;color:#9a5000">26/2</p>
+<p style="font-size:32px;line-height:1.4;color:#4a5563">Se libera ese día, para todos los que aprobaron.</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:32px;line-height:1.4;color:#131a22">Llega al correo institucional. <b>Sumá tu correo personal en Credly</b> para no perderla si dejás de tener el del Terciario.</p>
+<p style="font-size:32px;line-height:1.4;color:#4a5563">Sirve para el CV y para LinkedIn.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6b7280">Cloud Foundations · Verano 2026–2027</p>
+
+</section>
+<section id="skill-builder" data-transition="fade" style="background:#131a22;color:#e8edf2;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;align-items:center;gap:32px">
+<svg viewBox="0 0 24 24" fill="none" stroke="#ff9900" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;width:96px;height:96px" aria-label="Warning"><path d="M12 3 2 21h20z"/><path d="M12 10v5M12 18v.01"/></svg>
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#ff9900">Ojo con esto</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;color:#e8edf2">“Active su oferta de AWS Skill Builder”</h2>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:24px;background:#1d2733;border:2px solid #ff9900;border-radius:16px;padding:56px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;color:#ff9900">Todavía no la respondas.</p>
+<ul style="font-size:32px;line-height:1.4;color:#c9d3dd;display:flex;flex-direction:column;gap:16px">
+<li>Se responde <b>una sola vez</b>.</li>
+<li>Si decís que sí, los <b>12 meses</b> de Skill Builder empiezan a correr ese día.</li>
+<li>Guardala para cuando vayas a preparar la certificación.</li>
+</ul>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#8a99a8">Cloud Foundations · Verano 2026–2027</p>
+
+</section>
+<section id="despues" data-transition="fade" style="background:#f4f1ea;color:#131a22;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#9a5000">Después</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;color:#131a22">El paso siguiente: AWS Certified Cloud Practitioner</h2>
+</div>
+<table style="font-size:32px;color:#131a22">
+<tr><th style="width:30%;color:#9a5000">Qué</th><th style="width:70%;color:#9a5000">Cómo es</th></tr>
+<tr><td>Código</td><td>CLF-C02</td></tr>
+<tr><td>Examen</td><td>65 preguntas, 90 minutos, en español</td></tr>
+<tr><td>Dónde</td><td>En línea desde tu casa, con supervisión, o en un centro Pearson VUE</td></tr>
+<tr><td>Precio</td><td>USD 100 de lista, más impuestos. Lo pagás vos</td></tr>
+<tr><td>Vale</td><td>3 años</td></tr>
+</table>
+<p style="font-size:32px;color:#4a5563">Este curso es la base. La certificación es aparte y se rinde por tu cuenta.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6b7280">Cloud Foundations · Verano 2026–2027</p>
+
+</section>
+<section id="consultas" data-transition="fade" style="background:linear-gradient(135deg, #131a22, #232f3e);color:#e8edf2;font-family:Inter, Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#ff9900">Hasta el 26/2</p>
+<div style="display:flex;flex-direction:column;gap:32px">
+<h1 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:120px;font-weight:700;line-height:1.05;color:#ff9900">¿Preguntas?</h1>
+<p style="font-size:44px;line-height:1.3;color:#e8edf2">Dudas durante la cursada: por mail al profesor.<br>Lo que se repita va al encuentro del jueves 18/2.</p>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:end">
+<p style="font-size:32px;color:#b8c4d0">Las diapositivas te llegan por mail.</p>
+<p style="font-size:32px;color:#b8c4d0">pablopedernera0.github.io/cloud-foundations</p>
+</div>
+
+</section>
+</div>
+<div id="barra"><button id="ant" aria-label="Anterior">←</button><span id="num"></span><button id="sig" aria-label="Siguiente">→</button><button id="full" title="Pantalla completa (F)">Pantalla completa</button></div>
+<script>
+const slides = [...document.querySelectorAll('#escenario > section')];
+let i = Math.max(0, Math.min(slides.length - 1, (parseInt(location.hash.slice(1)) || 1) - 1));
+function ajustar() {
+  const e = document.getElementById('escenario');
+  const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+  e.style.transform = `translate(${(innerWidth - 1920 * s) / 2}px, ${(innerHeight - 1080 * s) / 2}px) scale(${s})`;
+}
+function ir(n) {
+  i = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((s, k) => s.classList.toggle('activa', k === i));
+  document.getElementById('num').textContent = `${i + 1} / ${slides.length}`;
+  history.replaceState(null, '', '#' + (i + 1));
+}
+function pantalla() { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}); }
+addEventListener('keydown', (e) => {
+  if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); ir(i + 1); }
+  else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); ir(i - 1); }
+  else if (e.key === 'Home') ir(0);
+  else if (e.key === 'End') ir(slides.length - 1);
+  else if (e.key === 'f' || e.key === 'F') pantalla();
+});
+document.getElementById('ant').onclick = () => ir(i - 1);
+document.getElementById('sig').onclick = () => ir(i + 1);
+document.getElementById('full').onclick = pantalla;
+document.getElementById('escenario').addEventListener('click', (e) => { if (!e.target.closest('a')) ir(i + 1); });
+addEventListener('resize', ajustar);
+ajustar(); ir(i);
+</script>
+</body>
+</html>
