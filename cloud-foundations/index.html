@@ -144,9 +144,9 @@
     <ul>
         <li>Ser estudiante, egresado o docente del Terciario Urquiza (cualquier carrera y año).</li>
         <li>Tener <strong>18 años o más</strong>: lo exige AWS Academy.</li>
-        <li>Inscribirte con tu <strong>correo institucional</strong> (<code>@terciariourquiza.edu.ar</code>).
-            Los docentes también usan el institucional.
-            <strong>Si egresaste, usá tu correo personal</strong>: el institucional puede darse de baja.
+        <li>Inscribirte con un <strong>correo</strong> al que tengas acceso, institucional
+            (<code>@terciariourquiza.edu.ar</code>) o personal. Si egresaste, el institucional puede darse de baja,
+            así que conviene usar el personal.
             Ese correo pasa a ser tu usuario de AWS Academy y no se puede cambiar. Si ya tenés cuenta
             (por ejemplo, del Learner Lab), usá el mismo correo: el curso aparece en la misma cuenta.</li>
         <li>Una computadora con navegador. Los laboratorios no andan bien en el celular.</li>
@@ -204,8 +204,8 @@
             </div>
         </div>
         <div>
-            <label for="correo">Correo <span class="ayuda" id="ayuda-correo">(el institucional, @terciariourquiza.edu.ar. Será tu usuario en AWS Academy)</span></label>
-            <input type="email" id="correo" autocomplete="email" placeholder="tu-dni@terciariourquiza.edu.ar">
+            <label for="correo">Correo <span class="ayuda">(institucional o personal. Será tu usuario en AWS Academy)</span></label>
+            <input type="email" id="correo" autocomplete="email" placeholder="nombre@correo.com">
         </div>
         <label class="check"><input type="checkbox" id="mayor"> Tengo 18 años o más.</label>
         <label class="check"><input type="checkbox" id="entiendo"> Entiendo que es un curso a mi ritmo, que la
@@ -243,13 +243,10 @@
 
     const ROLES = { estudiante: 'Estudiante', egresado: 'Egresado/a', docente: 'Docente' };
 
-    // Según el rol: el año solo aplica a estudiantes y el correo cambia de requisito.
+    // El año solo aplica a estudiantes.
     function actualizarRol() {
         const rol = $('rol').value;
         $('bloque-anio').classList.toggle('hidden', rol === 'egresado' || rol === 'docente');
-        $('ayuda-correo').textContent = rol === 'egresado'
-            ? '(podés usar tu correo personal. Será tu usuario en AWS Academy)'
-            : '(el institucional, @terciariourquiza.edu.ar. Será tu usuario en AWS Academy)';
     }
     $('rol').addEventListener('change', actualizarRol);
 
@@ -267,13 +264,7 @@
         if (!carrera) { msg.textContent = 'Elegí tu carrera.'; return; }
         if (rol === 'estudiante' && !anio) { msg.textContent = 'Elegí el año que cursás.'; return; }
         const institucional = /^[^\s@]+@terciariourquiza\.edu\.ar$/.test(correo);
-        if (rol !== 'egresado' && !institucional) {
-            msg.textContent = rol === 'docente'
-                ? 'Como docente, usá tu correo institucional (@terciariourquiza.edu.ar).'
-                : 'El correo tiene que ser el institucional (@terciariourquiza.edu.ar). Si egresaste, elegí "Egresado/a" y usá tu correo personal.';
-            return;
-        }
-        if (rol === 'egresado' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
             msg.textContent = 'Revisá el correo: no parece una dirección válida.'; return;
         }
         if (!$('mayor').checked) { msg.textContent = 'AWS Academy pide tener 18 años o más.'; return; }
