@@ -18,7 +18,7 @@ varios.
 - `index.html` (raíz): portada neutra con dos entradas, `terciario/` y `notas/`. Reenvía los
   deep links viejos (`/#infraestructura`, `/#desarrollo`, `/#redes`) a `terciario/`.
 - `terciario/index.html`: índice de recursos del terciario. Se arma desde
-  `js/recursos-data.js`; para publicar un recurso se agrega una entrada ahí. Las carpetas de
+  `js/recursos-data.js` (materias, tipos y recursos; cada recurso puede ir en varias materias). Para publicar un recurso se agrega una entrada ahí; el HTML no se toca. Las carpetas de
   los recursos siguen en la raíz (no se mueven: hay links en el Classroom que apuntan a ellas).
 - `notas/`: textos propios, una carpeta por nota, y una entrada a mano en `notas/index.html`.
   Comparten `css/lectura.css` con la portada.

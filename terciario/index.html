@@ -6,96 +6,66 @@
     <title>Recursos de Clases - Prof. Pablo Pedernera</title>
     <link rel="stylesheet" href="../css/styles.css">
 </head>
+<!-- Todo el contenido sale de js/recursos-data.js (materias, tipos y recursos).
+     Para publicar algo nuevo se edita ese archivo, no este. -->
 <body data-base="../">
 <header class="header">
     <div class="container">
-        <div class="header-content">
-            <h1>Recursos de Clases</h1>
-            <p class="subtitle">Material educativo y recursos para estudiantes</p>
-            <div class="institution">Terciario Urquiza</div>
-        </div>
+        <a class="volver" href="../">← Pablo Pedernera</a>
+        <h1>Recursos de Clases</h1>
+        <p class="subtitle">Material de las materias que dicto en el Terciario Urquiza: clases, guías, prácticas y casos.</p>
     </div>
 </header>
 
-<nav class="nav">
+<div class="toolbar">
     <div class="container">
-        <div class="nav-container">
-            <ul class="nav-links">
-                <li><a href="#inicio">Inicio</a></li>
-                <li><a href="#infraestructura">Infraestructura de Redes</a></li>
-                <li><a href="#desarrollo">Desarrollo Web</a></li>
-                <li><a href="#redes">Redes y Comunicaciones</a></li>
-                <li><a href="#contacto">Contacto</a></li>
-            </ul>
-        </div>
+        <label class="buscador">
+            <span class="visually-hidden">Buscar recursos</span>
+            <input type="search" id="buscar" placeholder="Buscar: AWS, SQL, EIDAS, firewall…" autocomplete="off">
+        </label>
+        <div class="filtros" role="group" aria-label="Filtrar por materia" id="filtro-materias"></div>
+        <div class="filtros filtros-tipo" role="group" aria-label="Filtrar por tipo" id="filtro-tipos"></div>
     </div>
-</nav>
+</div>
 
 <main class="main">
     <div class="container">
-        <section id="inicio" class="intro">
-            <h2>Bienvenidos</h2>
-            <p>En este sitio encontrarás todos los recursos, materiales y contenidos de las materias que dicto.
-                Mantente actualizado con las últimas clases, ejercicios prácticos, bibliografía recomendada y proyectos.</p>
+        <section id="destacados" class="bloque" hidden>
+            <h2 class="bloque-titulo">Destacado</h2>
+            <div class="grilla" id="lista-destacados"></div>
         </section>
 
-        <section class="courses-grid">
-            <div class="course-card" id="infraestructura">
-                <div class="course-header">
-                    <h3>Infraestructura de Redes</h3>
-                    <span class="course-type">ITI</span>
-                </div>
-                <div class="course-content">
-                    <div class="resources-list" data-categoria="infraestructura"></div>
-                </div>
+        <section class="bloque">
+            <div class="bloque-cabecera">
+                <h2 class="bloque-titulo" id="titulo-lista">Recursos</h2>
+                <span class="contador" id="contador" aria-live="polite"></span>
             </div>
-
-            <div class="course-card" id="desarrollo">
-                <div class="course-header">
-                    <h3>Desarrollo de Sistemas Web</h3>
-                    <span class="course-type">AF</span>
-                </div>
-                <div class="course-content">
-                    <div class="resources-list" data-categoria="desarrollo"></div>
-                </div>
-            </div>
-
-            <div class="course-card" id="redes">
-                <div class="course-header">
-                    <h3>Redes y Comunicaciones</h3>
-                    <span class="course-type">AF</span>
-                </div>
-                <div class="course-content">
-                    <div class="resources-list" data-categoria="redes"></div>
-                </div>
+            <div class="grilla" id="lista"></div>
+            <div class="vacio" id="vacio" hidden>
+                <p>No hay recursos que coincidan con los filtros.</p>
+                <button type="button" class="boton-limpiar" id="limpiar">Ver todo</button>
             </div>
         </section>
+
+        <details class="bloque archivo" id="archivo" hidden>
+            <summary>
+                <span class="bloque-titulo">Archivo: ciclos anteriores</span>
+                <span class="contador" id="contador-archivo"></span>
+            </summary>
+            <div class="grilla" id="lista-archivo"></div>
+        </details>
     </div>
 </main>
 
 <footer class="footer" id="contacto">
     <div class="container">
-        <div class="footer-content">
-            <h4>Profesor Pablo Pedernera</h4>
-            <div class="contact-info">
-                <div class="contact-item">
-                    <span>🏫</span>
-                    <span>Terciario Urquiza</span>
-                </div>
-                <div class="contact-item">
-                    <span>📧</span>
-                    <span>Contacto: pedernera.pablo@terciariourquiza.edu.ar</span>
-                </div>
-            </div>
-            <p style="opacity: 0.8; margin-top: 1rem;">
-                © 2025 - Material educativo para uso académico
-            </p>
-        </div>
+        <p><strong>Prof. Pablo Pedernera</strong> · Terciario Urquiza</p>
+        <p>Contacto: pedernera.pablo@terciariourquiza.edu.ar</p>
+        <p class="footer-nota">© <span id="anio">2026</span> · Material educativo para uso académico</p>
     </div>
 </footer>
 
 <script src="../js/recursos-data.js"></script>
 <script src="../js/render-recursos.js"></script>
-<script src="../js/functions.js"></script>
 </body>
 </html>
