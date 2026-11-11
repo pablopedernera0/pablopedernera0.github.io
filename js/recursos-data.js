@@ -46,7 +46,7 @@ const RECURSOS = [
         destacadoHasta: "2026-11-30",
         carpeta: "cloud-foundations",
         icono: "☁️",
-        descripcion: "Curso oficial AWS Academy Cloud Foundations, gratis, en línea y a tu ritmo, del 3/12/2026 al 26/2/2027, para estudiantes y egresados de cualquier carrera (18+). Da la insignia AWS Academy Graduate y prepara para Cloud Practitioner. Inscripción hasta el 30/11.",
+        descripcion: "Curso oficial AWS Academy Cloud Foundations, gratis, en línea y a tu ritmo, del 3/12/2026 al 26/2/2027, para estudiantes, egresados y docentes de cualquier carrera (18+). Da la insignia AWS Academy Graduate y prepara para Cloud Practitioner. Inscripción hasta el 30/11.",
         fecha: "2026-11-10"
     },
     {
