@@ -6,7 +6,7 @@ portada. También aloja la versión publicada de la guía docente del hilo condu
 y páginas de referencia operativa del docente (ej. `eidas-cheatsheet`), no solo tutoriales
 para estudiantes.
 
-**Antes de arrancar, leer también** `~/trabajos/pablo/terciario-urquiza/contexto-docente/CONTEXTO.md`
+**Antes de arrancar, leer también** `~/personal/urquiza/terciario-urquiza/contexto-docente/CONTEXTO.md`
 (repo privado `pablopedernera0/contexto-docente`) — contexto que cruza este repo con
 `la-cajonera`, `sistema-eidas`, `sistema-eidas-datos` y `hilo-conductor-redes-ataques`
 (cuentas de GitHub, incidente Killercoda, hábito de dos máquinas). La memoria de Claude
