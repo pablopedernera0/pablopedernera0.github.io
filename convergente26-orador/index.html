@@ -179,7 +179,7 @@
     <p><span class="gesto">→ 2</span> <b>La IA como primer lector.</b> Un agente lee el repositorio completo y escribe un borrador de devolución contra la rúbrica. Hace la parte que más tiempo me llevaba: recorrer todo, comparar con lo que se pidió y anotar qué falta.</p>
     <p><span class="gesto">→ 3</span> <b>Aprobación docente obligatoria.</b> Y esta es la pieza que no se negocia: <mark>la IA nunca es la evaluadora final</mark>. Lo que produce es un borrador auditable. La nota la pone el docente y la firma el docente.</p>
   </div>
-  <div class="caja pase"><h3>Pase a la 4</h3><p>"Veamos cómo circula una devolución, paso a paso."</p></div>
+  <div class="caja pase"><h3>Pase a la 4</h3><p>"Veamos cómo circula una devolución, paso a paso. Los tres pilares de recién son estos cinco pasos: el 1 es el repositorio, el 2 y el 3 son la IA, el 4 y el 5 soy yo."</p></div>
 </section>
 
 <!-- 4 -->
@@ -188,15 +188,17 @@
   <p class="meta">Diapositiva 4 · 2 min 30 s · llegar al minuto 7:30</p>
   <h2>El circuito de una devolución</h2>
   <div class="guion">
-    <p><span class="gesto">→ 1</span> Arranca con algo muy simple: <b>sincronizo los repositorios</b> de todos los grupos. Bajo lo último que subieron.</p>
-    <p><span class="gesto">→ 2</span> El <b>agente</b>, que en nuestro caso es Claude Code, lee cada repositorio. No lo lee solo: lee también la rúbrica, el cronograma de la materia y <mark>todas las devoluciones anteriores de ese grupo</mark>. Sobre esto último vuelvo en un minuto, porque es lo que hizo la diferencia.</p>
-    <p><span class="gesto">→ 3</span> El resultado es un <b>borrador privado</b>, que queda en un repositorio mío. El grupo todavía no ve nada.</p>
+    <p><span class="gesto">→ ANTES DE LOS PASOS</span><br>Una aclaración para quienes trabajan con IA: <mark>el agente no es un servicio en la nube ni un bot en GitHub</mark>. Es Claude Code, corriendo en mi computadora. Yo le escribo "evaluá el grupo tal" y él abre el repositorio del grupo, lo lee con la rúbrica y el historial, y me deja un borrador. <b>Todo lo disparo yo: no hay nada corriendo solo.</b></p>
+    <p><span class="gesto">→ 1</span> Arranca con algo muy simple: <b>sincronizo los repositorios</b> de todos los grupos (el repositorio es la carpeta del proyecto en GitHub). Bajo lo último que subieron.</p>
+    <p><span class="gesto">→ 2</span> <b>Acá razona la IA.</b> El agente lee cada repositorio. No lo lee solo: lee también la rúbrica, el cronograma de la materia y <mark>todas las devoluciones anteriores de ese grupo</mark>. Sobre esto último vuelvo en un minuto, porque es lo que hizo la diferencia.</p>
+    <p><span class="gesto">→ 3</span> El resultado es un <b>borrador privado</b>, que queda en una carpeta privada mía. El grupo todavía no ve nada.</p>
     <p><span class="gesto">→ 4</span> Ahí entro yo. Leo el borrador, <b>ajusto puntajes</b>, saco lo que no corresponde y agrego lo que la IA no puede saber: lo que pasó en clase, lo que me dijo el grupo o que un integrante estuvo enfermo.</p>
-    <p><span class="gesto">→ 5</span> Recién cuando lo apruebo se <b>publica</b> en el repositorio del grupo, y les llega un aviso por correo automático. Esa parte la hace n8n con Gmail.</p>
+    <p><span class="gesto">→ 5</span> Recién cuando lo apruebo se <b>publica</b> en el repositorio del grupo, y les llega un aviso por correo automático. En el 1 y el 5 el agente solo ejecuta lo que le pido; el mail lo manda otra herramienta, n8n, no la IA.</p>
     <p><span class="gesto">→ SEÑALAR CAJA DE ABAJO</span><br>Lo importante está abajo: entre el paso 3 y el 5 hay una persona. <mark>Lo que la IA publica sin revisión es exactamente nada.</mark></p>
-    <p>Este circuito se repitió todo el cuatrimestre: cada grupo recibió <mark>unas ocho devoluciones</mark>, no una al final.</p>
+    <p><span class="gesto">→ SEÑALAR DEL 5 AL 2, CON LA MANO</span><br>Y esto no es una línea, es una vuelta: <mark>lo que publico en el 5 es lo que la IA lee en el 2 la próxima vez</mark>. Eso pasó unas ocho veces por grupo, no una sola al final.</p>
   </div>
-  <div class="caja"><h3>Si preguntan por la infraestructura</h3><ul><li>GitHub para los repos, Claude Code como agente, un repo privado para los borradores, n8n + Gmail para el aviso.</li><li>El código es abierto: github.com/pablopedernera0/sistema-eidas.</li></ul></div>
+  <div class="caja"><h3>Si preguntan por la infraestructura</h3><ul><li>GitHub para los repos, Claude Code en mi computadora como agente, un repo privado para los borradores, n8n + Gmail para el aviso.</li><li>El agente es reemplazable: ver "¿Se puede usar con otra IA?" en las preguntas.</li><li>El código es abierto: github.com/pablopedernera0/sistema-eidas.</li></ul></div>
+  <div class="caja cuidado"><h3>Tiempo</h3><p>Esta diapositiva ahora suma unos 30 segundos. Recuperarlos en la 2 (saltear la frase de la investigación sobre retroalimentación) o en la 8 (saltear "97 mejoraron, 61 igual, 2 bajaron").</p></div>
   <div class="caja pase"><h3>Pase a la 5</h3><p>"Ahora, cualquiera que haya probado pedirle devoluciones a una IA sabe lo que pasa la primera vez…"</p></div>
 </section>
 
@@ -241,6 +243,7 @@
   <p class="meta">Diapositiva 7 · 1 min 30 s · llegar al minuto 14</p>
   <h2>Cómo llega el borrador al docente</h2>
   <div class="guion">
+    <p><span class="gesto">→ PRIMERO, UBICAR</span><br>Volvamos al paso 4 del circuito: <mark>esto es lo que tengo en la mano cuando reviso</mark>.</p>
     <p>Esto es una <b>maqueta</b>, no un borrador real, pero tiene la forma exacta. Tres cosas.</p>
     <p><span class="gesto">→ 1</span> <b>Puntaje por criterio</b>, contra la rúbrica de 10 criterios.</p>
     <p><span class="gesto">→ 2</span> <b>Confianza por sección.</b> La IA dice cuán segura está de cada puntaje. Requisitos, confianza alta: lo miro rápido. Modelo entidad-relación, confianza baja: <mark>ahí pongo mi tiempo</mark>. Esto cambió mi forma de revisar: en vez de leer todo con la misma atención, concentro la revisión donde la IA duda.</p>
@@ -310,6 +313,8 @@
   <div class="caja"><h3>"¿Qué pasa con los datos de los estudiantes?"</h3><p>Los borradores quedan en un repositorio privado del docente; lo que se publica va al repositorio del propio grupo. Los ejemplos de esta charla están anonimizados.</p></div>
   <div class="caja"><h3>"¿Los estudiantes saben que lo lee una IA?"</h3><p>Sí, lo saben desde el principio. La IA hace la primera lectura; yo reviso lo que dice y confirmo o corrijo cada puntaje y cada devolución antes de que les llegue.</p></div>
   <div class="caja"><h3>"¿Qué modelo usás?"</h3><p>Claude Opus 5.5, de Anthropic, a través de Claude Code, que es el agente que lee los repositorios. El dispositivo no depende de ese modelo en particular: lo que hizo la diferencia fue el contexto, no el modelo.</p></div>
+  <div class="caja"><h3>"¿Se puede usar con otra IA?" / "¿Dependés de Anthropic?"</h3><p>En principio, sí se puede. Todo lo que lee el agente son archivos de texto: la consigna, la rúbrica, el cronograma, las devoluciones anteriores y mis criterios. Los scripts son Python y el mail lo manda n8n: nada de eso es de Anthropic. Lo propio de Claude Code son las instrucciones de cada comando, que también son texto. Se pueden pasar a otro agente de terminal, por ejemplo OpenCode, que es abierto y funciona con muchos modelos, incluso locales. <b>Todavía no lo probé:</b> la calidad del borrador va a depender del modelo, y es un buen experimento para hacer.</p></div>
+  <div class="caja"><h3>"¿Qué pasa cuando no estás de acuerdo con la IA?"</h3><p>Corrijo el puntaje o el texto antes de publicar. Y si la corrección es un criterio ("esto no lo penalices"), queda escrito y la IA lo lee la ronda siguiente: es la capa 5. Por eso el circuito es una vuelta y no una línea.</p></div>
   <div class="caja"><h3>"¿Cuánto cuesta?"</h3><p>Una cuenta Claude Pro, el plan pago más básico, y nada más. GitHub es gratuito. El aviso por correo lo manda n8n, que corre en mi máquina con Docker y está conectado a mi correo institucional: no hay servidores pagos. El código es abierto.</p></div>
 </section>
 
